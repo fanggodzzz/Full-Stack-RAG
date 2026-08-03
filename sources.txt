@@ -1,0 +1,8 @@
+https://spring.io/
+https://nodejs.org/
+https://www.djangoproject.com/
+https://flask.palletsprojects.com/
+https://react.dev/
+https://angular.dev/
+https://vuejs.org/
+https://nextjs.org/
