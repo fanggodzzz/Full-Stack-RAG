@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timezone
 import time
 import data_processing as dp
+from shared import document_queue
 
 SEED_URLS = []
 SOURCES_FILE = "sources.txt"
@@ -136,11 +137,12 @@ def crawler_thread(url, rp):
             response.raise_for_status()
             content_type = response.headers.get("Content-Type", "").lower()
 
-            # Skip XML and JSON content types
-            if ("xml" in content_type) or ("json" in content_type):
+            # Only get HMTL files
+            if not ("html" in content_type):
                 continue
 
             content = response.content.decode(response.encoding or "utf-8", errors="ignore")
+
             content = remove_unwanted_tags(content)
 
             with lock:
@@ -163,7 +165,7 @@ def crawler_thread(url, rp):
                 if rp is not None and rp.can_fetch(USER_AGENT, link):
                     queue.append(link)
 
-            dp.process_raw_data(current_docno)
+            document_queue.put(current_docno)
 
         except requests.RequestException as e:
             print(f"Failed to fetch {normalized_url}: {e}")
@@ -185,9 +187,7 @@ def crawl():
         thread.join()
 
 def main():
-    with open("./DATA/processed.jsonl", "w", encoding="utf-8") as f:
-        f.write("")  # Clear the directory before writing new data
-
+    
     print("Getting seed urls from sources.txt...")
     import_sources()
 
@@ -199,6 +199,8 @@ def main():
 
     print("Crawling completed. Total documents crawled:", DOCNUM)
     print(f"Crawled documents are saved in the {RAW} directory.")
+
+    document_queue.put(None)  # Signal the data processing thread to exit
 
 if __name__ == "__main__":
     main()
