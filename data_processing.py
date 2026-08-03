@@ -1,18 +1,18 @@
-from compression import gzip
-
-from bs4 import BeautifulSoup
-import json
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from shared import document_queue
+import hashlib
+from shared import document_queue, meta_raw
+from Document_processor import html, md, txt
+import json
 
 DATA = "./Data/processed.jsonl"
 RAW = "./Data/raw/"
 CHUNK = "./Data/chunked.jsonl"
 MAX_DOCS = 10
 CHUNK_SIZE = 256
-OVERLAP = 50
+OVERLAP = 25
 
 
 # Stop words from NLTK
@@ -20,6 +20,8 @@ stopWords = set(nltk.corpus.stopwords.words("english"))
 
 # Stemming function
 stem = PorterStemmer().stem
+
+text_hashes = set()  # Set to store hashes of processed texts
 
 def preprocessing_text(text):
     # Tokenization
@@ -31,24 +33,7 @@ def preprocessing_text(text):
     # Remove stop words, punctuation and non-alphabetic tokens (numbers, etc.)
     tokens = [token for token in tokens if token.isalpha() and token not in stopWords]
 
-    text = " ".join(tokens)
-
-    return text
-
-def extract_title_from_html(html):
-    soup = BeautifulSoup(html, "html.parser")
-
-    # Extract title
-    title = soup.title.string if soup.title else ""
-    return preprocessing_text(title)
-
-def extract_text_from_html(html):
-    soup = BeautifulSoup(html, "html.parser")
-
-    # Get the text
-    text = soup.get_text(separator=" ", strip=True)
-
-    return text
+    return tokens
 
 def chunk_text(document):
     text = document["content"]
@@ -73,20 +58,28 @@ def chunk_text(document):
         save_chunked_data(chunk)
 
 def process_raw_data(doc_num):
+    meta = meta_raw[doc_num]
     try:
-        with open(RAW + f"doc_{doc_num:07d}.html", "r", encoding="utf-8") as f:
+        with open(f"{RAW}doc_{doc_num:07d}{meta['ext']}", "r", encoding="utf-8") as f:
             content = f.read()
-            text = preprocessing_text(extract_text_from_html(content))
-            document = {
-                "docno": doc_num,
-                "token_num": len(text.split()),
-                "title": extract_title_from_html(content),
-                "content": text
-            }
-            save_processed_data(document)
-            chunk_text(document)
+
+        if (meta["ext"] == "html"):
+            text = html.extract_text_from_html(content)
+        elif (meta["ext"] == "md"):
+            text = md.extract_text_from_md(content)
+        else:
+            text = txt.extract_text_from_txt(content)
+
+        document = {
+            "docno": doc_num,
+            "title": meta["title"],
+            "content": text
+        }
+        save_processed_data(document)
+        chunk_text(document)
     except Exception as e:
-        print(f"Error processing document {doc_num}: {e}")
+        print(f"Error reading file for doc_num {doc_num}: {e}")
+        return
 
 def save_processed_data(document):
     with open(DATA, "at", encoding="utf-8") as f:
@@ -103,8 +96,9 @@ def save_chunked_data(document):
         ) + "\n")
 
 def main():
-    with open("./DATA/processed.jsonl", "w", encoding="utf-8") as f:
-        f.write("")  # Clear the directory before writing new data
+    # Clear output files before starting
+    with open(DATA, "w", encoding="utf-8") as f:
+        f.write("")  # Clear the file before writing new data
 
     with open(CHUNK, "w", encoding="utf-8") as f:
         f.write("")  # Clear the directory before writing new data
@@ -115,6 +109,9 @@ def main():
             break
         process_raw_data(doc_num)
         document_queue.task_done()  # Mark the task as done
+
+    # for doc_num in range(MAX_DOCS):
+    #     process_raw_data(doc_num)
 
     print("Data processing completed. Processed documents are saved in the processed.jsonl and chunked.jsonl files.")
 

@@ -2,3 +2,6 @@ ollama
 requests
 beautifulsoup4
 nltk
+rank_bm25
+gensim
+markdown

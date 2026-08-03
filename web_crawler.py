@@ -1,13 +1,11 @@
 from urllib.robotparser import RobotFileParser
 from urllib.parse import urljoin, urlparse, urlsplit, urlunsplit
-from bs4 import BeautifulSoup
 import requests
 import threading
 import os
-from datetime import datetime, timezone
-import time
-import data_processing as dp
-from shared import document_queue
+from shared import document_queue, meta_raw, save_meta_raw, add_meta, META_RAW, normalize_url
+import hashlib
+from Document_processor import html, md, txt
 
 SEED_URLS = []
 SOURCES_FILE = "sources.txt"
@@ -15,13 +13,15 @@ USER_AGENT = "MyCRAWLER"
 ROBOT_FILE = "robots.txt"
 DOCNUM = 0
 RAW = "./Data/raw"
-REMOVED_TAGS = ["script", "style", "noscript", "iframe", "header", "footer", "nav", "aside", "meta", "link"]
-MAX_DOCS = 1000000000
+META_RAW = "./Data/meta_raw.jsonl"
+MAX_DOCS = 20000
+# MAX_DOCS = 200  # Limit the number of documents to crawl for testing purposes
 
 
 robots = {}
 lock = threading.Lock()
 visited = set()
+content_hashes = set()  # To store hashes of the content to avoid duplicates
 
 def import_sources():
     global SEED_URLS
@@ -58,71 +58,69 @@ def parse_robots_txt():
         except requests.RequestException as e:
             robots[domain] = None
 
-def normalize_url(url):
-    parts = urlsplit(url)
-    path = parts.path or "/"
-    return urlunsplit((
-        parts.scheme.lower(),
-        parts.netloc.lower(),
-        path,
-        "",   # remove query
-        ""    # remove fragment
-    ))
+def save_raw_data(docno, title, normalized_url, content, ext):
+    # Save content
+    file_path = os.path.join(RAW, f"doc_{docno:07d}{ext}")
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(content)
 
-def extract_links(content, base_url):
-    links = set()
-    soup = BeautifulSoup(content, "html.parser")
+    # Save metadata
+    add_meta(docno, title, normalized_url, ext)
 
-    for a_tag in soup.find_all("a", href=True):
-        href = a_tag["href"]
-        absolute_url = urljoin(base_url, href)
-        normalized_url = normalize_url(absolute_url)
-        if urlparse(normalized_url).netloc == urlparse(base_url).netloc:
-            links.add(normalized_url)
-    return links
+def process_and_save(response, normalized_url):
+    global DOCNUM
+    content_type = response.headers.get("Content-Type", "").lower()
+    content = links = title = ext = None
+    
+    # Choose how to decode and what extension to save based on content type
+    if content_type.startswith("text/markdown") or normalized_url.endswith(".md"):
+        raw_content = response.content.decode("utf-8", errors="ignore")
+        content, links, title = md.process_markdown(raw_content, normalized_url)
+        ext = ".md"
+    elif content_type.startswith("text/html") or normalized_url.endswith(".html"):
+        raw_content = response.content.decode("utf-8", errors="ignore")
+        content, links, title = html.process_html(raw_content, normalized_url)
+        ext = ".html"
+    elif content_type.startswith("text/plain") or normalized_url.endswith(".txt"):
+        raw_content = response.content.decode("utf-8", errors="ignore") 
+        content, links, title = txt.process_txt(raw_content, normalized_url)
+        ext = ".txt"
 
-def add_crawler_metadata(html, url, docno):
-    soup = BeautifulSoup(html, "html.parser")
+    if content is None or title is None:
+        print(f"Skipping invalid content for URL: {normalized_url}")
+        return None, None, False  
 
-    if soup.head is None:
-        head = soup.new_tag("head")
+    # Calculate the hash of the content
+    content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
 
-        if soup.html:
-            soup.html.insert(0, head)
-        else:
-            soup.insert(0, head)
+    # Deduplicate text
+    if content_hash in content_hashes:
+        print(f"Skipping duplicate content for URL: {normalized_url}")
+        return None, None, False  
 
-    metadata = {
-        "crawler-url": url,
-        "crawler-docno": docno,
-        "crawler-time": datetime.now(timezone.utc).isoformat()
-    }
+    with lock:
+        current_docno = DOCNUM
+        DOCNUM += 1
+        content_hashes.add(content_hash)
 
-    for name, value in metadata.items():
-        meta = soup.new_tag("meta")
-        meta["name"] = name
-        meta["content"] = value
-        soup.head.append(meta)
+    save_raw_data(current_docno, title, normalized_url, content, ext)
 
-    return str(soup)
-
-def remove_unwanted_tags(html):
-    soup = BeautifulSoup(html, "html.parser")
-    for tag in REMOVED_TAGS:
-        for element in soup.find_all(tag):
-            element.decompose()
-    return str(soup)
+    return current_docno, links, True  
 
 def crawler_thread(url, rp):
     global DOCNUM
     queue = ["https://" + url]
-    print(f"Thread started for URL: {url}")
+    with lock:
+        print(f"Thread started for URL: {url}")
 
     while queue:
         url = queue.pop(0)
         normalized_url = normalize_url(url)
 
         with lock:
+            if DOCNUM >= MAX_DOCS:
+                print(f"Reached maximum document limit of {MAX_DOCS}. Stopping crawler.")
+                return
             if normalized_url in visited:
                 continue
             visited.add(normalized_url)
@@ -135,37 +133,13 @@ def crawler_thread(url, rp):
                 timeout=5
             )
             response.raise_for_status()
-            content_type = response.headers.get("Content-Type", "").lower()
 
-            # Only get HMTL files
-            if not ("html" in content_type):
-                continue
-
-            content = response.content.decode(response.encoding or "utf-8", errors="ignore")
-
-            content = remove_unwanted_tags(content)
-
-            with lock:
-                if DOCNUM >= MAX_DOCS:
-                    print(f"Reached maximum document limit of {MAX_DOCS}. Stopping crawler.")
-                    break
-                current_docno = DOCNUM
-                DOCNUM += 1
-
-            content = add_crawler_metadata(content, normalized_url, current_docno)
-            
-            # Save the content to a file
-            file_path = os.path.join(RAW, f"doc_{current_docno:07d}.html")
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(content)
-
-            # Extract links and add to the queue
-            links = extract_links(content, normalized_url)
-            for link in links:
-                if rp is not None and rp.can_fetch(USER_AGENT, link):
-                    queue.append(link)
-
-            document_queue.put(current_docno)
+            doc_num, links, processing = process_and_save(response, normalized_url)   
+            if (processing):
+                document_queue.put(doc_num)  # Add the document name to the queue for processing
+                for link in links:
+                    if rp is not None and rp.can_fetch(USER_AGENT, link):
+                        queue.append(link)
 
         except requests.RequestException as e:
             print(f"Failed to fetch {normalized_url}: {e}")
@@ -199,6 +173,9 @@ def main():
 
     print("Crawling completed. Total documents crawled:", DOCNUM)
     print(f"Crawled documents are saved in the {RAW} directory.")
+
+    save_meta_raw()  # Save the metadata after crawling is complete
+    print(f"Metadata saved in {META_RAW} ")
 
     document_queue.put(None)  # Signal the data processing thread to exit
 
