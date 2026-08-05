@@ -1,7 +1,7 @@
 import re
 import markdown
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from shared import normalize_url
 
 
@@ -22,16 +22,22 @@ def extract_title_from_md(md_text):
     return None
 
 
-def extract_links_from_md(md_text, base_url=""):
+def extract_links_from_md(md_text, base_url):
     links = set()
 
     # Markdown links
     pattern = r"\[[^\]]+\]\(([^)]+)\)"
 
     for href in re.findall(pattern, md_text):
-        if base_url:
-            href = normalize_url(urljoin(base_url, href))
-        links.add(href)
+        try:
+            absolute_url = urljoin(base_url, href)
+            normalized_url = normalize_url(absolute_url)
+
+            if urlparse(normalized_url).netloc == urlparse(base_url).netloc:
+                links.add(normalized_url)
+
+        except Exception as e:
+            continue
 
     return links
 

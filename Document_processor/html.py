@@ -4,7 +4,29 @@ from shared import normalize_url
 
 from bs4 import BeautifulSoup
 
-REMOVED_TAGS = ["script", "style", "noscript", "iframe", "header", "footer", "nav", "aside", "meta", "link"]
+REMOVED_TAGS = ["script", "style", "noscript", "iframe", "meta", "link"]
+
+def prepare_base_url(base_url):
+    parsed = urlparse(base_url)
+    path = parsed.path
+
+    # Root URL
+    if not path:
+        return base_url.rstrip("/") + "/"
+
+    # Already a directory URL
+    if path.endswith("/"):
+        return base_url
+
+    # Get the last path component
+    last_part = path.rsplit("/", 1)[-1]
+
+    if "." in last_part:
+        last_part = last_part.rsplit(".", 1)[0] + "/"
+        return urljoin(base_url, last_part)
+
+    # Otherwise, treat it as a directory
+    return base_url + "/"
 
 def extract_title_from_html(html):
     soup = BeautifulSoup(html, "html.parser")
@@ -24,13 +46,18 @@ def extract_title_from_html(html):
 def extract_links_from_html(html, base_url):
     links = set()
     soup = BeautifulSoup(html, "html.parser")
-
+    base_url = prepare_base_url(base_url)
     for a_tag in soup.find_all("a", href=True):
         href = a_tag["href"]
-        absolute_url = urljoin(base_url, href)
-        normalized_url = normalize_url(absolute_url)
-        if urlparse(normalized_url).netloc == urlparse(base_url).netloc:
-            links.add(normalized_url)
+        try:
+            absolute_url = urljoin(base_url, href)
+            normalized_url = normalize_url(absolute_url)
+
+            if urlparse(normalized_url).netloc == urlparse(base_url).netloc:
+                links.add(normalized_url)
+
+        except Exception as e:
+            continue
 
     return links
 
@@ -69,8 +96,9 @@ def valid_doc_title(html):
 
 def process_html(content, base_url):
     title = valid_doc_title(content)
+    text = extract_text_from_html(content)
+    links = extract_links_from_html(content, base_url)
     text = remove_unwanted_tags(content)
-    links = extract_links_from_html(text, base_url)
 
     if not text or not title:
         return None, None, None

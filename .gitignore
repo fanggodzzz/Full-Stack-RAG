@@ -1,2 +1,6 @@
-/Data/raw
-/_pycache_
+__pycache__/
+Data/
+Document_processor/
+Models/
+rag-env/
+

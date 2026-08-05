@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse, urlsplit, urlunsplit
 import requests
 import threading
 import os
-from shared import document_queue, meta_raw, save_meta_raw, add_meta, META_RAW, normalize_url
+from shared import document_queue, filter_url, meta_raw, save_meta_raw, add_meta, META_RAW, normalize_url
 import hashlib
 from Document_processor import html, md, txt
 
@@ -14,14 +14,15 @@ ROBOT_FILE = "robots.txt"
 DOCNUM = 0
 RAW = "./Data/raw"
 META_RAW = "./Data/meta_raw.jsonl"
-MAX_DOCS = 20000
-# MAX_DOCS = 200  # Limit the number of documents to crawl for testing purposes
+MAX_DOCS = 10000
 
 
 robots = {}
 lock = threading.Lock()
+print_lock = threading.Lock()
 visited = set()
 content_hashes = set()  # To store hashes of the content to avoid duplicates
+title_hashes = set()  # To store hashes of the titles to avoid duplicates
 
 def import_sources():
     global SEED_URLS
@@ -41,7 +42,7 @@ def parse_robots_txt():
         parsed_url = urlparse(url)
         domain = parsed_url.netloc
         robots_url = urljoin(
-            f"{parsed_url.scheme}://{parsed_url.netloc}/",
+            f"{parsed_url.scheme}://{parsed_url.netloc}/{parsed_url.path}",
             ROBOT_FILE
         )
 
@@ -56,7 +57,8 @@ def parse_robots_txt():
             rp.parse(response.text.splitlines())
             robots[domain] = rp
         except requests.RequestException as e:
-            robots[domain] = None
+            if domain not in robots:
+                robots[domain] = None
 
 def save_raw_data(docno, title, normalized_url, content, ext):
     # Save content
@@ -87,35 +89,58 @@ def process_and_save(response, normalized_url):
         ext = ".txt"
 
     if content is None or title is None:
-        print(f"Skipping invalid content for URL: {normalized_url}")
-        return None, None, False  
+        # print(f"Skipping invalid content for URL: {normalized_url}")
+        return None, links, False  
 
     # Calculate the hash of the content
     content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
 
-    # Deduplicate text
-    if content_hash in content_hashes:
-        print(f"Skipping duplicate content for URL: {normalized_url}")
-        return None, None, False  
+    # Calculate the hash of the title
+    title_hash = hashlib.sha256(title.encode("utf-8")).hexdigest()
 
     with lock:
         current_docno = DOCNUM
-        DOCNUM += 1
+
+        # Deduplicate titles
+        if title_hash in title_hashes:
+            # print(f"Skipping duplicate title for URL: {normalized_url}")
+            return None, links, False  
+    
+        # Deduplicate text
+        if content_hash in content_hashes:
+            # print(f"Skipping duplicate content for URL: {normalized_url}")
+            return None, links, False   
+
         content_hashes.add(content_hash)
+        title_hashes.add(title_hash)
 
-    save_raw_data(current_docno, title, normalized_url, content, ext)
+        save_raw_data(current_docno, title, normalized_url, content, ext)
 
-    return current_docno, links, True  
+        DOCNUM += 1
 
-def crawler_thread(url, rp):
+    return current_docno, links, True    
+
+def crawler_thread(seed_url, rp):
     global DOCNUM
-    queue = ["https://" + url]
-    with lock:
-        print(f"Thread started for URL: {url}")
+
+    # Add links from the SEED and from the root domain to the queue
+    seed_url = seed_url if seed_url.startswith(("http://", "https://")) else "https://" + seed_url
+    # queue = [seed_url]
+    queue = []
+
+    for url in SEED_URLS:
+        parsed_url = urlparse(url)
+        if parsed_url.netloc == urlparse(seed_url).netloc:
+            queue.append(url)
+
+    with print_lock:
+        print(f"Thread started for URL: {seed_url}")
 
     while queue:
         url = queue.pop(0)
         normalized_url = normalize_url(url)
+        if not filter_url(normalized_url):
+            continue
 
         with lock:
             if DOCNUM >= MAX_DOCS:
@@ -124,6 +149,9 @@ def crawler_thread(url, rp):
             if normalized_url in visited:
                 continue
             visited.add(normalized_url)
+
+        with print_lock:
+            print(f"docnum: {DOCNUM}", end="\r")
 
         try:
             # Fetch the page content
@@ -137,25 +165,27 @@ def crawler_thread(url, rp):
             doc_num, links, processing = process_and_save(response, normalized_url)   
             if (processing):
                 document_queue.put(doc_num)  # Add the document name to the queue for processing
+
+            if links:
                 for link in links:
                     if rp is not None and rp.can_fetch(USER_AGENT, link):
                         queue.append(link)
-
+            # break
         except requests.RequestException as e:
-            print(f"Failed to fetch {normalized_url}: {e}")
+            # print(f"Failed to fetch {normalized_url}: {e}")
+            continue
 
 def crawl():
-    global DOCNUM
+    global DOCNUM, robots
     threads = []
 
     # Start a thread for each seed URL
-    for url, rp in robots.items():
+    for url in robots.keys():
+        rp = robots[url]
         if rp is not None and rp.can_fetch(USER_AGENT, url):
             thread = threading.Thread(target=crawler_thread, args=(url, rp))
             threads.append(thread)
             thread.start()
-        else:
-            print(f"Skipping {url} due to robots.txt restrictions.")
 
     for thread in threads:
         thread.join()
@@ -174,7 +204,7 @@ def main():
     print("Crawling completed. Total documents crawled:", DOCNUM)
     print(f"Crawled documents are saved in the {RAW} directory.")
 
-    save_meta_raw()  # Save the metadata after crawling is complete
+    save_meta_raw()  # Save the metadata to the JSONL file
     print(f"Metadata saved in {META_RAW} ")
 
     document_queue.put(None)  # Signal the data processing thread to exit

@@ -1,18 +1,21 @@
+import os
+
+os.environ.setdefault("NLTK_DISABLE_IMPORT_SECURITY", "1")
+
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
-from shared import document_queue
 import hashlib
-from shared import document_queue, meta_raw
+from shared import document_queue, import_meta_raw, meta_raw
 from Document_processor import html, md, txt
 import json
 
 DATA = "./Data/processed.jsonl"
 RAW = "./Data/raw/"
 CHUNK = "./Data/chunked.jsonl"
-MAX_DOCS = 10
 CHUNK_SIZE = 256
 OVERLAP = 25
+MAX_DOCS = 10000 # Limit the number of documents to process for testing purposes
 
 
 # Stop words from NLTK
@@ -22,6 +25,7 @@ stopWords = set(nltk.corpus.stopwords.words("english"))
 stem = PorterStemmer().stem
 
 text_hashes = set()  # Set to store hashes of processed texts
+# meta_raw = {}  # Dictionary to store metadata for each document
 
 def preprocessing_text(text):
     # Tokenization
@@ -63,9 +67,9 @@ def process_raw_data(doc_num):
         with open(f"{RAW}doc_{doc_num:07d}{meta['ext']}", "r", encoding="utf-8") as f:
             content = f.read()
 
-        if (meta["ext"] == "html"):
+        if (meta["ext"] == ".html"):
             text = html.extract_text_from_html(content)
-        elif (meta["ext"] == "md"):
+        elif (meta["ext"] == ".md"):
             text = md.extract_text_from_md(content)
         else:
             text = txt.extract_text_from_txt(content)
@@ -75,6 +79,13 @@ def process_raw_data(doc_num):
             "title": meta["title"],
             "content": text
         }
+
+        text_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        if text_hash in text_hashes:
+            # print(f"Skipping duplicate text for doc_num {doc_num}")
+            return
+        text_hashes.add(text_hash)
+
         save_processed_data(document)
         chunk_text(document)
     except Exception as e:
@@ -103,15 +114,13 @@ def main():
     with open(CHUNK, "w", encoding="utf-8") as f:
         f.write("")  # Clear the directory before writing new data
 
+    # Concurrently with crawling
     while True:
         doc_num = document_queue.get()  # Wait for a document number from the queue
         if doc_num is None:  # Check for the sentinel value to exit
             break
         process_raw_data(doc_num)
         document_queue.task_done()  # Mark the task as done
-
-    # for doc_num in range(MAX_DOCS):
-    #     process_raw_data(doc_num)
 
     print("Data processing completed. Processed documents are saved in the processed.jsonl and chunked.jsonl files.")
 

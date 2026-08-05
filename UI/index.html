@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>RAG Chat</title>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}"
+        />
+    </head>
+    <body>
+        <div class="app-shell">
+            <main class="chat-panel">
+                <header class="chat-header">
+                    <div>
+                        <div class="brand">RAG Chat</div>
+                        <p>Type a question and send it to the backend.</p>
+                    </div>
+                    <div class="header-pill">Flask</div>
+                </header>
+
+                <section id="messages" class="messages" aria-live="polite">
+                    <article class="message assistant">
+                        <div class="avatar">AI</div>
+                        <div class="bubble">
+                            <p>
+                                Ask anything. Your typed query will be posted to
+                                the Flask endpoint.
+                            </p>
+                        </div>
+                    </article>
+                </section>
+
+                <form id="chat-form" class="composer" autocomplete="off">
+                    <label class="sr-only" for="query-input">Message</label>
+                    <textarea
+                        id="query-input"
+                        name="query"
+                        rows="1"
+                        placeholder="Message the app..."
+                        required
+                    ></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            </main>
+        </div>
+
+        <script src="{{ url_for('static', filename='app.js') }}"></script>
+    </body>
+</html>
