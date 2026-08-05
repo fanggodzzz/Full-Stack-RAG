@@ -1,0 +1,484 @@
+Index: 5499 <<"chunk_id": 1, "docno": 761>>
+
+of the core functionality works https://angular.dev/essentials/components
+https://angular.dev/essentials/signals https://angular.dev/essentials/templates
+https://angular.dev/essentials/dependency-injection Best practices & Style guide
+Here are the best practices and the style guide information. Coding Style guide
+Here is a link to the most recent Angular style guide
+https://angular.dev/style-guide TypeScript Best Practices Use strict type
+checking Prefer type inference when the type is obvious Avoid the any type; use
+unknown when type is uncertain Angular Best Practices Always use standalone
+components over NgModules Do NOT set standalone: true inside the @Component ,
+@Directive and @Pipe decorators Use signals for state management Implement lazy
+loading for feature routes Do NOT use the @HostBinding and @HostListener
+decorators. Put host bindings inside the host object of the @Component or
+@Directive decorator instead Use NgOptimizedImage for all static images.
+NgOptimizedImage does not work for inline base64 images. Accessibility
+Requirements It MUST pass all AXE checks. It MUST follow all WCAG AA minimums,
+including focus management, color contrast, and ARIA attributes. Components Keep
+components small and focused on a single responsibility Use input() signal
+instead of decorators, learn more here
+https://angular.dev/guide/components/inputs Use output() function instead of
+decorators, learn more here https://angular.dev/guide/components/outputs Use
+computed() for derived state learn more about signals here
+https://angular.dev/guide/signals. Prefer inline templates for small components
+Prefer Reactive forms instead of Template-driven ones Do NOT use ngClass , use
+class bindings instead, for context:
+https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
+Do NOT use ngStyle , use style bindings instead, for context:
+https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
+State Management Use signals for local component state Use computed() for
+derived state Keep state transformations pure and predictable Do NOT use
+----------------------------------------------------------------------------------------------------
+Index: 5303 <<"chunk_id": 0, "docno": 735>>
+
+You are an expert in TypeScript, Angular, and scalable web application
+development. You write functional, maintainable, performant, and accessible code
+following Angular and TypeScript best practices. TypeScript Best Practices Use
+strict type checking Prefer type inference when the type is obvious Avoid the
+any type; use unknown when type is uncertain Angular Best Practices Always use
+standalone components over NgModules Must NOT set standalone: true inside
+Angular decorators. It's the default in Angular v20+. Do NOT set
+changeDetection: ChangeDetectionStrategy.OnPush explicitly. OnPush is the
+default in Angular v22+. Use signals for state management Implement lazy loading
+for feature routes Do NOT use the @HostBinding and @HostListener decorators. Put
+host bindings inside the host object of the @Component or @Directive decorator
+instead Use NgOptimizedImage for all static images. NgOptimizedImage does not
+work for inline base64 images. Accessibility Requirements It MUST pass all AXE
+checks. It MUST follow all WCAG AA minimums, including focus management, color
+contrast, and ARIA attributes. Components Keep components small and focused on a
+single responsibility Use input() and output() functions instead of decorators
+Use model() for two-way bound properties with [(prop)] syntax instead of pairing
+input() with output() Use computed() for derived state Use linkedSignal() for
+state derived from multiple reactive sources that must stay synchronized Prefer
+inline templates for small components Prefer Signal Forms (
+@angular/forms/signals ) for new forms. They are stable in Angular v22+ and
+provide signal-based state, type-safe field access, and schema-based validation
+When not using Signal Forms, prefer Reactive forms instead of Template-driven
+ones Do NOT use ngClass ,
+----------------------------------------------------------------------------------------------------
+Index: 1462 <<"chunk_id": 1, "docno": 215>>
+
+Security Updates for Vue 2 On this page Table of Contents for current page
+Reporting Vulnerabilities Rule No.1: Never Use Non-trusted Templates What Vue
+Does to Protect You Potential Dangers Best Practices Backend Coordination
+Server-Side Rendering (SSR) Sponsors Become a Sponsor Are you an LLM? You can
+read better optimized documentation at /guide/best-practices/security.md for
+this page in Markdown format Security ​ Reporting Vulnerabilities ​ When a
+vulnerability is reported, it immediately becomes our top concern, with a
+full-time contributor dropping everything to work on it. To report a
+vulnerability, please email security@vuejs.org . While the discovery of new
+vulnerabilities is rare, we also recommend always using the latest versions of
+Vue and its official companion libraries to ensure your application remains as
+secure as possible. Rule No.1: Never Use Non-trusted Templates ​ The most
+fundamental security rule when using Vue is never use non-trusted content as
+your component template . Doing so is equivalent to allowing arbitrary
+JavaScript execution in your application - and worse, could lead to server
+breaches if the code is executed during server-side rendering. An example of
+such usage: js Vue. createApp ({ template: `<div>` + userProvidedString +
+`</div>` // NEVER DO THIS }). mount ( '#app' ) Vue templates are compiled into
+JavaScript, and expressions inside templates will be executed as part of the
+rendering process. Although the expressions are evaluated against a specific
+rendering context, due to the complexity of potential global execution
+environments, it is impractical for a framework like Vue to completely shield
+you from potential malicious code
+----------------------------------------------------------------------------------------------------
+Index: 3120 <<"chunk_id": 1, "docno": 446>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Project Setup Overview IDE Support Configuring
+tsconfig.json Note on Vue CLI and ts-loader General Usage Notes
+defineComponent() Usage in Single-File Components TypeScript in Templates Usage
+with TSX Generic Components API-Specific Recipes Sponsors Become a Sponsor Are
+you an LLM? You can read better optimized documentation at
+/guide/typescript/overview.md for this page in Markdown format Using Vue with
+TypeScript ​ A type system like TypeScript can detect many common errors via
+static analysis at build time. This reduces the chance of runtime errors in
+production, and also allows us to more confidently refactor code in large-scale
+applications. TypeScript also improves developer ergonomics via type-based
+auto-completion in IDEs. Vue is written in TypeScript itself and provides
+first-class TypeScript support. All official Vue packages come with bundled type
+declarations that should work out-of-the-box. Project Setup ​ create-vue , the
+official project scaffolding tool, offers the options to scaffold a Vite
+-powered, TypeScript-ready Vue project. Overview ​ With a Vite-based setup, the
+dev server and the bundler are transpilation-only and do not perform any
+type-checking. This ensures the Vite dev server stays blazing fast even when
+using TypeScript. During development, we recommend relying on a good IDE setup
+for instant feedback on type errors. If using SFCs, use the vue-tsc utility for
+command line type checking and type declaration generation. vue-tsc is a wrapper
+around tsc , TypeScript's own command line interface. It works largely the same
+as tsc except that it supports Vue
+----------------------------------------------------------------------------------------------------
+Index: 4023 <<"chunk_id": 9, "docno": 550>>
+
+filesystems which do the same. Use Normalization Comparison Functions
+Appropriately Make sure that you use case / Unicode form / timestamp comparison
+functions appropriately. Do not use a case-insensitive filename comparison
+function if you are working on a case-sensitive filesystem. Do not use a Unicode
+form insensitive comparison function if you are working on a Unicode form
+sensitive filesystem (e.g. NTFS and most Linux filesystems which preserve both
+NFC and NFD or mixed Unicode forms). Do not compare timestamps at 2-second
+resolution if you are working on a nanosecond timestamp resolution filesystem.
+Be Prepared for Slight Differences in Comparison Functions Be careful that your
+comparison functions match those of the filesystem (or probe the filesystem if
+possible to see how it would actually compare). Case-insensitivity for example
+is more complex than a simple toLowerCase() comparison. In fact, toUpperCase()
+is usually better than toLowerCase() (since it handles certain foreign language
+characters differently). But better still would be to probe the filesystem since
+every filesystem has its own case comparison table baked in. As an example,
+Apple's HFS+ normalizes filenames to NFD form but this NFD form is actually an
+older version of the current NFD form and may sometimes be slightly different
+from the latest Unicode standard's NFD form. Do not expect HFS+ NFD to be
+exactly the same as Unicode NFD all the time. Reading Time 10 min read
+Contribute Edit this page Table of Contents Filesystem Behavior Avoid a Lowest
+Common Denominator Approach Adopt a Superset Approach Case Preservation Unicode
+Form Preservation Unicode Form Insensitivity
+----------------------------------------------------------------------------------------------------
+Index: 2466 <<"chunk_id": 9, "docno": 355>>
+
+features, makes it difficult to reason about when a piece of hooks code is run,
+and makes working with mutable state that should persist across renders (via
+useRef ) cumbersome. Note: some of the above issues that are related to
+memoization can be resolved by the upcoming React Compiler . In comparison, Vue
+Composition API: Invokes setup() or <script setup> code only once. This makes
+the code align better with the intuitions of idiomatic JavaScript usage as there
+are no stale closures to worry about. Composition API calls are also not
+sensitive to call order and can be conditional. Vue's runtime reactivity system
+automatically collects reactive dependencies used in computed properties and
+watchers, so there's no need to manually declare dependencies. No need to
+manually cache callback functions to avoid unnecessary child updates. In
+general, Vue's fine-grained reactivity system ensures child components only
+update when they need to. Manual child-update optimizations are rarely a concern
+for Vue developers. We acknowledge the creativity of React Hooks, and it is a
+major source of inspiration for Composition API. However, the issues mentioned
+above do exist in its design and we noticed Vue's reactivity model happens to
+provide a way around them. Edit this page on GitHub Previous Ways of Using Vue
+Next Reactivity in Depth Composition API FAQ has loaded
+----------------------------------------------------------------------------------------------------
+Index: 2780 <<"chunk_id": 1, "docno": 402>>
+
+Techniques Get Security Updates for Vue 2 On this page Table of Contents for
+current page What is Reactivity? How Reactivity Works in Vue Runtime vs.
+Compile-time Reactivity Reactivity Debugging Component Debugging Hooks Computed
+Debugging Watcher Debugging Integration with External State Systems Immutable
+Data State Machines RxJS Connection to Signals API Design Trade-Offs Sponsors
+Become a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/reactivity-in-depth.md for this page in Markdown format Reactivity
+in Depth ​ One of Vue’s most distinctive features is the unobtrusive reactivity
+system. Component state consists of reactive JavaScript objects. When you modify
+them, the view updates. It makes state management simple and intuitive, but it’s
+also important to understand how it works to avoid some common gotchas. In this
+section, we are going to dig into some of the lower-level details of Vue’s
+reactivity system. What is Reactivity? ​ This term comes up in programming quite
+a bit these days, but what do people mean when they say it? Reactivity is a
+programming paradigm that allows us to adjust to changes in a declarative
+manner. The canonical example that people usually show, because it’s a great
+one, is an Excel spreadsheet: A B C 0 1 1 2 2 3 Here cell A2 is defined via a
+formula of = A0 + A1 (you can click on A2 to view or edit the formula), so the
+spreadsheet gives us 3. No surprises there. But if you update A0 or A1, you'll
+notice that A2 automagically updates too. JavaScript
+----------------------------------------------------------------------------------------------------
+Index: 2458 <<"chunk_id": 1, "docno": 355>>
+
+Techniques Get Security Updates for Vue 2 On this page Table of Contents for
+current page What is Composition API? Why Composition API? Better Logic Reuse
+More Flexible Code Organization Better Type Inference Smaller Production Bundle
+and Less Overhead Relationship with Options API Trade-offs Does Composition API
+cover all use cases? Can I use both APIs in the same component? Will Options API
+be deprecated? Relationship with Class API Comparison with React Hooks Sponsors
+Become a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/composition-api-faq.md for this page in Markdown format
+Composition API FAQ ​ TIP This FAQ assumes prior experience with Vue - in
+particular, experience with Vue 2 while primarily using Options API. What is
+Composition API? ​ Watch a free video lesson on Vue School Composition API is a
+set of APIs that allows us to author Vue components using imported functions
+instead of declaring options. It is an umbrella term that covers the following
+APIs: Reactivity API , e.g. ref() and reactive() , that allows us to directly
+create reactive state, computed state, and watchers. Lifecycle Hooks , e.g.
+onMounted() and onUnmounted() , that allow us to programmatically hook into the
+component lifecycle. Dependency Injection , i.e. provide() and inject() , that
+allow us to leverage Vue's dependency injection system while using Reactivity
+APIs. Composition API is a built-in feature of Vue 3 and Vue 2.7 . For older Vue
+2 versions, use the officially maintained @vue/composition-api plugin. In Vue 3,
+it is also primarily used together with
+----------------------------------------------------------------------------------------------------
+Index: 3405 <<"chunk_id": 1, "docno": 476>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Using Custom Elements in Vue Building Custom Elements
+with Vue Non-Vue Web Components and TypeScript Web Components vs. Vue Components
+Sponsors Become a Sponsor Are you an LLM? You can read better optimized
+documentation at /guide/extras/web-components.md for this page in Markdown
+format Vue and Web Components ​ Web Components is an umbrella term for a set of
+web native APIs that allows developers to create reusable custom elements. We
+consider Vue and Web Components to be primarily complementary technologies. Vue
+has excellent support for both consuming and creating custom elements. Whether
+you are integrating custom elements into an existing Vue application, or using
+Vue to build and distribute custom elements, you are in good company. Using
+Custom Elements in Vue ​ Vue scores a perfect 100% in the Custom Elements
+Everywhere tests . Consuming custom elements inside a Vue application largely
+works the same as using native HTML elements, with a few things to keep in mind:
+Skipping Component Resolution ​ By default, Vue will attempt to resolve a
+non-native HTML tag as a registered Vue component before falling back to
+rendering it as a custom element. This will cause Vue to emit a "failed to
+resolve component" warning during development. To let Vue know that certain
+elements should be treated as custom elements and skip component resolution, we
+can specify the compilerOptions.isCustomElement option . If you are using Vue
+with a build setup, the option should be passed
+----------------------------------------------------------------------------------------------------
+Index: 5304 <<"chunk_id": 1, "docno": 735>>
+
+signal-based state, type-safe field access, and schema-based validation When not
+using Signal Forms, prefer Reactive forms instead of Template-driven ones Do NOT
+use ngClass , use class bindings instead Do NOT use ngStyle , use style bindings
+instead When using external templates/styles, use paths relative to the
+component TS file. State Management Use signals for local component state Use
+computed() for derived state Keep state transformations pure and predictable Do
+NOT use mutate on signals, use update or set instead Templates Keep templates
+simple and avoid complex logic Use native control flow ( @if , @for , @switch )
+instead of ngIf , ngFor , *ngSwitch Use the async pipe to handle observables Do
+not assume globals like ( new Date() ) are available. Services Design services
+around a single responsibility Use the providedIn: 'root' option for singleton
+services Prefer the @Service decorator over @Injectable({providedIn: 'root'})
+for new singleton services (Angular v22+) Use the inject() function instead of
+constructor injection
+----------------------------------------------------------------------------------------------------
+Index: 360 <<"chunk_id": 3, "docno": 68>>
+
+not include .runtime are full builds : they include the compiler and support
+compiling templates directly in the browser. However, they will increase the
+payload by ~14kb. Our default tooling setups use the runtime-only build since
+all templates in SFCs are pre-compiled. If, for some reason, you need in-browser
+template compilation even with a build step, you can do so by configuring the
+build tool to alias vue to vue/dist/vue.esm-bundler.js instead. If you are
+looking for a lighter-weight alternative for no-build-step usage, check out
+petite-vue . IDE Support ​ The recommended IDE setup is VS Code + the Vue -
+Official extension (previously Volar). The extension provides syntax
+highlighting, TypeScript support, and intellisense for template expressions and
+component props. TIP Vue - Official replaces Vetur , our previous official VS
+Code extension for Vue 2. If you have Vetur currently installed, make sure to
+disable it in Vue 3 projects. WebStorm also provides great built-in support for
+Vue SFCs. Other IDEs that support the Language Service Protocol (LSP) can also
+leverage Volar's core functionalities via LSP: Sublime Text support via
+LSP-Volar . vim / Neovim support via coc-volar . emacs support via lsp-mode
+Browser Devtools ​ The Vue browser devtools extension allows you to explore a
+Vue app's component tree, inspect the state of individual components, track
+state management events, and profile performance. Documentation Chrome Extension
+Vite Plugin Standalone Electron app TypeScript ​ Main article: Using Vue with
+TypeScript . Vue - Official extension provides type checking for SFCs using
+<script lang="ts"> blocks, including template expressions
+----------------------------------------------------------------------------------------------------
+Index: 16163 <<"chunk_id": 13, "docno": 2160>>
+
+its APIs. When application code exposes Node.js functionality to untrusted users
+in an unsafe manner, any resulting crashes, data corruption, or other issues are
+not considered vulnerabilities in Node.js itself. It is the application's
+responsibility to: Validate and sanitize all untrusted input before passing it
+to Node.js APIs. Design appropriate access controls and security boundaries.
+Avoid exposing low-level or dangerous APIs directly to untrusted users. Examples
+of scenarios that are not Node.js vulnerabilities: Allowing untrusted users to
+register SQLite user-defined functions via node:sqlite ( DatabaseSync ) that can
+perform arbitrary operations (e.g., closing database connections during query
+execution, causing crashes or use-after-free conditions). Loading SQLite
+extensions using the allowExtension option in DatabaseSync — this option must be
+explicitly set to true by the application, and enabling it is the application
+operator's responsibility. Using node:sqlite built-in SQL functions or pragmas
+(e.g., ATTACH DATABASE ) to read or write files — DatabaseSync operates with the
+same file-system access as the process itself, and it is the application's
+responsibility to restrict what SQL is executed. Exposing child_process.exec()
+or similar APIs to untrusted users without proper input validation, allowing
+command injection. Allowing untrusted users to control file paths passed to file
+system APIs without validation, leading to path traversal issues. Permitting
+untrusted users to define custom code that executes with the application's
+privileges (e.g., custom transforms, plugins, or callbacks). These scenarios
+represent application-level security issues, not Node.js vulnerabilities. The
+root cause is the application's failure to establish proper security boundaries
+between trusted application logic and untrusted user input. Build System
+----------------------------------------------------------------------------------------------------
+Index: 362 <<"chunk_id": 5, "docno": 68>>
+
+your editor during development. This also avoids unnecessary linting cost when
+starting the dev server. Run ESLint as part of the production build command, so
+you get full linter feedback before shipping to production. (Optional) Setup
+tools like lint-staged to automatically lint modified files on git commit.
+Formatting ​ The Vue - Official VS Code extension provides formatting for Vue
+SFCs out of the box. Alternatively, Prettier provides built-in Vue SFC
+formatting support. SFC Custom Block Integrations ​ Custom blocks are compiled
+into imports to the same Vue file with different request queries. It is up to
+the underlying build tool to handle these import requests. If using Vite, a
+custom Vite plugin should be used to transform matched custom blocks into
+executable JavaScript. Example If using Vue CLI or plain webpack, a webpack
+loader should be configured to transform the matched blocks. Example Lower-Level
+Packages ​ @vue/compiler-sfc ​ Docs This package is part of the Vue core
+monorepo and is always published with the same version as the main vue package.
+It is included as a dependency of the main vue package and proxied under
+vue/compiler-sfc so you don't need to install it individually. The package
+itself provides lower-level utilities for processing Vue SFCs and is only meant
+for tooling authors that need to support Vue SFCs in custom tools. TIP Always
+prefer using this package via the vue/compiler-sfc deep import since this
+ensures its version is in sync with the Vue runtime. @vitejs/plugin-vue ​ Docs
+Official plugin that provides Vue SFC support in Vite.
+----------------------------------------------------------------------------------------------------
+Index: 1468 <<"chunk_id": 7, "docno": 215>>
+
+to also review the source code of your dependencies for potentially dangerous
+patterns, if any of them include 3rd-party components or otherwise influence
+what's rendered to the DOM. Backend Coordination ​ HTTP security
+vulnerabilities, such as cross-site request forgery (CSRF/XSRF) and cross-site
+script inclusion (XSSI), are primarily addressed on the backend, so they aren't
+a concern of Vue's. However, it's still a good idea to communicate with your
+backend team to learn how to best interact with their API, e.g., by submitting
+CSRF tokens with form submissions. Server-Side Rendering (SSR) ​ There are some
+additional security concerns when using SSR, so make sure to follow the best
+practices outlined throughout our SSR documentation to avoid vulnerabilities.
+Edit this page on GitHub Previous Accessibility Next Overview Security has
+loaded
+----------------------------------------------------------------------------------------------------
+Index: 3297 <<"chunk_id": 1, "docno": 460>>
+
+Security Updates for Vue 2 On this page Table of Contents for current page
+Overview Profiling Options Page Load Optimizations Choosing the Right
+Architecture Bundle Size and Tree-shaking Code Splitting Update Optimizations
+Props Stability v-once v-memo Computed Stability General Optimizations
+Virtualize Large Lists Reduce Reactivity Overhead for Large Immutable Structures
+Avoid Unnecessary Component Abstractions Sponsors Become a Sponsor Are you an
+LLM? You can read better optimized documentation at
+/guide/best-practices/performance.md for this page in Markdown format
+Performance ​ Overview ​ Vue is designed to be performant for most common use
+cases without much need for manual optimizations. However, there are always
+challenging scenarios where extra fine-tuning is needed. In this section, we
+will discuss what you should pay attention to when it comes to performance in a
+Vue application. First, let's discuss the two major aspects of web performance:
+Page Load Performance : how fast the application shows content and becomes
+interactive on the initial visit. This is usually measured using web vital
+metrics like Largest Contentful Paint (LCP) and Interaction to Next Paint .
+Update Performance : how fast the application updates in response to user input.
+For example, how fast a list updates when the user types in a search box, or how
+fast the page switches when the user clicks a navigation link in a Single-Page
+Application (SPA). While it would be ideal to maximize both, different frontend
+architectures tend to affect how easy it is to attain desired performance in
+these aspects. In addition, the type of application you are building greatly
+----------------------------------------------------------------------------------------------------
+Index: 1563 <<"chunk_id": 12, "docno": 230>>
+
+chapter, we discussed the Renderless Component pattern based on scoped slots. We
+even implemented the same mouse tracking demo using renderless components. The
+main advantage of composables over renderless components is that composables do
+not incur the extra component instance overhead. When used across an entire
+application, the amount of extra component instances created by the renderless
+component pattern can become a noticeable performance overhead. The
+recommendation is to use composables when reusing pure logic, and use components
+when reusing both logic and visual layout. vs. React Hooks ​ If you have
+experience with React, you may notice that this looks very similar to custom
+React hooks. Composition API was in part inspired by React hooks, and Vue
+composables are indeed similar to React hooks in terms of logic composition
+capabilities. However, Vue composables are based on Vue's fine-grained
+reactivity system, which is fundamentally different from React hooks' execution
+model. This is discussed in more detail in the Composition API FAQ . Further
+Reading ​ Reactivity In Depth : for a low-level understanding of how Vue's
+reactivity system works. State Management : for patterns of managing state
+shared by multiple components. Testing Composables : tips on unit testing
+composables. VueUse : an ever-growing collection of Vue composables. The source
+code is also a great learning resource. Edit this page on GitHub Previous Async
+Components Next Custom Directives Composables has loaded
+----------------------------------------------------------------------------------------------------
+Index: 2939 <<"chunk_id": 3, "docno": 423>>
+
+the effect re-runs. This time, a new, updated Virtual DOM tree is created. The
+runtime renderer walks the new tree, compares it with the old one, and applies
+necessary updates to the actual DOM. Templates vs. Render Functions ​ Vue
+templates are compiled into virtual DOM render functions. Vue also provides APIs
+that allow us to skip the template compilation step and directly author render
+functions. Render functions are more flexible than templates when dealing with
+highly dynamic logic, because you can work with vnodes using the full power of
+JavaScript. So why does Vue recommend templates by default? There are a number
+of reasons: Templates are closer to actual HTML. This makes it easier to reuse
+existing HTML snippets, apply accessibility best practices, style with CSS, and
+for designers to understand and modify. Templates are easier to statically
+analyze due to their more deterministic syntax. This allows Vue's template
+compiler to apply many compile-time optimizations to improve the performance of
+the virtual DOM (which we will discuss below). In practice, templates are
+sufficient for most use cases in applications. Render functions are typically
+only used in reusable components that need to deal with highly dynamic rendering
+logic. Render function usage is discussed in more detail in Render Functions &
+JSX . Compiler-Informed Virtual DOM ​ The virtual DOM implementation in React
+and most other virtual-DOM implementations are purely runtime: the
+reconciliation algorithm cannot make any assumptions about the incoming virtual
+DOM tree, so it has to fully traverse the tree and diff the props of
+----------------------------------------------------------------------------------------------------
+Index: 1552 <<"chunk_id": 1, "docno": 230>>
+
+Security Updates for Vue 2 On this page Table of Contents for current page What
+is a "Composable"? Mouse Tracker Example Async State Example Conventions and
+Best Practices Extracting Composables for Code Organization Using Composables in
+Options API Comparisons with Other Techniques Further Reading Sponsors Become a
+Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/reusability/composables.md for this page in Markdown format Composables ​
+TIP This section assumes basic knowledge of Composition API. If you have been
+learning Vue with Options API only, you can set the API Preference to
+Composition API (using the toggle at the top of the left sidebar) and re-read
+the Reactivity Fundamentals and Lifecycle Hooks chapters. What is a
+"Composable"? ​ In the context of Vue applications, a "composable" is a function
+that leverages Vue's Composition API to encapsulate and reuse stateful logic .
+When building frontend applications, we often need to reuse logic for common
+tasks. For example, we may need to format dates in many places, so we extract a
+reusable function for that. This formatter function encapsulates stateless logic
+: it takes some input and immediately returns expected output. There are many
+libraries out there for reusing stateless logic - for example lodash and
+date-fns , which you may have heard of. By contrast, stateful logic involves
+managing state that changes over time. A simple example would be tracking the
+current position of the mouse on a page. In real-world scenarios, it could also
+be more complex logic such as touch gestures or connection
+----------------------------------------------------------------------------------------------------
+Index: 1644 <<"chunk_id": 1, "docno": 241>>
+
+Get Security Updates for Vue 2 On this page Table of Contents for current page
+Development vs. Production Without Build Tools With Build Tools Tracking Runtime
+Errors Sponsors Become a Sponsor Are you an LLM? You can read better optimized
+documentation at /guide/best-practices/production-deployment.md for this page in
+Markdown format Production Deployment ​ Development vs. Production ​ During
+development, Vue provides a number of features to improve the development
+experience: Warning for common errors and pitfalls Props / events validation
+Reactivity debugging hooks Devtools integration However, these features become
+useless in production. Some of the warning checks can also incur a small amount
+of performance overhead. When deploying to production, we should drop all the
+unused, development-only code branches for smaller payload size and better
+performance. Without Build Tools ​ If you are using Vue without a build tool by
+loading it from a CDN or self-hosted script, make sure to use the production
+build (dist files that end in .prod.js ) when deploying to production.
+Production builds are pre-minified with all development-only code branches
+removed. If using global build (accessing via the Vue global): use
+vue.global.prod.js . If using ESM build (accessing via native ESM imports): use
+vue.esm-browser.prod.js . Consult the dist file guide for more details. With
+Build Tools ​ Projects scaffolded via create-vue (based on Vite) or Vue CLI
+(based on webpack) are pre-configured for production builds. If using a custom
+setup, make sure that: vue resolves to vue.runtime.esm-bundler.js . The compile
+time feature flags are properly configured. process.env .NODE_ENV is replaced
+with "production"
+----------------------------------------------------------------------------------------------------
+Index: 2465 <<"chunk_id": 8, "docno": 355>>
+
+using Class API with Vue 3, given that Composition API provides great TypeScript
+integration with additional logic reuse and code organization benefits.
+Comparison with React Hooks ​ Composition API provides the same level of logic
+composition capabilities as React Hooks, but with some important differences.
+React Hooks are invoked repeatedly every time a component updates. This creates
+a number of caveats that can confuse even seasoned React developers. It also
+leads to performance optimization issues that can severely affect development
+experience. Here are some examples: Hooks are call-order sensitive and cannot be
+conditional. Variables declared in a React component can be captured by a hook
+closure and become "stale" if the developer fails to pass in the correct
+dependencies array. This leads to React developers relying on ESLint rules to
+ensure correct dependencies are passed. However, the rule is often not smart
+enough and over-compensates for correctness, which leads to unnecessary
+invalidation and headaches when edge cases are encountered. Expensive
+computations require the use of useMemo , which again requires manually passing
+in the correct dependencies array. Event handlers passed to child components
+cause unnecessary child updates by default, and require explicit useCallback as
+an optimization. This is almost always needed, and again requires a correct
+dependencies array. Neglecting this leads to over-rendering apps by default and
+can cause performance issues without realizing it. The stale closure problem,
+combined with Concurrent features, makes it difficult to reason about when a
+piece of hooks code is run, and makes working with mutable state that should
+persist across
+----------------------------------------------------------------------------------------------------

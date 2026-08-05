@@ -1,0 +1,521 @@
+Index: 28432 <<"chunk_id": 2, "docno": 4154>>
+
+indicate a change New applications (default in Angular v21+), or existing
+applications ready to migrate Slow computations Identifies and optimizes
+expensive template expressions and lifecycle hooks Profiling reveals specific
+components causing slow change detection cycles Skipping component subtrees Uses
+OnPush change detection to skip unchanged component trees Applications that need
+finer control over change detection Zone pollution Prevents unnecessary change
+detection caused by third-party libraries or timers Zone-based applications
+where profiling reveals excessive change detection cycles Measuring performance
+Identifying what to optimize is just as important as knowing how to optimize it.
+Angular integrates with browser developer tools to help you find bottlenecks.
+Tool What it does Chrome DevTools profiling Records Angular-specific performance
+data alongside browser profiling, with color-coded flame charts that show
+component rendering, change detection cycles, and lifecycle hooks Angular
+DevTools A browser extension that provides a component tree inspector and a
+profiler for visualizing change detection cycles What to optimize first If you
+are unsure where to start, profile your application first using the Chrome
+DevTools Angular track to identify specific bottlenecks. As a general starting
+point: Slow initial load — Use @defer to split large components out of the main
+bundle, NgOptimizedImage to prioritize above-the-fold images, and server-side
+rendering to deliver content faster. Slow interactions after load — Check
+whether zoneless change detection is enabled, look for slow computations in
+templates or lifecycle hooks, and consider OnPush to reduce unnecessary change
+detection. Social Media Blog X (formerly Twitter) Bluesky YouTube Discord GitHub
+Stack Overflow Community Contribute Code of Conduct Report Issues Google's
+----------------------------------------------------------------------------------------------------
+Index: 18697 <<"chunk_id": 9, "docno": 2474>>
+
+the behavior of hybrid applications: Unlike UpgradeModule , downgradeModule()
+does not bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g. when the inputs of a
+downgraded component change). This improves performance, especially in
+change-detection-heavy applications, but leaves it up to the developer to
+manually notify each framework as needed. For a more detailed discussion of the
+differences and their implications, see Upgrading for Performance . You can
+manually trigger a change detection run in AngularJS using scope.$apply(...) or
+$rootScope.$digest() . You can manually trigger a change detection run in
+Angular using * ngZone.run(...) . Downgrading multiple modules It is possible to
+downgrade multiple modules and include them in an AngularJS application. In that
+case, each downgraded module will be bootstrapped when an associated downgraded
+component or injectable needs to be instantiated. Things to keep in mind, when
+downgrading multiple modules: Each downgraded component/injectable needs to be
+explicitly associated with a downgraded module. See downgradeComponent() and
+downgradeInjectable() for more details. If you want
+----------------------------------------------------------------------------------------------------
+Index: 28056 <<"chunk_id": 2, "docno": 4090>>
+
+in the providers. Provide your own NgZone instance. zone.js - Use default NgZone
+which requires Zone.js . noop - Use NoopNgZone which does nothing.
+ngZoneEventCoalescing boolean | undefined @deprecated BootstrapOptions is
+deprecated. Use provideZoneChangeDetection instead to configure coalescing.
+Optionally specify coalescing event change detections or not. Consider the
+following case. < div (click) = "doSomething()" > < button (click) =
+"doSomethingElse()" ></ button > </ div > When button is clicked, because of the
+event bubbling, both event handlers will be called and 2 change detections will
+be triggered. We can coalesce such kind of events to only trigger change
+detection only once. By default, this option will be false. So the events will
+not be coalesced and the change detection will be triggered multiple times. And
+if this option be set to true, the change detection will be triggered async by
+scheduling a animation frame. So in the case above, the change detection will
+only be triggered once. ngZoneRunCoalescing boolean | undefined @deprecated
+BootstrapOptions is deprecated. Use provideZoneChangeDetection instead to
+configure coalescing. Optionally specify if NgZone#run() method invocations
+should be coalesced into a single change detection. Consider the following case.
+for ( let i = 0 ; i < 10 ; i ++ ) { ngZone. run (() => { // do something }); }
+This case triggers the change detection multiple times. With ngZoneRunCoalescing
+options, all change detections in an event loop trigger only once. In addition,
+the change detection executes in requestAnimation. Jump to details Social Media
+Blog X (formerly Twitter) Bluesky YouTube
+----------------------------------------------------------------------------------------------------
+Index: 18690 <<"chunk_id": 2, "docno": 2474>>
+
+how to use downgradeModule() see Upgrading for Performance . @param
+moduleOrBootstrapFn Type <T> | ((extraProviders: StaticProvider []) => Promise<
+NgModuleRef <T>>) @returns string Usage notes Apart from UpgradeModule , you can
+use the rest of the upgrade/static helpers as usual to build a hybrid
+application. Note that the Angular pieces (e.g. downgraded services) will not be
+available until the downgraded module has been bootstrapped, i.e. by
+instantiating a downgraded component. You cannot use downgradeModule() and
+UpgradeModule in the same hybrid application. Use one or the other. Differences
+with UpgradeModule Besides their different API, there are two important internal
+differences between downgradeModule() and UpgradeModule that affect the behavior
+of hybrid applications: Unlike UpgradeModule , downgradeModule() does not
+bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g. when the inputs of a
+downgraded component change). This improves performance, especially in
+change-detection-heavy applications, but leaves it up to the developer to
+manually notify each framework as needed. For a more detailed discussion of the
+differences
+----------------------------------------------------------------------------------------------------
+Index: 18693 <<"chunk_id": 5, "docno": 2474>>
+
+the name of the created AngularJS wrapper module. You can use it to declare a
+dependency in your main AngularJS module. {@example
+upgrade/static/ts/lite/module.ts region="basic-how-to"} For more details on how
+to use downgradeModule() see Upgrading for Performance . @deprecated Passing
+NgModuleFactory as the downgradeModule function argument is deprecated, please
+pass an NgModule class reference instead. @param moduleOrBootstrapFn
+NgModuleFactory <T> @returns string Usage notes Apart from UpgradeModule , you
+can use the rest of the upgrade/static helpers as usual to build a hybrid
+application. Note that the Angular pieces (e.g. downgraded services) will not be
+available until the downgraded module has been bootstrapped, i.e. by
+instantiating a downgraded component. You cannot use downgradeModule() and
+UpgradeModule in the same hybrid application. Use one or the other. Differences
+with UpgradeModule Besides their different API, there are two important internal
+differences between downgradeModule() and UpgradeModule that affect the behavior
+of hybrid applications: Unlike UpgradeModule , downgradeModule() does not
+bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g.
+----------------------------------------------------------------------------------------------------
+Index: 28431 <<"chunk_id": 1, "docno": 4154>>
+
+top Loading performance Loading performance determines how quickly your
+application becomes visible and interactive. Slow loading directly impacts Core
+Web Vitals like Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
+Technique What it does When to use it Lazy-loaded routes Defers loading route
+components until navigation, reducing the initial bundle size Applications with
+multiple routes where not all are needed on initial load Deferred loading with
+@defer Splits components into separate bundles that load on demand Components
+not visible on initial render, heavy third-party libraries, below-the-fold
+content Lazy loading services with injectAsync Splits rarely used services into
+separate chunks and loads them on demand Services backed by large libraries or
+infrequently used features Image optimization Prioritizes LCP images, lazy loads
+others, generates responsive srcset attributes Any application that displays
+images Server-side rendering Renders pages on the server for faster first paint
+and better SEO, with hydration to restore interactivity and incremental
+hydration to defer hydrating sections until needed Content-heavy applications,
+pages that need search engine indexing Runtime performance Runtime performance
+determines how responsive your application feels after it loads. Angular's
+change detection system keeps the DOM in sync with your data, and optimizing how
+and when it runs is the primary lever for improving runtime performance.
+Technique What it does When to use it Zoneless change detection Removes ZoneJS
+overhead and triggers change detection only when signals or events indicate a
+change New applications (default in Angular v21+), or existing applications
+ready to migrate Slow computations Identifies and optimizes expensive template
+expressions and lifecycle
+----------------------------------------------------------------------------------------------------
+Index: 4295 <<"chunk_id": 3, "docno": 590>>
+
+child component from being refreshed if it is not OnPush compatible and relies
+on ZoneJS to trigger change detection. Components can use the Default strategy
+as long as they notify Angular when change detection needs to run (calling
+markForCheck , using signals, AsyncPipe , etc.). Being a host for a user
+component means using an API such as ViewContainerRef.createComponent and not
+just hosting a portion of a template from a user component (i.e. content
+projection or using a template ref input). Remove NgZone.onMicrotaskEmpty ,
+NgZone.onUnstable , NgZone.isStable , or NgZone.onStable Applications and
+libraries need to remove uses of NgZone.onMicrotaskEmpty , NgZone.onUnstable ,
+and NgZone.onStable . These observables will never emit when an Application
+enables zoneless change detection. Similarly, NgZone.isStable will always be
+true and should not be used as a condition for code execution. The
+NgZone.onMicrotaskEmpty and NgZone.onStable observables are most often used to
+wait for Angular to complete change detection before performing a task. Instead,
+these can be replaced by afterNextRender if they need to wait for a single
+change detection or afterEveryRender if there is some condition that might span
+several change detection rounds. In other cases, these observables were used
+because they happened to be familiar and have similar timing to what was needed.
+More straightforward or direct DOM APIs can be used instead, such as
+MutationObserver when code needs to wait for certain DOM state (rather than
+waiting for it indirectly through Angular's render hooks). NgZone.run and
+NgZone.runOutsideAngular are compatible with Zoneless NgZone.run and
+NgZone.runOutsideAngular do not need to be removed in
+----------------------------------------------------------------------------------------------------
+Index: 4293 <<"chunk_id": 1, "docno": 590>>
+
+application's views. ZoneJS does not have any insight into whether application
+state actually changed and so this synchronization is triggered more frequently
+than necessary. Improved Core Web Vitals : ZoneJS brings a fair amount of
+overhead, both in payload size and startup time. Improved debugging experience :
+ZoneJS makes debugging code more difficult. Stack traces are harder to
+understand with ZoneJS. It's also difficult to understand when code breaks as a
+result of being outside the Angular Zone. Better ecosystem compatibility :
+ZoneJS works by patching browser APIs but does not automatically have patches
+for every new browser API. Some APIs, such as async / await , cannot be patched
+effectively and must be downleveled to work with ZoneJS. Sometimes libraries in
+the ecosystem are also incompatible with the way ZoneJS patches the native APIs.
+Removing ZoneJS as a dependency ensures better long-term compatibility by
+removing a source of complexity, monkey patching, and ongoing maintenance.
+Enabling Zoneless in an application Zoneless is the default in Angular v21+ so
+you do not need to do anything to enable it. You should verify that
+provideZoneChangeDetection is not used anywhere to override the default
+configuration. If you are using Angular v20, enable zoneless change detection by
+adding provideZonelessChangeDetection() at bootstrap: standalone bootstrap
+bootstrapApplication (MyApp, {providers: [ provideZonelessChangeDetection ()]});
+NgModule bootstrap platformBrowser (). bootstrapModule (AppModule); @ NgModule
+({ providers: [ provideZonelessChangeDetection ()], }) export class AppModule {}
+Removing ZoneJS Zoneless applications should remove ZoneJS entirely from the
+build to reduce bundle size. ZoneJS is typically loaded via the polyfills option
+----------------------------------------------------------------------------------------------------
+Index: 39449 <<"chunk_id": 1, "docno": 5910>>
+
+by allowing you to define a tag whose content is created and controlled by
+JavaScript code. The browser maintains a CustomElementRegistry of defined custom
+elements, which maps an instantiable JavaScript class to an HTML tag. The
+@angular/elements package exports a createCustomElement() API that provides a
+bridge from Angular's component interface and change detection functionality to
+the built-in DOM API. Transforming a component to a custom element makes all the
+required Angular infrastructure available to the browser. Creating a custom
+element is simple and straightforward, and automatically connects your
+component-defined view with change detection and data binding, mapping Angular
+functionality to the corresponding built-in HTML equivalents. On this page
+arrow_upward_alt Back to the top Using custom elements Custom elements bootstrap
+themselves - they start when they are added to the DOM, and are destroyed when
+removed from the DOM. Once a custom element is added to the DOM for any page, it
+looks and behaves like any other HTML element, and does not require any special
+knowledge of Angular terms or usage conventions. To add the @angular/elements
+package to your workspace, run the following command: npm npm install
+@angular/elements yarn yarn add @angular/elements pnpm pnpm add
+@angular/elements bun bun add @angular/elements How it works The
+createCustomElement() function converts a component into a class that can be
+registered with the browser as a custom element. After you register your
+configured class with the browser's custom-element registry, use the new element
+just like a built-in HTML element in content that you add directly into the DOM:
+< my-popup message
+----------------------------------------------------------------------------------------------------
+Index: 28514 <<"chunk_id": 1, "docno": 4166>>
+
+when an application has an especially large component tree, running change
+detection across the whole application can cause performance issues. You can
+address this by configuring change detection to only run on a subset of the
+component tree. On this page arrow_upward_alt Back to the top Using OnPush
+OnPush is the default change detection strategy in Angular (since v22). It
+instructs Angular to run change detection for a component subtree only when: The
+root component of the subtree receives new inputs as the result of a template
+binding. Angular compares the current and past value of the input with == .
+Angular handles an event (for example using event binding, output binding, or
+@HostListener ) in the subtree's root component or any of its children whether
+they are using OnPush change detection or not. Common change detection scenarios
+This section examines several common change detection scenarios to illustrate
+Angular's behavior. An event is handled by a component with Eager change
+detection If Angular handles an event within a component with the Eager
+strategy, the framework executes change detection on the entire component tree.
+Angular will skip descendant component subtrees with roots using OnPush , which
+have not received new inputs. As an example, if we set the change detection
+strategy of MainComponent to OnPush and the user interacts with a component
+outside the subtree with root MainComponent , Angular will check all the pink
+components from the diagram below ( AppComponent , HeaderComponent ,
+SearchComponent , ButtonComponent ) unless MainComponent receives new inputs:
+AppComponent HeaderComponent MainComponent
+----------------------------------------------------------------------------------------------------
+Index: 6048 <<"chunk_id": 411, "docno": 788>>
+
+relies on ZoneJS to trigger change detection. Components can use the `Default`
+strategy as long as they notify Angular when change detection needs to run
+(calling `markForCheck`, using signals, `AsyncPipe`, etc.). Being a host for a
+user component means using an API such as `ViewContainerRef.createComponent` and
+not just hosting a portion of a template from a user component (i.e. content
+projection or using a template ref input). ### Remove `NgZone.onMicrotaskEmpty`,
+`NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable` Applications and
+libraries need to remove uses of `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`,
+and `NgZone.onStable`. These observables will never emit when an Application
+enables zoneless change detection. Similarly, `NgZone.isStable` will always be
+`true` and should not be used as a condition for code execution. The
+`NgZone.onMicrotaskEmpty` and `NgZone.onStable` observables are most often used
+to wait for Angular to complete change detection before performing a task.
+Instead, these can be replaced by `afterNextRender` if they need to wait for a
+single change detection or `afterEveryRender` if there is some condition that
+might span several change detection rounds. In other cases, these observables
+were used because they happened to be familiar and have similar timing to what
+was needed. More straightforward or direct DOM APIs can be used instead, such as
+`MutationObserver` when code needs to wait for certain DOM state (rather than
+waiting for it indirectly through Angular's render hooks). `NgZone.run` and
+`NgZone.runOutsideAngular` do not need to be removed in order for code to be
+compatible with Zoneless applications. In fact, removing these calls can lead to
+performance regressions for libraries that are used in applications
+----------------------------------------------------------------------------------------------------
+Index: 23476 <<"chunk_id": 2, "docno": 3003>>
+
+means that OnPush components that are not marked for check will not be checked.
+This behavior is the current default behavior in Angular. When running change
+detection on a view tree, views marked for check are refreshed and the flag to
+check it is removed. When Angular checks views a second time to ensure nothing
+has changed, OnPush components will no longer be marked and not be checked.
+@param options { exhaustive: false; } @returns EnvironmentProviders function
+provideCheckNoChangesConfig ( options : { interval ?: number | undefined ;
+exhaustive : true ; }) : EnvironmentProviders ; interval will periodically run
+checkNoChanges on application views. This can be useful in zoneless applications
+to periodically ensure no changes have been made without notifying Angular that
+templates need to be refreshed. The exhaustive option will treat all application
+views as if they were ChangeDetectionStrategy.Eager / Default when verifying no
+expressions have changed. All views attached to ApplicationRef and all the
+descendants of those views will be checked for changes (excluding those subtrees
+which are detached via ChangeDetectorRef.detach() ). This is useful because the
+check that runs after regular change detection does not work for components
+using ChangeDetectionStrategy.OnPush . This check is will surface any existing
+errors hidden by OnPush components. @param options { interval?: number |
+undefined; exhaustive: true; } @returns EnvironmentProviders Description Used to
+disable exhaustive checks when verifying no expressions changed after they were
+checked. This means that OnPush components that are not marked for check will
+not be checked. This behavior is the current default behavior
+----------------------------------------------------------------------------------------------------
+Index: 5976 <<"chunk_id": 339, "docno": 788>>
+
+user enters a keystroke, for example. The `TestBed.createComponent` does not
+trigger change detection synchronously; a fact confirmed in the revised test:
+```ts it('no title in the DOM after createComponent()', () => {
+expect(h1.textContent).toEqual(''); }); ``` ### `whenStable()` You can tell the
+`TestBed` to wait for change detection to run with `await fixture.whenStable()`.
+Only then does the `<h1>` have the expected title. ```ts it('should display
+original title', async () => { await fixture.whenStable();
+expect(h1.textContent).toContain(component.title()); }); ``` Delayed change
+detection is intentional and useful. It gives the tester an opportunity to
+inspect and change the state of the component _before Angular initiates data
+binding and calls [lifecycle hooks](guide/components/lifecycle)_. Here's another
+test that changes the component's `title` property _before_ calling
+`fixture.whenStable()`. ```ts it('should display a different test title', async
+() => { component.title.set('Test Title'); await fixture.whenStable();
+expect(h1.textContent).toContain('Test Title'); }); ``` ### Binding signals to
+inputs To reflect changes to inputs and listen to outputs you can dynamically
+bind signals to inputs and functions to outputs. ```ts import {inputBinding,
+outputBinding} from '@angular/core'; const fixture =
+TestBed.createComponent(ValueDisplay, { bindings: [ inputBinding('value',
+value), outputBinding('valueChange', () => (/* ... */) ), ], }); ``` ### Change
+an input value with `dispatchEvent()` To simulate user input, find the input
+element and set its `value` property. But there is an essential, intermediate
+step. Angular doesn't know that you set the input element's `value` property. It
+won't read that property until you raise the element's `input` event by calling
+`dispatchEvent()`. The following example of a component using the
+`TitleCasePipe` demonstrates the proper sequence. ```ts it('should convert
+----------------------------------------------------------------------------------------------------
+Index: 222 <<"chunk_id": 12, "docno": 38>>
+
+few quarters we'll collect feedback from developers and finalize the project
+making the APIs stable. As the next step we will work on improving use cases
+such as TestBed, Angular elements, etc. Completed in Q4 2022 Allow binding to
+protected fields in templates To improve the encapsulation of Angular components
+we enabled binding to protected members of the component instance. This way
+you'll no longer have to expose a field or a method as public to use it inside
+your templates. Completed in Q2 2022 Publish guides on advanced concepts Develop
+and publish an in-depth guide on change detection. Develop content for
+performance profiling of Angular apps. Cover how change detection interacts with
+Zone.js and explain when it gets triggered, how to profile its duration, as well
+as common practices for performance optimization. Completed in Q2 2022 Rollout
+strict typings for @angular/forms In Q4 2021 we designed a solution for
+introducing strict typings for forms and in Q1 2022 we concluded the
+corresponding request for comments. Currently, we are implementing a rollout
+strategy with an automated migration step that will enable the improvements for
+existing projects. We are first testing the solution with more than 2,500
+projects at Google to ensure a smooth migration path for the external community.
+Completed in Q2 2022 Remove legacy View Engine After the transition of all our
+internal tooling to Ivy is completed, we will remove the legacy View Engine for
+reduced Angular conceptual overhead, smaller package size, lower maintenance
+cost, and lower codebase complexity. Completed in Q1 2022 Simplified
+----------------------------------------------------------------------------------------------------
+Index: 6046 <<"chunk_id": 409, "docno": 788>>
+
+into whether application state actually changed and so this synchronization is
+triggered more frequently than necessary. - **Improved Core Web Vitals**: ZoneJS
+brings a fair amount of overhead, both in payload size and startup time. -
+**Improved debugging experience**: ZoneJS makes debugging code more difficult.
+Stack traces are harder to understand with ZoneJS. It's also difficult to
+understand when code breaks as a result of being outside the Angular Zone. -
+**Better ecosystem compatibility**: ZoneJS works by patching browser APIs but
+does not automatically have patches for every new browser API. Some APIs, such
+as `async`/`await`, cannot be patched effectively and must be downleveled to
+work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible
+with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency
+ensures better long-term compatibility by removing a source of complexity,
+monkey patching, and ongoing maintenance. ## Enabling Zoneless in an application
+Zoneless is the default in Angular v21+ so you do not need to do anything to
+enable it. You should verify that `provideZoneChangeDetection` is not used
+anywhere to override the default configuration. If you are using Angular v20,
+enable zoneless change detection by adding `provideZonelessChangeDetection()` at
+bootstrap: ```ts {header: 'standalone bootstrap'} bootstrapApplication(MyApp,
+{providers: [provideZonelessChangeDetection()]}); ``` ```ts {header: 'NgModule
+bootstrap'} platformBrowser().bootstrapModule(AppModule); @NgModule({ providers:
+[provideZonelessChangeDetection()], }) export class AppModule {} ``` ## Removing
+ZoneJS Zoneless applications should remove ZoneJS entirely from the build to
+reduce bundle size. ZoneJS is typically loaded via the `polyfills` option in
+`angular.json`, both in the `build` and `test` targets. Remove `zone.js` and
+`zone.js/testing`
+----------------------------------------------------------------------------------------------------
+Index: 27840 <<"chunk_id": 7, "docno": 4045>>
+
+will inherit it from. Custom or Noop Zone.js are not yet supported Hydration
+relies on a signal from Zone.js when it becomes stable inside an application, so
+that Angular can start the serialization process on the server or post-hydration
+cleanup on the client to remove DOM nodes that remained unclaimed. Providing a
+custom or a "noop" Zone.js implementation may lead to a different timing of the
+"stable" event, thus triggering the serialization or the cleanup too early or
+too late. This is not yet a fully supported configuration and you may need to
+adjust the timing of the onStable event in the custom Zone.js implementation.
+Errors There are several hydration related errors you may encounter ranging from
+node mismatches to cases when the ngSkipHydration was used on an invalid host
+node. The most common error case that may occur is due to direct DOM
+manipulation using native APIs that results in hydration being unable to find or
+match the expected DOM tree structure on the client that was rendered by the
+server. The other case where you may encounter this type of error was mentioned
+in the Valid HTML structure section earlier. So, make sure the HTML in your
+templates is using valid structure, and you'll avoid that error case. For a full
+reference on hydration related errors, visit the Errors Reference Guide . How to
+skip hydration for particular components Some components may not work properly
+with hydration enabled due to some of the aforementioned issues, like Direct DOM
+Manipulation . As a workaround, you
+----------------------------------------------------------------------------------------------------
+Index: 28516 <<"chunk_id": 3, "docno": 4166>>
+
+SearchComponent ButtonComponent LoginComponent (OnPush) DetailsComponent Event
+New inputs to component with OnPush Angular will run change detection within a
+child component with OnPush when setting an input property as result of a
+template binding. For example, in the diagram below, AppComponent passes a new
+input to MainComponent , which has OnPush . Angular will run change detection in
+MainComponent but will not run change detection in LoginComponent , which also
+has OnPush , unless it receives new inputs as well. AppComponent HeaderComponent
+MainComponent (OnPush) SearchComponent ButtonComponent LoginComponent (OnPush)
+DetailsComponent Parent passes new input to MainComponent Edge cases Modifying
+input properties in TypeScript code . When you use an API like @ViewChild or
+@ContentChild to get a reference to a component in TypeScript and manually
+modify an @Input property, Angular will not automatically run change detection
+for OnPush components. If you need Angular to run change detection, you can
+inject ChangeDetectorRef in your component and call
+changeDetectorRef.markForCheck() to tell Angular to schedule a change detection.
+Modifying object references . In case an input receives a mutable object as
+value and you modify the object but preserve the reference, Angular will not
+invoke change detection. That’s the expected behavior because the previous and
+the current value of the input point to the same reference. Social Media Blog X
+(formerly Twitter) Bluesky YouTube Discord GitHub Stack Overflow Community
+Contribute Code of Conduct Report Issues Google's DevLibrary Angular Google
+Developer Experts Resources Press Kit Roadmap Community translations
+Azərbaycanca Español Türkçe Русский 한국어 日本語版 简体中文版 正體中文版 Super-powered by Google
+©2010-2026. Code
+----------------------------------------------------------------------------------------------------
+Index: 28422 <<"chunk_id": 1, "docno": 4152>>
+
+change detection process because Angular runs the computations sequentially. On
+this page arrow_upward_alt Back to the top Identifying slow computations You can
+identify heavy computations with Angular DevTools’ profiler. In the performance
+timeline, click a bar to preview a particular change detection cycle. This
+displays a bar chart, which shows how long the framework spent in change
+detection for each component. When you click a component, you can preview how
+long Angular spent evaluating its template and lifecycle hooks. For example, in
+the preceding screenshot, the second recorded change detection cycle is
+selected. Angular spent over 573 ms on this cycle, with the most time spent in
+the EmployeeListComponent . In the details panel, you can see that Angular spent
+over 297 ms evaluating the template of the EmployeeListComponent . Optimizing
+slow computations Here are several techniques to remove slow computations:
+Optimizing the underlying algorithm . This is the recommended approach. If you
+can speed up the algorithm that is causing the problem, you can speed up the
+entire change detection mechanism. Caching using pure pipes . You can move the
+heavy computation to a pure pipe . Angular reevaluates a pure pipe only if it
+detects that its inputs have changed, compared to the previous time Angular
+called it. Using memoization . Memoization is a similar technique to pure pipes,
+with the difference that pure pipes preserve only the last result from the
+computation where memoization could store multiple results. Avoid
+repaints/reflows in lifecycle hooks . Certain operations cause the browser to
+either synchronously recalculate
+----------------------------------------------------------------------------------------------------
+Index: 28515 <<"chunk_id": 2, "docno": 4166>>
+
+all the pink components from the diagram below ( AppComponent , HeaderComponent
+, SearchComponent , ButtonComponent ) unless MainComponent receives new inputs:
+AppComponent HeaderComponent MainComponent (OnPush) SearchComponent
+ButtonComponent LoginComponent (OnPush) DetailsComponent Event An event is
+handled by a component with OnPush If Angular handles an event within a
+component with OnPush strategy, the framework will execute change detection
+within the entire component tree. Angular will ignore component subtrees with
+roots using OnPush, which have not received new inputs and are outside the
+component which handled the event. As an example, if Angular handles an event
+within MainComponent , the framework will run change detection in the entire
+component tree. Angular will ignore the subtree with root LoginComponent because
+it has OnPush and the event happened outside of its scope. AppComponent
+HeaderComponent MainComponent (OnPush) SearchComponent ButtonComponent
+LoginComponent (OnPush) DetailsComponent Event An event is handled by a
+descendant of a component with OnPush If Angular handles an event in a component
+with OnPush, the framework will execute change detection in the entire component
+tree, including the component’s ancestors. As an example, in the diagram below,
+Angular handles an event in LoginComponent which uses OnPush. Angular will
+invoke change detection in the entire component subtree including MainComponent
+( LoginComponent ’s parent), even though MainComponent has OnPush as well.
+Angular checks MainComponent as well because LoginComponent is part of its view.
+AppComponent HeaderComponent MainComponent (OnPush) SearchComponent
+ButtonComponent LoginComponent (OnPush) DetailsComponent Event New inputs to
+component with OnPush Angular will run change detection within a child component
+with OnPush when setting
+----------------------------------------------------------------------------------------------------
+Index: 42864 <<"chunk_id": 2, "docno": 6586>>
+
+either of these occurs, this is a sign that change detection is not stabilized.
+Angular throws the error to ensure data is always reflected correctly in the
+view, which prevents erratic UI behavior or a possible infinite loop. This error
+commonly occurs when you've added template expressions or have begun to
+implement lifecycle hooks like ngAfterViewInit or ngOnChanges . It is also
+common when dealing with loading status and asynchronous operations, or when a
+child component changes its parent bindings. On this page arrow_upward_alt Back
+to the top Debugging the error The source maps generated by the CLI are very
+useful when debugging. Navigate up the call stack until you find a template
+expression where the value displayed in the error has changed. Ensure that there
+are no changes to the bindings in the template after change detection is run.
+This often means refactoring to use the correct component lifecycle hook for
+your use case. If the issue exists within ngAfterViewInit , the recommended
+solution is to use a constructor or ngOnInit to set initial values, or use
+ngAfterContentInit for other value bindings. If you are binding to methods in
+the view, ensure that the invocation does not update any of the other bindings
+in the template. Read more about which solution is right for you in 'Everything
+you need to know about the "ExpressionChangedAfterItHasBeenCheckedError" error'
+and why this is useful at 'Angular Debugging "Expression has changed after it
+was checked": Simple Explanation (and Fix)' . Social Media Blog X (formerly
+Twitter) Bluesky YouTube Discord GitHub
+----------------------------------------------------------------------------------------------------

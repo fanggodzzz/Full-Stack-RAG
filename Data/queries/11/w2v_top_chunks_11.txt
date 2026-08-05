@@ -1,0 +1,482 @@
+Index: 38435 <<"chunk_id": 2, "docno": 5680>>
+
+cache framework . Who’s behind this? ¶ Django was originally developed at World
+Online, the web department of a newspaper in Lawrence, Kansas, USA. Django’s now
+run by an international team of volunteers . How is Django licensed? ¶ Django is
+distributed under the 3-clause BSD license . This is an open source license
+granting broad permissions to modify and redistribute Django. Why does Django
+include Python’s license file? ¶ Django includes code from the Python standard
+library. Python is distributed under a permissive open source license. A copy of
+the Python license is included with Django for compliance with Python’s terms.
+Which sites use Django? ¶ BuiltWithDjango.com features a constantly growing list
+of Django-powered sites. Django appears to be a MVC framework, but you call the
+Controller the “view”, and the View the “template”. How come you don’t use the
+standard names? ¶ Well, the standard names are debatable. In our interpretation
+of MVC, the “view” describes the data that gets presented to the user. It’s not
+necessarily how the data looks , but which data is presented. The view describes
+which data you see , not how you see it. It’s a subtle distinction. So, in our
+case, a “view” is the Python callback function for a particular URL, because
+that callback function describes which data is presented. Furthermore, it’s
+sensible to separate content from presentation – which is where templates come
+in. In Django, a “view” describes which data is presented, but a view normally
+delegates to a template, which describes how the
+----------------------------------------------------------------------------------------------------
+Index: 38437 <<"chunk_id": 4, "docno": 5680>>
+
+up to snuff. We’re picky. You might even call us perfectionists. (With
+deadlines.) Over time, we stumbled across open-source libraries that did things
+we’d already implemented. It was reassuring to see other people solving similar
+problems in similar ways, but it was too late to integrate outside code: We’d
+already written, tested and implemented our own framework bits in several
+production settings – and our own code met our needs delightfully. In most
+cases, however, we found that existing frameworks/tools inevitably had some sort
+of fundamental, fatal flaw that made us squeamish. No tool fit our philosophies
+100%. Like we said: We’re picky. We’ve documented our philosophies on the design
+philosophies page . Is Django a content-management-system (CMS)? ¶ No, Django is
+not a CMS, or any sort of “turnkey product” in and of itself. It’s a web
+framework; it’s a programming tool that lets you build websites. For example, it
+doesn’t make much sense to compare Django to something like Drupal , because
+Django is something you use to create things like Drupal. Yes, Django’s
+automatic admin site is fantastic and timesaving – but the admin site is one
+module of Django the framework. Furthermore, although Django has special
+conveniences for building “CMS-y” apps, that doesn’t mean it’s not just as
+appropriate for building “non-CMS-y” apps (whatever that means!). How can I
+download the Django documentation to read it offline? ¶ The Django docs are
+available in the docs directory of each Django tarball release. These docs are
+in reST (reStructuredText) format, and each text
+----------------------------------------------------------------------------------------------------
+Index: 6348 <<"chunk_id": 6, "docno": 828>>
+
+a bug! What should I do? I think I’ve found a security problem! What should I
+do? FAQ: Databases and models How can I see the raw SQL queries Django is
+running? Can I use Django with a preexisting database? If I make changes to a
+model, how do I update the database? Do Django models support multiple-column
+primary keys? Does Django support NoSQL databases? How do I add
+database-specific options to my CREATE TABLE statements, such as specifying
+MyISAM as the table type? FAQ: The admin I can’t log in. When I enter a valid
+username and password, it just brings up the login page again, with no error
+messages. I can’t log in. When I enter a valid username and password, it brings
+up the login page again, with a “Please enter a correct username and password”
+error. How do I automatically set a field’s value to the user who last edited
+the object in the admin? How do I limit admin access so that objects can only be
+edited by the users who created them? My admin-site CSS and images showed up
+fine using the development server, but they’re not displaying when using
+mod_wsgi. My “list_filter” contains a ManyToManyField, but the filter doesn’t
+display. Some objects aren’t appearing in the admin. How can I customize the
+functionality of the admin interface? The dynamically-generated admin site is
+ugly! How can I change it? What browsers are supported for using the admin? What
+assistive technologies are supported for using the admin? FAQ: Contributing code
+How
+----------------------------------------------------------------------------------------------------
+Index: 3293 <<"chunk_id": 2, "docno": 459>>
+
+the login page again, with a “Please enter a correct username and password”
+error. How do I automatically set a field’s value to the user who last edited
+the object in the admin? How do I limit admin access so that objects can only be
+edited by the users who created them? My admin-site CSS and images showed up
+fine using the development server, but they’re not displaying when using
+mod_wsgi. My “list_filter” contains a ManyToManyField, but the filter doesn’t
+display. Some objects aren’t appearing in the admin. How can I customize the
+functionality of the admin interface? The dynamically-generated admin site is
+ugly! How can I change it? What browsers are supported for using the admin? What
+assistive technologies are supported for using the admin? FAQ: Contributing code
+How can I get started contributing code to Django? I submitted a bug fix several
+weeks ago. Why are you ignoring my contribution? When and how might I remind the
+team of a change I care about? But I’ve reminded you several times and you keep
+ignoring my contribution! I’m sure my ticket is absolutely 100% perfect, can I
+mark it as “Ready For Checkin” myself? Troubleshooting Problems running
+django-admin Miscellaneous Previous page and next page How to customize the
+shell command FAQ: General Back to Top Additional Information Support Django!
+Sunny Vercett donated to the Django Software Foundation to support Django
+development. Donate today! Contents Django FAQ Browse Prev: How to customize the
+shell command Next: FAQ: General Table of contents General Index Python Module
+Index
+----------------------------------------------------------------------------------------------------
+Index: 38434 <<"chunk_id": 1, "docno": 5680>>
+
+over two years. In summer 2005, World Online decided to open-source the
+resulting software, Django. Django would not be possible without a whole host of
+open-source projects – Apache , Python , and PostgreSQL to name a few – and
+we’re thrilled to be able to give something back to the open-source community.
+What does “Django” mean, and how do you pronounce it? ¶ Django is named after
+Django Reinhardt , a jazz manouche guitarist from the 1930s to early 1950s. To
+this day, he’s considered one of the best guitarists of all time. Listen to his
+music. You’ll like it. Django is pronounced JANG -oh. Rhymes with FANG-oh. The
+“D” is silent. We’ve also recorded an audio clip of the pronunciation . Is
+Django stable? ¶ Yes, it’s quite stable. Companies like Disqus, Instagram,
+Pinterest, and Mozilla have been using Django for many years. Sites built on
+Django have weathered traffic spikes of over 50 thousand hits per second. Does
+Django scale? ¶ Yes. Compared to development time, hardware is cheap, and so
+Django is designed to take advantage of as much hardware as you can throw at it.
+Django uses a “shared-nothing” architecture, which means you can add hardware at
+any level – database servers, caching servers or web/application servers. The
+framework cleanly separates components such as its database layer and
+application layer. And it ships with a simple-yet-powerful cache framework .
+Who’s behind this? ¶ Django was originally developed at World Online, the web
+department of a newspaper in Lawrence, Kansas, USA. Django’s
+----------------------------------------------------------------------------------------------------
+Index: 51291 <<"chunk_id": 3, "docno": 8188>>
+
+for new features as new features get added, or as Django APIs or behaviors
+change. Django’s documentation is kept in the same source control system as its
+code. It lives in the docs directory of our Git repository. Each document online
+is a separate text file in the repository. Where to get it ¶ You can read Django
+documentation in several ways. They are, in order of preference: On the web ¶
+The most recent version of the Django documentation lives at
+https://docs.djangoproject.com/en/dev/ . These HTML pages are generated
+automatically from the text files in source control. That means they reflect the
+“latest and greatest” in Django – they include the very latest corrections and
+additions, and they discuss the latest Django features, which may only be
+available to users of the Django development version. (See Differences between
+versions below.) We encourage you to help improve the docs by submitting
+changes, corrections and suggestions in the ticket system . The Django
+developers actively monitor the ticket system and use your feedback to improve
+the documentation for everybody. Note, however, that tickets should explicitly
+relate to the documentation, rather than asking broad tech-support questions. If
+you need help with your particular Django setup, try the Django Forum or the
+Django Discord server instead. In plain text ¶ For offline reading, or just for
+convenience, you can read the Django documentation in plain text. If you’re
+using an official release of Django, the zipped package (tarball) of the code
+includes a docs/ directory, which contains all the documentation
+----------------------------------------------------------------------------------------------------
+Index: 2980 <<"chunk_id": 2, "docno": 428>>
+
+and see your code in the next version of Django. Contributing code Tutorials
+How-to guides Related topics Contributing documentation ¶ Django’s documentation
+is one of its key strengths. It’s informative and thorough. You can help to
+improve the documentation and keep it relevant as the framework evolves. Writing
+documentation The Django documentation process How the documentation is
+organized How to start contributing documentation Writing style Commonly used
+terms Django-specific terminology Guidelines for reStructuredText files
+Django-specific markup Documenting new features Minimizing images An example
+Translating documentation django-admin man page Localizing Django ¶ Django is
+translated into over 100 languages - There’s even some translation for Klingon?!
+The i18n team is always looking for translators to help maintain and increase
+language reach. Localizing Django Translations Formats Documentation Other ways
+of contributing ¶ Explore additional avenues of contributing to Django beyond
+coding. Django’s ticket tracker is the central hub for managing issues,
+improvements, and contributions to Django. It’s a valuable resource where you
+can report bugs you encounter or assist in triaging existing tickets to ensure a
+smooth development workflow. Django also has a process for suggesting ideas
+where you can join the community in discussing ideas for new features. Beyond
+the Django codebase, there’s a vibrant ecosystem that is maintained by the
+community that you can contribute to. Explore the ways you can make a difference
+below, and join us in making Django better for everyone. Reporting bugs and
+requesting features Reporting bugs Requesting features Requesting performance
+optimizations How we make decisions How to test pre-release versions of
+----------------------------------------------------------------------------------------------------
+Index: 38438 <<"chunk_id": 5, "docno": 5680>>
+
+¶ The Django docs are available in the docs directory of each Django tarball
+release. These docs are in reST (reStructuredText) format, and each text file
+corresponds to a web page on the official Django site. Because the documentation
+is stored in revision control , you can browse documentation changes just like
+you can browse code changes. Technically, the docs on Django’s site are
+generated from the latest development versions of those reST documents, so the
+docs on the Django site may offer more information than the docs that come with
+the latest Django release. How do I cite Django? ¶ It’s difficult to give an
+official citation format, for two reasons: citation formats can vary wildly
+between publications, and citation standards for software are still a matter of
+some debate. For example, APA style , would dictate something like: Django
+(Version 1.5) [Computer Software]. (2013). Retrieved from
+https://www.djangoproject.com/. However, the only true guide is what your
+publisher will accept, so get a copy of those guidelines and fill in the gaps as
+best you can. If your referencing style guide requires a publisher name, use
+“Django Software Foundation”. If you need a publishing location, use “Lawrence,
+Kansas”. If you need a web address, use https://www.djangoproject.com/ . If you
+need a name, just use “Django”, without any tagline. If you need a publication
+date, use the year of release of the version you’re referencing (e.g., 2013 for
+v1.5) Where can I find more Django resources? ¶ The Steering Council maintains a
+collection of Django third-party packages,
+----------------------------------------------------------------------------------------------------
+Index: 41719 <<"chunk_id": 11, "docno": 6384>>
+
+heavyweight applications. A key aim of the PyPy project is compatibility with
+existing Python APIs and libraries. Django is compatible with versions of PyPy
+corresponding to the supported Python versions, but you will need to check the
+compatibility of other libraries you rely on. That said, a lot of a web
+framework’s work is done by concatenating strings, and PyPy has an issue with
+that (see this PyPy blog ). This may cause performance issues, depending on your
+use. C implementations of Python libraries ¶ Some Python libraries are also
+implemented in C, and can be much faster. They aim to offer the same APIs. Note
+that compatibility issues and behavior differences are not unknown (and not
+always immediately evident). Previous page and next page Security in Django
+Serializing Django objects Back to Top Additional Information Support Django!
+Mike Urbanski donated to the Django Software Foundation to support Django
+development. Donate today! Contents Performance and optimization Introduction
+General approaches What are you optimizing for ? Performance benchmarking Django
+tools Third-party services Get things right from the start Work at the
+appropriate level Caching The caching framework cached_property Understanding
+laziness Laziness in Django Databases Database optimization Other
+database-related tips HTTP performance Middleware ConditionalGetMiddleware
+GZipMiddleware Sessions Using cached sessions Static files
+ManifestStaticFilesStorage “Minification” Template performance The cached
+template loader Using different versions of available software Newer is often -
+but not always - better Alternatives to Django’s template language Alternative
+software implementations PyPy C implementations of Python libraries Browse Prev:
+Security in Django Next: Serializing Django objects Table
+----------------------------------------------------------------------------------------------------
+Index: 2979 <<"chunk_id": 1, "docno": 428>>
+
+applications and projects that use it. This is also a good place to ask and
+answer any questions related to installing, using, or contributing to Django.
+Join the Django Discord server to discuss and answer questions. By explaining
+Django to other users, you’re going to learn a lot about the framework yourself.
+Blog about Django. We syndicate all the Django blogs we know about on the
+community page ; if you’d like to see your blog on that page you can register it
+here . Contribute to open-source Django projects, write some documentation, or
+release your own code as an open-source pluggable application. The ecosystem of
+pluggable applications is a big strength of Django, help us build it! Getting
+started ¶ Django encourages and welcomes new contributors, and makes an effort
+to help them become experienced, confident contributors to Open Source Software
+(OSS). Our documentation contains guidance for first-time contributors,
+including: An overview of the contributing process and what's involved. If
+you're at a contribution sprint, start here. Work on the Django framework ¶ If
+you enjoy working with Django, wait until you start working on it. Really,
+anyone can do something to improve Django, which will improve the experience of
+lots of people! The work on Django itself falls into three major areas:
+Contributing code ¶ Fix a bug, or add a new feature. You can make a pull request
+and see your code in the next version of Django. Contributing code Tutorials
+How-to guides Related topics Contributing documentation ¶ Django’s documentation
+is one of
+----------------------------------------------------------------------------------------------------
+Index: 38375 <<"chunk_id": 4, "docno": 5666>>
+
+support Django development. Donate today! Contents FAQ: The admin I can’t log
+in. When I enter a valid username and password, it just brings up the login page
+again, with no error messages. I can’t log in. When I enter a valid username and
+password, it brings up the login page again, with a “Please enter a correct
+username and password” error. How do I automatically set a field’s value to the
+user who last edited the object in the admin? How do I limit admin access so
+that objects can only be edited by the users who created them? My admin-site CSS
+and images showed up fine using the development server, but they’re not
+displaying when using mod_wsgi. My “list_filter” contains a ManyToManyField, but
+the filter doesn’t display. Some objects aren’t appearing in the admin. How can
+I customize the functionality of the admin interface? The dynamically-generated
+admin site is ugly! How can I change it? What browsers are supported for using
+the admin? What assistive technologies are supported for using the admin? Browse
+Prev: FAQ: Databases and models Next: FAQ: Contributing code Table of contents
+General Index Python Module Index You are here: Django 6.0 documentation Django
+FAQ FAQ: The admin Getting help FAQ Try the FAQ — it's got answers to many
+common questions. Index , Module Index , or Table of Contents Handy when looking
+for specific information. Django Discord Server Join the Django Discord
+Community. Official Django Forum Join the community on the Django Forum. Ticket
+tracker Report bugs with Django
+----------------------------------------------------------------------------------------------------
+Index: 41429 <<"chunk_id": 1, "docno": 6330>>
+
+are looking for a reference on the details of making code contributions, see the
+Contributing code documentation. For this tutorial, we expect that you have at
+least a basic understanding of how Django works. This means you should be
+comfortable going through the existing tutorials on writing your first Django
+app . In addition, you should have a good understanding of Python itself. But if
+you don’t, Dive Into Python is a fantastic (and free) online book for beginning
+Python programmers. Those of you who are unfamiliar with version control systems
+and Trac will find that this tutorial and its links include just enough
+information to get started. However, you’ll probably want to read some more
+about these different tools if you plan on contributing to Django regularly. For
+the most part though, this tutorial tries to explain as much as possible, so
+that it can be of use to the widest audience. Where to get help: If you’re
+having trouble going through this tutorial, please post a message on the Django
+Forum or drop by the Django Discord server to chat with other Django users who
+might be able to help. What does this tutorial cover? ¶ We’ll be walking you
+through contributing to Django for the first time. By the end of this tutorial,
+you should have a basic understanding of both the tools and the processes
+involved. Specifically, we’ll be covering the following: Installing Git.
+Downloading a copy of Django’s development version. Running Django’s test suite.
+Writing a test for your changes. Writing
+----------------------------------------------------------------------------------------------------
+Index: 41891 <<"chunk_id": 5, "docno": 6417>>
+
+part of Django as of the 0.91 release, but was superseded by another refactoring
+(see next listing) prior to the Django 1.0 release. newforms-admin : The second
+refactoring of Django’s bundled administrative application. This became part of
+Django as of the 1.0 release, and is the basis of the current incarnation of
+django.contrib.admin . queryset-refactor : A refactoring of the internals of
+Django’s object-relational mapper. This became part of Django as of the 1.0
+release. unicode : A refactoring of Django’s internals to consistently use
+Unicode-based strings in most places within Django and Django applications. This
+became part of Django as of the 1.0 release. Additionally, the following tags
+under the archive/attic/ prefix reference the tips of branches that were closed,
+but whose code was never merged into Django, and the features they aimed to
+implement were never finished: full-history generic-auth multiple-db-support
+per-object-permissions schema-evolution schema-evolution-ng search-api
+sqlalchemy Finally, under the archive/ prefix, the repository contains
+soc20XX/<project> tags referencing the tip of branches that were used by
+students who worked on Django during the 2009 and 2010 Google Summer of Code
+programs. Previous page and next page Django Deprecation Timeline How to release
+Django Back to Top Additional Information Support Django! Torchbox donated to
+the Django Software Foundation to support Django development. Donate today!
+Contents The Django source code repository High-level overview The main branch
+Stable branches Tags Archived feature-development work Browse Prev: Django
+Deprecation Timeline Next: How to release Django Table of contents General Index
+Python Module Index You are here: Django dev documentation Django internals
+----------------------------------------------------------------------------------------------------
+Index: 41879 <<"chunk_id": 1, "docno": 6415>>
+
+Python 3.x.y [GCC 4.x] on linux Type "help", "copyright", "credits" or "license"
+for more information. >>> Set up a database ¶ This step is only necessary if
+you’d like to work with a “large” database engine like PostgreSQL, MariaDB,
+MySQL, or Oracle. To install such a database, consult the database installation
+information . Install Django ¶ You’ve got three options to install Django:
+Install an official release . This is the best approach for most users. Install
+a version of Django provided by your operating system distribution . Install the
+latest development version . This option is for enthusiasts who want the
+latest-and-greatest features and aren’t afraid of running brand new code. You
+might encounter new bugs in the development version, but reporting them helps
+the development of Django. Also, releases of third-party packages are less
+likely to be compatible with the development version than with the latest stable
+release. Always refer to the documentation that corresponds to the version of
+Django you’re using! If you do either of the first two steps, keep an eye out
+for parts of the documentation marked new in development version . That phrase
+flags features that are only available in development versions of Django, and
+they likely won’t work with an official release. Verifying ¶ To verify that
+Django can be seen by Python, type python from your shell. Then at the Python
+prompt, try to import Django: >>> import django >>> print(django.get_version())
+6.2 You may have another version of Django installed. That’s it! ¶ That’s it –
+you
+----------------------------------------------------------------------------------------------------
+Index: 41442 <<"chunk_id": 14, "docno": 6330>>
+
+simpler in nature and are great for first time contributors. Once you’re
+familiar with contributing to Django, you can start working on more difficult
+and complicated tickets. If you just want to get started already (and nobody
+would blame you!), try taking a look at the list of easy tickets without a
+branch and the easy tickets that have branches which need improvement . If
+you’re familiar with writing tests, you can also look at the list of easy
+tickets that need tests . Remember to follow the guidelines about claiming
+tickets that were mentioned in the link to Django’s documentation on claiming
+tickets and submitting branches . What’s next after creating a pull request? ¶
+After a ticket has a branch, it needs to be reviewed by a second set of eyes.
+After submitting a pull request, update the ticket metadata by setting the flags
+on the ticket to say “has patch”, “doesn’t need tests”, etc, so others can find
+it for review. Contributing doesn’t necessarily always mean writing code from
+scratch. Reviewing open pull requests is also a very helpful contribution. See
+Triaging tickets for details. Previous page and next page What to read next
+Using Django Back to Top Additional Information Support Django! Krzysztof
+Jeziorny donated to the Django Software Foundation to support Django
+development. Donate today! Contents Writing your first contribution for Django
+Introduction Who’s this tutorial for? What does this tutorial cover? Code of
+Conduct Installing Git Getting a copy of Django’s development version Running
+Django’s test suite for the first
+----------------------------------------------------------------------------------------------------
+Index: 41120 <<"chunk_id": 8, "docno": 6286>>
+
+fill. This means that a site redesign can be done by changing a single file –
+the base template. It also lets you create multiple versions of a site, with
+different base templates, while reusing child templates. Django’s creators have
+used this technique to create strikingly different mobile versions of sites by
+only creating a new base template. Note that you don’t have to use Django’s
+template system if you prefer another system. While Django’s template system is
+particularly well-integrated with Django’s model layer, nothing forces you to
+use it. For that matter, you don’t have to use Django’s database API, either.
+You can use another database abstraction layer, you can read XML files, you can
+read files off disk, or anything you want. Each piece of Django – models, views,
+templates – is decoupled from the next. This is just the surface ¶ This has been
+only a quick overview of Django’s functionality. Some more useful features: A
+caching framework that integrates with memcached or other backends. A
+syndication framework that lets you create RSS and Atom feeds by writing a small
+Python class. More attractive automatically-generated admin features – this
+overview barely scratched the surface. The next steps are for you to download
+Django , read the tutorial and join the community . Thanks for your interest!
+Previous page and next page Getting started Quick install guide Back to Top
+Additional Information Support Django! RodinLawFirm Calgary donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Django at a glance Design
+----------------------------------------------------------------------------------------------------
+Index: 41510 <<"chunk_id": 18, "docno": 6342>>
+
+you to check not just the behavior of your Django code, but also, for example,
+of your JavaScript. It’s quite something to see the tests launch a browser, and
+start interacting with your site, as if a human being were driving it! Django
+includes LiveServerTestCase to facilitate integration with tools like Selenium.
+If you have a complex application, you may want to run tests automatically with
+every commit for the purposes of continuous integration , so that quality
+control is itself - at least partially - automated. A good way to spot untested
+parts of your application is to check code coverage. This also helps identify
+fragile or even dead code. If you can’t test a piece of code, it usually means
+that code should be refactored or removed. Coverage will help to identify dead
+code. See Integration with coverage.py for details. Testing in Django has
+comprehensive information about testing. What’s next? ¶ For full details on
+testing, see Testing in Django . When you’re comfortable with testing Django
+views, read part 6 of this tutorial to learn about static files management.
+Previous page and next page Writing your first Django app, part 4 Writing your
+first Django app, part 6 Back to Top Additional Information Support Django!
+carson gregory donated to the Django Software Foundation to support Django
+development. Donate today! Contents Writing your first Django app, part 5
+Introducing automated testing What are automated tests? Why you need to create
+tests Tests will save you time Tests don’t just identify problems, they prevent
+them
+----------------------------------------------------------------------------------------------------
+Index: 18611 <<"chunk_id": 2, "docno": 2464>>
+
+please apply anyway ! We generally try to err on the side of saying “yes”. Since
+the precise line is hard to define, here are some examples of things that
+generally do and do not qualify for membership: Examples of contributions that
+do qualify for membership: Being part of the organizing team for a Django
+community event (conference, meetup, tutorial, etc.). Both virtual and in-person
+events count! Examples include DjangoCons, DjangoGirls workshops, local Django
+meetups, development or contribution sprints, etc. These events should be open
+to the public to be applicable — company-internal events generally don’t count
+unless they’re open to the local public. Serving on a DSF working group .
+Contributing code to Django itself or to a third-party Django app. We’ll want to
+see that this contribution is somewhat substantial: either a single
+large/complex contribution, or sustained history (months) of smaller
+contributions. Maintaining a third-party Django app or package in the broader
+Django ecosystem. We’ll take a very broad view of this: if you maintain any sort
+of Python tool that is broadly useful to Django developers, it counts. We’ll
+probably also count related technologies that Django developers widely use –
+database utilities, front-end tools, WSGI/ASGI servers, etc. If you work on a
+thing that helps make Django developers' lives easier, it counts . This includes
+contributing to Python itself, core Python infrastructure like PyPI, tools that
+Django developers often use like Read the Docs, and so on. Contributing to
+third-party apps. This is basically a merge of the previous two points: if you
+----------------------------------------------------------------------------------------------------
+Index: 40761 <<"chunk_id": 21, "docno": 6218>>
+
+example of how to subclass FileField to support a particular type of file, as it
+incorporates all of the techniques described above. Cache file attributes
+wherever possible. Since files may be stored in remote storage systems,
+retrieving them may cost extra time, or even money, that isn’t always necessary.
+Once a file is retrieved to obtain some data about its content, cache as much of
+that data as possible to reduce the number of times the file must be retrieved
+on subsequent calls for that information. Previous page and next page How to
+integrate Django with a legacy database How to create database migrations Back
+to Top Additional Information Support Django! Nowack & Olson, PLLC donated to
+the Django Software Foundation to support Django development. Donate today!
+Contents How to create custom model fields Introduction Our example object
+Background theory Database storage What does a field class do? Writing a field
+subclass Field deconstruction Field attributes not affecting database column
+definition Changing a custom field’s base class Documenting your custom field
+Useful methods Custom database types Converting values to Python objects
+Converting Python objects to query values Converting query values to database
+values Preprocessing values before saving Specifying the form field for a model
+field Emulating built-in field types Converting field data for serialization
+Some general advice Writing a FileField subclass A few suggestions Browse Prev:
+How to integrate Django with a legacy database Next: How to create database
+migrations Table of contents General Index Python Module Index You are here:
+Django dev documentation How-to guides
+----------------------------------------------------------------------------------------------------
+Index: 38436 <<"chunk_id": 3, "docno": 5680>>
+
+where templates come in. In Django, a “view” describes which data is presented,
+but a view normally delegates to a template, which describes how the data is
+presented. Where does the “controller” fit in, then? In Django’s case, it’s
+probably the framework itself: the machinery that sends a request to the
+appropriate view, according to the Django URL configuration. If you’re hungry
+for acronyms, you might say that Django is a “MTV” framework – that is, “model”,
+“template”, and “view.” That breakdown makes much more sense. At the end of the
+day, it comes down to getting stuff done. And, regardless of how things are
+named, Django gets stuff done in a way that’s most logical to us. <Framework X>
+does <feature Y> – why doesn’t Django? ¶ We’re well aware that there are other
+awesome web frameworks out there, and we’re not averse to borrowing ideas where
+appropriate. However, Django was developed precisely because we were unhappy
+with the status quo, so please be aware that “because <Framework X> does it” is
+not going to be sufficient reason to add a given feature to Django. Why did you
+write all of Django from scratch, instead of using other Python libraries? ¶
+When Django was originally written, Adrian and Simon spent quite a bit of time
+exploring the various Python web frameworks available. In our opinion, none of
+them were completely up to snuff. We’re picky. You might even call us
+perfectionists. (With deadlines.) Over time, we stumbled across open-source
+libraries that did things we’d already
+----------------------------------------------------------------------------------------------------

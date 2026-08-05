@@ -1,0 +1,485 @@
+Index: 13082 <<"chunk_id": 82, "docno": 1753>>
+
+file descriptor of process.stdout . The value is fixed at 1 . In Worker threads,
+this field does not exist. A note on process I/O # process.stdout and
+process.stderr differ from other Node.js streams in important ways: They are
+used internally by console.log() and console.error() , respectively. Writes may
+be synchronous depending on what the stream is connected to and whether the
+system is Windows or POSIX: Files: synchronous on Windows and POSIX TTYs
+(Terminals): asynchronous on Windows, synchronous on POSIX Pipes (and sockets):
+synchronous on Windows, asynchronous on POSIX These behaviors are partly for
+historical reasons, as changing them would create backward incompatibility, but
+they are also expected by some users. Synchronous writes avoid problems such as
+output written with console.log() or console.error() being unexpectedly
+interleaved, or not written at all if process.exit() is called before an
+asynchronous write completes. See process.exit() for more information. Warning :
+Synchronous writes block the event loop until the write has completed. This can
+be near instantaneous in the case of output to a file, but under high system
+load, pipes that are not being read at the receiving end, or with slow terminals
+or file systems, it's possible for the event loop to be blocked often enough and
+long enough to have severe negative performance impacts. This may not be a
+problem when writing to an interactive terminal session, but consider this
+particularly careful when doing production logging to the process output
+streams. To check if a stream is connected to a TTY context, check the isTTY
+property.
+----------------------------------------------------------------------------------------------------
+Index: 1359 <<"chunk_id": 4, "docno": 206>>
+
+variants of the same key, such as PATH and Path . The child_process.spawn()
+method spawns the child process asynchronously, without blocking the Node.js
+event loop. The child_process.spawnSync() function provides equivalent
+functionality in a synchronous manner that blocks the event loop until the
+spawned process either exits or is terminated. For convenience, the
+node:child_process module provides a handful of synchronous and asynchronous
+alternatives to child_process.spawn() and child_process.spawnSync() . Each of
+these alternatives are implemented on top of child_process.spawn() or
+child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
+command within that shell, passing the stdout and stderr to a callback function
+when complete. child_process.execFile() : similar to child_process.exec() except
+that it spawns the command directly without first spawning a shell by default.
+child_process.fork() : spawns a new Node.js process and invokes a specified
+module with an IPC communication channel established that allows sending
+messages between parent and child. child_process.execSync() : a synchronous
+version of child_process.exec() that will block the Node.js event loop.
+child_process.execFileSync() : a synchronous version of child_process.execFile()
+that will block the Node.js event loop. For certain use cases, such as
+automating shell scripts, the synchronous counterparts may be more convenient.
+In many cases, however, the synchronous methods can have significant impact on
+performance due to stalling the event loop while spawned processes complete.
+Asynchronous process creation # The child_process.spawn() , child_process.fork()
+, child_process.exec() , and child_process.execFile() methods all follow the
+idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
+of the methods returns a ChildProcess instance. These objects implement the
+Node.js EventEmitter API,
+----------------------------------------------------------------------------------------------------
+Index: 42760 <<"chunk_id": 1, "docno": 6559>>
+
+found NG05201: Unsafe value used in a resource URL context NG05703: Suspicious
+URL Origin Change NG0602: Disallowed function call inside reactive context
+NG0750: @defer dependencies failed to load NG0751: @defer behavior when HMR is
+enabled NG0910: Unsafe bindings on an iframe element NG0912: Component ID
+generation collision NG0913: Runtime Performance Warnings NG0919: Circular
+Dependency Detected NG0950: Required input is accessed before a value is set.
+NG0951: Child query result is required but no value is available. NG0955: Track
+expression resulted in duplicated keys for a given collection. NG0956: Tracking
+expression caused re-creation of the DOM structure. NG1001: Argument Not Literal
+NG2003: Missing Token NG2009: Invalid Shadow DOM selector NG3003: Import Cycle
+Detected NG6100: NgModule.id Set to module.id anti-pattern NG8001: Invalid
+Element NG8002: Invalid Attribute NG8003: Missing Reference Target NG8023:
+Multiple Components Match Same Element NG8024: Conflicting Host Directive
+Binding Error Encyclopedia Application remains unstable This warning only
+appears in the browser during the hydration process when it's enabled on the
+client but the application remains unstable for an extended period of time (over
+10 seconds). Typically that happens when there are some pending microtasks or
+macrotasks on a page. Angular Hydration relies on a signal from
+ApplicationRef.isStable when it becomes stable inside an application: during the
+server-side rendering (SSR) to start the serialization process in a browser this
+signal is used to start the post-hydration cleanup to remove DOM nodes that
+remained unclaimed This warning is displayed when ApplicationRef.isStable does
+not emit true within 10 seconds. If this behavior is intentional and your
+application stabilizes later,
+----------------------------------------------------------------------------------------------------
+Index: 2968 <<"chunk_id": 9, "docno": 426>>
+
+timers if scheduled within an I/O cycle, independently of how many timers are
+present. M process.nextTick process . nextTick (): void Understanding
+process.nextTick() You may have noticed that process.nextTick() was not
+displayed in the diagram, even though it's a part of the asynchronous API. This
+is because process.nextTick() is not technically part of the event loop.
+Instead, the nextTickQueue will be processed after the current operation is
+completed, regardless of the current phase of the event loop. Here, an operation
+is defined as a transition from the underlying C/C++ handler, and handling the
+JavaScript that needs to be executed. Looking back at our diagram, any time you
+call process.nextTick() in a given phase, all callbacks passed to
+process.nextTick() will be resolved before the event loop continues. This can
+create some bad situations because it allows you to "starve" your I/O by making
+recursive process.nextTick() calls , which prevents the event loop from reaching
+the poll phase. Why would that be allowed? Why would something like this be
+included in Node.js? Part of it is a design philosophy where an API should
+always be asynchronous even where it doesn't have to be. Take this code snippet
+for example: function apiCall ( arg , callback ) { if ( typeof arg !== ' string
+' ) { return process . nextTick ( callback , new TypeError ( ' argument should
+be string ' ) ) ; } } JavaScript Copy to clipboard The snippet does an argument
+check and if it's not correct, it will pass the error
+----------------------------------------------------------------------------------------------------
+Index: 2963 <<"chunk_id": 4, "docno": 426>>
+
+for any asynchronous I/O or timers and shuts down cleanly if there are not any.
+Starting with libuv 1.45.0 (Node.js 20), timers are run after the poll phase in
+each event loop iteration. In earlier versions, timers were run before polling.
+To preserve backwards compatibility, libuv 1.45.0 still runs timers once before
+entering the event loop . This change can affect the timing of setImmediate()
+callbacks and how they interact with timers in certain scenarios. Phases in
+Detail pending callbacks This phase executes callbacks for some system
+operations such as types of TCP errors. For example if a TCP socket receives
+ECONNREFUSED when attempting to connect, some *nix systems want to wait to
+report the error. This will be queued to execute in the pending callbacks phase.
+poll The poll phase has two main functions: Calculating how long it should block
+and poll for I/O, then Processing events in the poll queue. When the event loop
+enters the poll phase and there are no timers scheduled , one of two things will
+happen: If the poll queue is not empty , the event loop will iterate through its
+queue of callbacks executing them synchronously until either the queue has been
+exhausted, or the system-dependent hard limit is reached. If the poll queue is
+empty , one of two more things will happen: If scripts have been scheduled by
+setImmediate() , the event loop will end the poll phase and continue to the
+check phase to execute those scheduled scripts. If scripts have not been
+scheduled by
+----------------------------------------------------------------------------------------------------
+Index: 1647 <<"chunk_id": 1, "docno": 242>>
+
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Understanding process.nextTick()
+As you try to understand the Node.js event loop, one important part of it is
+process.nextTick() . Every time the runtime calls back into JavaScript for an
+event, we call it a tick. When we pass a function to process.nextTick() , we
+schedule it to run immediately after the current call stack completes, before
+the event loop continues and before any other queued tasks or phases are
+processed: process . nextTick ( () => { // do something } ) ; JavaScript Copy to
+clipboard The event loop is busy processing the current function code. When this
+operation ends, the JS engine runs all the functions passed to nextTick calls
+during that operation. It's the way we can tell the JS engine to process a
+function asynchronously (after the current function), but as soon as possible,
+not queue it. Calling setTimeout(() => {},
+----------------------------------------------------------------------------------------------------
+Index: 13006 <<"chunk_id": 6, "docno": 1753>>
+
+message might not be the same as what is originally sent. If the serialization
+option was set to advanced used when spawning the process, the message argument
+can contain data that JSON is not able to represent. See Advanced serialization
+for child_process for more details. Event: 'rejectionHandled' # Added in: v1.4.1
+promise <Promise> The late handled promise. The 'rejectionHandled' event is
+emitted whenever a Promise has been rejected and an error handler was attached
+to it (using promise.catch() , for example) later than one turn of the Node.js
+event loop. The Promise object would have previously been emitted in an
+'unhandledRejection' event, but during the course of processing gained a
+rejection handler. There is no notion of a top level for a Promise chain at
+which rejections can always be handled. Being inherently asynchronous in nature,
+a Promise rejection can be handled at a future point in time, possibly much
+later than the event loop turn it takes for the 'unhandledRejection' event to be
+emitted. Another way of stating this is that, unlike in synchronous code where
+there is an ever-growing list of unhandled exceptions, with Promises there can
+be a growing-and-shrinking list of unhandled rejections. In synchronous code,
+the 'uncaughtException' event is emitted when the list of unhandled exceptions
+grows. In asynchronous code, the 'unhandledRejection' event is emitted when the
+list of unhandled rejections grows, and the 'rejectionHandled' event is emitted
+when the list of unhandled rejections shrinks. import process from
+'node:process' ; const unhandledRejections = new Map () ; process . on (
+'unhandledRejection'
+----------------------------------------------------------------------------------------------------
+Index: 30176 <<"chunk_id": 1412, "docno": 4202>>
+
+. Each of these alternatives are implemented on top of child_process.spawn() or
+child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
+command within that shell, passing the stdout and stderr to a callback function
+when complete. child_process.execFile() : similar to child_process.exec() except
+that it spawns the command directly without first spawning a shell by default.
+child_process.fork() : spawns a new Node.js process and invokes a specified
+module with an IPC communication channel established that allows sending
+messages between parent and child. child_process.execSync() : a synchronous
+version of child_process.exec() that will block the Node.js event loop.
+child_process.execFileSync() : a synchronous version of child_process.execFile()
+that will block the Node.js event loop. For certain use cases, such as
+automating shell scripts, the synchronous counterparts may be more convenient.
+In many cases, however, the synchronous methods can have significant impact on
+performance due to stalling the event loop while spawned processes complete.
+Asynchronous process creation # The child_process.spawn() , child_process.fork()
+, child_process.exec() , and child_process.execFile() methods all follow the
+idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
+of the methods returns a ChildProcess instance. These objects implement the
+Node.js EventEmitter API, allowing the parent process to register listener
+functions that are called when certain events occur during the life cycle of the
+child process. The child_process.exec() and child_process.execFile() methods
+additionally allow for an optional callback function to be specified that is
+invoked when the child process terminates. Spawning .bat and .cmd files on
+Windows # The importance of the distinction between child_process.exec() and
+child_process.execFile() can vary based
+----------------------------------------------------------------------------------------------------
+Index: 1648 <<"chunk_id": 2, "docno": 242>>
+
+tell the JS engine to process a function asynchronously (after the current
+function), but as soon as possible, not queue it. Calling setTimeout(() => {},
+0) schedules the callback for a future event loop iteration, much later than
+when using process.nextTick() , which executes before the event loop continues.
+Use nextTick() when you want to make sure that in the next event loop iteration
+that code is already executed. To learn more about the order of execution and
+how the event loop works, check out the dedicated article Reading Time 1 min
+read Contribute Edit this page Copyright OpenJS Foundation and Node.js
+contributors. All rights reserved. The OpenJS Foundation has registered
+trademarks and uses trademarks. For a list of trademarks of the OpenJS
+Foundation , please see our Trademark Policy and Trademark List . Trademarks and
+logos not indicated on the list of OpenJS Foundation trademarks are trademarks™
+or registered® trademarks of their respective holders. Use of them does not
+imply any affiliation with or endorsement by them. OpenJS Foundation AI Coding
+Assistants Policy Bylaws Code of Conduct Cookie Policy Privacy Policy Security
+Policy Terms of Use Trademark List Trademark Policy
+----------------------------------------------------------------------------------------------------
+Index: 2966 <<"chunk_id": 7, "docno": 426>>
+
+{ // do nothing } } ) ; JavaScript Copy to clipboard When the event loop enters
+the poll phase, it has an empty queue ( fs.readFile() has not completed), so it
+will wait for the number of ms remaining until the soonest timer's threshold is
+reached. While it is waiting 95 ms pass, fs.readFile() finishes reading the file
+and its callback which takes 10 ms to complete is added to the poll queue and
+executed. When the callback finishes, there are no more callbacks in the queue,
+so the event loop will see that the threshold of the soonest timer has been
+reached then wrap back to the timers phase to execute the timer's callback. In
+this example, you will see that the total delay between the timer being
+scheduled and its callback being executed will be 105ms. To prevent the poll
+phase from starving the event loop, libuv (the C library that implements the
+Node.js event loop and all of the asynchronous behaviors of the platform) also
+has a hard maximum (system dependent) before it stops polling for more events.
+setImmediate() vs setTimeout() setImmediate() and setTimeout() are similar, but
+behave in different ways depending on when they are called. setImmediate() is
+designed to execute a script once the current poll phase completes. setTimeout()
+schedules a script to be run after a minimum threshold in ms has elapsed. The
+order in which the timers are executed will vary depending on the context in
+which they are called. If both are called from within the main
+----------------------------------------------------------------------------------------------------
+Index: 5254 <<"chunk_id": 5, "docno": 728>>
+
+Node.js, through the Timers module . Node.js also provides setImmediate() ,
+which schedules a callback to execute during the check phase of the event loop.
+Unlike setTimeout(() => {}, 0) , it is not generally equivalent because their
+callbacks are executed in different phases of the event loop and their execution
+order depends on the execution context. Reading Time 4 min read Contribute Edit
+this page Table of Contents setTimeout Zero delay setInterval Recursive
+setTimeout Copyright OpenJS Foundation and Node.js contributors. All rights
+reserved. The OpenJS Foundation has registered trademarks and uses trademarks.
+For a list of trademarks of the OpenJS Foundation , please see our Trademark
+Policy and Trademark List . Trademarks and logos not indicated on the list of
+OpenJS Foundation trademarks are trademarks™ or registered® trademarks of their
+respective holders. Use of them does not imply any affiliation with or
+endorsement by them. OpenJS Foundation AI Coding Assistants Policy Bylaws Code
+of Conduct Cookie Policy Privacy Policy Security Policy Terms of Use Trademark
+List Trademark Policy
+----------------------------------------------------------------------------------------------------
+Index: 10841 <<"chunk_id": 139, "docno": 1533>>
+
+string of JavaScript code and returns its result with the following caveats:
+Unlike eval , this function does not allow the script to access the current
+lexical scope, and therefore also does not allow to access the module scope ,
+meaning that pseudo-globals such as require will not be available. The script
+can access the global scope . Function and var declarations in the script will
+be added to the global object. Variable declarations made using let and const
+will be visible globally, but will not be added to the global object. The value
+of this is global within the script. libuv event loop # Node-API provides a
+function for getting the current event loop associated with a specific napi_env
+. napi_get_uv_event_loop # Added in: v9.3.0, v8.10.0 N-API Version: 2
+NAPI_EXTERN napi_status napi_get_uv_event_loop ( node_api_basic_env env , struct
+uv_loop_s ** loop ); c copy [in] env : The environment that the API is invoked
+under. [out] loop : The current libuv loop instance. Note: While libuv only
+guarantees ABI stability in a major version, its use may result in an addon that
+does not work across Node.js major versions. ThreadSafeFunction is an ABI-stable
+alternative for many use cases to calling into the JavaScript thread from
+another thread. Asynchronous thread-safe function calls # JavaScript functions
+can normally only be called from a native addon's main thread. If an addon
+creates additional threads, then Node-API functions that require a napi_env ,
+napi_value , or napi_ref must not be called from those threads. When an addon
+has additional threads
+----------------------------------------------------------------------------------------------------
+Index: 29555 <<"chunk_id": 791, "docno": 4202>>
+
+the following caveats: Unlike eval , this function does not allow the script to
+access the current lexical scope, and therefore also does not allow to access
+the module scope , meaning that pseudo-globals such as require will not be
+available. The script can access the global scope . Function and var
+declarations in the script will be added to the global object. Variable
+declarations made using let and const will be visible globally, but will not be
+added to the global object. The value of this is global within the script. libuv
+event loop # Node-API provides a function for getting the current event loop
+associated with a specific napi_env . napi_get_uv_event_loop # Added in: v9.3.0,
+v8.10.0 N-API Version: 2 NAPI_EXTERN napi_status napi_get_uv_event_loop (
+node_api_basic_env env , struct uv_loop_s ** loop ); c copy [in] env : The
+environment that the API is invoked under. [out] loop : The current libuv loop
+instance. Note: While libuv only guarantees ABI stability in a major version,
+its use may result in an addon that does not work across Node.js major versions.
+ThreadSafeFunction is an ABI-stable alternative for many use cases to calling
+into the JavaScript thread from another thread. Asynchronous thread-safe
+function calls # JavaScript functions can normally only be called from a native
+addon's main thread. If an addon creates additional threads, then Node-API
+functions that require a napi_env , napi_value , or napi_ref must not be called
+from those threads. When an addon has additional threads and JavaScript
+functions need to be invoked based on
+----------------------------------------------------------------------------------------------------
+Index: 30140 <<"chunk_id": 1376, "docno": 4202>>
+
+components and APIs: V8 : the C++ library Node.js uses to provide the JavaScript
+implementation. It provides the mechanisms for creating objects, calling
+functions, etc. The V8's API is documented mostly in the v8.h header file (
+deps/v8/include/v8.h in the Node.js source tree), and is also available online .
+libuv : The C library that implements the Node.js event loop, its worker threads
+and all of the asynchronous behaviors of the platform. It also serves as a
+cross-platform abstraction library, giving easy, POSIX-like access across all
+major operating systems to many common system tasks, such as interacting with
+the file system, sockets, timers, and system events. libuv also provides a
+threading abstraction similar to POSIX threads for more sophisticated
+asynchronous addons that need to move beyond the standard event loop. Addon
+authors should avoid blocking the event loop with I/O or other time-intensive
+tasks by offloading work via libuv to non-blocking system operations, worker
+threads, or a custom use of libuv threads. Internal Node.js libraries: Node.js
+itself exports C++ APIs that addons can use, the most important of which is the
+node::ObjectWrap class. Other statically linked libraries (including OpenSSL):
+These other libraries are located in the deps/ directory in the Node.js source
+tree. Only the libuv, OpenSSL, V8, and zlib symbols are purposefully re-exported
+by Node.js and may be used to various extents by addons. See Linking to
+libraries included with Node.js for additional information. All of the following
+examples are available for download and may be used as the starting-point for an
+addon. Hello world
+----------------------------------------------------------------------------------------------------
+Index: 10556 <<"chunk_id": 2, "docno": 1517>>
+
+library Node.js uses to provide the JavaScript implementation. It provides the
+mechanisms for creating objects, calling functions, etc. The V8's API is
+documented mostly in the v8.h header file ( deps/v8/include/v8.h in the Node.js
+source tree), and is also available online . libuv : The C library that
+implements the Node.js event loop, its worker threads and all of the
+asynchronous behaviors of the platform. It also serves as a cross-platform
+abstraction library, giving easy, POSIX-like access across all major operating
+systems to many common system tasks, such as interacting with the file system,
+sockets, timers, and system events. libuv also provides a threading abstraction
+similar to POSIX threads for more sophisticated asynchronous addons that need to
+move beyond the standard event loop. Addon authors should avoid blocking the
+event loop with I/O or other time-intensive tasks by offloading work via libuv
+to non-blocking system operations, worker threads, or a custom use of libuv
+threads. Internal Node.js libraries: Node.js itself exports C++ APIs that addons
+can use, the most important of which is the node::ObjectWrap class. Other
+statically linked libraries (including OpenSSL): These other libraries are
+located in the deps/ directory in the Node.js source tree. Only the libuv,
+OpenSSL, V8, and zlib symbols are purposefully re-exported by Node.js and may be
+used to various extents by addons. See Linking to libraries included with
+Node.js for additional information. All of the following examples are available
+for download and may be used as the starting-point for an addon. Hello world #
+This "Hello world" example is a
+----------------------------------------------------------------------------------------------------
+Index: 30462 <<"chunk_id": 1698, "docno": 4202>>
+
+is no longer experimental. Returns: <AsyncIterator> Create an AsyncIterator
+object that iterates through each line in the input stream as a string. This
+method allows asynchronous iteration of InterfaceConstructor objects through for
+await...of loops. Errors in the input stream are not forwarded. If the loop is
+terminated with break , throw , or return , rl.close() will be called. In other
+words, iterating over a InterfaceConstructor will always consume the input
+stream fully. Performance is not on par with the traditional 'line' event API.
+Use 'line' instead for performance-sensitive applications. async function
+processLineByLine () { const rl = readline . createInterface ( { // ... } ) ;
+for await ( const line of rl) { // Each line in the readline input will be
+successively available here as // `line`. } } js copy readline.createInterface()
+will start to consume the input stream once invoked. Having asynchronous
+operations between interface creation and asynchronous iteration may result in
+missed lines. rl.line # Added in: v0.1.98 History Version Changes v15.8.0,
+v14.18.0 Value will always be a string, never undefined. Type: <string> The
+current input data being processed by node. This can be used when collecting
+input from a TTY stream to retrieve the current value that has been processed
+thus far, prior to the line event being emitted. Once the line event has been
+emitted, this property will be an empty string. Be aware that modifying the
+value during the instance runtime may have unintended consequences if rl.cursor
+is not also controlled. If not using a TTY stream
+----------------------------------------------------------------------------------------------------
+Index: 32469 <<"chunk_id": 9, "docno": 4288>>
+
+experimental. Returns: <AsyncIterator> Create an AsyncIterator object that
+iterates through each line in the input stream as a string. This method allows
+asynchronous iteration of InterfaceConstructor objects through for await...of
+loops. Errors in the input stream are not forwarded. If the loop is terminated
+with break , throw , or return , rl.close() will be called. In other words,
+iterating over a InterfaceConstructor will always consume the input stream
+fully. Performance is not on par with the traditional 'line' event API. Use
+'line' instead for performance-sensitive applications. async function
+processLineByLine () { const rl = readline . createInterface ( { // ... } ) ;
+for await ( const line of rl) { // Each line in the readline input will be
+successively available here as // `line`. } } js copy readline.createInterface()
+will start to consume the input stream once invoked. Having asynchronous
+operations between interface creation and asynchronous iteration may result in
+missed lines. rl.line # Added in: v0.1.98 History Version Changes v15.8.0,
+v14.18.0 Value will always be a string, never undefined. Type: <string> The
+current input data being processed by node. This can be used when collecting
+input from a TTY stream to retrieve the current value that has been processed
+thus far, prior to the line event being emitted. Once the line event has been
+emitted, this property will be an empty string. Be aware that modifying the
+value during the instance runtime may have unintended consequences if rl.cursor
+is not also controlled. If not using a TTY stream for input, use
+----------------------------------------------------------------------------------------------------
+Index: 15319 <<"chunk_id": 6, "docno": 2018>>
+
+function directly to have this error occur. If you have called a sync function
+directly from an async function, without using sync_to_async() or similar, then
+it can also occur. This is because your code is still running in a thread with
+an active event loop, even though it may not be declared as async code. If you
+encounter this error, you should fix your code to not call the offending code
+from an async context. Instead, write your code that talks to async-unsafe
+functions in its own, sync function, and call that using
+asgiref.sync.sync_to_async() (or any other way of running sync code in its own
+thread). The async context can be imposed upon you by the environment in which
+you are running your Django code. For example, Jupyter notebooks and IPython
+interactive shells both transparently provide an active event loop so that it is
+easier to interact with asynchronous APIs. If you’re using an IPython shell, you
+can disable this event loop by running: %autoawait off as a command at the
+IPython prompt. This will allow you to run synchronous code without generating
+SynchronousOnlyOperation errors; however, you also won’t be able to await
+asynchronous APIs. To turn the event loop back on, run: %autoawait on If you’re
+in an environment other than IPython (or you can’t turn off autoawait in IPython
+for some reason), you are certain there is no chance of your code being run
+concurrently, and you absolutely need to run your sync code from an async
+context, then you can disable the warning
+----------------------------------------------------------------------------------------------------
+Index: 3184 <<"chunk_id": 16, "docno": 454>>
+
+version, which doesn’t accept a callback but instead returns a promise that is
+rejected if the pipeline fails. Async Iterators Async iterators are recommended
+as the standard way of interfacing with the Streams API. Compared to all the
+stream primitives in both the Web and Node.js, async iterators are easier to
+understand and use, contributing to fewer bugs and more maintainable code. In
+recent versions of Node.js, async iterators have emerged as a more elegant and
+readable way to interact with streams. Building upon the foundation of events,
+async iterators provide a higher-level abstraction that simplifies stream
+consumption. In Node.js, all readable streams are asynchronous iterables. This
+means you can use the for await...of syntax to loop through the stream's data as
+it becomes available, handling each piece of data with the efficiency and
+simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
+Using async iterators with streams simplifies the handling of asynchronous data
+flows in several ways: Enhanced Readability : The code structure is cleaner and
+more readable, particularly when dealing with multiple asynchronous data
+sources. Error Handling : Async iterators allow straightforward error handling
+using try/catch blocks, akin to regular asynchronous functions. Flow Control :
+They inherently manage backpressure, as the consumer controls the flow by
+awaiting the next piece of data, allowing for more efficient memory usage and
+processing. Async iterators offer a more modern and often more readable way to
+work with readable streams, especially when dealing with asynchronous data
+sources or when you prefer a more sequential, loop-based approach
+----------------------------------------------------------------------------------------------------
+Index: 1285 <<"chunk_id": 1, "docno": 196>>
+
+a runner Publishing a TypeScript package Modules How to use streams
+Backpressuring in Streams Publishing a package How to publish a Node-API package
+ABI Stability Diagnostics User Journey Memory Overview Understanding and Tuning
+Memory Using Heap Profiler Using Heap Snapshot Tracing garbage collection Live
+Debugging Overview Using Inspector Poor Performance Overview Using Linux Perf
+Flame Graphs Test Runner Discovering Node.js's test runner Using Node.js's test
+runner Mocking in tests Collecting code coverage in Node.js Node-API What is
+Node-API? Getting Started Overview Pre-requisites Tools Anatomy of a Node-API
+project Your First Project Object Wrap Migrating to Node-API Build Tools
+Overview node-gyp CMake.js node-pre-gyp Special Topics Overview Context
+Awareness Object and Function References AsyncWorker Thread-Safe Functions On
+this page Blocking Comparing Code Concurrency and Throughput Dangers of Mixing
+Blocking and Non-Blocking Code Additional Resources Overview of Blocking vs
+Non-Blocking This overview covers the difference between blocking and
+non-blocking calls in Node.js. This overview will refer to the event loop and
+libuv but no prior knowledge of those topics is required. Readers are assumed to
+have a basic understanding of the JavaScript language and Node.js callback
+pattern . "I/O" refers primarily to interaction with the system's disk and
+network supported by libuv . Blocking Blocking is when the execution of
+additional JavaScript in the Node.js process must wait until a non-JavaScript
+operation completes. This happens because the event loop is unable to continue
+running JavaScript while a blocking operation is occurring. In Node.js,
+JavaScript that exhibits poor performance due to being CPU intensive rather than
+waiting on a non-JavaScript
+----------------------------------------------------------------------------------------------------

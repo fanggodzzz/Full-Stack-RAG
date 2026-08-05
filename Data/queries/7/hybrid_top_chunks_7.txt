@@ -1,0 +1,550 @@
+Index: 4184 <<"chunk_id": 8, "docno": 574>>
+
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
+----------------------------------------------------------------------------------------------------
+Index: 13908 <<"chunk_id": 41, "docno": 1843>>
+
+idle connection to make sure it's still alive. 30s
+spring.cassandra.pool.idle-timeout Idle timeout before an idle connection is
+removed. 5s spring.cassandra.port Port to use if a contact point does not
+specify one. 9042 spring.cassandra.request.consistency Queries consistency
+level. spring.cassandra.request.page-size How many rows will be retrieved
+simultaneously in a single network round-trip. 5000
+spring.cassandra.request.serial-consistency Queries serial consistency level.
+spring.cassandra.request.throttler.drain-interval How often the throttler
+attempts to dequeue requests. Set this high enough that each attempt will
+process multiple entries in the queue, but not delay requests too much.
+spring.cassandra.request.throttler.max-concurrent-requests Maximum number of
+requests that are allowed to execute in parallel.
+spring.cassandra.request.throttler.max-queue-size Maximum number of requests
+that can be enqueued when the throttling threshold is exceeded.
+spring.cassandra.request.throttler.max-requests-per-second Maximum allowed
+request rate. spring.cassandra.request.throttler.type Request throttling type.
+none spring.cassandra.request.timeout How long the driver waits for a request to
+complete. 2s spring.cassandra.schema-action Schema action to take at startup.
+none spring.cassandra.session-name Name of the Cassandra session.
+spring.cassandra.ssl.bundle SSL bundle name. spring.cassandra.ssl.enabled
+Whether to enable SSL support. spring.cassandra.ssl.verify-hostname Whether to
+perform hostname verification. true spring.cassandra.username Login user of the
+server. spring.couchbase.authentication.jks.location Java KeyStore location for
+certificate-based cluster authentication.
+spring.couchbase.authentication.jks.password Java KeyStore password for
+certificate-based cluster authentication.
+spring.couchbase.authentication.pem.certificates PEM-formatted certificates for
+certificate-based cluster authentication.
+spring.couchbase.authentication.pem.private-key PEM-formatted private key for
+certificate-based cluster authentication.
+spring.couchbase.authentication.pem.private-key-password Private key password
+for certificate-based cluster authentication. spring.couchbase.connection-string
+Connection string used to locate the Couchbase cluster.
+spring.couchbase.env.io.idle-http-connection-timeout Length of time an HTTP
+connection may remain idle before it is closed and removed from the pool. 1s
+spring.couchbase.env.io.max-endpoints Maximum number of sockets per node. 12
+spring.couchbase.env.io.min-endpoints Minimum number of sockets per node. 1
+spring.couchbase.env.ssl.bundle SSL
+----------------------------------------------------------------------------------------------------
+Index: 50438 <<"chunk_id": 0, "docno": 8029>>
+
+Node.js — Node.js 9.10.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 9.10.0 (Current)
+MB Myles Borins Node.js 9.10.0 (Current) Notable Changes Upgrade to OpenSSL
+1.0.2o : Does not contain any security fixes that are known to impact Node.js.
+Fix for inspector DNS rebinding vulnerability (CVE-2018-7160) : A malicious
+website could use a DNS rebinding attack to trick a web browser to bypass
+same-origin-policy checks and allow HTTP connections to localhost or to hosts on
+the local network, potentially to an open inspector port as a debugger,
+therefore gaining full code execution access. The inspector now only allows
+connections that have a browser Host value that is either not subject to DNS
+resolution or matches localhost or localhost6 . Fix for 'path' module regular
+expression denial of service (CVE-2018-7158) : A regular expression used for
+parsing POSIX paths could be used to cause a denial of service if an attacker
+were able to have a specially crafted path string passed through one of the
+impacted 'path' module functions. Reject spaces in HTTP Content-Length header
+values (CVE-2018-7159) : The Node.js HTTP parser allowed for spaces inside
+Content-Length header values. Such values now lead to rejected connections in
+the same way as non-numeric values. Update root certificates : 5 additional root
+certificates have been added to the Node.js binary and 30 have been removed.
+cluster : Add support for NODE_OPTIONS="--inspect" (Sameer Srivastava) #19165
+crypto : Expose the public key of a certificate (Hannes Magnusson) #17690 n-api
+: Add
+----------------------------------------------------------------------------------------------------
+Index: 4178 <<"chunk_id": 2, "docno": 574>>
+
+It's a poor fit for two other situations, though: CPU-bound work (image
+resizing, hashing, parsing huge payloads) ties up the single thread and makes
+your whole application unresponsive while it runs. Scaling across CPU cores — a
+single Node.js process only ever uses one core for its JavaScript, no matter how
+many cores the machine has. Node.js ships three built-in modules to address
+this: node:child_process , node:worker_threads , and node:cluster . They solve
+overlapping problems in different ways, which is why it's easy to reach for the
+wrong one. This guide compares them side by side and walks through when to use
+each. The three options at a glance Runs Memory Talks via Best for child_process
+Separate process Isolated stdio, or IPC ( fork() ) Running external programs
+worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
+Multiple processes Isolated IPC Scaling a server across cores A useful way to
+tell them apart: cluster is built on top of child_process specifically to solve
+the "scale a server across cores" problem, while worker_threads exists to solve
+the "run CPU-heavy code without blocking" problem without paying the cost of a
+whole new process. Child Process Use child_process when you need to run another
+program — a shell command, a binary, a script in another language — from
+Node.js, or when you want a fully isolated Node.js process that you drive over
+stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
+spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
+output via a shell Short
+----------------------------------------------------------------------------------------------------
+Index: 42406 <<"chunk_id": 2, "docno": 6507>>
+
+cost of slightly higher memory usage. Users in memory sensitive environments are
+encouraged to explicitly set setDefaultHighWaterMark . Contributed by Robert
+Nagy in #52037 Watch Mode (node --watch) From this release Watch Mode is
+considered stable. When in watch mode, changes in the watched files cause the
+Node.js process to restart. Contributed by Moshe Atlow #52074 WebSocket The
+browser-compatible implementation of WebSocket, previously behind the flag
+--experimental-websocket , will be enabled by default. This provides a WebSocket
+client to Node.js without external dependencies. Contributed by the Undici team
+and Aras Abbasi in #51594 glob and globSync This release adds to the node:fs
+module the functions glob and globSync for pattern matching. Developers can now
+utilize these functions for matching file paths based on specified patterns.
+Contributed by Moshe Atlow #51912 Improve performance of AbortSignal creation
+This release enhances the efficiency of creating AbortSignal instances, leading
+to significantly improved performance in fetch and the test runner. Contributed
+by Raz Luvaton in #52505 Call to action Try out the new Node.js 22 release!
+We’re always happy to hear your feedback. Testing your applications and modules
+with Node.js 22 helps to ensure the future compatibility of your project with
+the latest Node.js changes and features. Also of note is that Node.js 18 will go
+End-of-Life in April 2025, so we advise you to start planning to upgrade to
+Node.js 20 (LTS) or Node.js 22 (soon to be LTS). Looking to the future, the
+Next-10 team is running a survey to gather info from the ecosystem. Help shape
+the future
+----------------------------------------------------------------------------------------------------
+Index: 13191 <<"chunk_id": 5, "docno": 1768>>
+
+support newer syntax Next.js will utilize the module/nomodule pattern. The
+module/nomodule pattern provides a reliable mechanism for serving modern
+JavaScript to modern browsers while allowing older browsers to fall back to
+polyfilled ES5 code. This new feature is currently being tested in production by
+multiple large-scale Next.js applications to collect real-world data. The
+results of these tests are looking promising and more details on the performance
+improvements of this change will be shared soon. Improved Bundle Splitting
+Next.js currently has multiple JavaScript bundles it loads to make a page
+interactive. Most notably: The page JavaScript bundle. A file with common
+JavaScript. Next.js client-side runtime bundle. Dynamic imports (generally added
+through next/dynamic ). To ensure the page gets interactive, all these bundles
+have to load as they all depend on each other to be able to boot up React in the
+browser. Because these bundles are required to be loaded for React to boot up,
+it’s important that they are as optimized as possible and don’t over-download
+too much code from the rest of the application. For this reason, there is a
+commons bundle that holds common JavaScript between pages. The calculation of
+the current bundle-splitting strategy to generate commons is based around a
+ratio-based heuristic, if a module is used in 50% of all pages it’ll be marked
+as a common module. However, applications could exist out of many different
+pieces. For example, marketing pages, a blog, and a dashboard. If there was a
+large number of marketing pages compared to the dashboard the commons
+calculation
+----------------------------------------------------------------------------------------------------
+Index: 1102 <<"chunk_id": 1, "docno": 167>>
+
+system FFI Globals HTTP HTTP/2 HTTPS Inspector Internationalization Iterable
+Streams API Modules: CommonJS modules Modules: ECMAScript modules Modules:
+node:module API Modules: Packages Modules: TypeScript Net OS Path Performance
+hooks Permissions Process Punycode Query strings Readline REPL Report Single
+executable applications SQLite Stream String decoder Test runner Timers TLS/SSL
+Trace events TTY UDP/datagram URL Utilities V8 Virtual File System VM WASI Web
+Crypto API Web Streams API Worker threads Zlib Other versions 26.x 25.x 24.x LTS
+23.x 22.x LTS 21.x 20.x 19.x 18.x 17.x 16.x 15.x 14.x 13.x 12.x 11.x 10.x 9.x
+8.x 7.x 6.x 5.x 4.x 0.12.x 0.10.x Options View on single page View as JSON Edit
+on GitHub Table of contents Cluster How it works Class: Worker Event:
+'disconnect' Event: 'error' Event: 'exit' Event: 'listening' Event: 'message'
+Event: 'online' worker.disconnect() worker.exitedAfterDisconnect worker.id
+worker.isConnected() worker.isDead() worker.kill([signal]) worker.process
+worker.send(message[, sendHandle[, options]][, callback]) Event: 'disconnect'
+Event: 'exit' Event: 'fork' Event: 'listening' Event: 'message' Event: 'online'
+Event: 'setup' cluster.disconnect([callback]) cluster.fork([env])
+cluster.isMaster cluster.isPrimary cluster.isWorker cluster.schedulingPolicy
+cluster.settings cluster.setupMaster([settings])
+cluster.setupPrimary([settings]) cluster.worker cluster.workers Cluster # Source
+Code: lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be
+used to run multiple instances of Node.js that can distribute workloads among
+their application threads. When process isolation is not needed, use the
+worker_threads module instead, which allows running multiple application threads
+within a single Node.js instance. The cluster module allows easy creation of
+child processes that all share server ports. import cluster from 'node:cluster'
+; import http from 'node:http' ; import { availableParallelism } from 'node:os'
+; import process from 'node:process' ; const numCPUs
+----------------------------------------------------------------------------------------------------
+Index: 42165 <<"chunk_id": 1, "docno": 6463>>
+
+future. - [C++ embedder API](https://nodejs.org/docs/latest/api/embedding.md):
+Node.js provides a number of C++ APIs that can be used to execute JavaScript in
+a Node.js environment from other C++ software. - [Environment
+Variables](https://nodejs.org/docs/latest/api/environment_variables.md):
+Environment variables are variables associated to the environment the Node.js
+process runs in. - [Errors](https://nodejs.org/docs/latest/api/errors.md):
+Applications running in Node.js will generally experience the following
+categories of errors: - [C++
+addons](https://nodejs.org/docs/latest/api/addons.md): _Addons_ are
+dynamically-linked shared objects that can be loaded via the `require()`
+function as ordinary Node.js modules. Addons provide a foreign function
+interface between JavaScript and native code. -
+[Assert](https://nodejs.org/docs/latest/api/assert.md): The `node:assert` module
+provides a set of assertion functions for verifying invariants. - [Asynchronous
+context tracking](https://nodejs.org/docs/latest/api/async_context.md): - [Async
+hooks](https://nodejs.org/docs/latest/api/async_hooks.md): We strongly
+discourage the use of the `async_hooks` API. Other APIs that can cover most of
+its use cases include: - [Buffer](https://nodejs.org/docs/latest/api/buffer.md):
+`Buffer` objects are used to represent a fixed-length sequence of bytes. Many
+Node.js APIs support `Buffer`s. - [Child
+process](https://nodejs.org/docs/latest/api/child_process.md): The
+`node:child_process` module provides the ability to spawn subprocesses in a
+manner that is similar, but not identical, to `popen(3)`. This capability is
+primarily provided by the `child_process.spawn()` function: - [Command-line
+API](https://nodejs.org/docs/latest/api/cli.md): Node.js comes with a variety of
+CLI options. These options expose built-in debugging, multiple ways to execute
+scripts, and other helpful runtime options. -
+[Cluster](https://nodejs.org/docs/latest/api/cluster.md): Clusters of Node.js
+processes can be used to run multiple instances of Node.js that can distribute
+workloads among their application threads. When process isolation is not needed,
+use the `worker_threads` module instead, which allows running multiple
+application threads within a single Node.js instance. -
+[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
+module provides
+----------------------------------------------------------------------------------------------------
+Index: 42623 <<"chunk_id": 1, "docno": 6548>>
+
+be enabled by default for the first time in V8 5.9. The new compiler pipeline
+represents such a significant change that the Node.js Core Technical Committee
+(CTC) chose to postpone the Node.js 8 release, originally scheduled for April,
+in order to better accommodate it. Say hello to the Node.js API (N-API) For
+Node.js developers who use or create native addons, the new experimental Node.js
+API (N-API) is a significant advancement over the existing Native Abstractions
+for Node.js ( nan ) that will allow native addons to be compiled once on a
+system and used across multiple versions of Node.js. By providing a new virtual
+machine agnostic Application Binary Interface (ABI), it becomes possible for
+native addons to work not only against multiple versions of the V8 JavaScript
+runtime, but Microsoft's Chakra-Core runtime as well. The N-API is experimental
+in Node.js 8.0.0, so significant changes in the implementation and API should be
+expected. Native addon developers are encouraged to begin working with the API
+as soon as possible and to provide feedback that will be necessary to ensure
+that the new API meets the needs of the ecosystem. Say hello to async_hooks The
+experimental async_hooks module (formerly async_wrap ) has received a major
+upgrade in 8.0.0. This diagnostics API allows developers a means of monitoring
+the operation of the Node.js event loop, tracking asynchronous requests and
+handles through their complete lifecycle. Complete documentation for the new
+module is still incomplete and users should take great care when using the
+experimental new module. Say hello to the WHATWG
+----------------------------------------------------------------------------------------------------
+Index: 43217 <<"chunk_id": 2, "docno": 6696>>
+
+rmdir() (cjihrig) #29168 http : switch default parser to llhttp (Anna
+Henningsen) #24870 os : implement os.type() using uv_os_uname() (cjihrig) #25659
+policy : Experimental support for module integrity checks through a manifest
+file is implemented now. nodejs/node#23834 Added --policy-integrity=sri CLI
+option to mitigate policy tampering. If a policy integrity is specified and the
+policy does not have that integrity, Node.js will error prior to running any
+code (Bradley Farias) #28734 . process : Add source-map support to stack traces
+by using --enable-source-maps #29564 A new method, process.resourceUsage() was
+added. It returns resource usage for the current process, such as CPU time
+#28018 . report : An experimental diagnostic API for capturing process state is
+available as process.report and through command line flags. nodejs/node#22712
+The cpu info got added to the report output #28188 repl : The REPL now supports
+multi-line statements using BigInt literals as well as public and private class
+fields and methods (Ruben Bridgewater) #27400 . The REPL now supports tab
+autocompletion of file paths with fs methods (Anto Aravinth) #26648 . tls :
+support TLSv1.3 (Sam Roberts) #26209 disable TLS v1.0 and v1.1 by default (Ben
+Noordhuis) #23814 util : The WHATWG TextEncoder and TextDecoder are now globals.
+#22281 v8 Added v8.getHeapSnapshot and v8.writeHeapSnapshot to generate
+snapshots in the format used by tools such as Chrome DevTools (James M Snell)
+#26501 . worker : The worker_thread module is now stable #29512 Additionally,
+additions to collaborators and TSC: meta : Added Jiawen Geng to collaborators
+#28322 . Added Christian Clauss to collaborators #27554 .
+----------------------------------------------------------------------------------------------------
+Index: 42166 <<"chunk_id": 2, "docno": 6463>>
+
+is not needed, use the `worker_threads` module instead, which allows running
+multiple application threads within a single Node.js instance. -
+[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
+module provides a simple debugging console that is similar to the JavaScript
+console mechanism provided by web browsers. -
+[Crypto](https://nodejs.org/docs/latest/api/crypto.md): The `node:crypto` module
+provides cryptographic functionality that includes a set of wrappers for
+OpenSSL's hash, HMAC, cipher, decipher, sign, and verify functions. -
+[V8](https://nodejs.org/docs/latest/api/v8.md): The `node:v8` module exposes
+APIs that are specific to the version of V8 built into the Node.js binary. It
+can be accessed using: - [Virtual File
+System](https://nodejs.org/docs/latest/api/vfs.md): The `node:vfs` module
+provides a virtual file system with a `node:fs`-like API. It is useful for
+tests, fixtures, embedded assets, and other scenarios where you need a
+self-contained file system without touching the actual file-system. - [VM
+(executing JavaScript)](https://nodejs.org/docs/latest/api/vm.md): The `node:vm`
+module enables compiling and running code within V8 Virtual Machine contexts. -
+[WebAssembly System Interface
+(WASI)](https://nodejs.org/docs/latest/api/wasi.md): <strong
+class="critical">The `node:wasi` module does not currently provide the
+comprehensive file system security properties provided by some WASI runtimes.
+Full support for secure file system sandboxing may or may not be implemented in
+future. In the mean time, do not rely on it to run untrusted code. </strong> -
+[Web Crypto API](https://nodejs.org/docs/latest/api/webcrypto.md): Node.js
+provides an implementation of the Web Crypto API standard. - [Web Streams
+API](https://nodejs.org/docs/latest/api/webstreams.md): An implementation of the
+WHATWG Streams Standard. - [Worker
+threads](https://nodejs.org/docs/latest/api/worker_threads.md): The
+`node:worker_threads` module enables the use of threads that execute JavaScript
+in parallel. To access it: - [Zlib](https://nodejs.org/docs/latest/api/zlib.md):
+The `node:zlib` module provides compression functionality implemented using
+Gzip, Deflate/Inflate, Brotli,
+----------------------------------------------------------------------------------------------------
+Index: 37585 <<"chunk_id": 1, "docno": 5488>>
+
+election among multiple xd-admin servers and automatic redeployment of modules
+to other xd-containers in the case of failure. ZooKeeper is introduced to manage
+the cluster and its deployment state. Support for running XD on YARN : Run admin
+and container nodes on a Hadoop YARN cluster rather than on VMs or physical
+servers that you need to manage. There are simple configuration and shell
+scripts that make this process very easy. Deployment Manifests : When deploying
+a stream you can provide a deployment manifest that describes how to transform
+the logical stream definition (e.g. http | hdfs) to a physical deployment on the
+cluster. You can specify the number of instances of each module to deploy and
+also a criteria expression (using SpEL) that evaluates each of the available
+containers in the cluster to determine the best matches for those module
+instances. This will be an area of active development for the next release as we
+extend the manifest to include support for data partitioning strategies.
+Real-Time Evaluation of Machine Learning Scoring Algorithms : Integration with
+the JPMML-Evaluator library that provides support for a wide range of model
+types and is interoperable with models exported from popular data analysis
+packages such as R . Integration with other libraries is supported by providing
+an implementation of XD's Analytic and MappedAnalytic abstractions. Give it a
+try with the sample application based on the classic iris data set . Updated UI
+: A redesign and rewrite of the UI that has a modern look and feel. Enhanced DSL
+Auto-completion:
+----------------------------------------------------------------------------------------------------
+Index: 18697 <<"chunk_id": 9, "docno": 2474>>
+
+the behavior of hybrid applications: Unlike UpgradeModule , downgradeModule()
+does not bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g. when the inputs of a
+downgraded component change). This improves performance, especially in
+change-detection-heavy applications, but leaves it up to the developer to
+manually notify each framework as needed. For a more detailed discussion of the
+differences and their implications, see Upgrading for Performance . You can
+manually trigger a change detection run in AngularJS using scope.$apply(...) or
+$rootScope.$digest() . You can manually trigger a change detection run in
+Angular using * ngZone.run(...) . Downgrading multiple modules It is possible to
+downgrade multiple modules and include them in an AngularJS application. In that
+case, each downgraded module will be bootstrapped when an associated downgraded
+component or injectable needs to be instantiated. Things to keep in mind, when
+downgrading multiple modules: Each downgraded component/injectable needs to be
+explicitly associated with a downgraded module. See downgradeComponent() and
+downgradeInjectable() for more details. If you want
+----------------------------------------------------------------------------------------------------
+Index: 30234 <<"chunk_id": 1470, "docno": 4202>>
+
+6056 started Worker 5644 started console copy On Windows, it is not yet possible
+to set up a named pipe server in a worker. How it works # The worker processes
+are spawned using the child_process.fork() method, so that they can communicate
+with the parent via IPC and pass server handles back and forth. The cluster
+module supports two methods of distributing incoming connections. The first one
+(and the default one on all platforms except Windows) is the round-robin
+approach, where the primary process listens on a port, accepts new connections
+and distributes them across the workers in a round-robin fashion, with some
+built-in smarts to avoid overloading a worker process. The second approach is
+where the primary process creates the listen socket and sends it to interested
+workers. The workers then accept incoming connections directly. The second
+approach should, in theory, give the best performance. In practice however,
+distribution tends to be very unbalanced due to operating system scheduler
+vagaries. Loads have been observed where over 70% of all connections ended up in
+just two processes, out of a total of eight. Because server.listen() hands off
+most of the work to the primary process, there are three cases where the
+behavior between a normal Node.js process and a cluster worker differs:
+server.listen({fd: 7}) Because the message is passed to the primary, file
+descriptor 7 in the parent will be listened on, and the handle passed to the
+worker, rather than listening to the worker's idea of what the number 7 file
+descriptor references. server.listen(handle) Listening
+----------------------------------------------------------------------------------------------------
+Index: 4404 <<"chunk_id": 1, "docno": 607>>
+
+TypeScript package Modules How to use streams Backpressuring in Streams
+Publishing a package How to publish a Node-API package ABI Stability Diagnostics
+User Journey Memory Overview Understanding and Tuning Memory Using Heap Profiler
+Using Heap Snapshot Tracing garbage collection Live Debugging Overview Using
+Inspector Poor Performance Overview Using Linux Perf Flame Graphs Test Runner
+Discovering Node.js's test runner Using Node.js's test runner Mocking in tests
+Collecting code coverage in Node.js Node-API What is Node-API? Getting Started
+Overview Pre-requisites Tools Anatomy of a Node-API project Your First Project
+Object Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js
+node-pre-gyp Special Topics Overview Context Awareness Object and Function
+References AsyncWorker Thread-Safe Functions On this page Profiling Node.js
+Applications Profiling a Node.js application involves measuring its performance
+by analyzing the CPU, memory, and other runtime metrics while the application is
+running. This helps in identifying bottlenecks, high CPU usage, memory leaks, or
+slow function calls that may impact the application's efficiency, responsiveness
+and scalability. There are many third party tools available for profiling
+Node.js applications but, in many cases, the easiest option is to use the
+Node.js built-in profiler. The built-in profiler uses the profiler inside V8
+which samples the stack at regular intervals during program execution. It
+records the results of these samples, along with important optimization events
+such as jit compiles, as a series of ticks:
+code-creation,LazyCompile,0,0x2d5000a337a0,396,"bp native
+array.js:1153:16",0x289f644df68,~
+code-creation,LazyCompile,0,0x2d5000a33940,716,"hasOwnProperty native
+v8natives.js:198:30",0x289f64438d0,~
+code-creation,LazyCompile,0,0x2d5000a33c20,284,"ToName native
+runtime.js:549:16",0x289f643bb28,~
+code-creation,Stub,2,0x2d5000a33d40,182,"DoubleToIStub"
+code-creation,Stub,2,0x2d5000a33e00,507,"NumberToStringStub" In the past, you
+needed the V8 source code to be able to interpret the ticks. Luckily, tools have
+been
+----------------------------------------------------------------------------------------------------
+Index: 30294 <<"chunk_id": 1530, "docno": 4202>>
+
+a snapshot, Node.js checks that: The version, architecture, and platform of the
+running Node.js binary are exactly the same as that of the binary that generates
+the snapshot. The V8 flags and CPU features are compatible with that of the
+binary that generates the snapshot. If they don't match, Node.js refuses to load
+the snapshot and exits with status code 1. --test # Added in: v18.1.0, v16.17.0
+History Version Changes v20.0.0 The test runner is now stable. v19.2.0, v18.13.0
+Test runner now supports running in watch mode. Starts the Node.js command line
+test runner. This flag cannot be combined with --watch-path , --check , --eval ,
+--interactive , or the inspector. See the documentation on running tests from
+the command line for more details. --test-concurrency # Added in: v21.0.0,
+v20.10.0, v18.19.0 The maximum number of test files that the test runner CLI
+will execute concurrently. If --test-isolation is set to 'none' , this flag is
+ignored and concurrency is one. Otherwise, concurrency defaults to
+os.availableParallelism() - 1 . --test-coverage-branches=threshold # Added in:
+v22.8.0 Stability: 1 - Experimental Require a minimum percent of covered
+branches. If code coverage does not reach the threshold specified, the process
+will exit with code 1 . --test-coverage-exclude # Added in: v22.5.0 Stability: 1
+- Experimental Excludes specific files from code coverage using a glob pattern,
+which can match both absolute and relative file paths. This option may be
+specified multiple times to exclude multiple glob patterns. If both
+--test-coverage-exclude and --test-coverage-include are provided, files must
+meet both criteria to be included
+----------------------------------------------------------------------------------------------------
+Index: 4690 <<"chunk_id": 0, "docno": 652>>
+
+title: How to build micro-frontends using multi-zones and Next.js description:
+Learn how to build micro-frontends using Next.js Multi-Zones to deploy multiple
+Next.js apps under a single domain. url:
+"https://nextjs.org/docs/app/guides/multi-zones" docs_index: /docs/llms.txt
+version: 16.3.0 lastUpdated: 2026-06-01 prerequisites: - "Guides:
+/docs/app/guides" For an index of all Next.js documentation, see /docs/llms.txt
+. Examples * With Zones Multi-Zones are an approach to micro-frontends that
+separate a large application on a domain into smaller Next.js applications that
+each serve a set of paths. This is useful when there are collections of pages
+unrelated to the other pages in the application. By moving those pages to a
+separate zone (i.e., a separate application), you can reduce the size of each
+application which improves build times and removes code that is only necessary
+for one of the zones. Since applications are decoupled, Multi-Zones also allows
+other applications on the domain to use their own choice of framework. For
+example, let's say you have the following set of pages that you would like to
+split up: /blog/ for all blog posts /dashboard/ for all pages when the user is
+logged-in to the dashboard / for the rest of your website not covered by other
+zones With Multi-Zones support, you can create three applications that all are
+served on the same domain and look the same to the user, but you can develop and
+deploy each of the applications independently. Navigating between pages in the
+same zone will perform soft navigations, a navigation that does not require
+reloading the page. For example, in this diagram,
+----------------------------------------------------------------------------------------------------
+Index: 29272 <<"chunk_id": 508, "docno": 4202>>
+
+their issues can be resolved. Users are encouraged to use the synchronous
+customization hooks via module.registerHooks() instead to avoid these caveats.
+Asynchronous hooks run on a separate thread, so the hook functions cannot
+directly mutate the global state of the modules being customized. It's typical
+to use message channels and atomics to pass data between the two or to affect
+control flows. See Communication with asynchronous module customization hooks .
+Asynchronous hooks do not affect all require() calls in the module graph. Custom
+require functions created using module.createRequire() are not affected. If the
+asynchronous load hook does not override the source for CommonJS modules that go
+through it, the child modules loaded by those CommonJS modules via built-in
+require() would not be affected by the asynchronous hooks either. There are
+several caveats that the asynchronous hooks need to handle when customizing
+CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
+details. When require() calls inside CommonJS modules are customized by
+asynchronous hooks, Node.js may need to load the source code of the CommonJS
+module multiple times to maintain compatibility with existing CommonJS
+monkey-patching. If the module code changes between loads, this may lead to
+unexpected behaviors. As a side effect, if both asynchronous hooks and
+synchronous hooks are registered and the asynchronous hooks choose to customize
+the CommonJS module, the synchronous hooks may be invoked multiple times for the
+require() calls in that CommonJS module. Registration of asynchronous
+customization hooks # Asynchronous customization hooks are registered using
+module.register() which takes a path or URL
+----------------------------------------------------------------------------------------------------
+Index: 47401 <<"chunk_id": 0, "docno": 7449>>
+
+Node.js — Node.js 12.2.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.2.0 (Current)
+MLZ Michaël Zasso Node.js 12.2.0 (Current) Notable changes deps : Updated llhttp
+to 1.1.3. This fixes a bug that made Node.js' HTTP parser refuse any request URL
+that contained the "|" (vertical bar) character (Fedor Indutny) #27595 . tls :
+Added an enableTrace() method to TLSSocket and an enableTrace option to
+tls.createServer() . When enabled, TSL packet trace information is written to
+stderr . This can be used to debug TLS connection problems (cjihrig) #27497 ,
+(Sam Roberts) #27376 . cli : Added a --trace-tls command-line flag that enables
+tracing of TLS connections without the need to modify existing application code
+(cjihrig) #27497 . Added a --cpu-prof-interval command-line flag. It can be used
+to specify the sampling interval for the CPU profiles generated by --cpu-prof
+(Joyee Cheung) #27535 . module : Added the createRequire() method. It allows to
+create a require function from a file URL object, a file URL string or an
+absolute path string. The existing createRequireFromPath() method is now
+deprecated (Myles Borins) #27405 . Throw on require('./path.mjs') . This is
+technically a breaking change that should have landed with Node.js 12.0.0. It is
+necessary to have this to keep the possibility for a future minor version to
+load ES Modules with the require function (Myles Borins) #27417 . repl : The
+REPL now supports multi-line statements using BigInt literals as well as public
+and private class fields and methods
+----------------------------------------------------------------------------------------------------
+Index: 30288 <<"chunk_id": 1524, "docno": 4202>>
+
+peer dependency: {appDir} ├── app │ ├── index.js │ └── node_modules │ ├──
+moduleA -> {appDir}/moduleA │ └── moduleB │ ├── index.js │ └── package.json └──
+moduleA ├── index.js └── package.json text copy The --preserve-symlinks
+command-line flag instructs Node.js to use the symlink path for modules as
+opposed to the real path, allowing symbolically linked peer dependencies to be
+found. Note, however, that using --preserve-symlinks can have other side
+effects. Specifically, symbolically linked native modules can fail to load if
+those are linked from more than one location in the dependency tree (Node.js
+would see those as two separate modules and would attempt to load the module
+multiple times, causing an exception to be thrown). The --preserve-symlinks flag
+does not apply to the main module, which allows node --preserve-symlinks
+node_module/.bin/<foo> to work. To apply the same behavior for the main module,
+also use --preserve-symlinks-main . --preserve-symlinks-main # Added in: v10.2.0
+Instructs the module loader to preserve symbolic links when resolving and
+caching the main module ( require.main ). This flag exists so that the main
+module can be opted-in to the same behavior that --preserve-symlinks gives to
+all other imports; they are separate flags, however, for backward compatibility
+with older Node.js versions. --preserve-symlinks-main does not imply
+--preserve-symlinks ; use --preserve-symlinks-main in addition to
+--preserve-symlinks when it is not desirable to follow symlinks before resolving
+relative paths. See --preserve-symlinks for more information. -p , --print
+"script" # Added in: v0.6.4 History Version Changes v5.11.0 Built-in libraries
+are now available as predefined variables. Identical to -e but prints
+----------------------------------------------------------------------------------------------------

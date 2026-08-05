@@ -1,0 +1,513 @@
+Index: 20093 <<"chunk_id": 1361, "docno": 2483>>
+
+application. url: "https://nextjs.org/docs/pages/guides/content-security-policy"
+version: 16.3.0 router: Pages Router --- # Content Security Policy [Content
+Security Policy (CSP)](https://developer.mozilla.org/docs/Web/HTTP/CSP) is
+important to guard your Next.js application against various security threats
+such as cross-site scripting (XSS), clickjacking, and other code injection
+attacks. By using CSP, developers can specify which origins are permissible for
+content sources, scripts, stylesheets, images, fonts, objects, media (audio,
+video), iframes, and more. <details> <summary>Examples</summary> * [Strict
+CSP](https://github.com/vercel/next.js/tree/canary/examples/with-strict-csp)
+</details> ## Nonces A
+[nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) is
+a unique, random string of characters created for a one-time use. It is used in
+conjunction with CSP to selectively allow certain inline scripts or styles to
+execute, bypassing strict CSP directives. ### Why use a nonce? CSP can block
+both inline and external scripts to prevent attacks. A nonce lets you safely
+allow specific scripts to run—only if they include the matching nonce value. If
+an attacker wanted to load a script into your page, they'd need to guess the
+nonce value. That's why the nonce must be unpredictable and unique for every
+request. ### Adding a nonce with Proxy
+[Proxy](/docs/app/api-reference/file-conventions/proxy) enables you to add
+headers and generate nonces before the page renders. Every time a page is
+viewed, a fresh nonce should be generated. This means that you **must use
+[dynamic rendering](/docs/app/glossary#dynamic-rendering) to add nonces**. For
+example: > **Good to know**: In development, `'unsafe-eval'` is required because
+React uses `eval` to provide enhanced debugging information, such as
+reconstructing server-side error stacks in the browser. `unsafe-eval` is not
+required for production. Neither React nor Next.js use `eval` in production by
+default.
+----------------------------------------------------------------------------------------------------
+Index: 7379 <<"chunk_id": 0, "docno": 1006>>
+
+title: How to set a Content Security Policy (CSP) for your Next.js application
+description: Learn how to set a Content Security Policy (CSP) for your Next.js
+application. url: "https://nextjs.org/docs/app/guides/content-security-policy"
+docs_index: /docs/llms.txt version: 16.3.0 lastUpdated: 2026-03-20
+prerequisites: - "Guides: /docs/app/guides" related: -
+app/api-reference/file-conventions/proxy - app/api-reference/functions/headers
+For an index of all Next.js documentation, see /docs/llms.txt . Content Security
+Policy (CSP) is important to guard your Next.js application against various
+security threats such as cross-site scripting (XSS), clickjacking, and other
+code injection attacks. By using CSP, developers can specify which origins are
+permissible for content sources, scripts, stylesheets, images, fonts, objects,
+media (audio, video), iframes, and more. Examples * Strict CSP Nonces A nonce is
+a unique, random string of characters created for a one-time use. It is used in
+conjunction with CSP to selectively allow certain inline scripts or styles to
+execute, bypassing strict CSP directives. Why use a nonce? CSP can block both
+inline and external scripts to prevent attacks. A nonce lets you safely allow
+specific scripts to run—only if they include the matching nonce value. If an
+attacker wanted to load a script into your page, they'd need to guess the nonce
+value. That's why the nonce must be unpredictable and unique for every request.
+Adding a nonce with Proxy Proxy enables you to add headers and generate nonces
+before the page renders. Every time a page is viewed, a fresh nonce should be
+generated. This means that you must use dynamic rendering to add nonces . For
+example: Good to know : In development,
+----------------------------------------------------------------------------------------------------
+Index: 8530 <<"chunk_id": 5, "docno": 1201>>
+
+would cache Next.js responses by using the pathname as the cache key, ignoring
+search parameters, and respecting standard Cache-Control headers. No need to
+understand Vary , inspect custom headers, or program edge logic. What changes
+for interception routes Under the current scheme, next-url contributes to the
+_rsc hash, so dropping it causes cache misses. Under the pathname-based scheme,
+interception variability would be encoded in a search parameter (not the
+pathname): If a CDN preserves search params, interception works correctly. If a
+CDN drops search params, interception is not supported. It would gracefully
+degrade to the non-intercepted page, client-side navigations won't break. This
+makes interception route support an opt-in CDN capability rather than a
+requirement. Current status This direction extends patterns that are already
+operational in the codebase (segment prefetch paths, output: 'export' mode). It
+is in active design. CDN Feature Compatibility For a full table showing the
+infrastructure primitives available on every major CDN (edge compute, key-value
+storage, blob storage, PPR resuming), see Deploying to Platforms . Related
+guides and references. Deploying to Platforms Understand which Next.js features
+require specific platform capabilities and how to choose the right deployment
+target. Self-Hosting Learn how to self-host your Next.js application on a
+Node.js server, Docker image, or static HTML files (static exports). Streaming
+Learn how streaming works in Next.js and how to use it to progressively render
+UI as data becomes available. assetPrefix Learn how to use the assetPrefix
+config option to configure your CDN. For a semantic overview of all
+documentation, see /docs/sitemap.md For an index of
+----------------------------------------------------------------------------------------------------
+Index: 7382 <<"chunk_id": 3, "docno": 1006>>
+
+present in the request. Static pages are generated at build time, when no
+request or response headers exist—so no nonce can be injected. Here’s how nonce
+support works in a dynamically rendered page: Proxy generates a nonce : Your
+proxy creates a unique nonce for the request, adds it to your
+Content-Security-Policy header, and also sets it in a custom x-nonce header.
+Next.js extracts the nonce : During rendering, Next.js parses the
+Content-Security-Policy header and extracts the nonce using the 'nonce-{value}'
+pattern. Nonce is applied automatically : Next.js attaches the nonce to:
+Framework scripts (React, Next.js runtime) Page-specific JavaScript bundles
+Inline styles and scripts generated by Next.js Any
+----------------------------------------------------------------------------------------------------
+Index: 19863 <<"chunk_id": 1131, "docno": 2483>>
+
+{ deploymentId: 'my-deployment-id', } ``` You can also set the deployment ID
+using the `NEXT_DEPLOYMENT_ID` environment variable: ```bash
+NEXT_DEPLOYMENT_ID=my-deployment-id next build ``` > **Good to know:** If both
+are set, the `deploymentId` value in `next.config.js` takes precedence over the
+`NEXT_DEPLOYMENT_ID` environment variable. ## How it works When a `deploymentId`
+is configured, Next.js: 1. Appends `?dpl=<deploymentId>` to static asset URLs
+(JavaScript, CSS, images) 2. Adds an `x-deployment-id` header to client-side
+navigation requests 3. Adds an `x-nextjs-deployment-id` header to navigation
+responses 4. Injects a `data-dpl-id` attribute on the `<html>` element 5.
+Includes the `deploymentId` in the [`'use cache'` cache
+key](/docs/app/api-reference/directives/use-cache#cache-keys), invalidating
+cache entries when the deployment ID changes When the client detects a mismatch
+between its deployment ID and the server's (via the response header), it
+triggers a hard navigation (full page reload) instead of a client-side
+navigation. This ensures users always receive assets and Server Functions from a
+consistent deployment version. > **Good to know:** Next.js does not read the
+`?dpl=` query parameter on incoming requests. The query parameter is for cache
+busting (ensuring browsers and CDNs fetch fresh assets), not for routing. If you
+need version-aware routing, consult your hosting provider or CDN's documentation
+for implementing deployment-based routing. ## Use cases ### Rolling deployments
+During a rolling deployment, some server instances may be running the new
+version while others are still running the old version. Without a deployment ID,
+users might receive a mix of old and new assets, causing errors. Setting a
+consistent `deploymentId` per deployment ensures: * Clients always request
+assets from a matching
+----------------------------------------------------------------------------------------------------
+Index: 20761 <<"chunk_id": 1, "docno": 2501>>
+
+will need to follow this upgrade guide to update your Middleware. Breaking
+changes No Nested Middleware No Response Body Cookies API Revamped New
+User-Agent Helper No More Page Match Data Executing Middleware on Internal
+Next.js Requests No Nested Middleware Summary of changes Define a single
+Middleware file next to your pages folder No need to prefix the file with an
+underscore A custom matcher can be used to define matching routes using an
+exported config object Explanation Previously, you could create a _middleware.ts
+file under the pages directory at any level. Middleware execution was based on
+the file path where it was created. Based on customer feedback, we have replaced
+this API with a single root Middleware, which provides the following
+improvements: Faster execution with lower latency : With nested Middleware, a
+single request could invoke multiple Middleware functions. A single Middleware
+means a single function execution, which is more efficient. Less expensive :
+Middleware usage is billed per invocation. Using nested Middleware, a single
+request could invoke multiple Middleware functions, meaning multiple Middleware
+charges per request. A single Middleware means a single invocation per request
+and is more cost effective. Middleware can conveniently filter on things besides
+routes : With nested Middleware, the Middleware files were located in the pages
+directory and Middleware was executed based on request paths. By moving to a
+single root Middleware, you can still execute code based on request paths, but
+you can now more conveniently execute Middleware based on other conditions, like
+cookies or the presence of a request
+----------------------------------------------------------------------------------------------------
+Index: 6346 <<"chunk_id": 4, "docno": 828>>
+
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version How to install Django on Windows How to
+deploy Django How to deploy static files Other guides How to authenticate using
+REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
+protection How to write a custom storage class How to create custom django-admin
+commands How to customize the shell command Django FAQ FAQ: General Why does
+this project exist? What does “Django” mean, and how do you pronounce it? Is
+Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
+does Django
+----------------------------------------------------------------------------------------------------
+Index: 8526 <<"chunk_id": 1, "docno": 1201>>
+
+Next.js server cache, then call your CDN purge API for the affected keys
+(including both HTML and RSC variants). Static assets Static assets (JavaScript,
+CSS, images, fonts) served from /_next/static/ include content hashes in their
+filenames and have a 1 year max-age and immutable directive: public,
+max-age=31536000, immutable You can use assetPrefix to serve static assets from
+a different domain or CDN origin. Static prefetches (PPR-enabled routes) When a
+route has Partial Prerendering enabled and the next-router-prefetch header is
+set (indicating a static prefetch), the response is deterministic: it returns
+the same prerendered content regardless of the client's router state. The
+next-router-state-tree header is not parsed for these requests, so it does not
+affect the response. For PPR-enabled routes, a CDN can cache static prefetch
+responses if it: Includes the _rsc search parameter in the cache key (to
+distinguish prefetch variants from HTML responses). Respects the Cache-Control
+headers Next.js sets on the response. Good to know: For routes without PPR, the
+next-router-state-tree header is read during prefetch requests to determine
+which segments to include, which increases cache vary as it passes the current
+router state. When Cache Components is enabled, segment-level prefetches already
+use pathname-based routes (for example, /page.segments/_tree.segment.rsc ), and
+CDNs can cache these with standard pathname-based cache keys. Where CDN Caching
+Is Challenging App Router responses can vary based on several custom request
+headers. Next.js sets a Vary header on responses to signal this to CDNs: rsc —
+whether the request should return a React Server Components (RSC) payload
+instead of HTML next-router-state-tree —
+----------------------------------------------------------------------------------------------------
+Index: 40761 <<"chunk_id": 21, "docno": 6218>>
+
+example of how to subclass FileField to support a particular type of file, as it
+incorporates all of the techniques described above. Cache file attributes
+wherever possible. Since files may be stored in remote storage systems,
+retrieving them may cost extra time, or even money, that isn’t always necessary.
+Once a file is retrieved to obtain some data about its content, cache as much of
+that data as possible to reduce the number of times the file must be retrieved
+on subsequent calls for that information. Previous page and next page How to
+integrate Django with a legacy database How to create database migrations Back
+to Top Additional Information Support Django! Nowack & Olson, PLLC donated to
+the Django Software Foundation to support Django development. Donate today!
+Contents How to create custom model fields Introduction Our example object
+Background theory Database storage What does a field class do? Writing a field
+subclass Field deconstruction Field attributes not affecting database column
+definition Changing a custom field’s base class Documenting your custom field
+Useful methods Custom database types Converting values to Python objects
+Converting Python objects to query values Converting query values to database
+values Preprocessing values before saving Specifying the form field for a model
+field Emulating built-in field types Converting field data for serialization
+Some general advice Writing a FileField subclass A few suggestions Browse Prev:
+How to integrate Django with a legacy database Next: How to create database
+migrations Table of contents General Index Python Module Index You are here:
+Django dev documentation How-to guides
+----------------------------------------------------------------------------------------------------
+Index: 16074 <<"chunk_id": 3, "docno": 2149>>
+
+SQL – entire statements, or just custom WHERE clauses as custom parameters to
+API calls. URL design ¶ Loose coupling ¶ URLs in a Django app should not be
+coupled to the underlying Python code. Tying URLs to Python function names is a
+Bad And Ugly Thing. Along these lines, the Django URL system should allow URLs
+for the same app to be different in different contexts. For example, one site
+may put stories at /stories/ , while another may use /news/ . Infinite
+flexibility ¶ URLs should be as flexible as possible. Any conceivable URL design
+should be allowed. Encourage best practices ¶ The framework should make it just
+as easy (or even easier) for a developer to design pretty URLs than ugly ones.
+File extensions in web-page URLs should be avoided. Vignette-style commas in
+URLs deserve severe punishment. Definitive URLs ¶ Technically, foo.com/bar and
+foo.com/bar/ are two different URLs, and search-engine robots (and some web
+traffic-analyzing tools) would treat them as separate pages. Django should make
+an effort to “normalize” URLs so that search-engine robots don’t get confused.
+This is the reasoning behind the APPEND_SLASH setting. Template system ¶
+Separate logic from presentation ¶ We see a template system as a tool that
+controls presentation and presentation-related logic – and that’s it. The
+template system shouldn’t support functionality that goes beyond this basic
+goal. Discourage redundancy ¶ The majority of dynamic websites use some sort of
+common sitewide design – a common header, footer, navigation bar, etc. The
+Django template system should make it
+----------------------------------------------------------------------------------------------------
+Index: 8527 <<"chunk_id": 2, "docno": 1201>>
+
+on responses to signal this to CDNs: rsc — whether the request should return a
+React Server Components (RSC) payload instead of HTML next-router-state-tree —
+the client's current router state, used for targeted segment updates during
+dynamic navigations next-router-prefetch — whether this is a prefetch request
+next-router-segment-prefetch — the specific segment being prefetched next-url —
+added only for routes that use interception routes , carries the URL being
+intercepted Good to know: proxy.js (previously Middleware) should run before the
+CDN cache so it remains the source of truth for auth, redirects, and rewrites.
+If your deployment places proxy.js behind the CDN, configure the cache layer to
+bypass caching for routes that depend on proxy.js decisions. Many CDNs don't
+support Vary without additional configuration. Next.js addresses this with the
+_rsc search parameter: a hash of the relevant request header values that acts as
+a cache-key, ensuring different response variants get different cache keys. This
+ensures correct responses even on CDNs that ignore Vary . Handling Headers at
+the CDN What you can safely ignore These headers can be omitted in specific
+cases without causing protocol errors. The server still returns a parseable
+response, but it may be larger or less targeted to the specific navigation:
+next-router-state-tree : when omitted on non-prefetch RSC requests, the server
+returns a full payload instead of a targeted segment update.
+next-router-segment-prefetch : when omitted on prefetch requests, the server
+falls back to a broader prefetch payload instead of a segment-specific one.
+next-url : used for interception routes to vary the response based
+----------------------------------------------------------------------------------------------------
+Index: 36505 <<"chunk_id": 9, "docno": 5248>>
+
+For example, if your site runs on example.com , you would want to serve uploaded
+content (the MEDIA_URL setting) from something like usercontent-example.com .
+It’s not sufficient to serve content from a subdomain like
+usercontent.example.com . Beyond this, applications may choose to define a list
+of allowable file extensions for user uploaded files and configure the web
+server to only serve such files. Form Submissions ¶ Form submissions containing
+files are not limited by DATA_UPLOAD_MAX_MEMORY_SIZE . Under ASGI, the entire
+request may be spooled to disk before any file size validation is performed. It
+is strongly advised that you limit the maximum request body size in your web
+server configuration to prevent denial of service (DOS) attacks. Content
+Security Policy ¶ Content Security Policy (CSP) is a browser security mechanism
+that helps protect web applications against attacks such as cross-site scripting
+(XSS) and other content injection attacks. CSP allows web applications to define
+which sources of content are trusted, instructing the browser to load, execute,
+or render resources only from those sources. This effectively creates an
+allowlist of content origins, reducing the risk of malicious code execution. Key
+benefits of enabling CSP include: Mitigating XSS attacks by blocking inline
+scripts and restricting external script loading. Controlling which external
+resources (e.g., images, fonts, stylesheets) can be loaded. Preventing unwanted
+framing of your site to protect against clickjacking. Reporting violations to a
+specified endpoint, enabling monitoring and debugging. For configuration
+instructions, see the Using CSP documentation, and refer to the CSP overview for
+details on directives and settings.
+----------------------------------------------------------------------------------------------------
+Index: 7753 <<"chunk_id": 1, "docno": 1073>>
+
+Pages Router on-demand ISR APIs (for example res.revalidate() and the
+x-prerender-revalidate flow) are still supported and use the server cache
+handler ( cacheHandler , singular). The cacheHandlers option (plural) is for
+'use cache' directives. What Gets Revalidated When a route is revalidated,
+Next.js regenerates both the HTML response and the RSC payload (React Server
+Components payload) from the same React component tree. Both artifacts are
+stored together in the same cache entry. This consistency matters because the
+RSC payload is used for client-side navigations. Browser navigations and
+client-side navigations should hold the same content. What happens if they get
+out of sync If a platform's cache serves HTML from one render and an RSC payload
+from a different render, users may see stale or mismatched content during
+client-side navigation. The primary mitigation is to cache HTML and RSC
+responses together with the same TTL and invalidation policy, and to respect the
+Vary header that Next.js sets. See CDN Caching for details. A separate but
+related problem is cross-deployment skew : during rolling deployments, a client
+built with deploy A may receive responses from a server running deploy B.
+deploymentId mitigates this: when the client detects a different deployment ID
+from the server, it triggers a hard navigation to fetch consistent content. Tag
+System Architecture Next.js uses a tag-based system to track which cached
+content needs to be invalidated. There are two types of tags: Explicit tags
+Explicit tags are set by the developer using cacheTag() inside a use cache
+function, or via next: { tags: [...]
+----------------------------------------------------------------------------------------------------
+Index: 19004 <<"chunk_id": 272, "docno": 2483>>
+
+navigation. The primary mitigation is to cache HTML and RSC responses together
+with the same TTL and invalidation policy, and to respect the [`Vary`
+header](/docs/app/guides/cdn-caching) that Next.js sets. See [CDN
+Caching](/docs/app/guides/cdn-caching) for details. A separate but related
+problem is **cross-deployment skew**: during rolling deployments, a client built
+with deploy A may receive responses from a server running deploy B.
+[`deploymentId`](/docs/app/api-reference/config/next-config-js/deploymentId)
+mitigates this: when the client detects a different deployment ID from the
+server, it triggers a hard navigation to fetch consistent content. ## Tag System
+Architecture Next.js uses a tag-based system to track which cached content needs
+to be invalidated. There are two types of tags: ### Explicit tags Explicit tags
+are set by the developer using
+[`cacheTag()`](/docs/app/api-reference/functions/cacheTag) inside a `use cache`
+function, or via `next: { tags: [...] }` on a `fetch` call. When
+[`revalidateTag('my-tag',
+'max')`](/docs/app/api-reference/functions/revalidateTag) is called, all cache
+entries with that tag are invalidated. ### Soft tags Soft tags are automatically
+generated by Next.js based on the route path, prefixed with `_N_T_`. For
+example, the route `/blog/hello` generates soft tags like `_N_T_/layout`,
+`_N_T_/blog/layout`, `_N_T_/blog/hello/layout`, and `_N_T_/blog/hello`. Each
+segment in the path gets a layout tag, plus the leaf route itself. Soft tags
+enable [`revalidatePath()`](/docs/app/api-reference/functions/revalidatePath) to
+work through the same tag-based system. When `revalidatePath('/blog/hello')` is
+called, it invalidates cache entries associated with that path's leaf route tag
+and its ancestor layout soft tags (for example `_N_T_/layout`,
+`_N_T_/blog/layout`, `_N_T_/blog/hello/layout`, and `_N_T_/blog/hello`). In the
+[cache handler
+API](/docs/app/api-reference/config/next-config-js/cacheHandlers), soft tags are
+passed to the `get()` method as the `softTags` parameter. Your handler should
+check whether any soft
+----------------------------------------------------------------------------------------------------
+Index: 22576 <<"chunk_id": 8, "docno": 2814>>
+
+writing your own template tags and filters: Always return strings from a
+template tag’s render() method and from template filters. Use force_str() in
+preference to smart_str() in these places. Tag rendering and filter calls occur
+as the template is being rendered, so there is no advantage to postponing the
+conversion of lazy translation objects into strings. It’s easier to work solely
+with strings at that point. Files ¶ If you intend to allow users to upload
+files, you must ensure that the environment used to run Django is configured to
+work with non-ASCII file names. If your environment isn’t configured correctly,
+you’ll encounter UnicodeEncodeError exceptions when saving files with file names
+or content that contains non-ASCII characters. Filesystem support for UTF-8 file
+names varies and might depend on the environment. Check your current
+configuration in an interactive Python shell by running: import sys sys .
+getfilesystemencoding () This should output “UTF-8”. The LANG environment
+variable is responsible for setting the expected encoding on Unix platforms.
+Consult the documentation for your operating system and application server for
+the appropriate syntax and location to set this variable. See the How to use
+Django with Apache and mod_wsgi for examples. In your development environment,
+you might need to add a setting to your ~.bashrc analogous to: export LANG =
+"en_US.UTF-8" Form submission ¶ HTML form submission is a tricky area. There’s
+no guarantee that the submission will include encoding information, which means
+the framework might have to guess at the encoding of submitted data. Django
+adopts a “lazy” approach
+----------------------------------------------------------------------------------------------------
+Index: 20508 <<"chunk_id": 1776, "docno": 2483>>
+
+
+[`crossOrigin="use-credentials"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin#use-credentials).
+--- title: deploymentId description: Configure a deployment identifier used for
+version skew protection and cache busting. url:
+"https://nextjs.org/docs/pages/api-reference/config/next-config-js/deploymentId"
+version: 16.3.0 router: Pages Router --- # deploymentId The `deploymentId`
+option allows you to set an identifier for your deployment. This identifier is
+used for [version skew](/docs/app/guides/self-hosting#version-skew) protection
+and cache busting during rolling deployments. ```js filename="next.config.js"
+module.exports = { deploymentId: 'my-deployment-id', } ``` You can also set the
+deployment ID using the `NEXT_DEPLOYMENT_ID` environment variable: ```bash
+NEXT_DEPLOYMENT_ID=my-deployment-id next build ``` > **Good to know:** If both
+are set, the `deploymentId` value in `next.config.js` takes precedence over the
+`NEXT_DEPLOYMENT_ID` environment variable. ## How it works When a `deploymentId`
+is configured, Next.js: 1. Appends `?dpl=<deploymentId>` to static asset URLs
+(JavaScript, CSS, images) 2. Adds an `x-deployment-id` header to client-side
+navigation requests 3. Adds an `x-nextjs-deployment-id` header to navigation
+responses 4. Injects a `data-dpl-id` attribute on the `<html>` element 5.
+Includes the `deploymentId` in the [`'use cache'` cache
+key](/docs/app/api-reference/directives/use-cache#cache-keys), invalidating
+cache entries when the deployment ID changes When the client detects a mismatch
+between its deployment ID and the server's (via the response header), it
+triggers a hard navigation (full page reload) instead of a client-side
+navigation. This ensures users always receive assets from a consistent
+deployment version. > **Good to know:** Next.js does not read the `?dpl=` query
+parameter on incoming requests. The query parameter is for cache busting
+(ensuring browsers and CDNs fetch fresh assets), not for routing. If you need
+version-aware routing, consult your hosting provider or CDN's documentation for
+implementing deployment-based routing. ## Use cases ###
+----------------------------------------------------------------------------------------------------
+Index: 33597 <<"chunk_id": 30, "docno": 4450>>
+
+a man-in-the-middle attack. Your Django website may sit behind a proxy cache ,
+such as Squid Web Proxy Cache ( http://www.squid-cache.org/ ), that caches pages
+for performance. In this case, each request first would be handled by the proxy,
+and it would be passed to your application only if needed. Your web browser
+caches pages, too. If a web page sends out the appropriate headers, your browser
+will use the local cached copy for subsequent requests to that page, without
+even contacting the web page again to see whether it has changed. Downstream
+caching is a nice efficiency boost, but there’s a danger to it: Many web pages’
+contents differ based on authentication and a host of other variables, and cache
+systems that blindly save pages based purely on URLs could expose incorrect or
+sensitive data to subsequent visitors to those pages. For example, if you
+operate a web email system, then the contents of the “inbox” page depend on
+which user is logged in. If an ISP blindly cached your site, then the first user
+who logged in through that ISP would have their user-specific inbox page cached
+for subsequent visitors to the site. That’s not cool. Fortunately, HTTP provides
+a solution to this problem. A number of HTTP headers exist to instruct
+downstream caches to differ their cache contents depending on designated
+variables, and to tell caching mechanisms not to cache particular pages. We’ll
+look at some of these headers in the sections that follow. Using Vary headers ¶
+The Vary header defines which
+----------------------------------------------------------------------------------------------------
+Index: 16076 <<"chunk_id": 5, "docno": 2149>>
+
+functionality, such as branching and looping, that is essential for making
+presentation-related decisions. The Django Template Language (DTL) aims to avoid
+advanced logic. Safety and security ¶ The template system, out of the box,
+should forbid the inclusion of malicious code – such as commands that delete
+database records. This is another reason the template system doesn’t allow
+arbitrary Python code. Extensibility ¶ The template system should recognize that
+advanced template authors may want to extend its technology. This is the
+philosophy behind custom template tags and filters. Views ¶ Simplicity ¶ Writing
+a view should be as simple as writing a Python function. Developers shouldn’t
+have to instantiate a class when a function will do. Use request objects ¶ Views
+should have access to a request object – an object that stores metadata about
+the current request. The object should be passed directly to a view function,
+rather than the view function having to access the request data from a global
+variable. This makes it light, clean and easy to test views by passing in “fake”
+request objects. Loose coupling ¶ A view shouldn’t care about which template
+system the developer uses – or even whether a template system is used at all.
+Differentiate between GET and POST ¶ GET and POST are distinct; developers
+should explicitly use one or the other. The framework should make it easy to
+distinguish between GET and POST data. Cache Framework ¶ The core goals of
+Django’s cache framework are: Less code ¶ A cache should be as fast
+----------------------------------------------------------------------------------------------------
+Index: 8529 <<"chunk_id": 4, "docno": 1201>>
+
+a 307 redirect to the URL with the correct hash. This behavior can be disabled
+by setting experimental.validateRSCRequestHeaders to false . CDNs should follow
+this redirect. Platforms that compute the hash upstream can rewrite requests to
+include the correct _rsc before forwarding to avoid an extra round trip. Good to
+know: Today, next-url is included in the _rsc hash even during static
+prefetches. This means you cannot safely ignore it under the current scheme
+without potentially getting cache misses. The pathname-based direction described
+below resolves this gap. Direction: Pathname-Based Cache Keying The Next.js team
+is working on moving all cache-affecting inputs into the URL pathname,
+eliminating the need for Vary on custom headers and removing the _rsc search
+parameter. This resolves the CDN caching challenges described above. How it
+works The approach extends the routing scheme that output: 'export' and segment
+prefetches already use today. File extensions in the pathname identify the
+response type: Full page RSC : /my/page.rsc returns the RSC payload for the
+entire page Segment RSC : /my/page.segments/path/to/segment.segment.rsc returns
+the RSC payload for a specific segment Under this model: The pathname determines
+the cache key. Anything in the pathname affects which response variant is
+returned. Search parameters can be safely dropped without affecting returned
+responses. Standard HTTP cache headers ( Cache-Control , max-age , etc.) are
+respected as usual. No Vary support needed from the CDN. A CDN would cache
+Next.js responses by using the pathname as the cache key, ignoring search
+parameters, and respecting standard Cache-Control headers. No need to understand
+Vary
+----------------------------------------------------------------------------------------------------
+Index: 1499 <<"chunk_id": 0, "docno": 220>>
+
+Installation — Flask Documentation (3.1.x) Navigation index modules | next |
+previous | Flask Documentation (3.1.x) » Installation Installation ¶ Python
+Version ¶ We recommend using the latest version of Python. Flask supports Python
+3.9 and newer. Dependencies ¶ These distributions will be installed
+automatically when installing Flask. Werkzeug implements WSGI, the standard
+Python interface between applications and servers. Jinja is a template language
+that renders the pages your application serves. MarkupSafe comes with Jinja. It
+escapes untrusted input when rendering templates to avoid injection attacks.
+ItsDangerous securely signs data to ensure its integrity. This is used to
+protect Flask’s session cookie. Click is a framework for writing command line
+applications. It provides the flask command and allows adding custom management
+commands. Blinker provides support for Signals . Optional dependencies ¶ These
+distributions will not be installed automatically. Flask will detect and use
+them if you install them. python-dotenv enables support for Environment
+Variables From dotenv when running flask commands. Watchdog provides a faster,
+more efficient reloader for the development server. greenlet ¶ You may choose to
+use Async with Gevent with your application. In this case, greenlet>=1.0 is
+required. When using PyPy, PyPy>=7.3.7 is required. These are not minimum
+supported versions, they only indicate the first versions that added necessary
+features. You should use the latest versions of each. Virtual environments ¶ Use
+a virtual environment to manage the dependencies for your project, both in
+development and in production. What problem does a virtual environment solve?
+The more Python projects you have, the more likely
+----------------------------------------------------------------------------------------------------

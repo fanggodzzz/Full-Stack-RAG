@@ -1,0 +1,469 @@
+Index: 6232 <<"chunk_id": 3, "docno": 814>>
+
+Rendering and Selective Hydration that are integrated with Suspense. Read an
+architectural overview and watch a technical talk to learn more. What activates
+a Suspense boundary A Suspense boundary waits for its content to be ready before
+revealing it. Any of the following keeps a boundary from revealing its content:
+Lazy-loading component code with lazy . Reading a Promise with use , including
+data streamed from Server Components or loaded through a Suspense-enabled
+framework . Loading a stylesheet rendered with <link rel="stylesheet"> and a
+precedence prop. React blocks the boundary until the stylesheet loads, up to a
+timeout. See an example below. Waiting for a large boundary’s HTML to arrive
+during streaming server rendering. Sending HTML takes time, so a boundary with
+enough content activates even when nothing in it suspends. React reveals the
+content as the HTML arrives. Canary only Loading fonts. Suspense doesn’t wait
+for fonts by default, but a <ViewTransition> update waits for new fonts to load,
+up to a timeout, so text doesn’t flash with a fallback font. See an example
+below. Canary only Loading images. Suspense doesn’t wait for images by default,
+but during a <ViewTransition> update, React blocks the boundary until the image
+loads, up to a timeout. Adding an onLoad handler opts a specific image out. See
+an example below. Experimental only Performing CPU-bound render work inside a
+<Suspense defer> boundary. Note Suspense-enabled frameworks A Suspense-enabled
+framework gives you a way to read data in your component in a way that activates
+the closest Suspense boundary. The exact way
+----------------------------------------------------------------------------------------------------
+Index: 9011 <<"chunk_id": 5, "docno": 1282>>
+
+In React 18, you can start using Suspense for data fetching in opinionated
+frameworks like Relay, Next.js, Hydrogen, or Remix. Ad hoc data fetching with
+Suspense is technically possible, but still not recommended as a general
+strategy. In the future, we may expose additional primitives that could make it
+easier to access your data with Suspense, perhaps without the use of an
+opinionated framework. However, Suspense works best when it’s deeply integrated
+into your application’s architecture: your router, your data layer, and your
+server rendering environment. So even long term, we expect that libraries and
+frameworks will play a crucial role in the React ecosystem. As in previous
+versions of React, you can also use Suspense for code splitting on the client
+with React.lazy. But our vision for Suspense has always been about much more
+than loading code — the goal is to extend support for Suspense so that
+eventually, the same declarative Suspense fallback can handle any asynchronous
+operation (loading code, data, images, etc). Server Components is Still in
+Development Server Components is an upcoming feature that allows developers to
+build apps that span the server and client, combining the rich interactivity of
+client-side apps with the improved performance of traditional server rendering.
+Server Components is not inherently coupled to Concurrent React, but it’s
+designed to work best with concurrent features like Suspense and streaming
+server rendering. Server Components is still experimental, but we expect to
+release an initial version in a minor 18.x release. In the meantime, we’re
+working with frameworks like Next.js, Hydrogen,
+----------------------------------------------------------------------------------------------------
+Index: 9014 <<"chunk_id": 8, "docno": 1282>>
+
+or key presses come in. If a transition gets interrupted by the user (for
+example, by typing multiple characters in a row), React will throw out the stale
+rendering work that wasn’t finished and render only the latest update.
+useTransition : a Hook to start transitions, including a value to track the
+pending state. startTransition : a method to start transitions when the Hook
+cannot be used. Transitions will opt in to concurrent rendering, which allows
+the update to be interrupted. If the content re-suspends, transitions also tell
+React to continue showing the current content while rendering the transition
+content in the background (see the Suspense RFC for more info). See docs for
+transitions here . New Suspense Features Suspense lets you declaratively specify
+the loading state for a part of the component tree if it’s not yet ready to be
+displayed: < Suspense fallback = { < Spinner /> } > < Comments /> </ Suspense >
+Suspense makes the “UI loading state” a first-class declarative concept in the
+React programming model. This lets us build higher-level features on top of it.
+We introduced a limited version of Suspense several years ago. However, the only
+supported use case was code splitting with React.lazy, and it wasn’t supported
+at all when rendering on the server. In React 18, we’ve added support for
+Suspense on the server and expanded its capabilities using concurrent rendering
+features. Suspense in React 18 works best when combined with the transition API.
+If you suspend during a transition, React will prevent already-visible
+----------------------------------------------------------------------------------------------------
+Index: 7561 <<"chunk_id": 1, "docno": 1039>>
+
+vs split hydration with Suspense boundaries Raw HTML streaming in a Route
+Handler, with early CSS discovery A configurable ReadableStream API endpoint for
+experimenting with chunk sizes and browser buffering How the App Router delivers
+a page When a browser requests a page, two streams work together during the
+initial page load: The HTML stream React's server renderer produces progressive
+HTML chunks. The static parts of your page (layouts, navigation, Suspense
+fallbacks) render first and are sent immediately. When an async Server Component
+resolves, React streams its completed HTML along with inline
+----------------------------------------------------------------------------------------------------
+Index: 8781 <<"chunk_id": 3, "docno": 1243>>
+
+these changes, we’re deprecating the old Node streaming API, which does not
+support incremental Suspense streaming on the server. Using this API will now
+warn: renderToNodeStream : Deprecated ⛔️️ Instead, for streaming in Node
+environments, use: renderToPipeableStream : New ✨ We’re also introducing a new
+API to support streaming SSR with Suspense for modern edge runtime environments,
+such as Deno and Cloudflare workers: renderToReadableStream : New ✨ The
+following APIs will continue working, but with limited support for Suspense:
+renderToString : Limited ⚠️ renderToStaticMarkup : Limited ⚠️ Finally, this API
+will continue to work for rendering e-mails: renderToStaticNodeStream For more
+information on the changes to server rendering APIs, see the working group post
+on Upgrading to React 18 on the server , a deep dive on the new Suspense SSR
+Architecture , and Shaundai Person’s talk on Streaming Server Rendering with
+Suspense at React Conf 2021. Updates to TypeScript definitions If your project
+uses TypeScript, you will need to update your @types/react and @types/react-dom
+dependencies to the latest versions. The new types are safer and catch issues
+that used to be ignored by the type checker. The most notable change is that the
+children prop now needs to be listed explicitly when defining props, for
+example: interface MyButtonProps { color : string ; children ?: React .
+ReactNode ; } See the React 18 typings pull request for a full list of type-only
+changes. It links to example fixes in library types so you can see how to adjust
+your code. You can use the automated
+----------------------------------------------------------------------------------------------------
+Index: 8788 <<"chunk_id": 10, "docno": 1243>>
+
+effects. Instead, React will throw away the new tree completely, wait for the
+asynchronous operation to finish, and then retry rendering again from scratch.
+React will render the retry attempt concurrently, and without blocking the
+browser. Layout Effects with Suspense : When a tree re-suspends and reverts to a
+fallback, React will now clean up layout effects, and then re-create them when
+the content inside the boundary is shown again. This fixes an issue which
+prevented component libraries from correctly measuring layout when used with
+Suspense. New JS Environment Requirements : React now depends on modern browsers
+features including Promise , Symbol , and Object.assign . If you support older
+browsers and devices such as Internet Explorer which do not provide modern
+browser features natively or have non-compliant implementations, consider
+including a global polyfill in your bundled application. Other Notable Changes
+React Components can now render undefined : React no longer warns if you return
+undefined from a component. This makes the allowed component return values
+consistent with values that are allowed in the middle of a component tree. We
+suggest to use a linter to prevent mistakes like forgetting a return statement
+before JSX. In tests, act warnings are now opt-in: If you’re running end-to-end
+tests, the act warnings are unnecessary. We’ve introduced an opt-in mechanism so
+you can enable them only for unit tests where they are useful and beneficial. No
+warning about setState on unmounted components: Previously, React warned about
+memory leaks when you call setState on an unmounted component. This warning was
+----------------------------------------------------------------------------------------------------
+Index: 9261 <<"chunk_id": 8, "docno": 1321>>
+
+preserve the state of hidden tabs, so the user can switch between them without
+losing their progress. A virtualized list component can prerender additional
+rows above and below the visible window. When opening a modal or popup, the rest
+of the app can be put into “background” mode so that events and updates are
+disabled for everything except the modal. Most React developers will not
+interact with React’s offscreen APIs directly. Instead, offscreen rendering will
+be integrated into things like routers and UI libraries, and then developers who
+use those libraries will automatically benefit without additional work. The idea
+is that you should be able to render any React tree offscreen without changing
+the way you write your components. When a component is rendered offscreen, it
+does not actually mount until the component becomes visible — its effects are
+not fired. For example, if a component uses useEffect to log analytics when it
+appears for the first time, prerendering won’t mess up the accuracy of those
+analytics. Similarly, when a component goes offscreen, its effects are
+unmounted, too. A key feature of offscreen rendering is that you can toggle the
+visibility of a component without losing its state. Since our last update, we’ve
+tested an experimental version of prerendering internally at Meta in our React
+Native apps on Android and iOS, with positive performance results. We’ve also
+improved how offscreen rendering works with Suspense — suspending inside an
+offscreen tree will not trigger Suspense fallbacks. Our remaining work involves
+finalizing the primitives that are exposed to
+----------------------------------------------------------------------------------------------------
+Index: 6231 <<"chunk_id": 2, "docno": 814>>
+
+will activate the closest parent Suspense boundary. Experimental only optional
+defer : A boolean. When true , React may show the fallback first and render or
+stream children later, even when nothing in them suspends. Use it for content
+that is expensive to render. Defaults to false . Caveats Suspense does not
+detect when data is fetched inside an Effect or event handler. It only activates
+in the cases listed below. React does not preserve any state for renders that
+got suspended before they were able to mount for the first time. When the
+component has loaded, React will retry rendering the suspended tree from
+scratch. If Suspense was displaying content for the tree, but then it suspended
+again, the fallback will be shown again unless the update causing it was caused
+by startTransition or useDeferredValue . React reveals suspended content at most
+once every 300ms, measured from the last reveal. Boundaries that become ready
+within that window are revealed together rather than one at a time. If React
+needs to hide the already visible content because it suspended again, it will
+clean up layout Effects in the content tree. When the content is ready to be
+shown again, React will fire the layout Effects again. This ensures that Effects
+measuring the DOM layout don’t try to do this while the content is hidden. React
+includes under-the-hood optimizations like Streaming Server Rendering and
+Selective Hydration that are integrated with Suspense. Read an architectural
+overview and watch a technical talk to learn more. What activates a Suspense
+----------------------------------------------------------------------------------------------------
+Index: 8822 <<"chunk_id": 10, "docno": 1250>>
+
+bugs in your components during development so you can fix them before they are
+shipped to production. For example, during development, Strict Mode will
+double-invoke ref callback functions on initial mount, to simulate what happens
+when a mounted component is replaced by a Suspense fallback. Improvements to
+Suspense In React 19, when a component suspends, React will immediately commit
+the fallback of the nearest Suspense boundary without waiting for the entire
+sibling tree to render. After the fallback commits, React schedules another
+render for the suspended siblings to “pre-warm” lazy requests in the rest of the
+tree: Previously, when a component suspended, the suspended siblings were
+rendered and then the fallback was committed. In React 19, when a component
+suspends, the fallback is committed and then the suspended siblings are
+rendered. This change means Suspense fallbacks display faster, while still
+warming lazy requests in the suspended tree. UMD builds removed UMD was widely
+used in the past as a convenient way to load React without a build step. Now,
+there are modern alternatives for loading modules as scripts in HTML documents.
+Starting with React 19, React will no longer produce UMD builds to reduce the
+complexity of its testing and release process. To load React 19 with a script
+tag, we recommend using an ESM-based CDN such as esm.sh . < script type =
+"module" > import React from "https://esm.sh/react@19/?dev" import
+ReactDOMClient from "https://esm.sh/react-dom@19/client?dev" ... </ script >
+Libraries depending on React internals may block upgrades This release includes
+changes to React internals that may impact
+----------------------------------------------------------------------------------------------------
+Index: 19308 <<"chunk_id": 576, "docno": 2483>>
+
+buffering ## How the App Router delivers a page When a browser requests a page,
+two streams work together during the initial page load: ### The HTML stream
+React's server renderer produces progressive HTML chunks. The static parts of
+your page (layouts, navigation, Suspense fallbacks) render first and are sent
+immediately. When an async [Server
+Component](/docs/app/glossary#server-component) resolves, React streams its
+completed HTML along with inline `<script>` tags: one that swaps the fallback
+DOM node with the new content, and another carrying the [component
+payload](#the-component-payload) so React can later hydrate it. The browser
+executes the swap instantly, without waiting for the page's JavaScript bundle to
+load or hydration to complete. This is what the user *sees*: the page painting
+progressively, section by section. ### The component payload The component
+payload is a serialized representation of the component tree that React uses to
+[hydrate](/docs/app/glossary#hydration) the page and handle client-side updates.
+On initial load, it arrives embedded in the HTML stream (as described above). On
+**client-side navigation**, only the component payload is fetched (with an `rsc:
+1` request header) and no HTML is transferred at all. React uses it to update
+the component tree in place. ### The static shell Everything that renders before
+any async work resolves is called the **static shell**: your layouts,
+navigation, and the fallback UI defined by your `<Suspense>` boundaries. It is
+sent immediately, giving the user something to see and interact with while
+dynamic content streams in. With [Cache
+Components](/docs/app/getting-started/caching), the static shell is prerendered
+at build time and served instantly from the
+----------------------------------------------------------------------------------------------------
+Index: 4427 <<"chunk_id": 4, "docno": 611>>
+
+how to configure streaming when self-hosting Next.js. Examples Streaming with
+Suspense In addition to loading.js , you can also manually create Suspense
+Boundaries for your own UI components. The App Router supports streaming with
+Suspense . See the Streaming guide for more on how streaming works, including
+granular Suspense patterns, Route Handler streaming, and infrastructure
+considerations. works by wrapping a component that performs an asynchronous
+action (e.g. fetch data), showing fallback UI (e.g. skeleton, spinner) while
+it's happening, and then swapping in your component once the action completes.
+tsx filename="app/dashboard/page.tsx" switcher import { Suspense } from 'react'
+import { PostFeed, Weather } from './Components' export default function Posts()
+{ return ( Loading feed...\ }> Loading weather...\ }> ) } jsx
+filename="app/dashboard/page.js" switcher import { Suspense } from 'react'
+import { PostFeed, Weather } from './Components' export default function Posts()
+{ return ( Loading feed...\ }> Loading weather...\ }> ) } By using Suspense, you
+get the benefits of: Streaming Server Rendering - Progressively rendering HTML
+from the server to the client. Selective Hydration - React prioritizes what
+components to make interactive first based on user interaction. For more
+Suspense examples and use cases, please see the React Documentation . Version
+History | Version | Changes | | --------- | --------------------- | | v13.0.0 |
+loading introduced. | For a semantic overview of all documentation, see
+/docs/sitemap.md For an index of all available documentation, see /docs/llms.txt
+----------------------------------------------------------------------------------------------------
+Index: 9016 <<"chunk_id": 10, "docno": 1282>>
+
+. React DOM Server These new APIs are now exported from react-dom/server and
+have full support for streaming Suspense on the server: renderToPipeableStream :
+for streaming in Node environments. renderToReadableStream : for modern edge
+runtime environments, such as Deno and Cloudflare workers. The existing
+renderToString method keeps working but is discouraged. See docs for React DOM
+Server here . New Strict Mode Behaviors In the future, we’d like to add a
+feature that allows React to add and remove sections of the UI while preserving
+state. For example, when a user tabs away from a screen and back, React should
+be able to immediately show the previous screen. To do this, React would unmount
+and remount trees using the same component state as before. This feature will
+give React apps better performance out-of-the-box, but requires components to be
+resilient to effects being mounted and destroyed multiple times. Most effects
+will work without any changes, but some effects assume they are only mounted or
+destroyed once. To help surface these issues, React 18 introduces a new
+development-only check to Strict Mode. This new check will automatically unmount
+and remount every component, whenever a component mounts for the first time,
+restoring the previous state on the second mount. Before this change, React
+would mount the component and create the effects: * React mounts the component .
+* Layout effects are created . * Effects are created . With Strict Mode in React
+18, React will simulate unmounting and remounting the component in development
+mode: * React mounts the
+----------------------------------------------------------------------------------------------------
+Index: 3395 <<"chunk_id": 3, "docno": 474>>
+
+state while loading. 1. Create a Server Component for video embedding The first
+step is to create a Server Component that generates the appropriate iframe for
+embedding the video. This component will fetch the source URL for the video and
+render the iframe. ```jsx filename="app/ui/video-component.jsx" export default
+async function VideoComponent() { const src = await getVideoSrc() return } ```
+2. Stream the video component using React Suspense After creating the Server
+Component to embed the video, the next step is to stream the component using
+React Suspense . ```jsx filename="app/page.jsx" import { Suspense } from 'react'
+import VideoComponent from '../ui/VideoComponent.jsx' export default function
+Page() { return ( Loading video...\ }> {/ Other content of the page /} ) } ```
+Good to know : When embedding videos from external platforms, consider the
+following best practices: Ensure the video embeds are responsive. Use CSS to
+make the iframe or video player adapt to different screen sizes. Implement
+strategies for loading videos based on network conditions, especially for users
+with limited data plans. This approach results in a better user experience as it
+prevents the page from blocking, meaning the user can interact with the page
+while the video component streams in. For a more engaging and informative
+loading experience, consider using a loading skeleton as the fallback UI. So
+instead of showing a simple loading message, you can show a skeleton that
+resembles the video player like this: ```jsx filename="app/page.jsx" import {
+Suspense } from 'react' import VideoComponent from '../ui/VideoComponent.jsx'
+import VideoSkeleton from '../ui/VideoSkeleton.jsx' export default function
+----------------------------------------------------------------------------------------------------
+Index: 6230 <<"chunk_id": 1, "docno": 814>>
+
+PureComponent API Reference Components Copy page Copy <Suspense> <Suspense> lets
+you display a fallback until its children have finished loading. < Suspense
+fallback = { < Loading /> } > < SomeComponent /> </ Suspense > Reference
+<Suspense> What activates a Suspense boundary Usage Displaying a fallback while
+content is loading Revealing content together at once Revealing nested content
+as it loads Showing stale content while fresh content is loading Preventing
+already revealed content from hiding Indicating that a Transition is happening
+Resetting Suspense boundaries on navigation Providing a fallback for server
+errors and client-only content Waiting for a stylesheet to load Animating from
+Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update? Reference <Suspense>
+Props children : The actual UI you intend to render. If children suspends while
+rendering, the Suspense boundary will switch to rendering fallback . fallback :
+An alternate UI to render in place of the actual UI if it has not finished
+loading. Any valid React node is accepted, though in practice, a fallback is a
+lightweight placeholder view, such as a loading spinner or skeleton. Suspense
+will automatically switch to fallback when children suspends, and back to
+children when the data is ready. If fallback suspends while rendering, it will
+activate the closest parent Suspense boundary. Experimental only optional defer
+: A boolean. When true , React may show the fallback first and render
+----------------------------------------------------------------------------------------------------
+Index: 9015 <<"chunk_id": 9, "docno": 1282>>
+
+concurrent rendering features. Suspense in React 18 works best when combined
+with the transition API. If you suspend during a transition, React will prevent
+already-visible content from being replaced by a fallback. Instead, React will
+delay the render until enough data has loaded to prevent a bad loading state.
+For more, see the RFC for Suspense in React 18 . New Client and Server Rendering
+APIs In this release we took the opportunity to redesign the APIs we expose for
+rendering on the client and server. These changes allow users to continue using
+the old APIs in React 17 mode while they upgrade to the new APIs in React 18.
+React DOM Client These new APIs are now exported from react-dom/client :
+createRoot : New method to create a root to render or unmount . Use it instead
+of ReactDOM.render . New features in React 18 don’t work without it. hydrateRoot
+: New method to hydrate a server rendered application. Use it instead of
+ReactDOM.hydrate in conjunction with the new React DOM Server APIs. New features
+in React 18 don’t work without it. Both createRoot and hydrateRoot accept a new
+option called onRecoverableError in case you want to be notified when React
+recovers from errors during rendering or hydration for logging. By default,
+React will use reportError , or console.error in the older browsers. See docs
+for React DOM Client here . React DOM Server These new APIs are now exported
+from react-dom/server and have full support for streaming Suspense on the
+server: renderToPipeableStream : for
+----------------------------------------------------------------------------------------------------
+Index: 8958 <<"chunk_id": 6, "docno": 1272>>
+
+state to pass to the resume apis. Notable Changes Batching Suspense Boundaries
+for SSR We fixed a behavioral bug where Suspense boundaries would reveal
+differently depending on if they were rendered on the client or when streaming
+from server-side rendering. Starting in 19.2, React will batch reveals of
+server-rendered Suspense boundaries for a short time, to allow more content to
+be revealed together and align with the client-rendered behavior. Previously,
+during streaming server-side rendering, suspense content would immediately
+replace fallbacks. In React 19.2, suspense boundaries are batched for a small
+amount of time, to allow revealing more content together. This fix also prepares
+apps for supporting <ViewTransition> for Suspense during SSR. By revealing more
+content together, animations can run in larger batches of content, and avoid
+chaining animations of content that stream in close together. Note React uses
+heuristics to ensure throttling does not impact core web vitals and search
+ranking. For example, if the total page load time is approaching 2.5s (which is
+the time considered “good” for LCP ), React will stop batching and reveal
+content immediately so that the throttling is not the reason to miss the metric.
+SSR: Web Streams support for Node React 19.2 adds support for Web Streams for
+streaming SSR in Node.js: renderToReadableStream is now available for Node.js
+prerender is now available for Node.js As well as the new resume APIs: resume is
+available for Node.js. resumeAndPrerender is available for Node.js. Pitfall
+Prefer Node Streams for server-side rendering in Node.js In Node.js
+environments, we still highly recommend using the
+----------------------------------------------------------------------------------------------------
+Index: 6256 <<"chunk_id": 27, "docno": 814>>
+
+only prevent unwanted fallbacks during non-urgent updates . It will not delay a
+render if it’s the result of an urgent update. You must opt in with an API like
+startTransition or useDeferredValue . If your router is integrated with
+Suspense, it should wrap its updates into startTransition automatically.
+Previous <StrictMode> Next <Activity> Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+Reference <Suspense> What activates a Suspense boundary Usage Displaying a
+fallback while content is loading Revealing content together at once Revealing
+nested content as it loads Showing stale content while fresh content is loading
+Preventing already revealed content from hiding Indicating that a Transition is
+happening Resetting Suspense boundaries on navigation Providing a fallback for
+server errors and client-only content Waiting for a stylesheet to load Animating
+from Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update?
+----------------------------------------------------------------------------------------------------
+Index: 8785 <<"chunk_id": 7, "docno": 1243>>
+
+UI while preserving state. For example, when a user tabs away from a screen and
+back, React should be able to immediately show the previous screen. To do this,
+React would unmount and remount trees using the same component state as before.
+This feature will give React better performance out-of-the-box, but requires
+components to be resilient to effects being mounted and destroyed multiple
+times. Most effects will work without any changes, but some effects assume they
+are only mounted or destroyed once. To help surface these issues, React 18
+introduces a new development-only check to Strict Mode. This new check will
+automatically unmount and remount every component, whenever a component mounts
+for the first time, restoring the previous state on the second mount. Before
+this change, React would mount the component and create the effects: * React
+mounts the component . * Layout effects are created . * Effect effects are
+created . With Strict Mode in React 18, React will simulate unmounting and
+remounting the component in development mode: * React mounts the component . *
+Layout effects are created . * Effect effects are created . * React simulates
+unmounting the component . * Layout effects are destroyed . * Effects are
+destroyed . * React simulates mounting the component with the previous state . *
+Layout effect setup code runs * Effect setup code runs For more information, see
+the Working Group posts for Adding Reusable State to StrictMode and How to
+support Reusable State in Effects . Configuring Your Testing Environment When
+----------------------------------------------------------------------------------------------------
+Index: 3184 <<"chunk_id": 16, "docno": 454>>
+
+version, which doesn’t accept a callback but instead returns a promise that is
+rejected if the pipeline fails. Async Iterators Async iterators are recommended
+as the standard way of interfacing with the Streams API. Compared to all the
+stream primitives in both the Web and Node.js, async iterators are easier to
+understand and use, contributing to fewer bugs and more maintainable code. In
+recent versions of Node.js, async iterators have emerged as a more elegant and
+readable way to interact with streams. Building upon the foundation of events,
+async iterators provide a higher-level abstraction that simplifies stream
+consumption. In Node.js, all readable streams are asynchronous iterables. This
+means you can use the for await...of syntax to loop through the stream's data as
+it becomes available, handling each piece of data with the efficiency and
+simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
+Using async iterators with streams simplifies the handling of asynchronous data
+flows in several ways: Enhanced Readability : The code structure is cleaner and
+more readable, particularly when dealing with multiple asynchronous data
+sources. Error Handling : Async iterators allow straightforward error handling
+using try/catch blocks, akin to regular asynchronous functions. Flow Control :
+They inherently manage backpressure, as the consumer controls the flow by
+awaiting the next piece of data, allowing for more efficient memory usage and
+processing. Async iterators offer a more modern and often more readable way to
+work with readable streams, especially when dealing with asynchronous data
+sources or when you prefer a more sequential, loop-based approach
+----------------------------------------------------------------------------------------------------
+Index: 8787 <<"chunk_id": 9, "docno": 1243>>
+
+cannot be adequately polyfilled in IE. If you need to support Internet Explorer
+we recommend you stay with React 17. Deprecations react-dom : ReactDOM.render
+has been deprecated. Using it will warn and run your app in React 17 mode.
+react-dom : ReactDOM.hydrate has been deprecated. Using it will warn and run
+your app in React 17 mode. react-dom : ReactDOM.unmountComponentAtNode has been
+deprecated. react-dom : ReactDOM.renderSubtreeIntoContainer has been deprecated.
+react-dom/server : ReactDOMServer.renderToNodeStream has been deprecated. Other
+Breaking Changes Consistent useEffect timing : React now always synchronously
+flushes effect functions if the update was triggered during a discrete user
+input event such as a click or a keydown event. Previously, the behavior wasn’t
+always predictable or consistent. Stricter hydration errors : Hydration
+mismatches due to missing or extra text content are now treated like errors
+instead of warnings. React will no longer attempt to “patch up” individual nodes
+by inserting or deleting a node on the client in an attempt to match the server
+markup, and will revert to client rendering up to the closest <Suspense>
+boundary in the tree. This ensures the hydrated tree is consistent and avoids
+potential privacy and security holes that can be caused by hydration mismatches.
+Suspense trees are always consistent: If a component suspends before it’s fully
+added to the tree, React will not add it to the tree in an incomplete state or
+fire its effects. Instead, React will throw away the new tree completely, wait
+for the asynchronous operation to finish, and then retry rendering again from
+scratch. React
+----------------------------------------------------------------------------------------------------

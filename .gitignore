@@ -1,5 +1,6 @@
 __pycache__/
-Data/
+
+Data/raw/
 
 Document_processor/__pycache__/
 

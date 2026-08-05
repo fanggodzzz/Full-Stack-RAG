@@ -1,0 +1,531 @@
+Index: 25614 <<"chunk_id": 4, "docno": 3534>>
+
+security rules (administrators can access it, but normal users can't) or maybe
+it's because we want to enable lazy loading, only loading data from a database
+on first access. Another reason would be to enable transparent transaction
+management for our objects. Transaction management Let's look at the transaction
+management example. The following sequence diagram roughly depicts (a simplified
+view of) what happens in a situation where a service is called whereby
+beforehand a transaction is started and after successful completion the
+transaction is committed. The invocation of the service itself now definitely
+involve a certain overhead (the overhead we already discussed before). The
+question however is, what do we get in exchange for the overhead? Benefits
+realized If we continue to look at the above example, we've realized a couple of
+benefits. Code simplification We've greatly simplified our code by putting a
+proxy in between. If we use the @Transactional annotation Spring provides, all
+we need to do is the following: public class Service { @Transactional public
+void executeService() { } } and <tx:annotation-driven/> <bean
+class="com.mycompany.Service"/> An alternative (programmatic) approach would
+involve significantly modifying either the client (caller) or the service class
+itself. Centralized transaction management Transaction management is now taken
+care of by a central facility, allowing for much more optimization and a very
+consistent approach to doing transaction management. This would not have been
+possible if we'd have implemented the transaction management code in our service
+or caller itself. And what does it matter anyway? If that's not enough, we can
+always start looking
+----------------------------------------------------------------------------------------------------
+Index: 59134 <<"chunk_id": 1, "docno": 9773>>
+
+Server 4.0. R2DBC (the specification for reactive SQL database drivers) started
+to emerge, and we decided to pick up on R2DBC with Spring Data R2DBC. Both
+projects wanted to expose transactional behavior, so they eventually provided
+inTransaction(…) methods on their Template APIs to perform units of work guarded
+by native transactions. While it is convenient to use an inTransaction(…) method
+for smaller chunks of work, it does not reflect the Spring way of supporting
+transactions. When working with imperative programming models, Spring Framework
+allows for two arrangements of transaction management: @Transactional and
+TransactionTemplate (declarative respective programmatic transaction
+management). Both approaches to transaction management are built on top of
+PlatformTransactionManager , which manages transactions for transactional
+resources. PlatformTransactionManager can be either a Spring-provided
+transaction manager implementation or a Java EE one based on JTA. Both
+approaches have in common that they bind the transactional state to ThreadLocal
+storage, which allows for transactional state management without passing a
+TransactionStatus object. Transaction management should happen in the background
+in a non-invasive manner. ThreadLocal works in imperative programming
+arrangements because of the underlying assumption that we do not engage threads
+to continue work within a transaction. How Imperative Transaction Management
+Works Transaction management needs to associate its transactional state with an
+execution. In imperative programming, this is typically a ThreadLocal storage –
+Transactional state is bound to a Thread . The underlying assumption is that
+transactional code gets executed on the same thread on which the container has
+invoked it. Reactive programming models remove this fundamental assumption of
+imperative (synchronous/blocking)
+----------------------------------------------------------------------------------------------------
+Index: 59136 <<"chunk_id": 3, "docno": 9773>>
+
+. All reactive code that uses Project Reactor can now participate in reactive
+transactions. Code that returns scalar values and that wants to access
+transactional details must be rewritten to use reactive types to participate in
+transactions. Otherwise, the Context is not available. Reactive Transaction
+Management Starting with Spring Framework 5.2 M2, Spring supports reactive
+transaction management through the ReactiveTransactionManager SPI.
+ReactiveTransactionManager is a transaction management abstraction for reactive
+and non-blocking integrations that uses transactional resources. It is a
+foundation for reactive @Transactional methods that return Publisher types and
+for programmatic transaction management that uses TransactionalOperator . The
+first two reactive transaction manager implementations are: R2DBC through Spring
+Data R2DBC 1.0 M2 MongoDB through Spring Data MongoDB 2.2 M4 Let’s take a look
+at how reactive transactions look like: class TransactionalService { final
+DatabaseClient db TransactionalService(DatabaseClient db) { this.db = db; }
+@Transactional Mono<Void> insertRows() { return db.execute() .sql("INSERT INTO
+person (name, age) VALUES('Joe', 34)") .fetch().rowsUpdated()
+.then(db.execute().sql("INSERT INTO contacts (name) VALUES('Joe')") .then(); } }
+Reactive transactions look very similar to imperative transactions in
+annotation-driven arrangements. The main difference though is that we work with
+DatabaseClient , which is a reactive resource abstraction. All transaction
+management happens behind the scenes, leveraging Spring’s transaction
+interceptors and ReactiveTransactionManager . Spring distinguishes (based on
+method return types) which type of transaction management to apply: Method
+returns a Publisher type: Reactive Transaction Management All other return
+types: Imperative Transaction Management This distinction is significant, as you
+could still use imperative components such as a JPA or JDBC query. Wrapping
+these results
+----------------------------------------------------------------------------------------------------
+Index: 43749 <<"chunk_id": 1, "docno": 6765>>
+
+of people told us by voting in the first poll that they were using the @Required
+annotation. The second poll--on transaction management, quickly showed that a
+lot of people were using the @Transactional annotation. Below you can find some
+of the results of the poll about checking required dependencies. Together with
+the poll on transaction management (about 30% of all respondents are using the
+@Transactional annotation to demarcate transaction boundaries) they consistently
+show that people are using Spring 2.0 a lot, which was very good news for us.
+Because upgrading an application that uses Spring 1.x to use Spring 2.0
+shouldn't be any issue, we really hoped people would not stick to Spring 1.x and
+in fact, people massively upgraded. How are you checking required dependencies
+8% I check them in my business methods 9% Using init-method and an assert
+mechanism (c.f. Assert) 9% Using the dependency-check attribute in XML 13% I
+don't have to, I use constructor injection 15% Using InitializingBean and an
+assert mechanism 17% Using the Spring 2.0 @Required annotation 29% I do not
+check required dependencies What's interesting however is that 29 percent of all
+people do not check required dependencies. In the forum thread that accompanied
+the discussion, interesting suggestions came up as to why some people weren't
+doing this and how people solved it otherwise. Let's review some of those.
+Constructor injection I'd like to begin with reviewing constructor injection.
+Any object that has a constructor that takes arguments, can (obviously) not be
+constructed without passing in arguments. In Java,
+----------------------------------------------------------------------------------------------------
+Index: 43729 <<"chunk_id": 1, "docno": 6763>>
+
+with Hibernate, or any other template-based approaches Spring features. Using
+Spring XxxTemplates In Spring 1.0, we introduced a revolutionary way of working
+with data access APIs that threw checked exceptions. The template approach
+Spring features along with its transaction synchronization manager and the
+extensive use of runtime exceptions makes any TCFTC (short for
+try/catch-finally-try/catch as we coined it back in 2005) often found in data
+access code entirely obsolete. Below you can see (a simplified version and not
+entirely precise version of) what Spring's template approach does for you (with
+specific code snippets that you would otherwise have to write). Acquisition of
+connection : If transaction synchronization is active (which it is, if you're
+using Spring's transaction management infrastructure), most of the times any of
+the Spring templates are using the same connection across the entire thread
+(things are actually a bit more complicated than that, but that would lead us
+too much into the gory details). Participation in a transaction Again, when
+using transaction management features, Spring will automatically associated any
+new connection with the current transaction. This again, all depends on the
+current propagations settings and so on, but whichever way you look at it, your
+core code is not affected by it. Specification of the SQL : This is what you
+(obviously) have to do yourself. The SQL ideally uses bind parameters, to avoid
+any chances of SQL injection from happening. Parameters are passed to the JDBC
+template as arguments. Creation / execution of statement and iterating over
+result set : After you've
+----------------------------------------------------------------------------------------------------
+Index: 38725 <<"chunk_id": 1, "docno": 5739>>
+
+room for improvements. The following listing shows that style: Reactive
+Transactions in Lovelace (with MongoDB) public Mono<Process> doSomething(Long
+id) { return template.inTransaction().execute(txTemplate -> { return
+txTemplate.findById(id) .flatMap(it -> start(txTemplate, it)) .flatMap(it ->
+verify(it)) .flatMap(it -> finish(txTemplate, it)); }).next(); } In the
+preceding snippet, the transaction has to be initiated by explicitly calling
+inTransaction() with a transaction-aware template within the closure, calling
+next() at the end to turn the returned Flux into a Mono to satisfy the method
+signature, even though findById(…) already emits only a single element.
+Obviously, this is not the most intuitive way of doing reactive transactions. So
+let’s have a look at the same flow using declarative reactive transaction
+support. As with Spring’s transaction support , you need a component to handle
+the transaction for you. For reactive transactions, a ReactiveTransactionManager
+is currently provided by the MongoDB and R2DBC modules. The following listing
+shows such a component: @EnableTransactionManagement class Config extends
+AbstractReactiveMongoConfiguration { // … @Bean ReactiveTransactionManager
+mgr(ReactiveMongoDatabaseFactory f) { return new
+ReactiveMongoTransactionManager(f); } } From there, you can annotate methods
+with @Transactional and rely on the infrastructure to start, commit, and roll
+back transactional flows to handle the lifecycle via the Reactor Context . This
+lets you turn the code from Lovelace into the following listing, removing the
+need for the closure with its scoped template and the superfluous Flux to Mono
+transformation: Declarative Reactive Transactions in Moore (with MongoDB)
+@Transactional public Mono<Process> doSomething(Long id) { return
+template.findById(id) .flatMap(it -> start(template, it)) .flatMap(it ->
+verify(it)) .flatMap(it -> finish(template, it)); } Reactive Elasticsearch
+----------------------------------------------------------------------------------------------------
+Index: 11823 <<"chunk_id": 4, "docno": 1622>>
+
+@…​Test annotations are already annotated with it. By default, @SpringBootTest
+will not start a server. You can use the webEnvironment attribute of
+@SpringBootTest to further refine how your tests run: MOCK (Default) : Loads a
+web ApplicationContext and provides a mock web environment. Embedded servers are
+not started when using this annotation. If a web environment is not available on
+your classpath, this mode transparently falls back to creating a regular non-web
+ApplicationContext . It can be used in conjunction with @AutoConfigureMockMvc ,
+or @AutoConfigureWebTestClient ] for mock-based testing of your web application.
+RANDOM_PORT : Loads a WebServerApplicationContext and provides a real web
+environment. Embedded servers are started and listen on a random port.
+DEFINED_PORT : Loads a WebServerApplicationContext and provides a real web
+environment. Embedded servers are started and listen on a defined port (from
+your application.properties ) or on the default port of 8080 . NONE : Loads an
+ApplicationContext by using SpringApplication but does not provide any web
+environment (mock or otherwise). If your test is @Transactional , it rolls back
+the transaction at the end of each test method by default. However, as using
+this arrangement with either RANDOM_PORT or DEFINED_PORT implicitly provides a
+real servlet environment, the HTTP client and server run in separate threads
+and, thus, in separate transactions. Any transaction initiated on the server
+does not roll back in this case. @SpringBootTest with webEnvironment =
+WebEnvironment.RANDOM_PORT will also start the management server on a separate
+random port if your application uses a different port for the management server.
+Detecting
+----------------------------------------------------------------------------------------------------
+Index: 42006 <<"chunk_id": 2, "docno": 6444>>
+
+on a WebSphere platform. Obviously Spring already worked well on WebSphere, but
+this closes off corner cases and, most importantly, means that even the most
+risk averse manager will understand that using Spring on WebSphere is safe and
+can be supported. The most important specific area of enhancement concerns
+transaction management, with code added to both WebSphere and Spring. This work
+has been led by Juergen Hoeller on the Interface21 side and WebSphere
+transaction architect Ian Robinson at IBM. If you're familiar with the Java EE
+and JTA specs, you'll know that they leave gaps--notably, how you do the
+significant things, like transaction suspension, that you can't do with a
+UserTransaction. These are corner cases, but when you encounter one of them it
+may be hard to work around it. While it's far preferable to delegate transaction
+management to Spring than to use JTA directly (for reasons of testability,
+exception handling and semantic completeness), the gaps in the standard JTA
+functionality can be problematic if that's all that's available underneath.
+Fortunately, a solution is at hand to allow Spring to maximize the potential of
+the underlying platform. Spring provides a transaction
+abstraction--PlatformTransactionManager--that is semantically more complete than
+JTA but makes no assumptions about its environment. It's a key example of what
+we call portable service abstractions . Normally you don't use the
+PlatformTransactionManager directly, because Spring's declarative transaction
+management gives you a uniquely powerful option for applying programmatic
+transactions to any POJO, but it is the foundation of both programmatic and
+declarative transaction management in Spring.
+----------------------------------------------------------------------------------------------------
+Index: 38025 <<"chunk_id": 4, "docno": 5602>>
+
+following is the sequence in this flow. The JPA transaction manager starts a new
+JPA transaction. The database operation commences, but no commit occurs here
+since we are still in the method execution. The StreamBridge send operation
+triggers a new Kafka transaction, synchronizing with the JPA transaction through
+the transaction synchronization manager. When the method exits, the JPA
+transaction is committed first, followed by the Kafka transaction. A general
+note on synchronizing transactions in Spring: It might sound like it is doing
+complex transaction synchronization behind the scenes. However, as we implied at
+the opening of this article, there is no distributed transaction synchronization
+going on here, let alone any intelligent ways to synchronize between the various
+transactions. The transactions themselves do not know anything about the
+synchronization. The Spring TransactionSynchronizatonManager simply coordinates
+the commits and rollbacks of multiple transactions. Synchronizing transactions
+in this context is functionally similar to nesting two or more @Transactional
+methods or TransactionTempate objects. There is less to configure because Spring
+does the nesting for you. Scenario 2: Reversing the Order of Commits Suppose we
+need to reverse the order of commits due to some new requirements in the flow,
+with the Kafka transaction getting committed first instead of the JPA one. How
+do we do that? One solution that might intuitively come to us is to explicitly
+provide a Kafka transaction manager to the @Transactional annotation and let the
+JPA transaction synchronize with the Kafka transaction, which is the primary
+one. The code looks like the following:
+@Transactional(“customKafkaTransactionManager) public void send(StreamBridge
+----------------------------------------------------------------------------------------------------
+Index: 37964 <<"chunk_id": 7, "docno": 5595>>
+
+= new KafkaTransactionManager(transactionalProducerFactory); return
+kafkaTransactionManager; } } And the corresponding configuration: spring: cloud:
+stream: bindings: mySupplier-out-0: destination: my-topic kafka: binder:
+Transaction: transaction-id-prefix: mySupplier- producer: configuration:
+retries: 1 acks: all Note that the transactional method (the method annotated
+with @Transactional ) in the preceding code must be in a different class from
+the one invoking the method. If the invocation is between the methods on the
+same class or between different classes that are not Spring-managed beans, there
+is no proxy, and the transaction interceptor does not kick in. The JVM does not
+know about the proxying and interceptor mechanism at runtime. When adding the
+@Transactional annotation on a method, Spring creates a transactional proxy for
+that method behind the scenes. When Spring Cloud Stream invokes the
+transactional method, the proxy intercepts that call and then the actual
+invocation happens through the proxied object. The custom
+KafkaTransactionManager bean we provide serves two purposes. First, it makes
+Spring Boot apply @EnableTransactionManagerment . It also provides the same
+producer factory the binder uses internally so that the Transactional annotation
+uses the proper resources when applying transactions. When Spring Boot detects
+an available transaction manager bean, it automatically applies the
+@EnableTransactionManagement annotation for us, which is responsible for
+detecting the @Transactional annotation and then adding the interceptor through
+the Spring AOP proxy and advice mechanism. In other words, Spring AOP creates a
+proxy for the @Transactional method and includes the AOP advice. Without the
+@EnableTransactionManagement annotation applied, Spring does not trigger any of
+these proxying and interception mechanisms. Since the
+----------------------------------------------------------------------------------------------------
+Index: 27176 <<"chunk_id": 3, "docno": 3929>>
+
+means for counting the number of rows in a table using a WHERE clause and for
+dropping a list of tables. On a similar note,
+AbstractTransactionalJUnit4SpringContextTests and
+AbstractTransactionalTestNGSpringContextTests have been retrofitted with a
+jdbcTemplate instance variable as well as countRowsInTableWhere() and
+dropTables() methods which delegate to their counterparts in JdbcTestUtils .
+Transaction Manager Configuration If you're familiar with the support for
+transactional integration tests in the Spring TestContext Framework , then
+you're probably aware that the transaction manager used for tests must be called
+"transactionManager" by convention. Since Spring 2.5, this has been overridable
+via the @TransactionConfiguration annotation (e.g.,
+@TransactionConfiguration(transactionManager="txMgr") ); however, the use of
+this annotation is no longer necessary if there is a single
+PlatformTransactionManger present in the application context. In other words, as
+long as there is only one transaction manager defined in the context, there's no
+longer a need to qualify what the name of that transaction manager is: if
+there's only one, the TestContext framework will simply use it. Spring 3.1
+introduced the TransactionManagementConfigurer interface for programmatically
+specifying the transaction manager to use with @Transactional methods when using
+@Configuration classes in conjunction with @EnableTransactionManagement (i.e.,
+as opposed to using XML configuration with <tx:annotation-driven /> ). So as of
+Spring 3.2, if one of your components (i.e., typically an @Configuration class)
+implements TransactionManagementConfigurer , the TestContext framework will use
+the transaction manager specified by that component. The Spring TestContext
+Framework The rest of this post deals explicitly with new features in the Spring
+TestContext Framework. If you're already familiar with the TestContext
+----------------------------------------------------------------------------------------------------
+Index: 42309 <<"chunk_id": 1, "docno": 6489>>
+
+the different transaction manager implementations in different versions Control
+over transaction isolation level: a very useful feature not available in JTA For
+those familiar with JTA, using the UserTransaction, as you do when controlling
+transactions programmatically in Java EE, has some significant gaps, perhaps
+understandable given the now obsolete assumption when J2EE was first conceived
+nearly ten years ago that no one would ever want to do transaction management
+without EJB. The problem is that some operations like suspending a transaction
+(to get "requires new" semantics, for example), are only possible on the
+TransactionManager. This interface is standardized in the JTA spec, but unlike
+the UserTransaction it does not offer a well-known JNDI location or other way of
+obtaining it. Some other things, such as control of isolation level or
+server-specific "transaction naming" (for monitoring or other purposes) are not
+possible at all with JTA. Because Spring provides a rich, portable transaction
+abstraction, it does the work under the covers of driving JTA and other APIs, so
+your code doesn't need to know anything about the underlying infrastructure, and
+thus can take advantage of any proprietary APIs that give more control or
+greater efficiency. Spring supports both declarative and programmatic
+transactions, so you can layer transaction management onto POJOs that don't know
+anything about it; or, if transaction management is part of your business logic,
+you can use a more elegant API that offers more features than JTA, isn't tied to
+JNDI, and is much less verbose to work with. This code will go into the
+----------------------------------------------------------------------------------------------------
+Index: 57715 <<"chunk_id": 5, "docno": 9390>>
+
+support, you no longer need the TransactionTemplate - the transaction management
+happens automatically for any method annotated with declarative transaction
+management enabled. If you’re using Spring’s XML configuration, then use this:
+<tx:annotation-driven transaction-manager =
+“platformTransactionManagerReference” /> If you’re using Spring 3.1, then you
+can simply annotate your Java configuration class, like this:
+@EnableTransactionManagement @Configuration public class MyConfiguration { ...
+This annotation will automatically scan your beans and look for a bean of type
+PlatformTransactionManager , which it will use. Then, in your Java beans, simply
+declare methods as transactional by annotating them. @Transactional public void
+work() { // the transaction will be rolled back if the // method throws an
+Exception, otherwise committed } JTA Now, if you still need to use JTA, at least
+the choice is yours to make. There are two common scenarios: using JTA in a
+heavyweight application server (which has all the nasty disadvantages of being
+tied to a JavaEE server), or using a standalone JTA implementation. Spring
+provides support for JTA-based global transaction implementations through a
+PlatformTransactionManager implementation called JtaTransactionManager . If you
+use it on a JavaEE application server, it will automatically find the correct
+javax.transaction.UserTransaction reference from JNDI. Additionally, it will
+attempt to find the container-specific javax.transaction.TransactionManager
+reference in 9 different application servers for more advanced use cases like
+transaction suspension. Behind the scenes, Spring loads different
+JtaTransactionManager subclasses to take advantage of specific, extra features
+in different servers when available, for example: WebLogicJtaTransactionManager
+, WebSphereUowTransactionManager and OC4JJtaTransactionManager . So, if you're
+inside a Java EE application server,
+----------------------------------------------------------------------------------------------------
+Index: 38057 <<"chunk_id": 5, "docno": 5604>>
+
+atomically sends the offset to the transaction and commits the record’s offset.
+The process is complete now. The recovered record is not included in the
+consumer seek, and the next poll returns the new records. If the recovery fails
+for any reason, the container behaves as if the retries are not exhausted and
+gets into an endless retry. As mentioned above, when recovery succeeds, the
+failed record is not included in the seek, so the next poll does not return that
+record. Assuming that the application sets maximum attempts to be two and that
+the record fails both times, the following is the sequence of events when using
+transactions . The consumer polls for records, and the listener in Spring Kafka
+is invoked within the execute method of the TransactionTemplate , which triggers
+the KafkaTransactionManager to start a new transaction. Eventually, the listener
+calls the user method, which is annotated with the @Transactional annotation.
+The transaction interceptor intercepts the transactional method and starts a new
+JPA transaction by using its transaction manager. When it reaches database
+operation, no commit or rollback occurs, since we are in the middle of the
+method execution. StreamBridge calls the send method, which publishes to the
+Kafka topic. No new Kafka transaction starts here, as there is already a Kafka
+transaction in progress. The same transactional resource, the producer, is used
+by the KafkaTemplate to publish. The method throws an exception from any of its
+operations, and the transaction interceptor catches that and performs a rollback
+on the JPA transaction. The
+----------------------------------------------------------------------------------------------------
+Index: 38054 <<"chunk_id": 2, "docno": 5604>>
+
+we do not need to do anything from an application or framework perspective
+during the transaction rollback. If an error occurs, it is guaranteed to be
+rolled back. However, recall that even though the transaction was rolled back,
+there may be uncommitted records in the Kafka logs. Consumers with isolation
+level read_uncommitted (the default) still receive these records. Therefore,
+consumer applications must ensure that they use an isolation level of
+read_committed so that they don’t receive any records rolled back by
+transactions upstream. Producer-Initiated Transactions Synchronizing with
+External Transactions We saw this scenario in the last part of this blog series.
+As in the first scenario, if the method throws an exception and a rollback
+occurs, even if the Kafka transaction synchronizes with the database
+transaction, the application needs to do nothing to handle the errors. The
+transactions roll back from both the database and Kafka publishing.
+Consumer-Initiated Transactions Rollback If producer-initiated transactions
+rollback is that straightforward, you might wonder what the big deal is and why
+we must dedicate an entire article to this topic. When is it necessary that the
+applications provide particular rollback strategies? It makes sense when you
+have a consumer-initiated transaction in progress, since we need to pay special
+attention to how we handle the state of the consumed records and their offsets.
+Let us re-examine our running consumer-initiated transactional method code from
+the previous blog in the series. public Consumer<PersonEvent> process(TxCode
+txCode) { return txCode::run; } @Component class TxCode { @Transactional void
+run(PersonEvent pe) { Person person = new Person();
+----------------------------------------------------------------------------------------------------
+Index: 38031 <<"chunk_id": 10, "docno": 5602>>
+
+transaction by using a different transaction manager (that is, the
+KafkaTransactionManager ). When Kafka publishing occurs, the transaction does
+not immediately commit or roll back, since the transaction started as part of
+the method, and the commit or roll-back happens when the method exits. At that
+point, the control returns to the first method and continues. Once it exits the
+original method, the JPA transaction is committed through the interceptor. If
+the method that publishes to Kafka throws an exception, it rolls back that
+transaction. In that case, after rolling back, the exception propagates back to
+the first transactional method (the JPA one), which also rolls back its
+transaction due to the exception. An important note when using this technique
+The call to the nested method should be the last thing the first method does
+because, if the first method fails to execute some code after the Kafka call,
+which went successfully, the Kafka transaction has already been committed. The
+failure in the first method does not automatically roll back the Kafka
+transaction. Scenario 3: Consume-Process-Produce With the core understanding we
+gained about transactions in this series so far, let’s look at a crucial pattern
+in event-driven and streaming applications called the consume-process-produce
+pattern. In Spring Cloud Stream, an implementation of such a pattern looks as
+follows: @Bean public Function<PersonEvent, PersonEvent> process(TxCode txCode)
+{ return pe -> txCode.run(pe); } @Component class TxCode { @Transactional
+PersonEvent run(PersonEvent pe) { Person person = new Person();
+person.setName(pe.getName()); Person savedPerson = repository.save(person);
+PersonEvent event = new PersonEvent(); event.setName(savedPerson.getName());
+event.setType("PersonSaved"); return
+----------------------------------------------------------------------------------------------------
+Index: 38030 <<"chunk_id": 9, "docno": 5602>>
+
+people thinking it has greater functionality than it really does). If you do not
+want to rely on deprecated classes from the framework or do not want to copy
+them and maintain them on your end, you have another option to try. You can
+create two transactional methods and nest the calls. Here is a blueprint for
+that idea: @Component static class Sender {
+@Transactional("jpaTransactionManager") public void send(StreamBridge
+streamBridge, PersonRepository repository, KafkaSender kafkaSender) { Person
+person = new Person(); person.setName("Some Person"); Person savedPerson =
+repository.save(person); PersonEvent event = new PersonEvent();
+event.setName(savedPerson.getName()); event.setType("PersonSaved");
+kafkaSender.send(streamBridge, event); } } @Component static class KafkaSender {
+@Transactional("customKafkaTransactionManager") public void send(StreamBridge
+streamBridge, PersonEvent event) { streamBridge.send("process-out-0", event); }
+} Ensure that the nested call is in a different class for the reasons we went
+through in part 2 of this blog series, because of how AOP proxying works in
+Spring. Both methods, in this case, are transactional, and they are nested. When
+the transaction interceptor intercepts the first method call, it starts the JPA
+transaction. In the middle of the execution, the nested call (whose method also
+has the @Transactional annotation) comes in. Since this bean method has the
+@Transactional annotation, Spring AOP wraps the bean in an AOP advice. Because
+we call this advised bean from another bean in a different class, the proxy
+mechanism properly invokes the advised bean. Another transaction interceptor
+starts a new transaction by using a different transaction manager (that is, the
+KafkaTransactionManager ). When Kafka publishing occurs, the transaction does
+not immediately commit or roll back,
+----------------------------------------------------------------------------------------------------
+Index: 37965 <<"chunk_id": 8, "docno": 5595>>
+
+@Transactional method and includes the AOP advice. Without the
+@EnableTransactionManagement annotation applied, Spring does not trigger any of
+these proxying and interception mechanisms. Since the
+EnableTransactionManagement annotation is crucial for these various reasons, we
+must provide a transaction manager bean. Otherwise, the Transactional annotation
+on the method has no bearings. Note that we are getting the transactional
+producer factory from the binder and using that in the constructor for
+KafkaTransactionManager . When this bean is present in the application, the
+entire publishing of all the records now happens within the scope of a single
+transaction. We see only a single sequence of beginTransaction…commitTransaction
+in the trace logs, which means that only one proper transaction carries out all
+the publishing operations. Behind the scenes, these are the sequence of events:
+As soon as the method annotated with Transactional is called, the transaction
+interceptor kicks in through the AOP proxying mechanism, and it starts a new
+transaction by using the custom KafkaTransactionManager . When the transaction
+manager begins the transaction, the resource used by the transaction manager -
+the transactional resource holder (AKA, producer obtained from the producer
+factory) - is bound to the transaction. When the method calls the
+StreamBridge#send method, the underlying KafkaTemplate will use the same
+transactional resource created by the custom KafkaTransactionManager . Since a
+transaction is already in progress, it does not start another transaction, but
+the publishing occurs on the same transactional producer. As it calls more send
+methods, it will not start new transactions. Instead, it publishes via the same
+producer
+----------------------------------------------------------------------------------------------------
+Index: 55783 <<"chunk_id": 1, "docno": 9071>>
+
+many more of the XML-based features that have been developed over the years. We
+think the result is very appealing, and in some cases even offering clear
+advantages over XML-based configuration. In short: if you didn't consider it in
+3.0 you really should look at it closely this time around. Code equivalents for
+Spring's XML namespaces If you've been watching things closely, you'll recall
+that we introduced the idea of FeatureSpecification classes and @Feature methods
+in 3.1 M1. As it turns out, we've decided to replace this with a different
+mechanism in 3.1 M2. Why? Because although FeatureSpecification classes provided
+a convenient mechanism for configuring features of the Spring container like
+annotation-driven transaction management and component-scanning, that
+convenience came with two downsides: lack of extensibility, and lack of
+implementation transparency. The more we thought about it, the more we realized
+we could do even better. While FeatureSpecification classes mirrored the XML
+namespaces closely through fluent APIs, the new solution takes a different shape
+- one specifically designed to take advantage of Java on its own terms. For
+short, we call the new mechanism " @Enable " annotations. These annotations are
+applied at the type level on @Configuration classes. Let's take
+@EnableTransactionManagement for an example. Most users will be familiar with
+the following Spring XML snippet: <beans> <tx:annotation-driven/> </beans> This
+of course enables Spring's support for transaction management using the
+@Transactional annotation. Now let's see the equivalent configuration in code:
+@Configuration @EnableTransactionManagement public class AppConfig { // ... }
+Pretty simple, huh? Of course there's much more
+----------------------------------------------------------------------------------------------------
+Index: 25615 <<"chunk_id": 5, "docno": 3534>>
+
+the transaction management code in our service or caller itself. And what does
+it matter anyway? If that's not enough, we can always start looking at the
+actual performance degradation that we get from the proxying mechanism and
+compare it to the actual time it takes to start and/or commit a transaction. I
+don't have any numbers available, but I can assure you, committing a transaction
+on a JDBC transaction definitely takes more time than 491 nanoseconds. But what
+if it's very fine-grained operations the proxy executes Ahh! That's an entirely
+different story. There are different classes of behavior you can transparently
+add of course (either using proxies or using a byte code weaving approach). I
+usually distinguish between fine-grained and coarse-grained behavior.
+Coarse-grained behavior to my mind is applied at a service level or only to a
+certain and limited set of operations in our application. A more fine-grained
+set of behavior would for example include logging of every method in our system.
+I would definitely not choose to use a proxy-based approach for such
+fine-grained approaches. Rules of thumb Concluding we can say the following:
+first of all proxies add overhead and that this overhead is negligible if the
+behavior applied to the objects that are proxied has something to do with longer
+running operations (such as database or file access or transaction management).
+We can also say that if you need very fine-grained behavior and want to apply
+that to a large set of objects, it's probably safer to go for a byte
+----------------------------------------------------------------------------------------------------

@@ -1,0 +1,493 @@
+Index: 3170 <<"chunk_id": 2, "docno": 454>>
+
+large data (e.g., files, network requests…). This is where Node.js streams come
+in. Streams offer a fundamentally different approach, allowing you to process
+data incrementally and optimize memory usage. By handling data in manageable
+chunks, streams empower you to build scalable applications that can efficiently
+tackle even the most daunting datasets. As popularly quoted, “streams are arrays
+over time.” In this guide, we give an overview of the Stream concept, history,
+and API as well as some recommendations on how to use and operate them. What are
+Node.js Streams? Node.js streams offer a powerful abstraction for managing data
+flow in your applications. They excel at processing large datasets, such as
+reading or writing from files and network requests, without compromising
+performance. This approach differs from loading the entire dataset into memory
+at once. Streams process data in chunks, significantly reducing memory usage.
+All streams in Node.js inherit from the EventEmitter class, allowing them to
+emit events at various stages of data processing. These streams can be readable,
+writable, or both, providing flexibility for different data-handling scenarios.
+Event-Driven Architecture Node.js thrives on an event-driven architecture,
+making it ideal for real-time I/O. This means consuming input as soon as it's
+available and sending output as soon as the application generates it. Streams
+seamlessly integrate with this approach, enabling continuous data processing.
+They achieve this by emitting events at key stages. These events include signals
+for received data ( data event) and the stream's completion ( end event).
+Developers can listen to these events and execute custom logic accordingly.
+----------------------------------------------------------------------------------------------------
+Index: 3171 <<"chunk_id": 3, "docno": 454>>
+
+signals for received data ( data event) and the stream's completion ( end
+event). Developers can listen to these events and execute custom logic
+accordingly. This event-driven nature makes streams highly efficient for the
+processing of data from external sources. Why use Streams? Streams provide three
+key advantages over other data-handling methods: Memory Efficiency : Streams
+process data incrementally, consuming and processing data in chunks rather than
+loading the entire dataset into memory. This is a major advantage when dealing
+with large datasets, as it significantly reduces memory usage and prevents
+memory-related performance issues. Improved Response Time : Streams allow for
+immediate data processing. When a chunk of data arrives, it can be processed
+without waiting for the entire payload or dataset to be received. This reduces
+latency and improves your application's overall responsiveness. Scalability for
+Real-Time Processing : By handling data in chunks, Node.js streams can
+efficiently handle large amounts of data with limited resources. This
+scalability makes streams ideal for applications that process high volumes of
+data in real time. These advantages make streams a powerful tool for building
+high-performance, scalable Node.js applications, particularly when working with
+large datasets or real-time data processing. Note on performance If your
+application already has all the data readily available in memory, using streams
+might add unnecessary overhead, complexity, and slow down your application.
+Stream history This section is a reference of the history of streams in Node.js.
+Unless you’re working with a codebase written for a Node.js version prior to
+0.11.5 (2013), you will rarely encounter older
+----------------------------------------------------------------------------------------------------
+Index: 22159 <<"chunk_id": 4, "docno": 2739>>
+
+is a basic principle that high traffic/volume pathways require more efficient
+throughput or you incur risk of bottlenecks in your distribution. One exercise
+is to rank these in terms of traffic or as a heat map. Next, can you classify
+your traffic - are there overarching patterns, topics or similar message types,
+and what are the relationships? Now start to consider consolidation, how and
+where might efficiency be improved, and apply tested patterns that resolve those
+heat points, decouple for scale, and increase performance. General Routing
+Considerations All exchange types behave differently. Here are a few general
+rules: If you have a finite domain of routing keys in an application's graph
+then many fanout exchanges might be the right fit (1:1 mapping of exchange per
+routing key) If you have a potentially infinite number of routing keys, consider
+topic exchanges For topic routing, performance decreases as the number of
+bindings increase Fanout exchanges are very fast because they have no routing to
+process yet if bound to a large number of queues that changes Direct exchanges
+are a faster form of topic exchanges, provided you do not need the wild card
+Troubleshooting problems across 100,000+ queues could be tedious versus a
+topology with more bindings, fewer exchanges and queues A very high number of
+exchanges and queues take up more memory which may be significant but this
+really depends As of RabbitMQ 2.4.0, released March 23, 2011, a new topic
+routing algorithm optimization is available that is 60 times faster at peak than
+the previous topic
+----------------------------------------------------------------------------------------------------
+Index: 3184 <<"chunk_id": 16, "docno": 454>>
+
+version, which doesn’t accept a callback but instead returns a promise that is
+rejected if the pipeline fails. Async Iterators Async iterators are recommended
+as the standard way of interfacing with the Streams API. Compared to all the
+stream primitives in both the Web and Node.js, async iterators are easier to
+understand and use, contributing to fewer bugs and more maintainable code. In
+recent versions of Node.js, async iterators have emerged as a more elegant and
+readable way to interact with streams. Building upon the foundation of events,
+async iterators provide a higher-level abstraction that simplifies stream
+consumption. In Node.js, all readable streams are asynchronous iterables. This
+means you can use the for await...of syntax to loop through the stream's data as
+it becomes available, handling each piece of data with the efficiency and
+simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
+Using async iterators with streams simplifies the handling of asynchronous data
+flows in several ways: Enhanced Readability : The code structure is cleaner and
+more readable, particularly when dealing with multiple asynchronous data
+sources. Error Handling : Async iterators allow straightforward error handling
+using try/catch blocks, akin to regular asynchronous functions. Flow Control :
+They inherently manage backpressure, as the consumer controls the flow by
+awaiting the next piece of data, allowing for more efficient memory usage and
+processing. Async iterators offer a more modern and often more readable way to
+work with readable streams, especially when dealing with asynchronous data
+sources or when you prefer a more sequential, loop-based approach
+----------------------------------------------------------------------------------------------------
+Index: 13265 <<"chunk_id": 6, "docno": 1778>>
+
+code updates with Fast Refresh on large Next.js apps like vercel.com . Advanced
+Tracing As Next.js has grown in adoption over the years, we've found it
+increasingly hard to reproduce reported issues on GitHub, especially related to
+compiler performance and memory usage. This is because most people can't share
+their application code, or when they share the code, the application can't run
+because it requires a database or other setup. To begin to address this, we
+added tracing to the internals of Next.js. These traces are written to a file in
+the .next folder and do not include application code — only the file path, the
+time the compiler took on it, and other timings like individual transforms.
+However, with webpack, we never had a good way to clearly distinguish memory
+usage of the compiler from memory usage of framework or application code, as
+they all run in the same Node.js instance. With Turbopack, we were able to
+design with instrumentation from the beginning. We implemented an
+instrumentation layer in Turbo Engine that allows for collecting timings of each
+individual function. We were able to extend these traces to also keep track of
+the memory allocation, deallocation, and persisted memory across every function.
+This new, advanced tracing gives us all the information needed to investigate
+slowdowns and memory usage deeply; it only requires a trace instead of a full
+codebase. In order to process these new traces, we've implemented a custom trace
+viewer that stays performant regardless of application and trace size. It's a
+trace viewer
+----------------------------------------------------------------------------------------------------
+Index: 35987 <<"chunk_id": 2, "docno": 5045>>
+
+cache or don’t learn about it in the first place. They update an entity using
+SQL and fail to load the updated state using JPA, because JPA always returns the
+already loaded entity. They edit an entity in memory and are surprised that it
+gets saved to the database, although they never called a method to do that. They
+edit an entity in memory and want to compare it to its state in the database and
+again are surprised that they keep getting the already changed version. They run
+large batches and are surprised that their entities are not garbage collected,
+resulting in huge memory footprint, bad performance and possibly out of memory
+exceptions. The separation of concerns in Spring Data JDBC makes things way more
+transparent. An entity gets saved to the database when you call save() on the
+respective repository. And it gets loaded from the database when you call a
+method that returns one or more entities from a repository. What if I still want
+caching? Without a doubt there are situations where caching is the right thing
+to do. Whenever you have data that you read a lot but that isn’t changing as
+fast, caching is a reasonable option. And since caching is not part of Spring
+Data JDBC and Spring Data JDBC repositories are just Spring Beans, you can
+combine it with any caching solution you like. The obvious choice is of course,
+Springs Caching abstraction behind which you can put any caching solution. It’s
+almost too simple to be true.
+----------------------------------------------------------------------------------------------------
+Index: 6120 <<"chunk_id": 0, "docno": 797>>
+
+title: How to optimize memory usage description: Optimize memory used by your
+application in development and production. url:
+"https://nextjs.org/docs/app/guides/memory-usage" docs_index: /docs/llms.txt
+version: 16.3.0 lastUpdated: 2026-04-28 prerequisites: - "Guides:
+/docs/app/guides" For an index of all Next.js documentation, see /docs/llms.txt
+. As applications grow and become more feature rich, they can demand more
+resources when developing locally or creating production builds. Let's explore
+some strategies and techniques to optimize memory and address common memory
+issues in Next.js. Reduce number of dependencies Applications with a large
+amount of dependencies will use more memory. The Bundle Analyzer can help you
+investigate large dependencies in your application that may be able to be
+removed to improve performance and memory usage. Try
+experimental.webpackMemoryOptimizations Starting in v15.0.0 , you can add
+experimental.webpackMemoryOptimizations: true to your next.config.js file to
+change behavior in Webpack that reduces max memory usage but may increase
+compilation times by a slight amount. Good to know : This feature is currently
+experimental to test on more projects first, but it is considered to be
+low-risk. Run next build with --experimental-debug-memory-usage Starting in
+14.2.0 , you can run next build --experimental-debug-memory-usage to run the
+build in a mode where Next.js will print out information about memory usage
+continuously throughout the build, such as heap usage and garbage collection
+statistics. Heap snapshots will also be taken automatically when memory usage
+gets close to the configured limit. Good to know : This feature is not
+compatible with the Webpack build worker option which is auto-enabled unless you
+have custom webpack config. Record a
+----------------------------------------------------------------------------------------------------
+Index: 46971 <<"chunk_id": 4, "docno": 7360>>
+
+the other in a single thread takes 1000ms, we might see a processing time of
+250ms for a single incoming request at our HTTP service. We should emphasise the
+"might" though: it’s only going to go that fast if there is no contention for
+the processing threads (in both stages, the Tomcat workers, and the application
+scheduler). If you have a server with a large number of cores, very low
+concurrency, i.e. a small number of clients connecting to your application, and
+hardly any chance that two will make a request at the same time, then you will
+probably see close to the theoretical improvement. As soon as there are multiple
+clients trying to connect, they will all be competing for the same 4 threads,
+and the latency will drift up, and could even be worse than that experienced by
+a single client with no background processing. We can improve the latency for
+concurrent clients by creating the scheduler with a larger thread pool, e.g.
+private Scheduler scheduler = Schedulers.newParallel("sub", 16); (16 threads.)
+Now we are using more memory for the threads and their stacks, and we can expect
+to see lower latency for low concurrency, but not necessarily for high
+concurrency if our hardware has fewer than 16 cores. We also do not expect
+higher throughput under load: if there is contention for the threads, there is a
+high cost for managing those resources and that has to be reflected somwehere in
+a metric that matters. If you are interested in more detailed analysis of
+----------------------------------------------------------------------------------------------------
+Index: 3169 <<"chunk_id": 1, "docno": 454>>
+
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page What are
+Node.js Streams? Event-Driven Architecture Why use Streams? Note on performance
+Stream history Streams 0 Streams 1 (Classic) Streams 2 Streams 3 Stream types
+Readable Writable Duplex Transform How to operate with streams .pipe() pipeline
+Async Iterators Object mode Backpressure Streams vs Web streams Interoperability
+of streams and Web Streams How To Use Streams Working with large amounts of data
+in Node.js applications can be a double-edged sword. The ability to handle
+massive amounts of data is extremely handy but can also lead to performance
+bottlenecks and memory exhaustion. Traditionally, developers tackled this
+challenge by reading the entire dataset into memory at once. This approach,
+while intuitive for smaller datasets, becomes inefficient and resource-intensive
+for large data (e.g., files, network requests…). This is where Node.js streams
+come in. Streams offer a fundamentally different approach, allowing you to
+process data incrementally
+----------------------------------------------------------------------------------------------------
+Index: 2421 <<"chunk_id": 2, "docno": 352>>
+
+ensure a smooth flow of data from one source to another. Different communities
+have resolved this issue uniquely to their programs, Unix pipes and TCP sockets
+are good examples of this, and are often referred to as flow control . In
+Node.js, streams have been the adopted solution. The purpose of this guide is to
+further detail what backpressure is, and how exactly streams address this in
+Node.js' source code. The second part of the guide will introduce suggested best
+practices to ensure your application's code is safe and optimized when
+implementing streams. We assume a little familiarity with the general definition
+of backpressure , Buffer , and EventEmitters in Node.js, as well as some
+experience with Stream . If you haven't read through those docs, it's not a bad
+idea to take a look at the API documentation first, as it will help expand your
+understanding while reading this guide. The Problem with Data Handling In a
+computer system, data is transferred from one process to another through pipes,
+sockets, and signals. In Node.js, we find a similar mechanism called Stream .
+Streams are great! They do so much for Node.js and almost every part of the
+internal codebase utilizes that module. As a developer, you are more than
+encouraged to use them too! CJS ESM const readline = require ( ' node:readline '
+) ; // process.stdin and process.stdout are both instances of Streams. const rl
+= readline . createInterface ( { input : process . stdin , output : process .
+stdout ,
+----------------------------------------------------------------------------------------------------
+Index: 3747 <<"chunk_id": 0, "docno": 505>>
+
+Security Considerations — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » Security Considerations Security
+Considerations ¶ Web applications face many types of potential security
+problems, and it can be hard to get everything right, or even to know what
+“right” is in general. Flask tries to solve a few of these things by default,
+but there are other parts you may have to take care of yourself. Many of these
+solutions are tradeoffs, and will depend on each application’s specific needs
+and threat model. Many hosting platforms may take care of certain types of
+problems without the need for the Flask application to handle them. Resource Use
+¶ A common category of attacks is “Denial of Service” (DoS or DDoS). This is a
+very broad category, and different variants target different layers in a
+deployed application. In general, something is done to increase how much
+processing time or memory is used to handle each request, to the point where
+there are not enough resources to handle legitimate requests. Flask provides a
+few configuration options to handle resource use. They can also be set on
+individual requests to customize only that request. The documentation for each
+goes into more detail. MAX_CONTENT_LENGTH or Request.max_content_length controls
+how much data will be read from a request. It is not set by default, although it
+will still block truly unlimited streams unless the WSGI server indicates
+support. MAX_FORM_MEMORY_SIZE or Request.max_form_memory_size controls how large
+any non-file multipart/form-data field can be. It is set to 500kB
+----------------------------------------------------------------------------------------------------
+Index: 56145 <<"chunk_id": 2, "docno": 9133>>
+
+at any point in time some key metrics, including: What jobs are currently
+running? Which jobs have failed, if any? Other questions about how things are
+going. Being able to have these KPIs at a glance on a dashboard is vital for
+efficient operations. 5. Scalability We are dealing with an unprecedented
+amounts of data, which is impossible to handle on a single machine any more.
+Correctly processing large volumes of distributed data is probably the most
+challenging point. Cloud-native batch applications should be scalable by design.
+All these aspects should be taken into consideration when designing and
+developing cloud-native batch applications. This is a considerable amount of
+work on the developer's side. Spring Batch takes care of most of these issues. I
+explain the details in the next section. How does Spring Batch Make a Batch
+Developer's Life easier? Spring Batch is the de facto batch processing framework
+on the JVM. Entire books have been written on the rich feature set provided by
+Spring Batch, but I would like to highlight the most relevant features that
+address the previously mentioned challenges in the context of cloud-native
+development: 1. Fault Tolerance Spring Batch provides fault-tolerance features,
+such as transaction management and skip and retry mechanisms, which are useful
+when batch jobs interact with flaky services in a cloud environment. 2.
+Robustness Spring Batch uses a centralized transactional job repository, which
+prevents duplicate job executions. By design, human errors and platform
+limitations that may lead to running the same job twice are impossible. 3. Cost
+Efficiency Spring
+----------------------------------------------------------------------------------------------------
+Index: 26718 <<"chunk_id": 1, "docno": 3801>>
+
+to stop expanding! Dysprosium-M1 is available on our milestone repository . It
+is paving the way for more changes in the work. It's worth noting that 2
+features are being deprecated, and evaluated for removal at the end of the
+milestone phase : EventLoopProcessor => TopicProcessor , WorkQueueProcessor and
+WaitStrategy : The processors have been moved to reactor-extra for optional use.
+They require the availability of Unsafe , making them rather niche given modern
+JVM restrictions. Not only they can be found elsewhere but they can also be
+replaced by equivalent constructs like EmitterProcessor with publishOn and
+ParallelFlux with runOn . Kotlin extensions are being given a dedicated space
+for further experimentation. With the latest developments around coroutines and
+inlining , we are excited to evaluate how we can leverage Kotlin to provide a
+smoother developer experience. One of the goals we have set to this experiment
+is to provide a dedicated API that will enable writing custom producers and
+operators with the conciseness of Kotlin. Even with these changes we do not
+anticipate major pains for our community, but we'd like to have your opinion.
+Change logs and release notes: reactor-core 3.3.0.M1 reactor-netty 0.9.0.M1
+reactor-addons 3.3.0.M1 BlockHound 1.0.0.M3 Runtime performances We are working
+hard at improving the overall experience for our users and upgrading our runtime
+efficiency across the board: reactor-netty 0.9.0.M1/0.8.8 has seen a 40%
+throughput improvement for request/reply (HTTP) scenarios and at least 20%
+increase for streaming scenarios. More importantly, memory management has been
+tightened to control some reported memory issues and the
+----------------------------------------------------------------------------------------------------
+Index: 30561 <<"chunk_id": 1797, "docno": 4202>>
+
+is so that unexpected 'error' events (due to incorrect stream implementations)
+do not cause unexpected crashes. If this is unwanted behavior then
+options.cleanup should be set to true : await finished (rs , { cleanup : true }
+) ; mjs copy Object mode # All streams created by Node.js APIs operate
+exclusively on strings, <Buffer> , <TypedArray> and <DataView> objects: Strings
+and Buffers are the most common types used with streams. TypedArray and DataView
+lets you handle binary data with types like Int32Array or Uint8Array . When you
+write a TypedArray or DataView to a stream, Node.js processes the raw bytes. It
+is possible, however, for stream implementations to work with other types of
+JavaScript values (with the exception of null , which serves a special purpose
+within streams). Such streams are considered to operate in "object mode". Stream
+instances are switched into object mode using the objectMode option when the
+stream is created. Attempting to switch an existing stream into object mode is
+not safe. Buffering # Both Writable and Readable streams will store data in an
+internal buffer. The amount of data potentially buffered depends on the
+highWaterMark option passed into the stream's constructor. For normal streams,
+the highWaterMark option specifies a total number of bytes . For streams
+operating in object mode, the highWaterMark specifies a total number of objects.
+For streams operating on (but not decoding) strings, the highWaterMark specifies
+a total number of UTF-16 code units. Data is buffered in Readable streams when
+the implementation calls stream.push(chunk) . If the
+----------------------------------------------------------------------------------------------------
+Index: 47855 <<"chunk_id": 0, "docno": 7553>>
+
+Node.js — Node.js 12.8.1 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.8.1 (Current)
+MLZ Michaël Zasso Node.js 12.8.1 (Current) Notable changes This is a security
+release. Node.js, as well as many other implementations of HTTP/2, have been
+found vulnerable to Denial of Service attacks. See
+https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
+for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
+attacker requests a large amount of data from a specified resource over multiple
+streams. They manipulate window size and stream priority to force the server to
+queue the data in 1-byte chunks. Depending on how efficiently this data is
+queued, this can consume excess CPU, memory, or both, potentially leading to a
+denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
+pings to an HTTP/2 peer, causing the peer to build an internal queue of
+responses. Depending on how efficiently this data is queued, this can consume
+excess CPU, memory, or both, potentially leading to a denial of service.
+CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
+and continually shuffles the priority of the streams in a way that causes
+substantial churn to the priority tree. This can consume excess CPU, potentially
+leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
+a number of streams and sends an invalid request over each stream that should
+solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
+queues the RST_STREAM frames, this can consume excess memory, CPU, or both,
+----------------------------------------------------------------------------------------------------
+Index: 60081 <<"chunk_id": 4, "docno": 9982>>
+
+the vast majority of the extra 512MB of memory to be given to the heap to cope
+with the increased load. Unfortunately, the JVM does not do so by default and
+will allocate the additional memory more equally between its heap and non-heap
+areas. Thankfully, the CloudFoundry team have a wealth of knowledge about the
+JVM's memory footprint. If you're pushing apps to CloudFoundry, the build pack
+will automatically apply this knowledge for you. If you're not using
+CloudFoudry, or you'd like to understand more about how to size your JVM, the
+design document for version three of the Java buildpack's memory calculator
+provides some highly recommended further reading. What does this mean for
+Spring? We spend a lot of time on the Spring team thinking about performance and
+memory utilisation, considering both heap and non-heap memory usage. One way to
+limit non-heap memory usage is to make parts of the Framework as general-purpose
+as possible. An example of this is the use of reflection to create and inject
+dependencies into your application's beans. Thanks to the use of reflection, the
+amount of Framework code that's used remains constant, irrespective of how many
+beans your application contains. We use a heap-based cache to optimise startup
+time, clearing this cache once startup has completed. The heap memory can then
+be easily reclaimed by the garbage collector, making as much memory as possible
+available to your application as it handles its workload. Get the Spring
+newsletter Stay connected with the Spring newsletter Subscribe Get ahead VMware
+offers training
+----------------------------------------------------------------------------------------------------
+Index: 47145 <<"chunk_id": 0, "docno": 7393>>
+
+Node.js — Node.js 8.16.1 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 8.16.1 (LTS) BNG
+Bethany Nicolle Griggs Node.js 8.16.1 (LTS) Notable changes This is a security
+release. Node.js, as well as many other implementations of HTTP/2, have been
+found vulnerable to Denial of Service attacks. See
+https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
+for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
+attacker requests a large amount of data from a specified resource over multiple
+streams. They manipulate window size and stream priority to force the server to
+queue the data in 1-byte chunks. Depending on how efficiently this data is
+queued, this can consume excess CPU, memory, or both, potentially leading to a
+denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
+pings to an HTTP/2 peer, causing the peer to build an internal queue of
+responses. Depending on how efficiently this data is queued, this can consume
+excess CPU, memory, or both, potentially leading to a denial of service.
+CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
+and continually shuffles the priority of the streams in a way that causes
+substantial churn to the priority tree. This can consume excess CPU, potentially
+leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
+a number of streams and sends an invalid request over each stream that should
+solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
+queues the RST_STREAM frames, this can consume excess memory, CPU, or
+----------------------------------------------------------------------------------------------------
+Index: 49007 <<"chunk_id": 0, "docno": 7737>>
+
+Node.js — Node.js 10.16.3 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 10.16.3 (LTS) BNG
+Bethany Nicolle Griggs Node.js 10.16.3 (LTS) Notable changes This is a security
+release. Node.js, as well as many other implementations of HTTP/2, have been
+found vulnerable to Denial of Service attacks. See
+https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
+for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
+attacker requests a large amount of data from a specified resource over multiple
+streams. They manipulate window size and stream priority to force the server to
+queue the data in 1-byte chunks. Depending on how efficiently this data is
+queued, this can consume excess CPU, memory, or both, potentially leading to a
+denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
+pings to an HTTP/2 peer, causing the peer to build an internal queue of
+responses. Depending on how efficiently this data is queued, this can consume
+excess CPU, memory, or both, potentially leading to a denial of service.
+CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
+and continually shuffles the priority of the streams in a way that causes
+substantial churn to the priority tree. This can consume excess CPU, potentially
+leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
+a number of streams and sends an invalid request over each stream that should
+solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
+queues the RST_STREAM frames, this can consume excess memory, CPU, or
+----------------------------------------------------------------------------------------------------
+Index: 4540 <<"chunk_id": 6, "docno": 627>>
+
+each creating small objects like { name: 'Alice', action: 'login' } , you may
+notice performance degradation due to frequent garbage collection. By increasing
+the New Space size, you can reduce the frequency of these collections and
+improve overall performance. node --max-semi-space-size=64 app.js This increases
+the New Space to 64 MB, allowing for more objects to reside in memory before
+triggering garbage collection. This is particularly useful in high-throughput
+environments where object creation and destruction are frequent. --gc-interval
+This flag adjusts how frequently garbage collection cycles occur. By default, V8
+determines the best interval, but you can override this setting in some
+scenarios where you need more control over memory cleanup. For example, in a
+real-time application like a stock trading platform, you may want to minimize
+the impact of garbage collection by reducing the frequency of collections,
+ensuring the application can process data without significant pauses. node
+--gc-interval=100 app.js This setting forces V8 to attempt garbage collection
+every 100 allocations. You may need to adjust this interval for specific use
+cases, but be cautious: setting the interval too low can cause performance
+degradation due to excessive garbage collection cycles. --expose-gc With the
+--expose-gc flag, you can manually trigger garbage collection from within your
+application code. This can be helpful in specific scenarios, like after
+processing a large batch of data, where you want to reclaim memory before
+continuing with further operations. To expose gc , start your app with: node
+--expose-gc app.js Then, within your application code, you can call global.gc()
+to manually trigger garbage
+----------------------------------------------------------------------------------------------------
+Index: 43235 <<"chunk_id": 20, "docno": 6696>>
+
+service. CVE-2019-9515 “Settings Flood” : The attacker sends a stream of
+SETTINGS frames to the peer. Since the RFC requires that the peer reply with one
+acknowledgement per SETTINGS frame, an empty SETTINGS frame is almost equivalent
+in behavior to a ping. Depending on how efficiently this data is queued, this
+can consume excess CPU, memory, or both, potentially leading to a denial of
+service. CVE-2019-9516 “0-Length Headers Leak” : The attacker sends a stream of
+headers with a 0-length header name and 0-length header value, optionally
+Huffman encoded into 1-byte or greater headers. Some implementations allocate
+memory for these headers and keep the allocation alive until the session dies.
+This can consume excess memory, potentially leading to a denial of service.
+CVE-2019-9517 “Internal Data Buffering” : The attacker opens the HTTP/2 window
+so the peer can send without constraint; however, they leave the TCP window
+closed so the peer cannot actually write (many of) the bytes on the wire. The
+attacker then sends a stream of requests for a large response object. Depending
+on how the servers queue the responses, this can consume excess memory, CPU, or
+both, potentially leading to a denial of service. CVE-2019-9518 “Empty Frames
+Flood” : The attacker sends a stream of frames with an empty payload and without
+the end-of-stream flag. These frames can be DATA, HEADERS, CONTINUATION and/or
+PUSH_PROMISE. The peer spends time processing each frame disproportionate to
+attack bandwidth. This can consume excess CPU, potentially leading to a denial
+of service. (Discovered by Piotr Sikora of Google) Notable
+----------------------------------------------------------------------------------------------------

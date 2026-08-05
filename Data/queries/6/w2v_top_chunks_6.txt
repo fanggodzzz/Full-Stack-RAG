@@ -1,0 +1,493 @@
+Index: 3171 <<"chunk_id": 3, "docno": 454>>
+
+signals for received data ( data event) and the stream's completion ( end
+event). Developers can listen to these events and execute custom logic
+accordingly. This event-driven nature makes streams highly efficient for the
+processing of data from external sources. Why use Streams? Streams provide three
+key advantages over other data-handling methods: Memory Efficiency : Streams
+process data incrementally, consuming and processing data in chunks rather than
+loading the entire dataset into memory. This is a major advantage when dealing
+with large datasets, as it significantly reduces memory usage and prevents
+memory-related performance issues. Improved Response Time : Streams allow for
+immediate data processing. When a chunk of data arrives, it can be processed
+without waiting for the entire payload or dataset to be received. This reduces
+latency and improves your application's overall responsiveness. Scalability for
+Real-Time Processing : By handling data in chunks, Node.js streams can
+efficiently handle large amounts of data with limited resources. This
+scalability makes streams ideal for applications that process high volumes of
+data in real time. These advantages make streams a powerful tool for building
+high-performance, scalable Node.js applications, particularly when working with
+large datasets or real-time data processing. Note on performance If your
+application already has all the data readily available in memory, using streams
+might add unnecessary overhead, complexity, and slow down your application.
+Stream history This section is a reference of the history of streams in Node.js.
+Unless you’re working with a codebase written for a Node.js version prior to
+0.11.5 (2013), you will rarely encounter older
+----------------------------------------------------------------------------------------------------
+Index: 3170 <<"chunk_id": 2, "docno": 454>>
+
+large data (e.g., files, network requests…). This is where Node.js streams come
+in. Streams offer a fundamentally different approach, allowing you to process
+data incrementally and optimize memory usage. By handling data in manageable
+chunks, streams empower you to build scalable applications that can efficiently
+tackle even the most daunting datasets. As popularly quoted, “streams are arrays
+over time.” In this guide, we give an overview of the Stream concept, history,
+and API as well as some recommendations on how to use and operate them. What are
+Node.js Streams? Node.js streams offer a powerful abstraction for managing data
+flow in your applications. They excel at processing large datasets, such as
+reading or writing from files and network requests, without compromising
+performance. This approach differs from loading the entire dataset into memory
+at once. Streams process data in chunks, significantly reducing memory usage.
+All streams in Node.js inherit from the EventEmitter class, allowing them to
+emit events at various stages of data processing. These streams can be readable,
+writable, or both, providing flexibility for different data-handling scenarios.
+Event-Driven Architecture Node.js thrives on an event-driven architecture,
+making it ideal for real-time I/O. This means consuming input as soon as it's
+available and sending output as soon as the application generates it. Streams
+seamlessly integrate with this approach, enabling continuous data processing.
+They achieve this by emitting events at key stages. These events include signals
+for received data ( data event) and the stream's completion ( end event).
+Developers can listen to these events and execute custom logic accordingly.
+----------------------------------------------------------------------------------------------------
+Index: 1682 <<"chunk_id": 2, "docno": 249>>
+
+read this guide? If you're writing anything more complicated than a brief
+command-line script, reading this should help you write higher-performance,
+more-secure applications. This document is written with Node.js servers in mind,
+but the concepts apply to complex Node.js applications as well. Where
+OS-specific details vary, this document is Linux-centric. Summary Node.js runs
+JavaScript code in the Event Loop (initialization and callbacks), and offers a
+Worker Pool to handle expensive tasks like file I/O. Node.js scales well,
+sometimes better than more heavyweight approaches like Apache. The secret to the
+scalability of Node.js is that it uses a small number of threads to handle many
+clients. If Node.js can make do with fewer threads, then it can spend more of
+your system's time and memory working on clients rather than on paying space and
+time overheads for threads (memory, context-switching). But because Node.js has
+only a few threads, you must structure your application to use them wisely.
+Here's a good rule of thumb for keeping your Node.js server speedy: Node.js is
+fast when the work associated with each client at any given time is "small" .
+This applies to callbacks on the Event Loop and tasks on the Worker Pool. Why
+should I avoid blocking the Event Loop and the Worker Pool? Node.js uses a small
+number of threads to handle many clients. In Node.js there are two types of
+threads: one Event Loop (aka the main loop, main thread, event thread, etc.),
+and a pool of k Workers in a Worker Pool (aka the threadpool). If
+----------------------------------------------------------------------------------------------------
+Index: 1702 <<"chunk_id": 22, "docno": 249>>
+
+only while it is scheduled. As a result, you should only consider this approach
+after careful analysis. Worker Pool: conclusions Whether you use only the
+Node.js Worker Pool or maintain separate Worker Pool(s), you should optimize the
+Task throughput of your Pool(s). To do this, minimize the variation in Task
+times by using Task partitioning. The risks of npm modules While the Node.js
+core modules offer building blocks for a wide variety of applications, sometimes
+something more is needed. Node.js developers benefit tremendously from the npm
+ecosystem , with hundreds of thousands of modules offering functionality to
+accelerate your development process. Remember, however, that the majority of
+these modules are written by third-party developers and are generally released
+with only best-effort guarantees. A developer using an npm module should be
+concerned about two things, though the latter is frequently forgotten. Does it
+honor its APIs? Might its APIs block the Event Loop or a Worker? Many modules
+make no effort to indicate the cost of their APIs, to the detriment of the
+community. For simple APIs you can estimate the cost of the APIs; the cost of
+string manipulation isn't hard to fathom. But in many cases it's unclear how
+much an API might cost. If you are calling an API that might do something
+expensive, double-check the cost. Ask the developers to document it, or examine
+the source code yourself (and submit a PR documenting the cost). Remember, even
+if the API is asynchronous, you don't know how much time it might spend on a
+----------------------------------------------------------------------------------------------------
+Index: 15811 <<"chunk_id": 4, "docno": 2107>>
+
+APM tools need to follow a request as it flows through your application, even
+across async boundaries. When an HTTP request comes in, is processed by
+middleware, queries a database, calls an external API, and finally returns a
+response, the APM needs to correlate all of these operations into a single
+trace. This requires async context tracking. Most modern APM tools use
+AsyncLocalStorage (which is built on async_hooks in versions of Node.js before
+Node 24) to propagate trace context across async operations. The moment you
+require('dd-trace') , require('newrelic') , or initialize OpenTelemetry, your
+application has async_hooks enabled. The irony is notable: the tools you install
+to monitor and debug crashes can make a category of crashes behave differently.
+This is not the fault of the APM tools; they are using Node.js APIs exactly as
+intended. Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere
+While this issue has significant practical impact, we want to be clear about why
+Node.js is treating this fix as a mere mitigation of security vulnerability
+risks at large: Stack Space Exhaustion Behavior Is Not Specified The "Maximum
+call stack size exceeded" error is not part of the ECMAScript specification. The
+specification does not impose any limit and assumes infinite stack space .
+Imposing a limit and throwing a recoverable error are only behaviors that
+JavaScript engines implement with best-effort. Applications and frameworks are
+already at risk when they build a security model on top of these unspecified
+behaviors that are not guaranteed to reproduce consistently, see: CWE-758:
+Reliance on
+----------------------------------------------------------------------------------------------------
+Index: 15813 <<"chunk_id": 6, "docno": 2107>>
+
+the event handler will not be caught. Instead, the process will exit with a
+non-zero exit code, and the stack trace will be printed. This is to avoid
+infinite recursion." Trying to invoke the handler after the call stack size is
+exceeded would itself throw. The fact that it works without promise hooks is
+largely coincidental rather than guaranteed behavior. Why We Put It In a
+Security Release Although it is a patch for an unspecified behavior, we chose to
+include it in the security release because of its widespread impact on the
+ecosystem. The prevalence of async_hooks usage by React Server Components,
+Next.js, and APM tools makes it a practical Denial-of-Service vector for many
+applications. Making the unspecified behavior more consistent in Node.js
+improves developer experience and makes error handling more predictable.
+However, it's important to note that we were fortunate to be able to fix this
+particular case. There's no guarantee that similar edge cases involving stack
+overflow and async_hooks can always be addressed. For mission-critical paths
+that must defend against infinite recursion or stack overflow from recursion
+whose depth can be controlled by an attacker, always sanitize the input or
+impose a limit on the depth of recursion by other means . It's worth noting that
+large array allocations can suffer from similar issues, like the recent qs
+vulnerability CVE-2025-15284 showed. It's paramount that developers validate and
+constrain resource usage that could be controlled by an attacker. The runtime
+cannot always recover reliably from resource exhaustion after-the-fact.
+Technical Deep Dive How async_hooks Works
+----------------------------------------------------------------------------------------------------
+Index: 16018 <<"chunk_id": 4, "docno": 2142>>
+
+addressing the use cases of enterWith() . We also discussed that there are
+alternatives to the AsyncLocalStorage data flow. Considering that the current
+AsyncLocalStorage data flow is a key model to APM vendors and OpenTelemetry, it
+is important to prioritize the existing model that has also been widely adopted
+so that the users at large can benefit from the feature being available on the
+Web. Single Executable Applications We were joined remotely by Darshan Sen
+(champion of the SEA initiative). Luke Karrys went through the current
+outstanding feature requests and issues of the SEA (Single Executable
+Application) feature, including: ESM support Injecting CLI flags Sourceless code
+cache JS APIs streamlining toolchain Virtual file system Most of the issues are
+addressable - we spent some time discussing streamlining the toolchain in core,
+which may be possible, but needs investigation into the binary size increase
+from bundling more of postject in core. The most important blocker to the
+progress of the SEA initiative remains the lack of volunteers or funding to gain
+momentum. We discussed setting up a team vs. a working group and how to resume
+more work. Embedding Undici Matteo chaired a session about next steps in
+improving user experience when they need more from Undici. We reviewed the
+issues with existing http builtins, whose status change as legacy was discussed,
+and how to prevent these issues with Undici once users need more powerful
+customizations. For now, exposing the dispatcher configuration from the bundled
+undici would help with most use cases, though it still requires stabilizing
+----------------------------------------------------------------------------------------------------
+Index: 3184 <<"chunk_id": 16, "docno": 454>>
+
+version, which doesn’t accept a callback but instead returns a promise that is
+rejected if the pipeline fails. Async Iterators Async iterators are recommended
+as the standard way of interfacing with the Streams API. Compared to all the
+stream primitives in both the Web and Node.js, async iterators are easier to
+understand and use, contributing to fewer bugs and more maintainable code. In
+recent versions of Node.js, async iterators have emerged as a more elegant and
+readable way to interact with streams. Building upon the foundation of events,
+async iterators provide a higher-level abstraction that simplifies stream
+consumption. In Node.js, all readable streams are asynchronous iterables. This
+means you can use the for await...of syntax to loop through the stream's data as
+it becomes available, handling each piece of data with the efficiency and
+simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
+Using async iterators with streams simplifies the handling of asynchronous data
+flows in several ways: Enhanced Readability : The code structure is cleaner and
+more readable, particularly when dealing with multiple asynchronous data
+sources. Error Handling : Async iterators allow straightforward error handling
+using try/catch blocks, akin to regular asynchronous functions. Flow Control :
+They inherently manage backpressure, as the consumer controls the flow by
+awaiting the next piece of data, allowing for more efficient memory usage and
+processing. Async iterators offer a more modern and often more readable way to
+work with readable streams, especially when dealing with asynchronous data
+sources or when you prefer a more sequential, loop-based approach
+----------------------------------------------------------------------------------------------------
+Index: 40702 <<"chunk_id": 1, "docno": 6211>>
+
+from Virtual Threads if they were built to use blocking I/O facilities such as
+InputStream and synchronous HTTP, database, and message broker clients. Running
+such workloads on Virtual Threads helps reduce the memory footprint compared to
+Platform Threads and in certain situations, Virtual Threads can increase
+concurrency. Higher concurrency can be achieved if the system has additional
+resources necessary for concurrency. Specifically, these are: Available
+connections in a connection pool Sufficient memory to serve the increased load
+Unused CPU time Use of Virtual Threads clearly is not limited to the direct
+reduction of memory footprints or an increase in concurrency. The introduction
+of Virtual Threads also prompts a broader revisit of decisions made for a
+runtime when only Platform Threads were available. Revision of Concurrency
+Utilities Spring Framework’s SimpleAsyncTaskExecutor uses a new Platform Thread
+for each runnable submitted if no ThreadFactory is configured. Such an
+arrangement requires Platform Thread creation resulting in lower throughput and
+higher memory consumption. SimpleAsyncTaskExecutor could be revised to use
+Virtual Threads by default to reduce the memory footprint and increase
+throughput in its default configuration. (In the meantime, a custom TaskExecutor
+variant can be used to the same effect.) Revision of Programming Models Virtual
+Threads can change our perspective on asynchronous programming interfaces. The
+reasons to use asynchronous programming models go away in many cases if we start
+with the assumption that our code runs on Virtual Threads. Virtual Threads are
+much more lightweight to allocate, and the number of threads is no longer a
+primary limitation for scalability. To make
+----------------------------------------------------------------------------------------------------
+Index: 16084 <<"chunk_id": 4, "docno": 2150>>
+
+Jean Burellier ( @sheplu ), aimed to analyze the survey data, identify trends,
+and develop actionable steps to address the findings. The survey covered a wide
+range of topics, including ESM syntax usage, next initiatives, and the overall
+health of the Node.js ecosystem. Survey Overview Jean presented the slides
+outlining the key findings from the Next-10 Survey . The survey received over
+2000 responses, providing a comprehensive view of the Node.js community's
+thoughts and experiences. ESM Syntax Usage One of the main topics discussed was
+the usage of ESM (ECMAScript Modules) syntax in production environments. Key
+points included: Awareness and Adoption : We noted that with over 2000
+responses, most participants should have a good understanding of whether they
+are running ESM in production. However, we also acknowledged that some
+respondents might not actually know whether they are using ESM, as frameworks
+like Next.js transpile ESM to CJS (CommonJS) behind the scenes. Usage Counter
+Proposal : We suggested adding an opt-in usage counter to core that dumps JSON
+files, which could be requested in the survey. This would allow respondents to
+easily sanitize and share their usage data, providing more accurate insights
+into ESM adoption. Visibility and Outreach : We emphasized the need for more
+visibility of the survey to reach a broader audience. Ethan added that it is
+crucial to reach out to the right people to ask relevant questions and gather
+meaningful data. Next Initiatives The discussion also covered potential next
+initiatives for the Node.js project: Failed Participation Example : We shared an
+example
+----------------------------------------------------------------------------------------------------
+Index: 15988 <<"chunk_id": 9, "docno": 2139>>
+
+there are also a few other important factors in play: The attacker needs to work
+with a noisy table with application-specific entries out of their control. It is
+shared by both array-index strings and regular strings hashed by rapidhash, and
+the capacity growth can also be affected by pre-existing entries, making it
+harder for the attacker to predict the exact probe chain consistently. Standard
+operational practices in production servers typically enforce payload size
+limits and rate limits. Without them, the server can already be exposed to
+simpler resource exhaustion attacks. These bound how many collisions an attacker
+can inject per request and how often they can retry. Other common practices like
+load balancing can further complicate the attacker's ability to accumulate
+collisions on the same server. Hash table entries held weakly are subject to
+V8's garbage collection. For example, between requests, internalized strings
+that become unreachable are cleaned, which helps prevent collisions from
+accumulating across requests and limit what an attacker can achieve in each
+payload. If the server allows an attacker to keep unlimited entries alive across
+GC cycles, no hash is strong enough to fix the off-table memory growth and it's
+that unbounded retention path that needs to be fixed. These contributed to the
+evaluation of high attack complexity in CVE-2026-21717 since the extreme
+amplification cannot be consistently reproduced against all Node.js servers,
+e.g., an Express server with its default 100 KB body limit . That said, for
+servers with fewer guardrails or simpler states, a fully deterministic hash
+still makes the attack feasible.
+----------------------------------------------------------------------------------------------------
+Index: 8958 <<"chunk_id": 6, "docno": 1272>>
+
+state to pass to the resume apis. Notable Changes Batching Suspense Boundaries
+for SSR We fixed a behavioral bug where Suspense boundaries would reveal
+differently depending on if they were rendered on the client or when streaming
+from server-side rendering. Starting in 19.2, React will batch reveals of
+server-rendered Suspense boundaries for a short time, to allow more content to
+be revealed together and align with the client-rendered behavior. Previously,
+during streaming server-side rendering, suspense content would immediately
+replace fallbacks. In React 19.2, suspense boundaries are batched for a small
+amount of time, to allow revealing more content together. This fix also prepares
+apps for supporting <ViewTransition> for Suspense during SSR. By revealing more
+content together, animations can run in larger batches of content, and avoid
+chaining animations of content that stream in close together. Note React uses
+heuristics to ensure throttling does not impact core web vitals and search
+ranking. For example, if the total page load time is approaching 2.5s (which is
+the time considered “good” for LCP ), React will stop batching and reveal
+content immediately so that the throttling is not the reason to miss the metric.
+SSR: Web Streams support for Node React 19.2 adds support for Web Streams for
+streaming SSR in Node.js: renderToReadableStream is now available for Node.js
+prerender is now available for Node.js As well as the new resume APIs: resume is
+available for Node.js. resumeAndPrerender is available for Node.js. Pitfall
+Prefer Node Streams for server-side rendering in Node.js In Node.js
+environments, we still highly recommend using the
+----------------------------------------------------------------------------------------------------
+Index: 40704 <<"chunk_id": 3, "docno": 6211>>
+
+be eliminated as it would be no longer required. Mitigating Limitations Our team
+has been experimenting with Virtual Threads since they were called Fibers. Since
+then and still with the release of Java 19, a limitation was prevalent, leading
+to Platform Thread pinning, effectively reducing concurrency when using
+synchronized . The use of synchronized code blocks is not in of itself a
+problem; only when those blocks contain blocking code, generally speaking I/O
+operations. These arrangements can be problematic as carrier Platform Threads
+are a limited resource and Platform Thread pinning can lead to application
+performance degradation when running code on Virtual Threads without careful
+inspection of the workload. In fact, the same blocking code in synchronized
+blocks can lead to performance issues even without Virtual Threads. Spring
+Framework makes a lot of use of synchronized to implement locking, mostly around
+local data structures. Over the years, before Virtual Threads were available, we
+have revised synchronized blocks which might potentially interact with
+third-party resources, removing lock contention in highly concurrent
+applications. So Spring is in pretty good shape already owing to its large
+community and extensive feedback from existing concurrent applications. On the
+path to becoming the best possible citizen in a Virtual Thread scenario, we will
+further revisit synchronized usage in the context of I/O or other blocking code
+to avoid Platform Thread pinning in hot code paths so that your application can
+get the most out of Project Loom. Running Spring Applications on Virtual Threads
+With the most recent versions of Spring Framework, Spring
+----------------------------------------------------------------------------------------------------
+Index: 14889 <<"chunk_id": 1, "docno": 1961>>
+
+keep the Node.js project sustainable in the long run. When it comes to security
+vulnerabilities, managing security releases across four or five active release
+lines has become difficult to sustain in the current Node.js voluntary work
+model. By reducing the number of concurrent release lines, the project can focus
+on better supporting the releases people actually use. Read more about the new
+release schedule in this blog post . New Streams API James Snell presented a
+new, more unified Streams API for the Web and Node.js. Historically, Node.js has
+relied on the highly optimized node:stream . In recent years, Node.js has also
+implemented WHATWG Web Streams to ensure cross-platform compatibility with
+browsers, Deno, Bun, and edge environments (like Cloudflare Workers). However,
+managing two different stream ecosystems has created friction for developers.
+The Web Streams API has significant promise and allocation overhead. It was
+designed primarily for browsers, and when applied to high-throughput backend
+environments, the architectural cost becomes obvious. The proposed New Streams
+API takes advantage of modern JavaScript Async Iteration, treats streams
+natively as async iterables, leaning heavily into async/await and for await...of
+loops, which is how modern developers naturally write code. Handling a filled
+data buffer has historically been a confusing black box. The new API also
+proposes forcing developers to explicitly choose a backpressure strategy when a
+buffer is full. The new stream/iter API has landed in Node.js core and shipped
+in v25.9.0 as an experimental feature. At the summit, we collected feedback on
+the design, compatibility with existing stream APIs, performance implications,
+----------------------------------------------------------------------------------------------------
+Index: 15981 <<"chunk_id": 2, "docno": 2139>>
+
+of V8, when it's used in a browser, DoS issues are not considered
+vulnerabilities because they typically only affect the tab that processes the
+malicious input, and users can simply close the tab. But when it's used in
+event-loop-based server-side runtimes, a single malicious request that manages
+to block the entire event loop for a sustained period of time has a much bigger
+impact. As one of the most widely deployed server-side runtimes, Node.js draws
+extensive scrutiny from security researchers, which helps us find and address
+weak spots like these. Unlike other DoS attack vectors that can be more easily
+mitigated by userland restrictions, HashDoS vulnerabilities are particularly
+tricky because they lurk inside widely used internal data structures and
+well-defined operations trusted by developers. For V8 embedders, this means
+fixes for HashDoS vulnerabilities usually fall on the runtime maintainers, and
+they are a critical part of maintaining the security and reliability of the
+ecosystem. Mitigating HashDoS with seeded hashes The core of HashDoS
+vulnerabilities lies in deterministic hash functions - if the attacker can
+predict the hash values of their inputs, they can craft inputs that reliably
+trigger worst-case performance in the target server. The standard mitigation is
+to mix a seed value into the computation of the hash, and make sure that the
+seed is randomly generated at program initialization . This way, even if the
+attacker knows the hash function, they can't predict the hash values without
+knowing the seed that changes whenever the server restarts, and therefore can't
+craft inputs that will reliably
+----------------------------------------------------------------------------------------------------
+Index: 4178 <<"chunk_id": 2, "docno": 574>>
+
+It's a poor fit for two other situations, though: CPU-bound work (image
+resizing, hashing, parsing huge payloads) ties up the single thread and makes
+your whole application unresponsive while it runs. Scaling across CPU cores — a
+single Node.js process only ever uses one core for its JavaScript, no matter how
+many cores the machine has. Node.js ships three built-in modules to address
+this: node:child_process , node:worker_threads , and node:cluster . They solve
+overlapping problems in different ways, which is why it's easy to reach for the
+wrong one. This guide compares them side by side and walks through when to use
+each. The three options at a glance Runs Memory Talks via Best for child_process
+Separate process Isolated stdio, or IPC ( fork() ) Running external programs
+worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
+Multiple processes Isolated IPC Scaling a server across cores A useful way to
+tell them apart: cluster is built on top of child_process specifically to solve
+the "scale a server across cores" problem, while worker_threads exists to solve
+the "run CPU-heavy code without blocking" problem without paying the cost of a
+whole new process. Child Process Use child_process when you need to run another
+program — a shell command, a binary, a script in another language — from
+Node.js, or when you want a fully isolated Node.js process that you drive over
+stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
+spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
+output via a shell Short
+----------------------------------------------------------------------------------------------------
+Index: 53404 <<"chunk_id": 1, "docno": 8569>>
+
+application can keep open to a given host. Proper KeepAlive support means that
+sockets will stay open until they timeout at the configured time, are closed by
+the remote side, or the process exits. Developer's no longer have to make sure
+requests have been pipelined to keep the socket open, or use an alternative
+module to get that support. Developers can also now explicitly flushHeaders to
+ensure time to first byte is low and proxied connections are held open. Cluster
+Now has two modes of operation, the new default is a round robin distribution
+mechanism where the master accepts new connections and distributes them to your
+workers. If you want you can still opt back into the old method where your
+workers are responsible for acception connections. TLS We have the new TLSWrap
+mechanism under the hood, this eliminates quite a few of the hops back and forth
+between JavaScript and our C++ implementations. Added APIs for asynchronous SNI
+callbacks, OCSP stapling, and storage events. Buffer We use a more accurate
+mechanism for allocating memory for buffers now, which means you'll see less
+overhead and impact from holding onto to small slices of Buffers. This reduces
+the amount of memory pressure on the system, which means GC runs are quicker,
+which means Node.js is on CPU less, and thus lower latency for your
+applications. child_process spawnSync / execSync have been added to facilitate
+synchronous child processes, warning your node process won't make forward
+progress while waiting for the child to exit, caveat emptor! Crypto Added APIs
+----------------------------------------------------------------------------------------------------
+Index: 16157 <<"chunk_id": 7, "docno": 2160>>
+
+application mistakes. The behavior cannot be reasonably mitigated through
+standard operational practices (like process recycling). The behavior occurs
+deterministically under normal usage patterns rather than edge cases. The
+behavior occurs at a rate that would cause practical resource exhaustion within
+a practical timeframe under typical workloads. The attack demonstrates
+asymmetric resource consumption , where the attacker expends significantly fewer
+resources than what's required by the server to process the attack. Attacks
+requiring comparable resources on the attacker's side (which can be mitigated
+through common practices like rate limiting) may not qualify. Node.js does NOT
+trust : Data received from the remote end of inbound network connections that
+are accepted through the use of Node.js APIs and which is transformed/validated
+by Node.js before being passed to the application. This includes: HTTP APIs (all
+flavors) server APIs. The data received from the remote end of outbound network
+connections that are created through the use of Node.js APIs and which is
+transformed/validated by Node.js before being passed to the application except
+with respect to payload length. Node.js trusts that applications make
+connections/requests which will avoid payload sizes that will result in a Denial
+of Service. HTTP APIs (all flavors) client APIs. DNS APIs. Consumers of data
+protected through the use of Node.js APIs (for example, people who have access
+to data encrypted through the Node.js crypto APIs). The file content or other
+I/O that is opened for reading or writing by the use of Node.js APIs (ex: stdin,
+stdout, stderr). In other words, if the data passing through Node.js
+----------------------------------------------------------------------------------------------------
+Index: 13265 <<"chunk_id": 6, "docno": 1778>>
+
+code updates with Fast Refresh on large Next.js apps like vercel.com . Advanced
+Tracing As Next.js has grown in adoption over the years, we've found it
+increasingly hard to reproduce reported issues on GitHub, especially related to
+compiler performance and memory usage. This is because most people can't share
+their application code, or when they share the code, the application can't run
+because it requires a database or other setup. To begin to address this, we
+added tracing to the internals of Next.js. These traces are written to a file in
+the .next folder and do not include application code — only the file path, the
+time the compiler took on it, and other timings like individual transforms.
+However, with webpack, we never had a good way to clearly distinguish memory
+usage of the compiler from memory usage of framework or application code, as
+they all run in the same Node.js instance. With Turbopack, we were able to
+design with instrumentation from the beginning. We implemented an
+instrumentation layer in Turbo Engine that allows for collecting timings of each
+individual function. We were able to extend these traces to also keep track of
+the memory allocation, deallocation, and persisted memory across every function.
+This new, advanced tracing gives us all the information needed to investigate
+slowdowns and memory usage deeply; it only requires a trace instead of a full
+codebase. In order to process these new traces, we've implemented a custom trace
+viewer that stays performant regardless of application and trace size. It's a
+trace viewer
+----------------------------------------------------------------------------------------------------
+Index: 16086 <<"chunk_id": 6, "docno": 2150>>
+
+data. This could involve promoting the survey through various channels and
+engaging with key stakeholders. Clarify ESM Usage : Ensure that respondents have
+a clear understanding of whether they are using ESM in production. This could
+involve providing guidance on how to determine ESM usage and adding an opt-in
+usage counter to core. Create Working Groups : Establish working groups to
+address specific initiatives, such as a flaky CI working group, to focus on
+improving the reliability of the CI system. Explore Next-Gen HTTP : Investigate
+next-generation HTTP protocols and their implications for the Node.js ecosystem,
+ensuring that the project remains at the forefront of web development
+technologies. Seek Professional Data Analysis : Engage professional data
+analysts to help extract meaningful insights from the survey results, ensuring
+that the data is used effectively to inform decision-making. Document Missed
+Discussions : Ensure that all discussions and insights are comprehensively
+documented, utilizing tools like the Zoom AI tool to capture missed discussions
+and provide a complete record of the session. To know you is to love you.
+Diversifying Node.js Diversity and inclusion are fundamental to the growth and
+success of any open-source community. The Node.js collaboration summit in Dublin
+provided a platform to discuss and address these critical issues. The session on
+diversity, led by Robin Bender Ginn ( @rginn ), focused on understanding the
+current state of diversity within the Node.js collaborator culture and
+identifying actionable steps to foster a more inclusive environment. Current
+State of Diversity Robin began the session by asking three key questions to
+----------------------------------------------------------------------------------------------------

@@ -1,0 +1,32 @@
+{"query_id":"1","query":"How does Spring Boot determine which auto-configuration classes should be enabled during application startup?"}
+{"query_id":"2","query":"What is the purpose of Spring Boot Actuator endpoints and how can custom health indicators be created?"}
+{"query_id":"3","query":"How does Spring Framework handle transaction management using @Transactional and what are its limitations?"}
+{"query_id":"4","query":"What is the difference between Spring Bean scopes singleton, prototype, request, and session?"}
+
+{"query_id":"5","query":"How does Node.js event loop prioritize microtasks and macrotasks during asynchronous execution?"}
+{"query_id":"6","query":"What is the purpose of Node.js streams and how do they improve memory efficiency when processing large files?"}
+{"query_id":"7","query":"How does Node.js cluster module allow applications to utilize multiple CPU cores?"}
+{"query_id":"8","query":"What are the differences between CommonJS and ECMAScript modules in Node.js?"}
+
+{"query_id":"9","query":"How does Django middleware process requests and responses throughout the request lifecycle?"}
+{"query_id":"10","query":"How does Django ORM optimize database queries using select_related and prefetch_related?"}
+{"query_id":"11","query":"What is the purpose of Django migrations and how does Django track migration history?"}
+{"query_id":"12","query":"How does Django's CSRF protection mechanism work internally?"}
+
+{"query_id":"13","query":"How does Flask application context differ from request context and when are they created?"}
+{"query_id":"14","query":"What is the purpose of Flask blueprints and how do they help organize large applications?"}
+{"query_id":"15","query":"How does Flask's Werkzeug routing system map URLs to view functions?"}
+
+{"query_id":"16","query":"How does React reconciliation algorithm determine which components need to be updated?"}
+{"query_id":"17","query":"What happens internally when React state updates trigger a component re-render?"}
+{"query_id":"18","query":"How does React Suspense work for handling asynchronous component loading?"}
+
+{"query_id":"19","query":"How does Angular dependency injection hierarchy determine which service instance is provided?"}
+{"query_id":"20","query":"How does Angular change detection work and what role does Zone.js play?"}
+
+{"query_id":"21","query":"How does Vue 3 reactivity system use Proxy objects to track dependencies?"}
+{"query_id":"22","query":"What are Vue composables and how do they replace mixins in Vue 3?"}
+
+{"query_id":"23","query":"How does Next.js App Router differ from the Pages Router architecture?"}
+{"query_id":"24","query":"How does Next.js server components reduce client-side JavaScript bundle size?"}
+{"query_id":"25","query":"How does Next.js handle incremental static regeneration and cache invalidation?"}

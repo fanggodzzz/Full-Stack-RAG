@@ -1,0 +1,467 @@
+Index: 3833 <<"chunk_id": 2, "docno": 519>>
+
+use the current working directory for that, which is a very unreliable way to
+determine where the application is. The current working directory is
+process-wide and if you are running multiple applications in one process (which
+could happen in a webserver without you knowing) the paths will be off. Worse:
+many webservers do not set the working directory to the directory of your
+application but to the document root which does not have to be the same folder.
+The third reason is “explicit is better than implicit”. That object is your WSGI
+application, you don’t have to remember anything else. If you want to apply a
+WSGI middleware, just wrap it and you’re done (though there are better ways to
+do that so that you do not lose the reference to the application object
+wsgi_app() ). Furthermore this design makes it possible to use a factory
+function to create the application which is very helpful for unit testing and
+similar things ( Application Factories ). The Routing System ¶ Flask uses the
+Werkzeug routing system which was designed to automatically order routes by
+complexity. This means that you can declare routes in arbitrary order and they
+will still work as expected. This is a requirement if you want to properly
+implement decorator based routing since decorators could be fired in undefined
+order when the application is split into multiple modules. Another design
+decision with the Werkzeug routing system is that routes in Werkzeug try to
+ensure that URLs are unique. Werkzeug will go quite far with
+----------------------------------------------------------------------------------------------------
+Index: 3834 <<"chunk_id": 3, "docno": 519>>
+
+design decision with the Werkzeug routing system is that routes in Werkzeug try
+to ensure that URLs are unique. Werkzeug will go quite far with that in that it
+will automatically redirect to a canonical URL if a route is ambiguous. One
+Template Engine ¶ Flask decides on one template engine: Jinja. Why doesn’t Flask
+have a pluggable template engine interface? You can obviously use a different
+template engine, but Flask will still configure Jinja for you. While that
+limitation that Jinja is always configured will probably go away, the decision
+to bundle one template engine and use that will not. Template engines are like
+programming languages and each of those engines has a certain understanding
+about how things work. On the surface they all work the same: you tell the
+engine to evaluate a template with a set of variables and take the return value
+as string. But that’s about where similarities end. Jinja for example has an
+extensive filter system, a certain way to do template inheritance, support for
+reusable blocks (macros) that can be used from inside templates and also from
+Python code, supports iterative template rendering, configurable syntax and
+more. On the other hand an engine like Genshi is based on XML stream evaluation,
+template inheritance by taking the availability of XPath into account and more.
+Mako on the other hand treats templates similar to Python modules. When it comes
+to connecting a template engine with an application or framework there is more
+than just rendering templates. For instance, Flask uses Jinja’s
+----------------------------------------------------------------------------------------------------
+Index: 3660 <<"chunk_id": 144, "docno": 493>>
+
+ways to define rules for the routing system: You can use the flask.Flask.route()
+decorator. You can use the flask.Flask.add_url_rule() function. You can directly
+access the underlying Werkzeug routing system which is exposed as
+flask.Flask.url_map . Variable parts in the route can be specified with angular
+brackets ( /user/<username> ). By default a variable part in the URL accepts any
+string without a slash however a different converter can be specified as well by
+using <converter:name> . Variable parts are passed to the view function as
+keyword arguments. The following converters are available: string accepts any
+text without a slash (the default) int accepts integers float like int but for
+floating point values path like the default but also accepts slashes any matches
+one of the items provided uuid accepts UUID strings Custom converters can be
+defined using flask.Flask.url_map . Here are some examples: @app . route ( '/' )
+def index (): pass @app . route ( '/<username>' ) def show_user ( username ):
+pass @app . route ( '/post/<int:post_id>' ) def show_post ( post_id ): pass An
+important detail to keep in mind is how Flask deals with trailing slashes. The
+idea is to keep each URL unique so the following rules apply: If a rule ends
+with a slash and is requested without a slash by the user, the user is
+automatically redirected to the same page with a trailing slash attached. If a
+rule does not end with a trailing slash and the user requests the page with a
+trailing slash, a 404
+----------------------------------------------------------------------------------------------------
+Index: 44587 <<"chunk_id": 1, "docno": 6915>>
+
+arrow_upward_alt Back to the top How to use RouterLink Instead of using regular
+anchor elements <a> with an href attribute, you add a RouterLink directive with
+the appropriate path in order to leverage Angular routing. import { RouterLink }
+from '@angular/router' ; @ Component ({ template: ` < nav > < a routerLink =
+"/user-profile" >User profile</ a > < a routerLink = "/settings" >Settings</ a >
+</ nav > ` , imports: [ RouterLink ], ... }) export class App {} Using absolute
+or relative links Relative URLs in Angular routing allow you to define
+navigation paths relative to the current route's location. This is in contrast
+to absolute URLs which contain the full path with the protocol (e.g., http:// )
+and the root domain (e.g., google.com ). <!-- Absolute URL --> < a href =
+"https://www.angular.dev/essentials" >Angular Essentials Guide</ a > <!--
+Relative URL --> < a href = "/essentials" >Angular Essentials Guide</ a > In
+this example, the first example contains the full path with the protocol (i.e.,
+https:// ) and the root domain (i.e., angular.dev ) explicitly defined for the
+essentials page. In contrast, the second example assumes the user is already on
+the correct root domain for /essentials . Generally speaking, relative URLs are
+preferred as they are more maintainable across applications since they don’t
+need to know their absolute position within the routing hierarchy. How relative
+URLs work Angular routing has two syntaxes for defining relative URLs: strings
+and arrays. <!-- Navigates user to /dashboard --> < a routerLink =
+----------------------------------------------------------------------------------------------------
+Index: 35174 <<"chunk_id": 0, "docno": 4791>>
+
+SEO: URL Structure | Next.js Skip to content Search documentation... ⌘K
+Search... ⌘K Showcase Docs Blog Templates Enterprise Search documentation... ⌘K
+Search... ⌘K Deploy Learn 13 Chapter 13 URL Structure URL Structure is an
+important part of an SEO strategy. While Google doesn't disclose which weight
+each part of SEO has, great URLs are considered a best practice no matter if
+they are a big or small ranking factor in the end. You might want to follow some
+principles: Semantic : It's best to use URLs that are semantic, meaning that
+they use words instead of IDs or random numbers. Example:
+/learn/basics/create-nextjs-app is better than /learn/course-1/lesson-1 Patterns
+that are logical and consistent : URLs should follow some sort of pattern that
+is consistent among pages. For example, you want to have a folder that groups
+all product pages, instead of having different paths for each product that you
+have. Keyword focused : Google still bases a considerable part of their systems
+on the keywords a website contains. You might want to use keywords in your URLs
+to facilitate understanding the purpose of the pages. Not parameter-based :
+Using parameters to build your URLs is generally not a good idea. They are not
+semantic in most cases, and search engines might confuse them and demote their
+rankings in results. How are Routes Defined in Next.js? Next.js uses file-system
+routing built on the file-system routing built on the concept of pages . When a
+file is added to the pages directory, it is automatically available as a route.
+----------------------------------------------------------------------------------------------------
+Index: 5904 <<"chunk_id": 267, "docno": 788>>
+
+with the appropriate path in order to leverage Angular routing. ```typescript
+import {RouterLink} from '@angular/router'; @Component({ template: ` <nav> <a
+routerLink="/user-profile">User profile</a> <a
+routerLink="/settings">Settings</a> </nav> `, imports: [RouterLink], ... })
+export class App {} ``` ### Using absolute or relative links **Relative URLs**
+in Angular routing allow you to define navigation paths relative to the current
+route's location. This is in contrast to **absolute URLs** which contain the
+full path with the protocol (e.g., `http://`) and the **root domain** (e.g.,
+`google.com`). ```html <!-- Absolute URL --> <a
+href="https://www.angular.dev/essentials">Angular Essentials Guide</a> <!--
+Relative URL --> <a href="/essentials">Angular Essentials Guide</a> ``` In this
+example, the first example contains the full path with the protocol (i.e.,
+`https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the
+essentials page. In contrast, the second example assumes the user is already on
+the correct root domain for `/essentials`. Generally speaking, relative URLs are
+preferred as they are more maintainable across applications since they don’t
+need to know their absolute position within the routing hierarchy. ### How
+relative URLs work Angular routing has two syntaxes for defining relative URLs:
+strings and arrays. ```html <!-- Navigates user to /dashboard --> <a
+routerLink="dashboard">Dashboard</a> <a
+[routerLink]="['dashboard']">Dashboard</a> ``` HELPFUL: Passing a string is the
+most common way to define relative URLs. When you need to define dynamic
+parameters in a relative URL, use the array syntax: ```html <a
+[routerLink]="['user', currentUserId]">Current User</a> ``` In addition, Angular
+routing allows you to specify whether you want the path to be relative to the
+current URL or to the root
+----------------------------------------------------------------------------------------------------
+Index: 2052 <<"chunk_id": 7, "docno": 300>>
+
+for more tips. Deep Dive How does React know which state to return? Show Details
+You might have noticed that the useState call does not receive any information
+about which state variable it refers to. There is no “identifier” that is passed
+to useState , so how does it know which of the state variables to return? Does
+it rely on some magic like parsing your functions? The answer is no. Instead, to
+enable their concise syntax, Hooks rely on a stable call order on every render
+of the same component. This works well in practice because if you follow the
+rule above (“only call Hooks at the top level”), Hooks will always be called in
+the same order. Additionally, a linter plugin catches most mistakes. Internally,
+React holds an array of state pairs for every component. It also maintains the
+current pair index, which is set to 0 before rendering. Each time you call
+useState , React gives you the next state pair and increments the index. You can
+read more about this mechanism in React Hooks: Not Magic, Just Arrays. This
+example doesn’t use React but it gives you an idea of how useState works
+internally: index.js index.html index.js Reload Clear Fork let componentHooks =
+[ ] ; let currentHookIndex = 0 ; // How useState works inside React
+(simplified). function useState ( initialState ) { let pair = componentHooks [
+currentHookIndex ] ; if ( pair ) { // This is not the first render, // so the
+state pair already exists. //
+----------------------------------------------------------------------------------------------------
+Index: 4202 <<"chunk_id": 4, "docno": 577>>
+
+replace ( '.' , '/' ) } .html" ctx = f ( * args , ** kwargs ) if ctx is None :
+ctx = {} elif not isinstance ( ctx , dict ): return ctx return render_template (
+template_name , ** ctx ) return decorated_function return decorator Endpoint
+Decorator ¶ When you want to use the werkzeug routing system for more
+flexibility you need to map the endpoint as defined in the Rule to a view
+function. This is possible with this decorator. For example: from flask import
+Flask from werkzeug.routing import Rule app = Flask ( __name__ ) app . url_map .
+add ( Rule ( '/' , endpoint = 'index' )) @app . endpoint ( 'index' ) def
+my_index (): return "Hello world" Contents View Decorators Login Required
+Decorator Caching Decorator Templating Decorator Endpoint Decorator Navigation
+Overview Patterns for Flask Previous: Caching Next: Form Validation with WTForms
+Quick search © Copyright 2010 Pallets. Created using Sphinx 8.2.3.
+----------------------------------------------------------------------------------------------------
+Index: 22156 <<"chunk_id": 1, "docno": 2739>>
+
+quite complex, and when designing a routing topology for a scalable, complex
+system it must be elegant. Kept clean and decoupled, components can throttle
+nicely with varying loads. This can be expressed as a simple map or complex
+graph. In its simplest form a routing topology can be expressed as nodes, for
+instance hierarchical nodes: For those new to RabbitMQ or AMQP (note that Rabbit
+works with many protocols including STOMP , HTTP, HTTPS, XMPP, and SMTP), here
+are some basic component descriptions: Exchange The entity within the server
+which receives messages from producer applications and optionally routes these
+to message queues within the server Exchange type The algorithm and
+implementation of a particular model of exchange. In contrast to the "exchange
+instance", which is the entity that receives and routes messages within the
+server Message queue A named entity that holds messages and forwards them to
+consumer applications Binding An entity that creates a relationship between a
+message queue and an exchange Routing key A virtual address that an exchange may
+use to decide how to route a specific message For point-to-point routing, the
+routing key is usually the name of a message queue. For topic pub-sub routing
+the routing key is usually hierarchical in nature:
+api.agents.agent-{id}.operations.{operationName} In more complex cases the
+routing key may be combined with routing on message header fields and/or its
+content. An exchange examines a message's properties, header fields, body
+content, and possibly data from other sources, then decides how to route the
+message. A binding pattern derived from the
+----------------------------------------------------------------------------------------------------
+Index: 18685 <<"chunk_id": 20, "docno": 2473>>
+
+IDs in URLs ¶ The Django sessions framework is entirely, and solely,
+cookie-based. It does not fall back to putting session IDs in URLs as a last
+resort, as PHP does. This is an intentional design decision. Not only does that
+behavior make URLs ugly, it makes your site vulnerable to session-ID theft via
+the “Referer” header. Previous page and next page Middleware Working with forms
+Back to Top Additional Information Support Django! Chandan Singh donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+How to use sessions Enabling sessions Configuring the session engine Using
+database-backed sessions Using cached sessions Using file-based sessions Using
+cookie-based sessions Using sessions in views Session serialization Bundled
+serializers Write your own serializer Session object guidelines Examples Setting
+test cookies Using sessions out of views When sessions are saved Browser-length
+sessions vs. persistent sessions Clearing the session store Settings Session
+security Technical details The SessionStore object Extending database-backed
+session engines Example Session IDs in URLs Browse Prev: Middleware Next:
+Working with forms Table of contents General Index Python Module Index You are
+here: Django 6.0 documentation Using Django Handling HTTP requests How to use
+sessions Getting help FAQ Try the FAQ — it's got answers to many common
+questions. Index , Module Index , or Table of Contents Handy when looking for
+specific information. Django Discord Server Join the Django Discord Community.
+Official Django Forum Join the community on the Django Forum. Ticket tracker
+Report bugs with Django or Django documentation in our ticket tracker. Download:
+Offline
+----------------------------------------------------------------------------------------------------
+Index: 3537 <<"chunk_id": 21, "docno": 493>>
+
+defaults to the name of the view function if the endpoint parameter isn’t
+passed. An error will be raised if a function has already been registered for
+the endpoint. The methods parameter defaults to ["GET"] . HEAD is always added
+automatically, and OPTIONS is added automatically by default. view_func does not
+necessarily need to be passed, but if the rule should participate in routing an
+endpoint name must be associated with a view function at some point with the
+endpoint() decorator. app . add_url_rule ( "/" , endpoint = "index" ) @app .
+endpoint ( "index" ) def index (): ... If view_func has a required_methods
+attribute, those methods are added to the passed and automatic methods. If it
+has a provide_automatic_methods attribute, it is used as the default if the
+parameter is not passed. Parameters : rule ( str ) – The URL rule string.
+endpoint ( str | None ) – The endpoint name to associate with the rule and view
+function. Used when routing and building URLs. Defaults to view_func.__name__ .
+view_func ( ft.RouteCallable | None ) – The view function to associate with the
+endpoint name. provide_automatic_options ( bool | None ) – Add the OPTIONS
+method and respond to OPTIONS requests automatically. options ( t.Any ) – Extra
+options passed to the Rule object. Return type : None after_request ( f ) ¶
+Register a function to run after each request to this object. The function is
+called with the response object, and must return a response object. This allows
+the
+----------------------------------------------------------------------------------------------------
+Index: 15247 <<"chunk_id": 12, "docno": 2006>>
+
+{ "blog_id" : 3 }), ] Note that extra options will always be passed to every
+line in the included URLconf, regardless of whether the line’s view actually
+accepts those options as valid. For this reason, this technique is only useful
+if you’re certain that every view in the included URLconf accepts the extra
+options you’re passing. Reverse resolution of URLs ¶ A common need when working
+on a Django project is the possibility to obtain URLs in their final forms
+either for embedding in generated content (views and assets URLs, URLs shown to
+the user, etc.) or for handling of the navigation flow on the server side
+(redirections, etc.) It is strongly desirable to avoid hardcoding these URLs (a
+laborious, non-scalable and error-prone strategy). Equally dangerous is devising
+ad-hoc mechanisms to generate URLs that are parallel to the design described by
+the URLconf, which can result in the production of URLs that become stale over
+time. In other words, what’s needed is a DRY mechanism. Among other advantages
+it would allow evolution of the URL design without having to go over all the
+project source code to search and replace outdated URLs. The primary piece of
+information we have available to get a URL is an identification (e.g. the name)
+of the view in charge of handling it. Other pieces of information that
+necessarily must participate in the lookup of the right URL are the types
+(positional, keyword) and values of the view arguments. Django provides a
+solution such that the URL mapper is the
+----------------------------------------------------------------------------------------------------
+Index: 9154 <<"chunk_id": 4, "docno": 1304>>
+
+from './Home' ; import Dashboard from './Dashboard' ; export default function
+App ( ) { // ❌ Routing in state does not create URLs const [ route , setRoute ]
+= useState ( 'home' ) ; return ( < div > { route === 'home' && < Home /> } {
+route === 'dashboard' && < Dashboard /> } </ div > ) } This is why most apps
+that use Create React App solve add routing with a routing library like React
+Router or Tanstack Router . With a routing library, you can add additional
+routes to the app, which provides opinions on the structure of your app, and
+allows you to start sharing links to routes. For example, with React Router you
+can define routes: import { RouterProvider , createBrowserRouter } from
+'react-router' ; import Home from './Home' ; import Dashboard from './Dashboard'
+; // ✅ Each route has it's own URL const router = createBrowserRouter ( [ { path
+: '/' , element : < Home /> } , { path : '/dashboard' , element : < Dashboard />
+} ] ) ; export default function App ( ) { return ( < RouterProvider value = {
+router } /> ) } With this change, you can share a link to /dashboard and the app
+will navigate to the dashboard page . Once you have a routing library, you can
+add additional features like nested routes, route guards, and route transitions,
+which are difficult to implement without a routing library. There’s a tradeoff
+----------------------------------------------------------------------------------------------------
+Index: 43569 <<"chunk_id": 2, "docno": 6725>>
+
+origin. If a URL behaves like a relative path but resolves to a different
+origin, Angular throws NG05703 and blocks the request/navigation. Common causes
+Backslash-prefixed hijack attempts (open redirects / SSRF bypass): Relative
+paths beginning with slashes and backslashes (such as /\\attacker.com/path or
+\\\\attacker.com/path ) can be interpreted differently by browsers and
+server-side URL parsers. In some parser implementations, these resolve to an
+absolute URL pointing to attacker.com . Angular detects this mismatch and blocks
+the resolution. Disallowed state changes to different origins: Navigation or URL
+updates (e.g. using location.replaceState or location.pushState ) that change
+the origin of the application when the environment is configured to restrict URL
+changes to the current origin only. SSR bootstrap URL mismatch: In server-side
+rendering, if the url passed to the renderer does not align with the base origin
+configured for the application (such as APP_BASE_HREF ), the router might
+attempt to synchronize the location on startup, causing a disallowed origin
+change. Obfuscated protocol schemes: Absolute URLs with obfuscated or malformed
+protocols (e.g. ht\ntp://evil.com/path ) that attempt to bypass origin checks.
+Debugging the error Check the URL that triggered the error. Ensure it does not
+contain unexpected backslashes, line breaks, or other characters that could
+trigger parsing anomalies: Avoid using backslashes ( \ ) in relative URLs or
+routing paths. Make sure any user-supplied URLs or query parameters are properly
+validated and sanitized before being processed in SSR. Align SSR bootstrap URL
+with configured base URL: If the error occurs on startup in an SSR environment,
+ensure that the url
+----------------------------------------------------------------------------------------------------
+Index: 13225 <<"chunk_id": 18, "docno": 1772>>
+
+to the loading phase The default loader has the following properties Support for
+builtin module loading via node: URLs Support for "inline" module loading via
+data: URLs Support for file: module loading Fails on any other URL protocol
+Fails on unknown extensions for file: loading (supports only .cjs , .js , and
+.mjs ) When the --experimental-package-map flag is enabled, bare specifier
+resolution first consults the package map configuration. If the importing module
+is within a mapped package and the specifier matches a declared dependency, the
+package map resolution takes precedence. See Package maps for details.
+Resolution algorithm # The algorithm to load an ES module specifier is given
+through the ESM_RESOLVE method below. It returns the resolved URL for a module
+specifier relative to a parentURL. The resolution algorithm determines the full
+resolved URL for a module load, along with its suggested module format. The
+resolution algorithm does not determine whether the resolved URL protocol can be
+loaded, or whether the file extensions are permitted, instead these validations
+are applied by Node.js during the load phase (for example, if it was asked to
+load a URL that has a protocol that is not file: , data: or node: . The
+algorithm also tries to determine the format of the file based on the extension
+(see ESM_FILE_FORMAT algorithm below). If it does not recognize the file
+extension (eg if it is not .mjs , .cjs , or .json ), then a format of undefined
+is returned, which will throw during the load phase. The algorithm to
+----------------------------------------------------------------------------------------------------
+Index: 16074 <<"chunk_id": 3, "docno": 2149>>
+
+SQL – entire statements, or just custom WHERE clauses as custom parameters to
+API calls. URL design ¶ Loose coupling ¶ URLs in a Django app should not be
+coupled to the underlying Python code. Tying URLs to Python function names is a
+Bad And Ugly Thing. Along these lines, the Django URL system should allow URLs
+for the same app to be different in different contexts. For example, one site
+may put stories at /stories/ , while another may use /news/ . Infinite
+flexibility ¶ URLs should be as flexible as possible. Any conceivable URL design
+should be allowed. Encourage best practices ¶ The framework should make it just
+as easy (or even easier) for a developer to design pretty URLs than ugly ones.
+File extensions in web-page URLs should be avoided. Vignette-style commas in
+URLs deserve severe punishment. Definitive URLs ¶ Technically, foo.com/bar and
+foo.com/bar/ are two different URLs, and search-engine robots (and some web
+traffic-analyzing tools) would treat them as separate pages. Django should make
+an effort to “normalize” URLs so that search-engine robots don’t get confused.
+This is the reasoning behind the APPEND_SLASH setting. Template system ¶
+Separate logic from presentation ¶ We see a template system as a tool that
+controls presentation and presentation-related logic – and that’s it. The
+template system shouldn’t support functionality that goes beyond this basic
+goal. Discourage redundancy ¶ The majority of dynamic websites use some sort of
+common sitewide design – a common header, footer, navigation bar, etc. The
+Django template system should make it
+----------------------------------------------------------------------------------------------------
+Index: 35361 <<"chunk_id": 1, "docno": 4847>>
+
+it goes like this: maintain two copies of your production environment ("blue"
+and "green"); route all traffic to the the blue environment by mapping
+production URLs to it; deploy and test any changes to the application in the
+green environment; "flip the switch" by mapping URLs onto green and unmapping
+them from blue. Conceptually, blue-green deployments are simple and the benefits
+are significant (deploy often, never go down, roll back with ease). But without
+the right infrastructure, they can be tricky to implement. For example, to
+accomplish the critical fourth step of "flipping the switch", you need a fast,
+reliable, and automated means of mapping and unmapping production URLs between
+the blue and green environments. A DNS-based approach fails on most or all of
+these criteria; what you want is a platform that is built with use cases like
+this in mind. Fortunately, Cloud Foundry is just such a platform. The Pivotal
+Web Services documentation on blue-green deployments does a great job of
+explaining how the CF Router makes this kind of mapping and unmapping possible.
+In the case of the Sagan project, while working with CF's routing infrastructure
+did indeed give us the fast and reliable mapping we needed, it left a little to
+be desired in the automation department. We initially wrote shell scripts around
+the Ruby cf client, and then migrated them to the new Go-based gcf client when
+it came out. This worked, but what we really wanted was a solution that (a) we
+didn't have to write and maintain ourselves, and
+----------------------------------------------------------------------------------------------------
+Index: 15256 <<"chunk_id": 21, "docno": 2006>>
+
+) urlpatterns = [ path ( "polls/" , include ( polls_patterns )), ] This will
+include the nominated URL patterns into the given application namespace. The
+instance namespace can be specified using the namespace argument to include() .
+If the instance namespace is not specified, it will default to the included
+URLconf’s application namespace. This means it will also be the default instance
+for that namespace. Previous page and next page Handling HTTP requests Writing
+views Back to Top Additional Information Support Django! Iteras donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+URL dispatcher Overview How Django processes a request Example Path converters
+Registering custom path converters Using regular expressions Using unnamed
+regular expression groups Nested arguments What the URLconf searches against
+Specifying defaults for view arguments Performance Syntax of the urlpatterns
+variable Error handling Including other URLconfs Captured parameters Passing
+extra options to view functions Passing extra options to include() Reverse
+resolution of URLs Examples Naming URL patterns URL namespaces Introduction
+Reversing namespaced URLs Example URL namespaces and included URLconfs Browse
+Prev: Handling HTTP requests Next: Writing views Table of contents General Index
+Python Module Index You are here: Django 6.0 documentation Using Django Handling
+HTTP requests URL dispatcher Getting help FAQ Try the FAQ — it's got answers to
+many common questions. Index , Module Index , or Table of Contents Handy when
+looking for specific information. Django Discord Server Join the Django Discord
+Community. Official Django Forum Join the community on the Django Forum. Ticket
+tracker Report bugs
+----------------------------------------------------------------------------------------------------
+Index: 23975 <<"chunk_id": 1, "docno": 3135>>
+
+URLs : Google sources URLs from many places, including Google Search Console ,
+links between websites, or XML sitemaps . Add to Crawl Queue : These URLs are
+added to the Crawl Queue for the Googlebot to process. URLs in the Crawl Queue
+usually last seconds there, but it can be up to a few days depending on the
+case, especially if the pages need to be rendered, indexed, or – if the URL is
+already indexed – refreshed. The pages will then enter the Render Queue . HTTP
+Request : The crawler makes an HTTP request to get the headers and acts
+according to the returned status code: 200 : It crawls and parses the HTML. 30X
+: It follows the redirects. 40X : It notes the error and does not load the HTML.
+50X : It may come back later to check if the status code has changed. Render
+Queue : The different services and components of the search system process the
+HTML and parse the content. If the page has some JavaScript client-side based
+content, the URLs might be added to a Render Queue. Render Queue is more costly
+for Google as it needs to use more resources to render JavaScript and therefore
+URLs rendered are a smaller percentage over the total pages out there on the
+internet. Some other search engines might not have the same rendering capacity
+as Google, and this is where Next.js can help with your rendering strategy.
+Ready to be indexed : If all criteria are met, the
+----------------------------------------------------------------------------------------------------
+Index: 25541 <<"chunk_id": 4, "docno": 3524>>
+
+a slight problem with this however. Browsers, typically have a fixed set of
+media types they send along as the Accept HTTP header and there's no way (aside
+from using JavaScript) to modify the Accept header sent along by the browser.
+That's why the file extension is a good alternative to indicate to a server what
+representation you want. Spring 3.0 features a ContentNegotiatingViewResolver
+that can work with both the extension as well as the Accept header. After it's
+figured out an appropriate media type, it delegates to a set of other view
+resolvers to do this for us. The following needs to be pasted into
+rest-servlet.xml to get this to work. As you can see, the
+ContentNegotiatingViewResolver will delegate to a a BeanNameViewResolver
+(resolving to the SampleContentAtomView if needed) or an
+InternalResourceViewResolver. The snippet below should, by the way, replace the
+InternalResourceViewResolver that was already configured in your
+rest-servlet.xml file. The ContentNegotiatingViewResolver looks at the file
+extension first and after that the Accept header is used (this is by the way
+customizable to a certain degree). We have to map the appropriate extensions to
+the appropriate media types. In this example, we map .html to the media type
+text/html and we map .atom to application/atom+xml. This will make sure the
+appropriate views are rendered. If a .atom request comes in, the
+ContentNegotiatingViewResolver will look for a view that matches the
+application/atom+xml media type. The view resolver will look for a view
+rendering content with media type text/html is an .html request comes in. <bean
+class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+----------------------------------------------------------------------------------------------------

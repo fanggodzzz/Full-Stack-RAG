@@ -1,0 +1,491 @@
+Index: 5188 <<"chunk_id": 2, "docno": 723>>
+
+your fix There are 2 main options, which cover almost all use-cases: Write
+source code and publish in CJS (you use require() ); CJS is consumable by both
+CJS and ESM (in all versions of node). Skip to CJS source and distribution .
+Write source code and publish in ESM (you use import , and don't use top-level
+await ); ESM is consumable by both ESM and CJS (in node 22.x and 23.x; see
+require() an ES Module ). Skip to ESM source and distribution . It's generally
+best to publish only 1 format, either CJS or ESM. Not both. Publishing multiple
+formats can result in the dual-package hazard , as well as other drawbacks.
+There are other options available, mostly for historical purposes. You as a
+package author write Consumers of your package write their code in Your options
+CJS source code using require() ESM: consumers import your package CJS source
+and only ESM distribution CJS source code using require() CJS & ESM: consumers
+either require() or import your package CJS source and both CJS & ESM
+distribution ESM source code using import CJS: consumers require() your package
+(and you use top-level await ) ESM source with only CJS distribution ESM source
+code using import CJS & ESM: consumers either require() or import your package
+ESM source and both CJS & ESM distribution CJS source and distribution The most
+minimal configuration may be only "name" . But the less arcane, the better:
+Essentially just declare the package’s exports via the "exports"
+field/field-set. Working example :
+----------------------------------------------------------------------------------------------------
+Index: 14018 <<"chunk_id": 26, "docno": 1848>>
+
+The specific <TypedArray> object is a <Uint8Array> . If the source value of a
+text-based format (i.e., 'json' , 'module' ) is not a string, it is converted to
+a string using util.TextDecoder . Asynchronous customization hooks # Stability:
+1.1 - Active Development Caveats of asynchronous customization hooks # The
+asynchronous customization hooks have many caveats and it is uncertain if their
+issues can be resolved. Users are encouraged to use the synchronous
+customization hooks via module.registerHooks() instead to avoid these caveats.
+Asynchronous hooks run on a separate thread, so the hook functions cannot
+directly mutate the global state of the modules being customized. It's typical
+to use message channels and atomics to pass data between the two or to affect
+control flows. See Communication with asynchronous module customization hooks .
+Asynchronous hooks do not affect all require() calls in the module graph. Custom
+require functions created using module.createRequire() are not affected. If the
+asynchronous load hook does not override the source for CommonJS modules that go
+through it, the child modules loaded by those CommonJS modules via built-in
+require() would not be affected by the asynchronous hooks either. There are
+several caveats that the asynchronous hooks need to handle when customizing
+CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
+details. When require() calls inside CommonJS modules are customized by
+asynchronous hooks, Node.js may need to load the source code of the CommonJS
+module multiple times to maintain compatibility with existing CommonJS
+monkey-patching. If the module code changes between loads, this may lead
+----------------------------------------------------------------------------------------------------
+Index: 44363 <<"chunk_id": 2, "docno": 6884>>
+
+to the same ESM file. If the package already doesn't want to support older
+versions of Node.js that doesn't support require(esm) , don't use this export
+condition. For bundlers/tools : they should avoid implementing this stop-gap
+condition. Most existing bundlers implement the de-facto bundler standard module
+exports condition, and that should be enough to support users who want to bundle
+ESM from CJS consumers. Users who want both bundlers and Node.js to recognize
+the ESM exports can use both module / module-sync conditions during the
+transition period, and can drop module-sync + module when they no longer need to
+support older versions of Node.js. If tools do want to support this condition,
+it's recommended to make the resolution rules in the graph pointed by this
+condition match the Node.js native ESM rules to avoid divergence. We ended up
+implementing a condition with a different name instead of reusing "module" ,
+because existing code in the ecosystem using the "module" condition sometimes
+also expect the module resolution for these ESM files to work in CJS style,
+which is supported by bundlers, but the native Node.js loader has intentionally
+made ESM resolution different from CJS resolution (e.g. forbidding import
+'./noext' or import './directory' ), so it would be breaking to implement a
+"module" condition without implementing the forbidden ESM resolution rules. For
+now, this just implements a new condition as semver-minor so it can be
+backported to older LTS. Contributed by Joyee Cheung in #54648 . node --run is
+now stable This CLI flag runs a specified command
+----------------------------------------------------------------------------------------------------
+Index: 29329 <<"chunk_id": 565, "docno": 4202>>
+
+but dynamic import() expressions are supported in CommonJS for loading ES
+modules. When importing CommonJS modules , the module.exports object is provided
+as the default export. Named exports may be available, provided by static
+analysis as a convenience for better ecosystem compatibility. require # The
+CommonJS module require currently only supports loading synchronous ES modules
+(that is, ES modules that do not use top-level await ). See Loading ECMAScript
+modules using require() for details. CommonJS Namespaces # Added in: v14.13.0
+History Version Changes v23.0.0 Added 'module.exports' export marker to CJS
+namespaces. CommonJS modules consist of a module.exports object which can be of
+any type. To support this, when importing CommonJS from an ECMAScript module, a
+namespace wrapper for the CommonJS module is constructed, which always provides
+a default export key pointing to the CommonJS module.exports value. In addition,
+a heuristic static analysis is performed against the source text of the CommonJS
+module to get a best-effort static list of exports to provide on the namespace
+from values on module.exports . This is necessary since these namespaces must be
+constructed prior to the evaluation of the CJS module. These CommonJS namespace
+objects also provide the default export as a 'module.exports' named export, in
+order to unambiguously indicate that their representation in CommonJS uses this
+value, and not the namespace value. This mirrors the semantics of the handling
+of the 'module.exports' export name in require(esm) interop support. When
+importing a CommonJS module, it can be reliably imported using the ES module
+default import or its corresponding sugar syntax:
+----------------------------------------------------------------------------------------------------
+Index: 14129 <<"chunk_id": 4, "docno": 1854>>
+
+module syntax in "ambiguous" files incurs a performance cost, and therefore it
+is encouraged that authors be explicit wherever possible. In particular, package
+authors should always include the "type" field in their package.json files, even
+in packages where all sources are CommonJS. Being explicit about the type of the
+package will future-proof the package in case the default type of Node.js ever
+changes, and it will also make things easier for build tools and loaders to
+determine how the files in the package should be interpreted. Syntax detection #
+Added in: v21.1.0, v20.10.0 History Version Changes v22.7.0, v20.19.0 Syntax
+detection is enabled by default. Stability: 1.2 - Release candidate Node.js will
+inspect the source code of ambiguous input to determine whether it contains ES
+module syntax; if such syntax is detected, the input will be treated as an ES
+module. Ambiguous input is defined as: Files with a .js extension or no
+extension; and either no controlling package.json file or one that lacks a type
+field. String input ( --eval or STDIN ) when --input-type is not specified. ES
+module syntax is defined as syntax that would throw when evaluated as CommonJS.
+This includes the following: import statements (but not import() expressions,
+which are valid in CommonJS). export statements. import.meta references. await
+at the top level of a module. Lexical redeclarations of the CommonJS wrapper
+variables ( require , module , exports , __dirname , __filename ). Module
+resolution and loading # Node.js has two types of module resolution and loading,
+chosen based on how the
+----------------------------------------------------------------------------------------------------
+Index: 42684 <<"chunk_id": 0, "docno": 6550>>
+
+Node.js — Node.js 12.17.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.17.0 (LTS) MLZ
+Michaël Zasso Node.js 12.17.0 (LTS) Notable Changes ECMAScript Modules -
+--experimental-modules flag removal As of Node.js 12.17.0, the
+--experimental-modules flag is no longer necessary to use ECMAScript modules
+(ESM). However, the ESM implementation in Node.js remains experimental. As per
+our stability index: “The feature is not subject to Semantic Versioning rules.
+Non-backward compatible changes or removal may occur in any future release.”
+Users should be cautious when using the feature in production environments.
+Unlike Node.js 14, using ESM will still emit a runtime experimental warning,
+either when a module is used a the application's entrypoint or the first time
+dynamic import() is called. Please keep in mind that the implementation of ESM
+in Node.js differs from the developer experience you might be familiar with.
+Most transpilation workflows support features such as named exports from
+CommonJS module imports, optional file extensions or JSON modules that the
+Node.js ESM implementation does not support. It is highly likely that modules
+from transpiled environments will require a certain degree of refactoring to
+work in Node.js. It is worth mentioning that many of our design decisions were
+made with two primary goals. Spec compliance and Web Compatibility. It is our
+belief that the current implementation offers a future proof model to authoring
+ESM modules that paves the path to Universal JavaScript. Please read more in our
+documentation. The ESM implementation in Node.js is still experimental but
+----------------------------------------------------------------------------------------------------
+Index: 14133 <<"chunk_id": 8, "docno": 1854>>
+
+ES modules within a "module" package). Within a "type": "commonjs" package,
+Node.js can be instructed to interpret a particular file as an ES module by
+naming it with an .mjs extension (since both .js and .cjs files are treated as
+CommonJS within a "commonjs" package). --input-type flag # Added in: v12.0.0
+Strings passed in as an argument to --eval (or -e ), or piped to node via STDIN
+, are treated as ES modules when the --input-type=module flag is set. node
+--input-type=module --eval "import { sep } from 'node:path'; console.log(sep);"
+echo "import { sep } from 'node:path'; console.log(sep);" | node
+--input-type=module bash copy For completeness there is also
+--input-type=commonjs , for explicitly running string input as CommonJS. This is
+the default behavior if --input-type is unspecified. Package entry points # In a
+package's package.json file, two fields can define entry points for a package:
+"main" and "exports" . Both fields apply to both ES module and CommonJS module
+entry points. The "main" field is supported in all versions of Node.js, but its
+capabilities are limited: it only defines the main entry point of the package.
+The "exports" provides a modern alternative to "main" allowing multiple entry
+points to be defined, conditional entry resolution support between environments,
+and preventing any other entry points besides those defined in "exports" . This
+encapsulation allows module authors to clearly define the public interface for
+their package. For new packages targeting the currently supported versions of
+Node.js, the "exports" field is recommended. For packages supporting Node.js 10
+and below, the "main"
+----------------------------------------------------------------------------------------------------
+Index: 14151 <<"chunk_id": 26, "docno": 1854>>
+
+throw an error rather than guess. To support this pattern, implementers must key
+module instances by package ID and propagate it from each resolution result to
+subsequent resolution requests. This ensures that when lib requires react , the
+runtime knows whether the request comes from lib-old or lib-new and can select
+the correct dependency. Interaction with other resolution # Package maps only
+apply to bare specifiers that are not Node.js builtin modules. The following
+cases are not affected by package maps and continue to use standard resolution:
+Relative paths or URLs ( ./ or ../ ). Absolute paths or URLs. Node.js builtin
+modules ( node:fs , etc.). Limitations # Package maps must be a single static
+file; dynamic configuration is not supported. Circular dependency detection is
+not performed by the package map resolver. The package map file is loaded
+synchronously at startup. Node.js package.json field definitions # This section
+describes the fields used by the Node.js runtime. Other tools (such as npm ) use
+additional fields which are ignored by Node.js and not documented here. The
+following fields in package.json files are used in Node.js: "name" - Relevant
+when using named imports within a package. Also used by package managers as the
+name of the package. "main" - The default module when loading the package, if
+exports is not specified, and in versions of Node.js prior to the introduction
+of exports. "type" - The package type determining whether to load .js files as
+CommonJS or ES modules. "exports" - Package exports and conditional exports.
+When present,
+----------------------------------------------------------------------------------------------------
+Index: 13335 <<"chunk_id": 3, "docno": 1787>>
+
+" erasableSyntaxOnly " : true , " verbatimModuleSyntax " : true } } json copy
+Use the noEmit option if you intend to only execute *.ts files, for example a
+build script. You won't need this flag if you intend to distribute *.js files.
+Determining module system # Node.js supports both CommonJS and ES Modules syntax
+in TypeScript files. Node.js will not convert from one module system to another;
+if you want your code to run as an ES module, you must use import and export
+syntax, and if you want your code to run as CommonJS you must use require and
+module.exports . .ts files will have their module system determined the same way
+as .js files. To use import and export syntax, add "type": "module" to the
+nearest parent package.json . .mts files will always be run as ES modules,
+similar to .mjs files. .cts files will always be run as CommonJS modules,
+similar to .cjs files. .tsx files are unsupported. As in JavaScript files, file
+extensions are mandatory in import statements and import() expressions: import
+'./file.ts' , not import './file' . Because of backward compatibility, file
+extensions are also mandatory in require() calls: require('./file.ts') , not
+require('./file') , similar to how the .cjs extension is mandatory in require
+calls in CommonJS files. The tsconfig.json option allowImportingTsExtensions
+will allow the TypeScript compiler tsc to type-check files with import
+specifiers that include the .ts extension. TypeScript features # Since Node.js
+is only removing inline types, any TypeScript features that involve replacing
+TypeScript syntax with new
+----------------------------------------------------------------------------------------------------
+Index: 13217 <<"chunk_id": 10, "docno": 1772>>
+
+performance similarly to require.resolve . This feature is not available within
+custom loaders (it would create a deadlock). Non-standard API : When using the
+--experimental-import-meta-resolve flag, that function accepts a second
+argument: parent <string> | <URL> An optional absolute parent module URL to
+resolve from. Default: import.meta.url Interoperability with CommonJS # import
+statements # An import statement can reference an ES module or a CommonJS
+module. import statements are permitted only in ES modules, but dynamic import()
+expressions are supported in CommonJS for loading ES modules. When importing
+CommonJS modules , the module.exports object is provided as the default export.
+Named exports may be available, provided by static analysis as a convenience for
+better ecosystem compatibility. require # The CommonJS module require currently
+only supports loading synchronous ES modules (that is, ES modules that do not
+use top-level await ). See Loading ECMAScript modules using require() for
+details. CommonJS Namespaces # Added in: v14.13.0 History Version Changes
+v23.0.0 Added 'module.exports' export marker to CJS namespaces. CommonJS modules
+consist of a module.exports object which can be of any type. To support this,
+when importing CommonJS from an ECMAScript module, a namespace wrapper for the
+CommonJS module is constructed, which always provides a default export key
+pointing to the CommonJS module.exports value. In addition, a heuristic static
+analysis is performed against the source text of the CommonJS module to get a
+best-effort static list of exports to provide on the namespace from values on
+module.exports . This is necessary since these namespaces must be constructed
+prior to the
+----------------------------------------------------------------------------------------------------
+Index: 29349 <<"chunk_id": 585, "docno": 4202>>
+
+STDIN , with the flag --input-type=commonjs . Files with a .js extension with no
+parent package.json file or where the nearest parent package.json file lacks a
+type field, and where the code can evaluate successfully as CommonJS. In other
+words, Node.js tries to run such "ambiguous" files as CommonJS first, and will
+retry evaluating them as ES modules if the evaluation as CommonJS fails because
+the parser found ES module syntax. Writing ES module syntax in "ambiguous" files
+incurs a performance cost, and therefore it is encouraged that authors be
+explicit wherever possible. In particular, package authors should always include
+the "type" field in their package.json files, even in packages where all sources
+are CommonJS. Being explicit about the type of the package will future-proof the
+package in case the default type of Node.js ever changes, and it will also make
+things easier for build tools and loaders to determine how the files in the
+package should be interpreted. Syntax detection # Added in: v21.1.0, v20.10.0
+History Version Changes v22.7.0, v20.19.0 Syntax detection is enabled by
+default. Stability: 1.2 - Release candidate Node.js will inspect the source code
+of ambiguous input to determine whether it contains ES module syntax; if such
+syntax is detected, the input will be treated as an ES module. Ambiguous input
+is defined as: Files with a .js extension or no extension; and either no
+controlling package.json file or one that lacks a type field. String input (
+--eval or STDIN ) when --input-type is not specified. ES module syntax is
+defined
+----------------------------------------------------------------------------------------------------
+Index: 12866 <<"chunk_id": 6, "docno": 1735>>
+
+looking for missing dependencies in /usr/node_modules or /node_modules . In
+order to make modules available to the Node.js REPL, it might be useful to also
+add the /usr/lib/node_modules folder to the $NODE_PATH environment variable.
+Since the module lookups using node_modules folders are all relative, and based
+on the real path of the files making the calls to require() , the packages
+themselves can be anywhere. Loading ECMAScript modules using require() # Added
+in: v22.0.0, v20.17.0 History Version Changes v25.4.0 This feature is no longer
+experimental. v23.5.0, v22.13.0, v20.19.0 This feature no longer emits an
+experimental warning by default, though the warning can still be emitted by
+--trace-require-module. v23.0.0, v22.12.0, v20.19.0 This feature is no longer
+behind the --experimental-require-module CLI flag. v23.0.0, v22.12.0 Support
+'module.exports' interop export in require(esm) . The .mjs extension is reserved
+for ECMAScript Modules . See Determining module system section for more info
+regarding which files are parsed as ECMAScript modules. require() only supports
+loading ECMAScript modules that meet the following requirements: The module is
+fully synchronous (contains no top-level await ); and One of these conditions
+are met: The file has a .mjs extension. The file has a .js extension, and the
+closest package.json contains "type": "module" The file has a .js extension, the
+closest package.json does not contain "type": "commonjs" , and the module
+contains ES module syntax. If the ES Module being loaded meets the requirements,
+require() can load it and return the module namespace object . In this case it
+is similar to dynamic import() but is run synchronously
+----------------------------------------------------------------------------------------------------
+Index: 16097 <<"chunk_id": 17, "docno": 2150>>
+
+different guides for different choices, as some may still want to support older
+versions of Node.js. Future Prospects : We envisioned a future where shipping
+native ESM (only) in all packages would be feasible, as long as there is an easy
+method for users on older engines to seamlessly adapt/transpile a consistent
+compile source. ESM as First Class Opinionated Documentation : We suggested that
+the documentation could be more opinionated, telling people to write ESM and
+considering CommonJS as legacy (but still supported). This would move away from
+presenting both as equal first-class citizens. Learn Article : We mentioned a
+potential Learn article that could be ported from the loaders example, providing
+practical guidance on configuring CommonJS and ESM for Node.js. node --init
+Problem (npm init): The group discussed the issue of npm init not making "type":
+"module" by default. Solution ( node --init ): The proposed solution was to
+introduce a node --init command to create a package.json with "type": "module" .
+This could be extended to include "scripts": {"test": "node --test"} to
+bootstrap a project. Related Work : We mentioned that the package maintenance
+working group (Node.js WG) is working on an pkgjs/create-package-json an
+alternative to npm init . ⚠️ WARNING : This is a proposal and not yet
+implemented. Also, it's may never be implemented. Please don't take this for
+granted. Missing Pieces of ESM Performance : We mentioned a work-in-progress to
+remove async handling in the ESM loader, which is currently failing tests due to
+unexpected async activity. We noted that it
+----------------------------------------------------------------------------------------------------
+Index: 29272 <<"chunk_id": 508, "docno": 4202>>
+
+their issues can be resolved. Users are encouraged to use the synchronous
+customization hooks via module.registerHooks() instead to avoid these caveats.
+Asynchronous hooks run on a separate thread, so the hook functions cannot
+directly mutate the global state of the modules being customized. It's typical
+to use message channels and atomics to pass data between the two or to affect
+control flows. See Communication with asynchronous module customization hooks .
+Asynchronous hooks do not affect all require() calls in the module graph. Custom
+require functions created using module.createRequire() are not affected. If the
+asynchronous load hook does not override the source for CommonJS modules that go
+through it, the child modules loaded by those CommonJS modules via built-in
+require() would not be affected by the asynchronous hooks either. There are
+several caveats that the asynchronous hooks need to handle when customizing
+CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
+details. When require() calls inside CommonJS modules are customized by
+asynchronous hooks, Node.js may need to load the source code of the CommonJS
+module multiple times to maintain compatibility with existing CommonJS
+monkey-patching. If the module code changes between loads, this may lead to
+unexpected behaviors. As a side effect, if both asynchronous hooks and
+synchronous hooks are registered and the asynchronous hooks choose to customize
+the CommonJS module, the synchronous hooks may be invoked multiple times for the
+require() calls in that CommonJS module. Registration of asynchronous
+customization hooks # Asynchronous customization hooks are registered using
+module.register() which takes a path or URL
+----------------------------------------------------------------------------------------------------
+Index: 16360 <<"chunk_id": 0, "docno": 2176>>
+
+Node.js — npm 1.0: Global vs Local installation Skip to content Learn About
+Download Blog Docs Beta Docs Contribute Courses Start typing... ⌘ K npm 1.0:
+Global vs Local installation IS Isaac Schlueter npm 1.0: Global vs Local
+installation npm 1.0 is in release candidate mode. Go get it! More than anything
+else, the driving force behind the npm 1.0 rearchitecture was the desire to
+simplify what a package installation directory structure looks like. In npm 0.x,
+there was a command called bundle that a lot of people liked. bundle let you
+install your dependencies locally in your project, but even still, it was
+basically a hack that never really worked very reliably. Also, there was that
+activation/deactivation thing. That’s confusing. Two paths In npm 1.0, there are
+two ways to install things: globally —- This drops modules in
+{prefix}/lib/node_modules , and puts executable files in {prefix}/bin , where
+{prefix} is usually something like /usr/local . It also installs man pages in
+{prefix}/share/man , if they’re supplied. locally —- This installs your package
+in the current working directory. Node modules go in ./node_modules ,
+executables go in ./node_modules/.bin/ , and man pages aren’t installed at all.
+Which to choose Whether to install a package globally or locally depends on the
+global config, which is aliased to the -g command line switch. Just like how
+global variables are kind of gross, but also necessary in some cases, global
+packages are important, but best avoided if not needed. In general, the rule of
+thumb is: If you’re installing
+----------------------------------------------------------------------------------------------------
+Index: 2726 <<"chunk_id": 2, "docno": 394>>
+
+addons often need to be recompiled - and sometimes updated - when Node.js ships
+a new V8 version. Node-API abstracts the JavaScript engine behind a stable
+interface. This gives you two important guarantees: Backward compatibility - a
+module built today will run on all future versions of Node.js without any
+recompilation or code changes. ABI stability - because the API is ABI-stable,
+the compiled .node binary itself continues to work across Node.js releases.
+Common use cases Wrapping an existing C/C++ library The most common reason to
+write a native addon is to expose an existing C/C++ library to JavaScript
+developers. Node-API lets you maintain your C/C++ code independently and keep
+the JavaScript bindings in sync with minimal effort. Accessing OS resources Some
+applications - such as those built with Electron or NW.js - need access to
+system APIs that Node.js does not expose. Node-API provides the hooks to reach
+those resources. Computationally intensive work For compute-heavy tasks, writing
+the hot path in C or C++ and calling it from JavaScript via Node-API can yield
+significant performance gains. Unlike JIT-compiled JavaScript, the compiled
+C/C++ binary is available to Node.js immediately without a warm-up phase.
+node-addon-api An important companion to Node-API is the npm package
+node-addon-api . It wraps the C API in an idiomatic C++ object model, reducing
+boilerplate and making common patterns - like wrapping C++ objects as JavaScript
+objects - much more ergonomic. It retains the full ABI-stability guarantee of
+Node-API. Most of the examples on this site use node-addon-api . Reading Time 2
+min
+----------------------------------------------------------------------------------------------------
+Index: 29298 <<"chunk_id": 534, "docno": 4202>>
+
+Node.js will not bother looking for missing dependencies in /usr/node_modules or
+/node_modules . In order to make modules available to the Node.js REPL, it might
+be useful to also add the /usr/lib/node_modules folder to the $NODE_PATH
+environment variable. Since the module lookups using node_modules folders are
+all relative, and based on the real path of the files making the calls to
+require() , the packages themselves can be anywhere. Loading ECMAScript modules
+using require() # Added in: v22.0.0, v20.17.0 History Version Changes v25.4.0
+This feature is no longer experimental. v23.5.0, v22.13.0, v20.19.0 This feature
+no longer emits an experimental warning by default, though the warning can still
+be emitted by --trace-require-module. v23.0.0, v22.12.0, v20.19.0 This feature
+is no longer behind the --experimental-require-module CLI flag. v23.0.0,
+v22.12.0 Support 'module.exports' interop export in require(esm) . The .mjs
+extension is reserved for ECMAScript Modules . See Determining module system
+section for more info regarding which files are parsed as ECMAScript modules.
+require() only supports loading ECMAScript modules that meet the following
+requirements: The module is fully synchronous (contains no top-level await );
+and One of these conditions are met: The file has a .mjs extension. The file has
+a .js extension, and the closest package.json contains "type": "module" The file
+has a .js extension, the closest package.json does not contain "type":
+"commonjs" , and the module contains ES module syntax. If the ES Module being
+loaded meets the requirements, require() can load it and return the module
+namespace object . In this case it is similar to dynamic import()
+----------------------------------------------------------------------------------------------------
+Index: 29350 <<"chunk_id": 586, "docno": 4202>>
+
+file or one that lacks a type field. String input ( --eval or STDIN ) when
+--input-type is not specified. ES module syntax is defined as syntax that would
+throw when evaluated as CommonJS. This includes the following: import statements
+(but not import() expressions, which are valid in CommonJS). export statements.
+import.meta references. await at the top level of a module. Lexical
+redeclarations of the CommonJS wrapper variables ( require , module , exports ,
+__dirname , __filename ). Module resolution and loading # Node.js has two types
+of module resolution and loading, chosen based on how the module is requested.
+When a module is requested via require() (available by default in CommonJS
+modules, and can be dynamically generated using createRequire() in both CommonJS
+and ES Modules): Resolution: The resolution initiated by require() supports
+folders as modules . When resolving a specifier, if no exact match is found,
+require() will try to add extensions ( .js , .json , and finally .node ) and
+then attempt to resolve folders as modules . It does not support URLs as
+specifiers by default. Loading: .json files are treated as JSON text files.
+.node files are interpreted as compiled addon modules loaded with
+process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
+files. Files with any other extension, or without extensions, are treated as
+JavaScript text files. require() can only be used to load ECMAScript modules
+from CommonJS modules if the ECMAScript module and its dependencies are
+synchronous (i.e. they do not contain top-level await
+----------------------------------------------------------------------------------------------------
+Index: 14130 <<"chunk_id": 5, "docno": 1854>>
+
+exports , __dirname , __filename ). Module resolution and loading # Node.js has
+two types of module resolution and loading, chosen based on how the module is
+requested. When a module is requested via require() (available by default in
+CommonJS modules, and can be dynamically generated using createRequire() in both
+CommonJS and ES Modules): Resolution: The resolution initiated by require()
+supports folders as modules . When resolving a specifier, if no exact match is
+found, require() will try to add extensions ( .js , .json , and finally .node )
+and then attempt to resolve folders as modules . It does not support URLs as
+specifiers by default. Loading: .json files are treated as JSON text files.
+.node files are interpreted as compiled addon modules loaded with
+process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
+files. Files with any other extension, or without extensions, are treated as
+JavaScript text files. require() can only be used to load ECMAScript modules
+from CommonJS modules if the ECMAScript module and its dependencies are
+synchronous (i.e. they do not contain top-level await ). When a module is
+requested via static import statements (only available in ES Modules) or
+import() expressions (available in both CommonJS and ES Modules): Resolution:
+The resolution of import / import() does not support folders as modules,
+directory indexes (e.g. './startup/index.js' ) must be fully specified. It does
+not perform extension searching. A file extension must be provided when the
+specifier is a relative or absolute file URL. It supports file:// and
+----------------------------------------------------------------------------------------------------
+Index: 4113 <<"chunk_id": 4, "docno": 562>>
+
+environment in which such applications run. In contrast, if an application
+depends on a package that contains a native addon, the application has to be
+recompiled, reinstalled, and redeployed whenever a new major version of Node.js
+is introduced into the production environment. This disparity between Node.js
+packages containing native addons and those that are written entirely in
+JavaScript has added to the maintenance burden of production systems which rely
+on native addons. Other projects have started to produce JavaScript interfaces
+that are essentially alternative implementations of Node.js. Since these
+projects are usually built on a different JavaScript engine than V8, their
+native addons necessarily take on a different structure and use a different API.
+Nevertheless, using a single API for a native addon across different
+implementations of the Node.js JavaScript API would allow these projects to take
+advantage of the ecosystem of JavaScript packages that has accrued around
+Node.js. Node.js may contain a different JavaScript engine in the future. This
+means that, externally, all Node.js interfaces would remain the same, but the V8
+header file would be absent. Such a step would cause the disruption of the
+Node.js ecosystem in general, and that of the native addons in particular, if an
+API that is JavaScript engine agnostic is not first provided by Node.js and
+adopted by native addons. To these ends Node.js has introduced N-API in version
+8.6.0 and marked it as a stable component of the project as of Node.js 8.12.0.
+The API is defined in the headers node_api.h and node_api_types.h , and provides
+a
+----------------------------------------------------------------------------------------------------

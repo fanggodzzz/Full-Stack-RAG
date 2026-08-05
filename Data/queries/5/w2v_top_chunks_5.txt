@@ -1,0 +1,489 @@
+Index: 2963 <<"chunk_id": 4, "docno": 426>>
+
+for any asynchronous I/O or timers and shuts down cleanly if there are not any.
+Starting with libuv 1.45.0 (Node.js 20), timers are run after the poll phase in
+each event loop iteration. In earlier versions, timers were run before polling.
+To preserve backwards compatibility, libuv 1.45.0 still runs timers once before
+entering the event loop . This change can affect the timing of setImmediate()
+callbacks and how they interact with timers in certain scenarios. Phases in
+Detail pending callbacks This phase executes callbacks for some system
+operations such as types of TCP errors. For example if a TCP socket receives
+ECONNREFUSED when attempting to connect, some *nix systems want to wait to
+report the error. This will be queued to execute in the pending callbacks phase.
+poll The poll phase has two main functions: Calculating how long it should block
+and poll for I/O, then Processing events in the poll queue. When the event loop
+enters the poll phase and there are no timers scheduled , one of two things will
+happen: If the poll queue is not empty , the event loop will iterate through its
+queue of callbacks executing them synchronously until either the queue has been
+exhausted, or the system-dependent hard limit is reached. If the poll queue is
+empty , one of two more things will happen: If scripts have been scheduled by
+setImmediate() , the event loop will end the poll phase and continue to the
+check phase to execute those scheduled scripts. If scripts have not been
+scheduled by
+----------------------------------------------------------------------------------------------------
+Index: 2962 <<"chunk_id": 3, "docno": 426>>
+
+the next phase, and so on. Since any of these operations may schedule more
+operations and new events processed in the poll phase are queued by the kernel,
+poll events can be queued while polling events are being processed. As a result,
+long running callbacks can allow the poll phase to run much longer than a
+timer's threshold. See the timers and poll sections for more details. There is a
+slight discrepancy between the Windows and the Unix/Linux implementation, but
+that's not important for this demonstration. The most important parts are here.
+There are actually seven or eight steps, but the ones we care about — ones that
+Node.js actually uses - are those above. Phases Overview pending callbacks :
+executes I/O callbacks deferred to the next loop iteration. idle, prepare : only
+used internally. poll : retrieve new I/O events; execute I/O related callbacks
+(almost all with the exception of close callbacks, the ones scheduled by timers,
+and setImmediate() ); node will block here when appropriate. check :
+setImmediate() callbacks are invoked here. close callbacks : some close
+callbacks, e.g. socket.on('close', ...) timers : this phase executes callbacks
+scheduled by setTimeout() and setInterval() . Additionally, these callbacks can
+execute before entering the event loop. This sometimes happens for setTimeout(()
+=> ... , 0) outside the I/O loop. Between each run of the event loop, Node.js
+checks if it is waiting for any asynchronous I/O or timers and shuts down
+cleanly if there are not any. Starting with libuv 1.45.0 (Node.js 20), timers
+are run after
+----------------------------------------------------------------------------------------------------
+Index: 2964 <<"chunk_id": 5, "docno": 426>>
+
+event loop will end the poll phase and continue to the check phase to execute
+those scheduled scripts. If scripts have not been scheduled by setImmediate() ,
+the event loop will wait for callbacks to be added to the queue, then execute
+them immediately. Once the poll queue is empty the event loop will check for
+timers whose time thresholds have been reached . If one or more timers are
+ready, the event loop will wrap back to the timers phase to execute those
+timers' callbacks. check This phase allows the event loop to execute callbacks
+immediately after the poll phase has completed. If the poll phase becomes idle
+and scripts have been queued with setImmediate() , the event loop may continue
+to the check phase rather than waiting. setImmediate() is actually a special
+timer that runs in a separate phase of the event loop. It uses a libuv API that
+schedules callbacks to execute after the poll phase has completed. Generally, as
+the code is executed, the event loop will eventually hit the poll phase where it
+will wait for an incoming connection, request, etc. However, if a callback has
+been scheduled with setImmediate() and the poll phase becomes idle, it will end
+and continue to the check phase rather than waiting for poll events. close
+callbacks If a socket or handle is closed abruptly (e.g. socket.destroy() ), the
+'close' event will be emitted in this phase. Otherwise it will be emitted via
+process.nextTick() . timers A timer specifies the threshold after which a
+provided
+----------------------------------------------------------------------------------------------------
+Index: 1359 <<"chunk_id": 4, "docno": 206>>
+
+variants of the same key, such as PATH and Path . The child_process.spawn()
+method spawns the child process asynchronously, without blocking the Node.js
+event loop. The child_process.spawnSync() function provides equivalent
+functionality in a synchronous manner that blocks the event loop until the
+spawned process either exits or is terminated. For convenience, the
+node:child_process module provides a handful of synchronous and asynchronous
+alternatives to child_process.spawn() and child_process.spawnSync() . Each of
+these alternatives are implemented on top of child_process.spawn() or
+child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
+command within that shell, passing the stdout and stderr to a callback function
+when complete. child_process.execFile() : similar to child_process.exec() except
+that it spawns the command directly without first spawning a shell by default.
+child_process.fork() : spawns a new Node.js process and invokes a specified
+module with an IPC communication channel established that allows sending
+messages between parent and child. child_process.execSync() : a synchronous
+version of child_process.exec() that will block the Node.js event loop.
+child_process.execFileSync() : a synchronous version of child_process.execFile()
+that will block the Node.js event loop. For certain use cases, such as
+automating shell scripts, the synchronous counterparts may be more convenient.
+In many cases, however, the synchronous methods can have significant impact on
+performance due to stalling the event loop while spawned processes complete.
+Asynchronous process creation # The child_process.spawn() , child_process.fork()
+, child_process.exec() , and child_process.execFile() methods all follow the
+idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
+of the methods returns a ChildProcess instance. These objects implement the
+Node.js EventEmitter API,
+----------------------------------------------------------------------------------------------------
+Index: 31957 <<"chunk_id": 15, "docno": 4244>>
+
+Safety notes # The node:ffi module does not track pointer validity, memory
+ownership, or native object lifetimes. In particular: Do not read from or write
+to freed memory. Do not use zero-copy views after the native memory has been
+released. Do not declare incorrect signatures for native symbols. Do not
+unregister callbacks while native code may still call them. Do not call callback
+pointers after library.close() or library.unregisterCallback(pointer) . Assume
+undefined callback behavior can crash the process, produce incorrect output, or
+corrupt memory. Do not assume pointer return values imply ownership; whether the
+caller must free the returned address depends entirely on the native API. As a
+general rule, prefer copied values unless zero-copy access is required, and keep
+callback and pointer lifetimes explicit on the native side.
+----------------------------------------------------------------------------------------------------
+Index: 30176 <<"chunk_id": 1412, "docno": 4202>>
+
+. Each of these alternatives are implemented on top of child_process.spawn() or
+child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
+command within that shell, passing the stdout and stderr to a callback function
+when complete. child_process.execFile() : similar to child_process.exec() except
+that it spawns the command directly without first spawning a shell by default.
+child_process.fork() : spawns a new Node.js process and invokes a specified
+module with an IPC communication channel established that allows sending
+messages between parent and child. child_process.execSync() : a synchronous
+version of child_process.exec() that will block the Node.js event loop.
+child_process.execFileSync() : a synchronous version of child_process.execFile()
+that will block the Node.js event loop. For certain use cases, such as
+automating shell scripts, the synchronous counterparts may be more convenient.
+In many cases, however, the synchronous methods can have significant impact on
+performance due to stalling the event loop while spawned processes complete.
+Asynchronous process creation # The child_process.spawn() , child_process.fork()
+, child_process.exec() , and child_process.execFile() methods all follow the
+idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
+of the methods returns a ChildProcess instance. These objects implement the
+Node.js EventEmitter API, allowing the parent process to register listener
+functions that are called when certain events occur during the life cycle of the
+child process. The child_process.exec() and child_process.execFile() methods
+additionally allow for an optional callback function to be specified that is
+invoked when the child process terminates. Spawning .bat and .cmd files on
+Windows # The importance of the distinction between child_process.exec() and
+child_process.execFile() can vary based
+----------------------------------------------------------------------------------------------------
+Index: 15815 <<"chunk_id": 8, "docno": 2107>>
+
+the application is in an undefined state. The hook might have partially
+executed, resources might be leaked, and continuing could cause data corruption.
+Better to crash fast and loud. But stack overflow is different. The error
+doesn't originate in the hook. Instead, it originates in user code. The stack
+just happens to overflow while the hook is on the call stack. The hook itself is
+fine; there's no corrupted state to worry about. The Bug Explained To understand
+the bug, we need to understand how promise hooks work. When you enable
+async_hooks with an init callback, Node.js registers a promise hook with V8.
+This hook is invoked by V8 itself every time a Promise is created, not by
+Node.js JavaScript code. The critical detail is that V8 calls this hook
+synchronously during the Promise constructor, before new Promise() returns to
+your code. The call sequence looks like this: Your code: new Promise() → V8
+Promise constructor → V8 calls promise hook (synchronous, before constructor
+returns) → Node.js promiseInitHook() [JavaScript] → emitInitNative()
+[JavaScript] → Your async_hooks init callback → V8 Promise constructor returns
+Your code continues... This means that async_hooks callbacks don't run in
+isolation. They run on the same call stack as user code. Every new Promise()
+call adds several stack frames for the hook machinery on top of whatever is
+already on the stack. Here's what the stack looks like during deep recursion:
+[bottom of stack] recursive() frame #1 new Promise() V8 promise hook async_hooks
+init callback ← TryCatchScope::kFatal active here recursive() frame #2 new
+----------------------------------------------------------------------------------------------------
+Index: 53421 <<"chunk_id": 0, "docno": 8575>>
+
+Node.js — Node.js 0.12.11 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 0.12.11 (LTS) RV Rod
+Vagg Node.js 0.12.11 (LTS) This release contains security updates. OpenSSL
+1.0.1s fixes some low-severity defects that impact Node.js. See our impact
+assessment for full details. Notable changes: http_parser : Update to
+http-parser 2.3.2 to fix an unintentionally strict limitation of allowable
+header characters. (James M Snell) nodejs/node#5241 domains : Prevent an exit
+due to an exception being thrown rather than emitting an 'uncaughtException'
+event on the process object when no error handler is set on the domain within
+which an error is thrown and an 'uncaughtException' event listener is set on
+process . (Julien Gilli) nodejs/node#3885 Fix an issue where the process would
+not abort in the proper function call if an error is thrown within a domain with
+no error handler and --abort-on-uncaught-exception is used. (Julien Gilli)
+nodejs/node#3885 openssl : Upgrade from 1.0.1r to 1.0.1s (Ben Noordhuis)
+nodejs/node#5509 Fix a double-free defect in parsing malformed DSA keys that may
+potentially be used for DoS or memory corruption attacks. It is likely to be
+very difficult to use this defect for a practical attack and is therefore
+considered low severity for Node.js users. More info is available at
+https://www.openssl.org/news/vulnerabilities.html#2016-0705 Fix a defect that
+can cause memory corruption in certain very rare cases relating to the internal
+BN_hex2bn() and BN_dec2bn() functions. It is believed that Node.js is not
+invoking the code paths that use these functions so practical attacks via
+Node.js
+----------------------------------------------------------------------------------------------------
+Index: 15814 <<"chunk_id": 7, "docno": 2107>>
+
+resource usage that could be controlled by an attacker. The runtime cannot
+always recover reliably from resource exhaustion after-the-fact. Technical Deep
+Dive How async_hooks Works When you create a Promise, async_hooks fires
+callbacks to track the async context: new Promise() → V8 promise hook triggered
+→ async_hooks init callback runs → Your hook code executes (e.g., APM span
+creation) The Fatal TryCatchScope Node.js wraps async_hooks callbacks in a
+special error handler called TryCatchScope with CatchMode::kFatal : // From
+Node.js internals void EmitAsyncInit ( /* ... */ ) { TryCatchScope try_catch (
+env , TryCatchScope :: CatchMode :: kFatal ) ; // Run async_hooks callback } C++
+Copy to clipboard kFatal means: "If any error occurs here, it's unrecoverable.
+Exit immediately." This behavior is documented and intentional. From the
+async_hooks documentation : If any AsyncHook callbacks throw, the application
+will print the stack trace and exit. The exit path does follow that of an
+uncaught exception, but all 'uncaughtException' listeners are removed, thus
+forcing the process to exit. The reason for this error handling behavior is that
+these callbacks are running at potentially volatile points in an object's
+lifetime, for example during class construction and destruction. Because of
+this, it is deemed necessary to bring down the process quickly in order to
+prevent an unintentional abort in the future. This design makes sense: if your
+APM tool's init callback throws an error, the application is in an undefined
+state. The hook might have partially executed, resources might be leaked, and
+continuing could cause data corruption. Better to
+----------------------------------------------------------------------------------------------------
+Index: 5049 <<"chunk_id": 12, "docno": 704>>
+
+events fire only for the <dialog> elements. Unlike browser events, they bubble
+in React: onCancel : An Event handler function. Fires when the user tries to
+dismiss the dialog. onCancelCapture : A version of onCancel that fires in the
+capture phase. onClose : An Event handler function. Fires when a dialog has been
+closed. onCloseCapture : A version of onClose that fires in the capture phase.
+These events fire only for the <details> elements. Unlike browser events, they
+bubble in React: onToggle : An Event handler function. Fires when the user
+toggles the details. onToggleCapture : A version of onToggle that fires in the
+capture phase. These events fire for <img> , <iframe> , <object> , <embed> ,
+<link> , and SVG <image> elements. Unlike browser events, they bubble in React:
+onLoad : An Event handler function. Fires when the resource has loaded.
+onLoadCapture : A version of onLoad that fires in the capture phase. onError :
+An Event handler function. Fires when the resource could not be loaded.
+onErrorCapture : A version of onError that fires in the capture phase. These
+events fire for resources like <audio> and <video> . Unlike browser events, they
+bubble in React: onAbort : An Event handler function. Fires when the resource
+has not fully loaded, but not due to an error. onAbortCapture : A version of
+onAbort that fires in the capture phase. onCanPlay : An Event handler function.
+Fires when there’s enough data to start playing, but not enough to play to the
+end without buffering. onCanPlayCapture :
+----------------------------------------------------------------------------------------------------
+Index: 45848 <<"chunk_id": 0, "docno": 7160>>
+
+Node.js — Node.js 20.0.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 20.0.0 (Current)
+RG Rafael Gonzaga Node.js 20.0.0 (Current) Notable Changes Permission Model
+Node.js now has an experimental feature called the Permission Model. It allows
+developers to restrict access to specific resources during program execution,
+such as file system operations, child process spawning, and worker thread
+creation. The API exists behind a flag --experimental-permission which when
+enabled will restrict access to all available permissions. By using this
+feature, developers can prevent their applications from accessing or modifying
+sensitive data or running potentially harmful code. More information about the
+Permission Model can be found in the Node.js documentation . The Permission
+Model was a contribution by Rafael Gonzaga in #44004 . Custom ESM loader hooks
+run on dedicated thread ESM hooks supplied via loaders (
+--experimental-loader=foo.mjs ) now run in a dedicated thread, isolated from the
+main thread. This provides a separate scope for loaders and ensures no
+cross-contamination between loaders and application code. Synchronous
+import.meta.resolve() In alignment with browser behavior, this function now
+returns synchronously. Despite this, user loader resolve hooks can still be
+defined as async functions (or as sync functions, if the author prefers). Even
+when there are async resolve hooks loaded, import.meta.resolve will still return
+synchronously for application code. Contributed by Anna Henningsen, Antoine du
+Hamel, Geoffrey Booth, Guy Bedford, Jacob Smith, and Michaël Zasso in #44710 V8
+11.3 The V8 engine is updated to version 11.3, which is part of Chromium
+----------------------------------------------------------------------------------------------------
+Index: 1684 <<"chunk_id": 4, "docno": 249>>
+
+be executed on the Event Loop. The Event Loop will also fulfill the non-blocking
+asynchronous requests made by its callbacks, e.g., network I/O. In summary, the
+Event Loop executes the JavaScript callbacks registered for events, and is also
+responsible for fulfilling non-blocking asynchronous requests like network I/O.
+What code runs on the Worker Pool? The Worker Pool of Node.js is implemented in
+libuv ( docs ), which exposes a general task submission API. Node.js uses the
+Worker Pool to handle "expensive" tasks. This includes I/O for which an
+operating system does not provide a non-blocking version, as well as
+particularly CPU-intensive tasks. These are the Node.js module APIs that make
+use of this Worker Pool: I/O-intensive DNS : dns.lookup() , dns.lookupService()
+. File System : All file system APIs except fs.FSWatcher() and those that are
+explicitly synchronous use libuv's threadpool. CPU-intensive Crypto :
+crypto.pbkdf2() , crypto.scrypt() , crypto.randomBytes() , crypto.randomFill() ,
+crypto.generateKeyPair() . Zlib : All zlib APIs except those that are explicitly
+synchronous use libuv's threadpool. In many Node.js applications, these APIs are
+the only sources of tasks for the Worker Pool. Applications and modules that use
+a C++ add-on can submit other tasks to the Worker Pool. For the sake of
+completeness, we note that when you call one of these APIs from a callback on
+the Event Loop, the Event Loop pays some minor setup costs as it enters the
+Node.js C++ bindings for that API and submits a task to the Worker Pool. These
+costs are negligible compared to the overall cost
+----------------------------------------------------------------------------------------------------
+Index: 16164 <<"chunk_id": 14, "docno": 2160>>
+
+not Node.js vulnerabilities. The root cause is the application's failure to
+establish proper security boundaries between trusted application logic and
+untrusted user input. Build System Attacks Requiring Control of the Build
+Environment (CWE-78, CWE-114, CWE-276) The Node.js build system (e.g., configure
+, configure.py , Makefile , vcbuild.bat ) is designed to run in a trusted build
+environment. The build environment, including environment variables, the file
+system, and locally installed tools, is a trusted element in the Node.js threat
+model. Reports about command injection via environment variables in build
+scripts (e.g., CC , CXX , PKG_CONFIG , RUSTC ), path hijacking in build output
+directories, or file permissions of build artifacts are not considered
+vulnerabilities. These scenarios require the attacker to already have control
+over the build environment, which means the system is already compromised. Build
+scripts are not a security boundary. They are expected to execute tools and
+scripts specified by the environment, and to trust the file system they operate
+on. Unhandled 'error' Events on EventEmitters (CWE-248) EventEmitters that can
+emit 'error' events require the application to attach an 'error' event handler.
+This includes HTTP streams and other Node.js core streams. If the application
+fails to attach an 'error' handler, the EventEmitter will throw an uncaught
+exception, which may crash the process. Crashes resulting from missing 'error'
+handlers are not considered denial-of-service vulnerabilities in Node.js. It is
+the application's responsibility to properly handle errors by attaching
+appropriate 'error' event listeners to EventEmitters that may emit errors.
+Exceptions Thrown by Application Callbacks (CWE-248) Node.js trusts the
+----------------------------------------------------------------------------------------------------
+Index: 4184 <<"chunk_id": 8, "docno": 574>>
+
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
+----------------------------------------------------------------------------------------------------
+Index: 1683 <<"chunk_id": 3, "docno": 249>>
+
+Event Loop (aka the main loop, main thread, event thread, etc.), and a pool of k
+Workers in a Worker Pool (aka the threadpool). If a thread is taking a long time
+to execute a callback (Event Loop) or a task (Worker), we call it "blocked".
+While a thread is blocked working on behalf of one client, it cannot handle
+requests from any other clients. This provides two motivations for blocking
+neither the Event Loop nor the Worker Pool: Performance: If you regularly
+perform heavyweight activity on either type of thread, the throughput
+(requests/second) of your server will suffer. Security: If it is possible that
+for certain input one of your threads might block, a malicious client could
+submit this "evil input", make your threads block, and keep them from working on
+other clients. This would be a Denial of Service attack. A quick review of Node
+Node.js uses the Event-Driven Architecture: it has an Event Loop for
+orchestration and a Worker Pool for expensive tasks. What code runs on the Event
+Loop? When they begin, Node.js applications first complete an initialization
+phase, require 'ing modules and registering callbacks for events. Node.js
+applications then enter the Event Loop, responding to incoming client requests
+by executing the appropriate callback. This callback executes synchronously, and
+may register asynchronous requests to continue processing after it completes.
+The callbacks for these asynchronous requests will also be executed on the Event
+Loop. The Event Loop will also fulfill the non-blocking asynchronous requests
+made by its callbacks, e.g., network I/O. In summary,
+----------------------------------------------------------------------------------------------------
+Index: 13010 <<"chunk_id": 10, "docno": 1753>>
+
+code and the stack trace will be printed. This is to avoid infinite recursion.
+Attempting to resume normally after an uncaught exception can be similar to
+pulling out the power cord when upgrading a computer. Nine out of ten times,
+nothing happens. But the tenth time, the system becomes corrupted. The correct
+use of 'uncaughtException' is to perform synchronous cleanup of allocated
+resources (e.g. file descriptors, handles, etc) before shutting down the
+process. It is not safe to resume normal operation after 'uncaughtException' .
+To restart a crashed application in a more reliable way, whether
+'uncaughtException' is emitted or not, an external monitor should be employed in
+a separate process to detect application failures and recover or restart as
+needed. Event: 'uncaughtExceptionMonitor' # Added in: v13.7.0, v12.17.0 err
+<Error> The uncaught exception. origin <string> Indicates if the exception
+originates from an unhandled rejection or from synchronous errors. Can either be
+'uncaughtException' or 'unhandledRejection' . The latter is used when an
+exception happens in a Promise based async context (or if a Promise is rejected)
+and --unhandled-rejections flag set to strict or throw (which is the default)
+and the rejection is not handled, or when a rejection happens during the command
+line entry point's ES module static loading phase. The
+'uncaughtExceptionMonitor' event is emitted before an 'uncaughtException' event
+is emitted or a hook installed via process.setUncaughtExceptionCaptureCallback()
+is called. Installing an 'uncaughtExceptionMonitor' listener does not change the
+behavior once an 'uncaughtException' event is emitted. The process will still
+crash if no 'uncaughtException' listener is installed. import process from
+----------------------------------------------------------------------------------------------------
+Index: 30448 <<"chunk_id": 1684, "docno": 4202>>
+
+to a non-function, and could not be called. 7 Internal Exception Handler
+Run-Time Failure : There was an uncaught exception, and the internal fatal
+exception handler function itself threw an error while attempting to handle it.
+This can happen, for example, if an 'uncaughtException' or domain.on('error')
+handler throws an error. 8 : Unused. In previous versions of Node.js, exit code
+8 sometimes indicated an uncaught exception. 9 Invalid Argument : Either an
+unknown option was specified, or an option requiring a value was provided
+without a value. 10 Internal JavaScript Run-Time Failure : The JavaScript source
+code internal in the Node.js bootstrapping process threw an error when the
+bootstrapping function was called. This is extremely rare, and generally can
+only happen during development of Node.js itself. 12 Invalid Debug Argument :
+The --inspect and/or --inspect-brk options were set, but the port number chosen
+was invalid or unavailable. 13 Unsettled Top-Level Await : await was used
+outside of a function in the top-level code, but the passed Promise never
+settled. 14 Snapshot Failure : Node.js was started to build a V8 startup
+snapshot and it failed because certain requirements of the state of the
+application were not met. >128 Signal Exits : If Node.js receives a fatal signal
+such as SIGKILL or SIGHUP , then its exit code will be 128 plus the value of the
+signal code. This is a standard POSIX practice, since exit codes are defined to
+be 7-bit integers, and signal exits set the high-order bit, and then contain the
+value of the
+----------------------------------------------------------------------------------------------------
+Index: 13088 <<"chunk_id": 88, "docno": 1753>>
+
+(reserved by Bash for builtin misuse) 3 Internal JavaScript Parse Error : The
+JavaScript source code internal in the Node.js bootstrapping process caused a
+parse error. This is extremely rare, and generally can only happen during
+development of Node.js itself. 4 Internal JavaScript Evaluation Failure : The
+JavaScript source code internal in the Node.js bootstrapping process failed to
+return a function value when evaluated. This is extremely rare, and generally
+can only happen during development of Node.js itself. 5 Fatal Error : There was
+a fatal unrecoverable error in V8. Typically a message will be printed to stderr
+with the prefix FATAL ERROR . 6 Non-function Internal Exception Handler : There
+was an uncaught exception, but the internal fatal exception handler function was
+somehow set to a non-function, and could not be called. 7 Internal Exception
+Handler Run-Time Failure : There was an uncaught exception, and the internal
+fatal exception handler function itself threw an error while attempting to
+handle it. This can happen, for example, if an 'uncaughtException' or
+domain.on('error') handler throws an error. 8 : Unused. In previous versions of
+Node.js, exit code 8 sometimes indicated an uncaught exception. 9 Invalid
+Argument : Either an unknown option was specified, or an option requiring a
+value was provided without a value. 10 Internal JavaScript Run-Time Failure :
+The JavaScript source code internal in the Node.js bootstrapping process threw
+an error when the bootstrapping function was called. This is extremely rare, and
+generally can only happen during development of Node.js itself. 12 Invalid Debug
+Argument :
+----------------------------------------------------------------------------------------------------
+Index: 15811 <<"chunk_id": 4, "docno": 2107>>
+
+APM tools need to follow a request as it flows through your application, even
+across async boundaries. When an HTTP request comes in, is processed by
+middleware, queries a database, calls an external API, and finally returns a
+response, the APM needs to correlate all of these operations into a single
+trace. This requires async context tracking. Most modern APM tools use
+AsyncLocalStorage (which is built on async_hooks in versions of Node.js before
+Node 24) to propagate trace context across async operations. The moment you
+require('dd-trace') , require('newrelic') , or initialize OpenTelemetry, your
+application has async_hooks enabled. The irony is notable: the tools you install
+to monitor and debug crashes can make a category of crashes behave differently.
+This is not the fault of the APM tools; they are using Node.js APIs exactly as
+intended. Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere
+While this issue has significant practical impact, we want to be clear about why
+Node.js is treating this fix as a mere mitigation of security vulnerability
+risks at large: Stack Space Exhaustion Behavior Is Not Specified The "Maximum
+call stack size exceeded" error is not part of the ECMAScript specification. The
+specification does not impose any limit and assumes infinite stack space .
+Imposing a limit and throwing a recoverable error are only behaviors that
+JavaScript engines implement with best-effort. Applications and frameworks are
+already at risk when they build a security model on top of these unspecified
+behaviors that are not guaranteed to reproduce consistently, see: CWE-758:
+Reliance on
+----------------------------------------------------------------------------------------------------
+Index: 13082 <<"chunk_id": 82, "docno": 1753>>
+
+file descriptor of process.stdout . The value is fixed at 1 . In Worker threads,
+this field does not exist. A note on process I/O # process.stdout and
+process.stderr differ from other Node.js streams in important ways: They are
+used internally by console.log() and console.error() , respectively. Writes may
+be synchronous depending on what the stream is connected to and whether the
+system is Windows or POSIX: Files: synchronous on Windows and POSIX TTYs
+(Terminals): asynchronous on Windows, synchronous on POSIX Pipes (and sockets):
+synchronous on Windows, asynchronous on POSIX These behaviors are partly for
+historical reasons, as changing them would create backward incompatibility, but
+they are also expected by some users. Synchronous writes avoid problems such as
+output written with console.log() or console.error() being unexpectedly
+interleaved, or not written at all if process.exit() is called before an
+asynchronous write completes. See process.exit() for more information. Warning :
+Synchronous writes block the event loop until the write has completed. This can
+be near instantaneous in the case of output to a file, but under high system
+load, pipes that are not being read at the receiving end, or with slow terminals
+or file systems, it's possible for the event loop to be blocked often enough and
+long enough to have severe negative performance impacts. This may not be a
+problem when writing to an interactive terminal session, but consider this
+particularly careful when doing production logging to the process output
+streams. To check if a stream is connected to a TTY context, check the isTTY
+property.
+----------------------------------------------------------------------------------------------------

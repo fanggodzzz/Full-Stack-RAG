@@ -1,0 +1,470 @@
+Index: 41710 <<"chunk_id": 2, "docno": 6384>>
+
+code is doing and how much time it spends doing it. In particular it can show
+you all the SQL queries your page is generating, and how long each one has
+taken. Third-party panels are also available for the toolbar, that can (for
+example) report on cache performance and template rendering times. Third-party
+services ¶ There are a number of free services that will analyze and report on
+the performance of your site’s pages from the perspective of a remote HTTP
+client, in effect simulating the experience of an actual user. These can’t
+report on the internals of your code, but can provide a useful insight into your
+site’s overall performance, including aspects that can’t be adequately measured
+from within Django environment. There are also several paid-for services that
+perform a similar analysis, including some that are Django-aware and can
+integrate with your codebase to profile its performance far more
+comprehensively. Get things right from the start ¶ Some work in optimization
+involves tackling performance shortcomings, but some of the work can be built-in
+to what you’d do anyway, as part of the good practices you should adopt even
+before you start thinking about improving performance. In this respect Python is
+an excellent language to work with, because solutions that look elegant and feel
+right usually are the best performing ones. As with most skills, learning what
+“looks right” takes practice, but one of the most useful guidelines is: Work at
+the appropriate level ¶ Django offers many different ways of approaching things,
+but just because
+----------------------------------------------------------------------------------------------------
+Index: 27570 <<"chunk_id": 3, "docno": 4004>>
+
+would run the full Django test suite and provide a set of tests that generated
+different SQL compared to the target branch so its much easier to identify
+unintended side effects when making invasive changes to the ORM. Which Django
+libraries are your favorite (core or 3rd party)? DRF django-filter django-seal
+(shameless plug) What are the top three things in Django that you like? The
+people The ORM, unsurprisingly The many entry points the framework provides to
+allow very powerful third-party apps to be used together You've contributed
+significantly to improving the Django ORM. What do you believe is the next big
+challenge for Django ORM, and how do you envision it evolving in the coming
+years? The ORM's expression interface is already very powerful but there are
+effectively some remaining rough edges . I believe that adding generalized
+support for composite virtual fields (a field composed of other fields) could
+solve many problems we currently face with how relationships are expressed
+between models as we currently lack a way to describe an expression that can
+return tuples of values internally. If we had this building block, adding a way
+to express and compose table expressions (CTE, subquery pushdown, aggregation
+through subqueries) would be much easier to implement without denaturing the ORM
+by turning it into a low level query builder. Many of these things are possible
+today (e.g. django-cte ) but they require a lot of SQL compilation and ORM
+knowledge and can hardly be composed together. How did you start to contribute
+to the
+----------------------------------------------------------------------------------------------------
+Index: 51289 <<"chunk_id": 1, "docno": 8188>>
+
+so that you can get the most out of it. (Yes, this is documentation about
+documentation. Rest assured we have no plans to write a document about how to
+read the document about documentation.) Finding documentation ¶ Django’s got a
+lot of documentation – almost 450,000 words and counting – so finding what you
+need can sometimes be tricky. A good place to start is the Index . We also
+recommend using the builtin search feature. Or you can just browse around! How
+the documentation is organized ¶ Django’s main documentation is broken up into
+“chunks” designed to fill different needs: The introductory material is designed
+for people new to Django – or to web development in general. It doesn’t cover
+anything in depth, but instead gives a high-level overview of how developing in
+Django “feels”. The topic guides , on the other hand, dive deep into individual
+parts of Django. There are complete guides to Django’s model system , template
+engine , forms framework , and much more. This is probably where you’ll want to
+spend most of your time; if you work your way through these guides you should
+come out knowing pretty much everything there is to know about Django. Web
+development is often broad, not deep – problems span many domains. We’ve written
+a set of how-to guides that answer common “How do I …?” questions. Here you’ll
+find information about generating PDFs with Django , writing custom template
+tags , and more. Answers to really common questions can also be found
+----------------------------------------------------------------------------------------------------
+Index: 37452 <<"chunk_id": 2, "docno": 5464>>
+
+concept or subject at a fairly high level. Link to reference material rather
+than repeat it. Use examples and don’t be reluctant to explain things that seem
+very basic to you - it might be the explanation someone else needs. Providing
+background context helps a newcomer connect the topic to things that they
+already know. Reference guides contain technical references for APIs. They
+describe the functioning of Django’s internal machinery and instruct in its use.
+Keep reference material tightly focused on the subject. Assume that the reader
+already understands the basic concepts involved but needs to know or be reminded
+of how Django does it. Reference guides aren’t the place for general
+explanation. If you find yourself explaining basic concepts, you may want to
+move that material to a topic guide. How-to guides are recipes that take the
+reader through steps in key subjects. What matters most in a how-to guide is
+what a user wants to achieve. A how-to should always be result-oriented rather
+than focused on internal details of how Django implements whatever is being
+discussed. These guides are more advanced than tutorials and assume some
+knowledge about how Django works. Assume that the reader has followed the
+tutorials and don’t hesitate to refer the reader back to the appropriate
+tutorial rather than repeat the same material. How to start contributing
+documentation ¶ Clone the Django repository to your local machine ¶ If you’d
+like to start contributing to our docs, get the development version of Django
+from the source code repository (see Installing
+----------------------------------------------------------------------------------------------------
+Index: 41495 <<"chunk_id": 3, "docno": 6342>>
+
+when something goes wrong, they focus light on the part that has gone wrong -
+even if you hadn’t even realized it had gone wrong . Tests make your code more
+attractive ¶ You might have created a brilliant piece of software, but you will
+find that many other developers will refuse to look at it because it lacks
+tests; without tests, they won’t trust it. Jacob Kaplan-Moss, one of Django’s
+original developers, says “Code without tests is broken by design.” That other
+developers want to see tests in your software before they take it seriously is
+yet another reason for you to start writing tests. Tests help teams work
+together ¶ The previous points are written from the point of view of a single
+developer maintaining an application. Complex applications will be maintained by
+teams. Tests guarantee that colleagues don’t inadvertently break your code (and
+that you don’t break theirs without knowing). If you want to make a living as a
+Django programmer, you must be good at writing tests! Basic testing strategies ¶
+There are many ways to approach writing tests. Some programmers follow a
+discipline called “ test-driven development ”; they actually write their tests
+before they write their code. This might seem counterintuitive, but in fact it’s
+similar to what most people will often do anyway: they describe a problem, then
+create some code to solve it. Test-driven development formalizes the problem in
+a Python test case. More often, a newcomer to testing will create some code and
+later decide that it
+----------------------------------------------------------------------------------------------------
+Index: 38437 <<"chunk_id": 4, "docno": 5680>>
+
+up to snuff. We’re picky. You might even call us perfectionists. (With
+deadlines.) Over time, we stumbled across open-source libraries that did things
+we’d already implemented. It was reassuring to see other people solving similar
+problems in similar ways, but it was too late to integrate outside code: We’d
+already written, tested and implemented our own framework bits in several
+production settings – and our own code met our needs delightfully. In most
+cases, however, we found that existing frameworks/tools inevitably had some sort
+of fundamental, fatal flaw that made us squeamish. No tool fit our philosophies
+100%. Like we said: We’re picky. We’ve documented our philosophies on the design
+philosophies page . Is Django a content-management-system (CMS)? ¶ No, Django is
+not a CMS, or any sort of “turnkey product” in and of itself. It’s a web
+framework; it’s a programming tool that lets you build websites. For example, it
+doesn’t make much sense to compare Django to something like Drupal , because
+Django is something you use to create things like Drupal. Yes, Django’s
+automatic admin site is fantastic and timesaving – but the admin site is one
+module of Django the framework. Furthermore, although Django has special
+conveniences for building “CMS-y” apps, that doesn’t mean it’s not just as
+appropriate for building “non-CMS-y” apps (whatever that means!). How can I
+download the Django documentation to read it offline? ¶ The Django docs are
+available in the docs directory of each Django tarball release. These docs are
+in reST (reStructuredText) format, and each text
+----------------------------------------------------------------------------------------------------
+Index: 35361 <<"chunk_id": 1, "docno": 4847>>
+
+it goes like this: maintain two copies of your production environment ("blue"
+and "green"); route all traffic to the the blue environment by mapping
+production URLs to it; deploy and test any changes to the application in the
+green environment; "flip the switch" by mapping URLs onto green and unmapping
+them from blue. Conceptually, blue-green deployments are simple and the benefits
+are significant (deploy often, never go down, roll back with ease). But without
+the right infrastructure, they can be tricky to implement. For example, to
+accomplish the critical fourth step of "flipping the switch", you need a fast,
+reliable, and automated means of mapping and unmapping production URLs between
+the blue and green environments. A DNS-based approach fails on most or all of
+these criteria; what you want is a platform that is built with use cases like
+this in mind. Fortunately, Cloud Foundry is just such a platform. The Pivotal
+Web Services documentation on blue-green deployments does a great job of
+explaining how the CF Router makes this kind of mapping and unmapping possible.
+In the case of the Sagan project, while working with CF's routing infrastructure
+did indeed give us the fast and reliable mapping we needed, it left a little to
+be desired in the automation department. We initially wrote shell scripts around
+the Ruby cf client, and then migrated them to the new Go-based gcf client when
+it came out. This worked, but what we really wanted was a solution that (a) we
+didn't have to write and maintain ourselves, and
+----------------------------------------------------------------------------------------------------
+Index: 38436 <<"chunk_id": 3, "docno": 5680>>
+
+where templates come in. In Django, a “view” describes which data is presented,
+but a view normally delegates to a template, which describes how the data is
+presented. Where does the “controller” fit in, then? In Django’s case, it’s
+probably the framework itself: the machinery that sends a request to the
+appropriate view, according to the Django URL configuration. If you’re hungry
+for acronyms, you might say that Django is a “MTV” framework – that is, “model”,
+“template”, and “view.” That breakdown makes much more sense. At the end of the
+day, it comes down to getting stuff done. And, regardless of how things are
+named, Django gets stuff done in a way that’s most logical to us. <Framework X>
+does <feature Y> – why doesn’t Django? ¶ We’re well aware that there are other
+awesome web frameworks out there, and we’re not averse to borrowing ideas where
+appropriate. However, Django was developed precisely because we were unhappy
+with the status quo, so please be aware that “because <Framework X> does it” is
+not going to be sufficient reason to add a given feature to Django. Why did you
+write all of Django from scratch, instead of using other Python libraries? ¶
+When Django was originally written, Adrian and Simon spent quite a bit of time
+exploring the various Python web frameworks available. In our opinion, none of
+them were completely up to snuff. We’re picky. You might even call us
+perfectionists. (With deadlines.) Over time, we stumbled across open-source
+libraries that did things we’d already
+----------------------------------------------------------------------------------------------------
+Index: 27339 <<"chunk_id": 3, "docno": 3954>>
+
+unable to articulate source code to the business in the terms that they
+understand, that functionality becomes ornamental and difficult to change or
+replace. Even the most complex domains can be divided into… Smaller but still
+quite complex subdomains (so-called core domains) - this is probably the largest
+competitive advantage of our enterprise hence, we invest much effort there.
+Simple and understandable subdomains that might not be unique to our enterprise
+(so-called generic subdomains) - we need them for our enterprise to operate but
+it does not give our customers competitive advantage. Think about inventory or
+invoicing. Our users will not come back attracted by even the prettiest
+invoices. Identifying those smaller products gives us a first draft of how to
+organize our code into modules. Each subdomain equals separate module.
+Understanding distinction between core and generic domains helps us see that
+they probably need different architectural style. Fortunately, there are a lot
+of ingredients we can pick and choose from! The example From this place I am
+happy to announce that together with my friend Michał Michaluk , we've created
+an initiative called #dddbyexamples. The purpose of the initiative is to bridge
+the many different parts of the Spring ecosystem with the interests of DDD
+enthusiasts. You can check our samples here . So far, there are two samples. One
+sample focuses on Event Sourcing and Command Query Responsibility Segregation,
+while the other focuses on an end-to-end DDD example. Both are implemented with
+Spring Boot. Let's dive into the end-to-end example. We are going to
+----------------------------------------------------------------------------------------------------
+Index: 41509 <<"chunk_id": 17, "docno": 6342>>
+
+It will continue performing its useful function as you continue to develop your
+program. Sometimes tests will need to be updated. Suppose that we amend our
+views so that only Question entries with associated Choice instances are
+published. In that case, many of our existing tests will fail - telling us
+exactly which tests need to be amended to bring them up to date , so to that
+extent tests help look after themselves. At worst, as you continue developing,
+you might find that you have some tests that are now redundant. Even that’s not
+a problem; in testing redundancy is a good thing. As long as your tests are
+sensibly arranged, they won’t become unmanageable. Good rules-of-thumb include
+having: a separate TestClass for each model or view a separate test method for
+each set of conditions you want to test test method names that describe their
+function Further testing ¶ This tutorial only introduces some of the basics of
+testing. There’s a great deal more you can do, and a number of very useful tools
+at your disposal to achieve some very clever things. For example, while our
+tests here have covered some of the internal logic of a model and the way our
+views publish information, you can use an “in-browser” framework such as
+Selenium to test the way your HTML actually renders in a browser. These tools
+allow you to check not just the behavior of your Django code, but also, for
+example, of your JavaScript. It’s quite something to see the tests
+----------------------------------------------------------------------------------------------------
+Index: 3747 <<"chunk_id": 0, "docno": 505>>
+
+Security Considerations — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » Security Considerations Security
+Considerations ¶ Web applications face many types of potential security
+problems, and it can be hard to get everything right, or even to know what
+“right” is in general. Flask tries to solve a few of these things by default,
+but there are other parts you may have to take care of yourself. Many of these
+solutions are tradeoffs, and will depend on each application’s specific needs
+and threat model. Many hosting platforms may take care of certain types of
+problems without the need for the Flask application to handle them. Resource Use
+¶ A common category of attacks is “Denial of Service” (DoS or DDoS). This is a
+very broad category, and different variants target different layers in a
+deployed application. In general, something is done to increase how much
+processing time or memory is used to handle each request, to the point where
+there are not enough resources to handle legitimate requests. Flask provides a
+few configuration options to handle resource use. They can also be set on
+individual requests to customize only that request. The documentation for each
+goes into more detail. MAX_CONTENT_LENGTH or Request.max_content_length controls
+how much data will be read from a request. It is not set by default, although it
+will still block truly unlimited streams unless the WSGI server indicates
+support. MAX_FORM_MEMORY_SIZE or Request.max_form_memory_size controls how large
+any non-file multipart/form-data field can be. It is set to 500kB
+----------------------------------------------------------------------------------------------------
+Index: 3835 <<"chunk_id": 4, "docno": 519>>
+
+When it comes to connecting a template engine with an application or framework
+there is more than just rendering templates. For instance, Flask uses Jinja’s
+extensive autoescaping support. Also it provides ways to access macros from
+Jinja templates. A template abstraction layer that would not take the unique
+features of the template engines away is a science on its own and a too large
+undertaking for a microframework like Flask. Furthermore extensions can then
+easily depend on one template language being present. You can easily use your
+own templating language, but an extension could still depend on Jinja itself.
+What does “micro” mean? ¶ “Micro” does not mean that your whole web application
+has to fit into a single Python file (although it certainly can), nor does it
+mean that Flask is lacking in functionality. The “micro” in microframework means
+Flask aims to keep the core simple but extensible. Flask won’t make many
+decisions for you, such as what database to use. Those decisions that it does
+make, such as what templating engine to use, are easy to change. Everything else
+is up to you, so that Flask can be everything you need and nothing you don’t. By
+default, Flask does not include a database abstraction layer, form validation or
+anything else where different libraries already exist that can handle that.
+Instead, Flask supports extensions to add such functionality to your application
+as if it was implemented in Flask itself. Numerous extensions provide database
+integration, form validation, upload handling, various open authentication
+technologies, and more. Flask
+----------------------------------------------------------------------------------------------------
+Index: 22836 <<"chunk_id": 9, "docno": 2859>>
+
+background worker support to Django. I’m also on the Core, Security and
+Performance teams for Wagtail CMS. Django has a great reputation for being
+"batteries included" and for "perfectionists", however that reputation is
+starting to age. Now, people think of Django and clunky, slow, and only useful
+for building big monoliths. Many developers choose leaner frameworks, and end up
+having to re-implement Django's batteries themselves, instead of starting with
+Django and focusing on building their application. For Django to progress, it
+needs to recharge its batteries. The ticket backlog, as well as many developer's
+dreams are filled with great feature ideas just looking for a little push in the
+right direction. Not just the big features like 2FA, Background Tasks or even
+type hints, but also quality of life improvements to templates, views or even
+the user model. To achieve this, it requires more than just code - it takes
+people. From personal experience, I've seen the friction from trying to add even
+small features to Django, and the mountains to climb to contribute large
+features. To encourage new contributors, that needs to change - just because
+it's the way it's always been, doesn't mean it has to continue. Django is a big,
+complex, highly depended on project, but that doesn't mean it needs to move at a
+snail's pace for everything, nor does every contribution need to be 100% perfect
+first time. Open source projects are built on passion, which is built up over
+time but destroyed in seconds. By fostering and enabling that passion,
+----------------------------------------------------------------------------------------------------
+Index: 18611 <<"chunk_id": 2, "docno": 2464>>
+
+please apply anyway ! We generally try to err on the side of saying “yes”. Since
+the precise line is hard to define, here are some examples of things that
+generally do and do not qualify for membership: Examples of contributions that
+do qualify for membership: Being part of the organizing team for a Django
+community event (conference, meetup, tutorial, etc.). Both virtual and in-person
+events count! Examples include DjangoCons, DjangoGirls workshops, local Django
+meetups, development or contribution sprints, etc. These events should be open
+to the public to be applicable — company-internal events generally don’t count
+unless they’re open to the local public. Serving on a DSF working group .
+Contributing code to Django itself or to a third-party Django app. We’ll want to
+see that this contribution is somewhat substantial: either a single
+large/complex contribution, or sustained history (months) of smaller
+contributions. Maintaining a third-party Django app or package in the broader
+Django ecosystem. We’ll take a very broad view of this: if you maintain any sort
+of Python tool that is broadly useful to Django developers, it counts. We’ll
+probably also count related technologies that Django developers widely use –
+database utilities, front-end tools, WSGI/ASGI servers, etc. If you work on a
+thing that helps make Django developers' lives easier, it counts . This includes
+contributing to Python itself, core Python infrastructure like PyPI, tools that
+Django developers often use like Read the Docs, and so on. Contributing to
+third-party apps. This is basically a merge of the previous two points: if you
+----------------------------------------------------------------------------------------------------
+Index: 11782 <<"chunk_id": 5, "docno": 1619>>
+
+not in development Zones One of the stated goals of Next.js from the very
+beginning was to bring back and preserve the simplicity of the Web.
+Server-rendering, a simple and agnostica approach to data fetching and
+declarative pages based on the filesystem structure are some of the features we
+introduced in line with this thinking. A frequently overlooked aspect of web
+services and web sites is how naturally composable and scalable they are. For
+example, mydomain.com/settings and mydomain.com/ could be two entirely different
+apps, deployed independently, scaled independently, even running different
+versions of the same software. All it takes to "glue them together" into a
+uniform experience for the end-user is some simple configuration of the backend
+routing layer or load balancers that expose them to the world. We are very happy
+to now bring the ability to compose multiple applications built with Next.js ,
+connected together using normal components. We call this feature Zones . As an
+example, consider these two independent Next.js applications deployed to Vercel
+: https://front.vercel.app https://zeit-docs-zbqbsrucga.vercel.app/docs
+https://zeit-docs-zbqbsrucga.vercel.app/api When we revamped our docs, we wanted
+to make accepting a community contribution as easy as possible. We decided to
+split out the documentation "mini-website" into its own repository .
+Additionally, whenever a pull-request is submitted and a change is proposed, we
+deploy it automatically, in isolation: What we ended up is two zones , that are
+brought together into the parent domain https://vercel.com using our path alias
+feature . It looks something like this: json { "rules": [ { "pathname": "/docs",
+"dest": "our-docs.vercel.app"
+----------------------------------------------------------------------------------------------------
+Index: 17932 <<"chunk_id": 78, "docno": 2361>>
+
+of the UI app, and then log back in, the authserver doesn’t recognize you and
+prompts for credentials. The downside of this approach is that you don’t really
+have true single sign on any more - any other apps that are part of your system
+will find that the authserver session is dead and they have to prompt for
+authentication again - it isn’t a great user experience if there are multiple
+apps. Conclusion In this section we have seen how to implement a couple of
+different patterns for logout from an OAuth2 client application (taking as a
+starting point the application from section five of the tutorial), and some
+options for other patterns were discussed. These options are not exhaustive, but
+should give you a good idea of the trade offs involved, and some tools for
+thinking about the best solution for your use case. There were only couple of
+lines of TypeScript in this section, and that wasn’t really specific to Angular
+(it adds a flag to XHR requests), so all the lessons and patterns are applicable
+beyond the narrow scope of the sample apps in this guide. A recurring theme is
+that all approaches to single logout (SL) where there are multiple UI apps and a
+single authserver tend to be flawed in some way: the best you can do is choose
+the approach that makes your users the least uncomfortable. If you have an
+internal authserver and a system that is composed of many components, then
+possibly the only architecture that feels
+----------------------------------------------------------------------------------------------------
+Index: 11513 <<"chunk_id": 2, "docno": 1591>>
+
+exposing data alone wasn't enough. Agents also needed to discover running dev
+servers and communicate with them, which led to next-devtools-mcp . Subtitle:
+The Next.js MCP responding to "whats use cache?" with documentation and context.
+The MCP also packages prompts and tools to help with upgrades and cache
+component migrations. There's a detailed talk about the MCP integration if you
+want to learn more. The answer is to think like an agent MCP confirmed what
+Vector taught us. Agents need visibility into what Next.js is doing, but that's
+only part of the story. The deeper lesson was treating agents as first-class
+users of Next.js and thinking from their perspective. What information do they
+need? When do they need it? How do they consume it? This mindset led to
+practical changes. If agents read terminal output during development, then
+logging Server Action invocations and forwarding browser errors gives them the
+hints they need. If agents struggle with framework concepts not in their
+training data, then embedding a compressed docs index agents.md or providing
+structured workflows ( Next.js skills ) gives them better context than
+documentation alone. Those questions run through everything we built. The need
+for visibility led to better logging, the need for knowledge led to agents.md,
+and the need for discovery led to MCP. When you treat agents as first-class
+users and meet them where they are, debugging becomes a tight feedback loop
+between code, runtime, and AI. What's next We're now working on making this
+easier to adopt. You can already run npx @next/codemod
+----------------------------------------------------------------------------------------------------
+Index: 3836 <<"chunk_id": 5, "docno": 519>>
+
+application as if it was implemented in Flask itself. Numerous extensions
+provide database integration, form validation, upload handling, various open
+authentication technologies, and more. Flask may be “micro”, but it’s ready for
+production use on a variety of needs. Why does Flask call itself a
+microframework and yet it depends on two libraries (namely Werkzeug and Jinja).
+Why shouldn’t it? If we look over to the Ruby side of web development there we
+have a protocol very similar to WSGI. Just that it’s called Rack there, but
+besides that it looks very much like a WSGI rendition for Ruby. But nearly all
+applications in Ruby land do not work with Rack directly, but on top of a
+library with the same name. This Rack library has two equivalents in Python:
+WebOb (formerly Paste) and Werkzeug. Paste is still around but from my
+understanding it’s sort of deprecated in favour of WebOb. The development of
+WebOb and Werkzeug started side by side with similar ideas in mind: be a good
+implementation of WSGI for other applications to take advantage. Flask is a
+framework that takes advantage of the work already done by Werkzeug to properly
+interface WSGI (which can be a complex task at times). Thanks to recent
+developments in the Python package infrastructure, packages with dependencies
+are no longer an issue and there are very few reasons against having libraries
+that depend on others. Thread Locals ¶ Flask uses thread local objects (context
+local objects in fact, they support greenlet contexts as well) for request,
+session
+----------------------------------------------------------------------------------------------------
+Index: 8431 <<"chunk_id": 2, "docno": 1184>>
+
+all the save inputs lead to the same action URL from the wrapping form. The view
+then branches on the submitted name value. That, of course, works, but we can
+imagine simpler, more flexible ideas being enabled via the Multi-Action Pages
+examples in the proposal. The disguised submit link leads to the deletion
+confirmation page, where we then submit a form to confirm the action. That's the
+correct behaviour, but the markup confuses the intent: this isn't (really) a
+navigation to a new page, it's the first step of an action — deleting the
+object. The proposal's discussion of Buttons vs Links describes situations we
+come up against writing applications regularly. The goal here is simpler
+patterns that will help us write better markup. Why we're supporting this The
+Django Software Foundation's mission includes a commitment to "advance the state
+of the art in Web development" . Standards work is that in its purest form: an
+improvement to HTML lands for everyone, in every framework, in every browser,
+indefinitely. It's also slow, painstaking work — specification, implementer
+engagement, web platform tests — that needs sustained attention. Carson and Alex
+are applying for funds so that people can devote real time to it. Our Letter of
+Collaboration is a concrete contribution to that application. How you can help
+If your company builds on Django, or indeed any other framework — with HTMX,
+Unpoly, Turbo, or plain HTML forms — this work benefits you directly. Carson and
+Alex are seeking non-binding letters of support on official letterhead for
+----------------------------------------------------------------------------------------------------
+Index: 3834 <<"chunk_id": 3, "docno": 519>>
+
+design decision with the Werkzeug routing system is that routes in Werkzeug try
+to ensure that URLs are unique. Werkzeug will go quite far with that in that it
+will automatically redirect to a canonical URL if a route is ambiguous. One
+Template Engine ¶ Flask decides on one template engine: Jinja. Why doesn’t Flask
+have a pluggable template engine interface? You can obviously use a different
+template engine, but Flask will still configure Jinja for you. While that
+limitation that Jinja is always configured will probably go away, the decision
+to bundle one template engine and use that will not. Template engines are like
+programming languages and each of those engines has a certain understanding
+about how things work. On the surface they all work the same: you tell the
+engine to evaluate a template with a set of variables and take the return value
+as string. But that’s about where similarities end. Jinja for example has an
+extensive filter system, a certain way to do template inheritance, support for
+reusable blocks (macros) that can be used from inside templates and also from
+Python code, supports iterative template rendering, configurable syntax and
+more. On the other hand an engine like Genshi is based on XML stream evaluation,
+template inheritance by taking the availability of XPath into account and more.
+Mako on the other hand treats templates similar to Python modules. When it comes
+to connecting a template engine with an application or framework there is more
+than just rendering templates. For instance, Flask uses Jinja’s
+----------------------------------------------------------------------------------------------------

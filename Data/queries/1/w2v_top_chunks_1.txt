@@ -1,0 +1,557 @@
+Index: 6304 <<"chunk_id": 14, "docno": 824>>
+
+quiet-period: "1s" The monitored classpath directories are now polled every 2
+seconds for changes, and a 1 second quiet period is maintained to make sure
+there are no additional class changes. Remote Applications The Spring Boot
+developer tools are not limited to local development. You can also use several
+features when running applications remotely. Remote support is opt-in as
+enabling it can be a security risk. It should only be enabled when running on a
+trusted network or when secured with SSL. If neither of these options is
+available to you, you should not use DevTools' remote support. You should never
+enable support on a production deployment. To enable it, you need to make sure
+that devtools is included in the repackaged archive, as shown in the following
+listing: <build> <plugins> <plugin> <groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-maven-plugin</artifactId> <configuration>
+<includeOptional>true</includeOptional> <excludeDevtools>false</excludeDevtools>
+</configuration> </plugin> </plugins> </build> Optional dependencies are not
+included by default, which explains why includeOptional is also present. Then
+you need to set the spring.devtools.remote.secret property. Like any important
+password or secret, the value should be unique and strong such that it cannot be
+guessed or brute-forced. Remote devtools support is provided in two parts: a
+server-side endpoint that accepts connections and a client application that you
+run in your IDE. The server component is automatically enabled when the
+spring.devtools.remote.secret property is set. The client component must be
+launched manually. Remote devtools is not supported for Spring WebFlux
+applications. Running the Remote Client Application The remote client
+application is designed to be run from within your IDE. You need
+----------------------------------------------------------------------------------------------------
+Index: 6295 <<"chunk_id": 5, "docno": 824>>
+
+is very beneficial in production, it can be counter-productive during
+development, preventing you from seeing the changes you just made in your
+application. For this reason, spring-boot-devtools disables the caching options
+by default. Cache options are usually configured by settings in your
+application.properties file. For example, Thymeleaf offers the
+spring.thymeleaf.cache property. The same applies for tracing probability that’s
+set to 100% as the default may not log all traces used for testing. Rather than
+needing to set these properties manually, the spring-boot-devtools module
+automatically applies sensible development-time configuration. The following
+table lists all the properties that are applied: Name Default Value
+management.tracing.sampling.probability 1.0
+server.servlet.jsp.init-parameters.development true
+server.servlet.session.persistent true spring.docker.compose.readiness.wait
+only-if-started spring.freemarker.cache false spring.graphql.graphiql.enabled
+true spring.groovy.template.cache false spring.h2.console.enabled true
+spring.mustache.servlet.cache false spring.mvc.log-resolved-exception true
+spring.reactor.netty.shutdown-quiet-period 0s spring.template.provider.cache
+false spring.thymeleaf.cache false spring.web.error.include-binding-errors
+always spring.web.error.include-message always
+spring.web.error.include-stacktrace always spring.web.resources.cache.period 0
+spring.web.resources.chain.cache false If you do not want property defaults to
+be applied you can set spring.devtools.add-properties to false in your
+application.properties . Because you need more information about web requests
+while developing Spring MVC and Spring WebFlux applications, developer tools
+suggests you to enable DEBUG logging for the web logging group. This will give
+you information about the incoming request, which handler is processing it, the
+response outcome, and other details. If you wish to log all request details
+(including potentially sensitive information), you can turn on the
+spring.mvc.log-request-details or spring.http.codecs.log-request-details
+configuration properties. Automatic Restart Applications that use
+spring-boot-devtools automatically restart whenever files on the classpath
+change. This can be a useful feature when working in an IDE, as it gives
+----------------------------------------------------------------------------------------------------
+Index: 11835 <<"chunk_id": 16, "docno": 1622>>
+
+service that is unavailable during development. Mocking can also be useful when
+you want to simulate failures that might be hard to trigger in a real
+environment. Spring Framework includes a @MockitoBean annotation that can be
+used to define a Mockito mock for a bean inside your ApplicationContext .
+Additionally, @MockitoSpyBean can be used to define a Mockito spy. Learn more
+about these features in the Spring Framework documentation . Auto-configured
+Tests Spring Boot’s auto-configuration system works well for applications but
+can sometimes be a little too much for tests. It often helps to load only the
+parts of the configuration that are required to test a “slice” of your
+application. For example, you might want to test that Spring MVC controllers are
+mapping URLs correctly, and you do not want to involve database calls in those
+tests, or you might want to test JPA entities, and you are not interested in the
+web layer when those tests run. When combined with
+spring-boot-test-autoconfigure , Spring Boot’s test modules include a number of
+annotations that can be used to automatically configure such “slices”. Each of
+them works in a similar way, providing a @…​Test annotation that loads the
+ApplicationContext and one or more @AutoConfigure…​ annotations that can be used
+to customize auto-configuration settings. Each slice restricts component scan to
+appropriate components and loads a very restricted set of auto-configuration
+classes. If you need to exclude one of them, most @…​Test annotations provide an
+excludeAutoConfiguration attribute. Alternatively, you can use
+@ImportAutoConfiguration#exclude . Including multiple “slices” by using several
+----------------------------------------------------------------------------------------------------
+Index: 56677 <<"chunk_id": 198, "docno": 9200>>
+
+SBDG auto-configures these features for you, the above annotations are not
+strictly required. Typically, you would only declare one of these annotations
+when you want to “override” Spring Boot’s conventions, as expressed in
+auto-configuration, and “customize” the behavior of the feature. Overriding In
+this section, we cover a few examples to make the behavior when overriding more
+apparent. Caches By default, SBDG provides you with a ClientCache instance. SBDG
+accomplishes this by annotating an auto-configuration class with
+@ClientCacheApplication internally. By convention, we assume most application
+developers' are developing Spring Boot applications by using Apache Geode as
+“client” applications in Apache Geode’s client/server topology. This is
+especially true as users migrate their applications to a managed cloud
+environment. Still, you can “override” the default settings (convention) and
+declare your Spring applications to be actual peer Cache members (nodes) of a
+Apache Geode cluster, instead: Example 234. Spring Boot, Apache Geode Peer Cache
+Application @SpringBootApplication @CacheServerApplication class
+SpringBootApacheGeodePeerCacheServerApplication { } By declaring the
+@CacheServerApplication annotation, you effectively override the SBDG default.
+Therefore, SBDG does not provide you with a ClientCache instance by default,
+because you have informed SBDG of exactly what you want: a peer Cache instance
+hosting an embedded CacheServer that allows client connections. However, you
+then might ask, “Well, how do I customize the ClientCache instance when
+developing client applications without explicitly declaring the
+@ClientCacheApplication annotation?” First, you can “customize” the ClientCache
+instance by explicitly declaring the @ClientCacheApplication annotation in your
+Spring Boot application configuration and setting specific attributes as needed.
+However, you should be aware
+----------------------------------------------------------------------------------------------------
+Index: 6297 <<"chunk_id": 7, "docno": 824>>
+
+favor of dynamic class reloading. Other devtools features (such as property
+overrides) can still be used. DevTools relies on the application context’s
+shutdown hook to close it during a restart. It does not work correctly if you
+have disabled the shutdown hook (
+SpringApplication.setRegisterShutdownHook(false) ). DevTools needs to customize
+the ResourceLoader used by the ApplicationContext . If your application provides
+one already, it is going to be wrapped. Direct override of the getResource
+method on the ApplicationContext is not supported. Automatic restart is not
+supported when using AspectJ weaving. Restart vs Reload The restart technology
+provided by Spring Boot works by using two classloaders. Classes that do not
+change (for example, those from third-party jars) are loaded into a base
+classloader. Classes that you are actively developing are loaded into a restart
+classloader. When the application is restarted, the restart classloader is
+thrown away and a new one is created. This approach means that application
+restarts are typically much faster than “cold starts”, since the base
+classloader is already available and populated. If you find that restarts are
+not quick enough for your applications or you encounter classloading issues, you
+could consider reloading technologies such as JRebel from ZeroTurnaround. These
+work by rewriting classes as they are loaded to make them more amenable to
+reloading. Logging Changes in Condition Evaluation By default, each time your
+application restarts, a report showing the condition evaluation delta is logged.
+The report shows the changes to your application’s auto-configuration as you
+make changes such as adding or removing beans and
+----------------------------------------------------------------------------------------------------
+Index: 56489 <<"chunk_id": 10, "docno": 9200>>
+
+the Spring Boot Gradle Plugin ( org.springframework.boot ) in your Spring Boot
+application Gradle build file, then you automatically enable the dependency
+management capabilities provided by Spring Boot for all 3rd-party Java libraries
+and dependencies curated and managed by Spring Boot. Spring Boot’s dependency
+management harmonizes all 3rd-party Java libraries and dependencies that you are
+likely to use in your Spring Boot applications. All these dependencies have been
+tested and proven to work with the version of Spring Boot and other Spring
+dependencies (e.g. Spring Data, Spring Security) you may be using in your Spring
+Boot applications. Still, there may be times when you want, or even need to
+override the version of some 3rd-party Java libraries used by your Spring Boot
+applications, that are specifically managed by Spring Boot. In cases where you
+know that using a different version of a managed dependency is safe to do so,
+then you have a few options for how to override the dependency version: Use
+caution when overriding dependencies since they may not be compatible with other
+dependencies managed by Spring Boot for which you may have declared on your
+application classpath, for example, by adding a starter. It is common for
+multiple Java libraries to share the same transitive dependencies but use
+different versions of the Java library (e.g. logging). This will often lead to
+Exceptions thrown at runtime due to API differences. Keep in mind that Java
+resolves classes on the classpath from the first class definition that is found
+in the order that JARs or
+----------------------------------------------------------------------------------------------------
+Index: 9881 <<"chunk_id": 11, "docno": 1417>>
+
+beans that act as database initializers and beans that require that database to
+have been initialized are detected automatically. Beans whose initialization
+depends upon the database having been initialized are configured to depend upon
+those that initialize it. If, during startup, your application tries to access
+the database and it has not been initialized, you can configure additional
+detection of beans that initialize the database and require the database to have
+been initialized. Detect a Database Initializer Spring Boot will automatically
+detect beans of the following types that initialize an SQL database:
+DataSourceScriptDatabaseInitializer EntityManagerFactory Flyway
+FlywayMigrationInitializer R2dbcScriptDatabaseInitializer SpringLiquibase If you
+are using a third-party starter for a database initialization library, it may
+provide a detector such that beans of other types are also detected
+automatically. To have other beans be detected, register an implementation of
+DatabaseInitializerDetector in META-INF/spring.factories . Detect a Bean That
+Depends On Database Initialization Spring Boot will automatically detect beans
+of the following types that depends upon database initialization:
+AbstractEntityManagerFactoryBean (unless
+spring.jpa.defer-datasource-initialization is set to true ) DSLContext (jOOQ)
+EntityManagerFactory (unless spring.jpa.defer-datasource-initialization is set
+to true ) JdbcClient JdbcOperations NamedParameterJdbcOperations If you are
+using a third-party starter data access library, it may provide a detector such
+that beans of other types are also detected automatically. To have other beans
+be detected, register an implementation of
+DependsOnDatabaseInitializationDetector in META-INF/spring.factories .
+Alternatively, annotate the bean’s class or its @Bean method with
+@DependsOnDatabaseInitialization . Data Access NoSQL Spring Boot Stable 4.1.0
+4.0.7 3.5.16 3.4.13 3.3.13 Snapshot 4.2.0-SNAPSHOT 4.1.1-SNAPSHOT 4.0.8-SNAPSHOT
+Related Spring Documentation Spring Boot Spring Framework
+----------------------------------------------------------------------------------------------------
+Index: 5338 <<"chunk_id": 5, "docno": 739>>
+
+you want to order certain auto-configurations that should not have any direct
+knowledge of each other, you can also use @AutoConfigureOrder . That annotation
+has the same semantic as the regular @Order annotation but provides a dedicated
+order for auto-configuration classes. As with standard @Configuration classes,
+the order in which auto-configuration classes are applied only affects the order
+in which their beans are defined. The order in which those beans are
+subsequently created is unaffected and is determined by each bean’s dependencies
+and any @DependsOn relationships. Deprecating and Replacing Auto-configuration
+Classes You may need to occasionally deprecate auto-configuration classes and
+offer an alternative. For example, you may want to change the package name where
+your auto-configuration class resides. Since auto-configuration classes may be
+referenced in before / after ordering and excludes , you’ll need to add an
+additional file that tells Spring Boot how to deal with replacements. To define
+replacements, create a
+META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.replacements
+file indicating the link between the old class and the new one. For example:
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration=com.mycorp.libx.autoconfigure.core.LibXAutoConfiguration
+The AutoConfiguration.imports file should also be updated to only reference the
+replacement class. Condition Annotations You almost always want to include one
+or more @Conditional annotations on your auto-configuration class. The
+@ConditionalOnMissingBean annotation is one common example that is used to allow
+developers to override auto-configuration if they are not happy with your
+defaults. Spring Boot includes a number of @Conditional annotations that you can
+reuse in your own code by annotating @Configuration classes or individual @Bean
+methods. These annotations include: Class Conditions Bean Conditions Property
+Conditions
+----------------------------------------------------------------------------------------------------
+Index: 464 <<"chunk_id": 7, "docno": 84>>
+
+endpoints: jmx: exposure: include: "health,info" * can be used to select all
+endpoints. For example, to expose everything over HTTP except the env and beans
+endpoints, use the following properties: Properties YAML
+management.endpoints.web.exposure.include=*
+management.endpoints.web.exposure.exclude=env,beans management: endpoints: web:
+exposure: include: "*" exclude: "env,beans" * has a special meaning in YAML, so
+be sure to add quotation marks if you want to include (or exclude) all
+endpoints. If your application is exposed publicly, we strongly recommend that
+you also secure your endpoints . If you want to implement your own strategy for
+when endpoints are exposed, you can register an EndpointFilter bean. Security
+For security purposes, only the /health endpoint is exposed over HTTP by
+default. You can use the management.endpoints.web.exposure.include property to
+configure the endpoints that are exposed. Before setting the
+management.endpoints.web.exposure.include , ensure that the exposed actuators do
+not contain sensitive information, are secured by placing them behind a
+firewall, or are secured by something like Spring Security. If Spring Security
+is on the classpath and no other SecurityFilterChain bean is present, all
+actuators other than /health are secured by Spring Boot auto-configuration. If
+you define a custom SecurityFilterChain bean, Spring Boot auto-configuration
+backs off and lets you fully control the actuator access rules. If you wish to
+configure custom security for HTTP endpoints (for example, to allow only users
+with a certain role to access them), Spring Boot provides some convenient
+RequestMatcher objects that you can use in combination with Spring Security. A
+typical Spring Security configuration might look something like the following
+example: Java
+----------------------------------------------------------------------------------------------------
+Index: 5097 <<"chunk_id": 4, "docno": 709>>
+
+to initialize a database . Spring Boot can auto-configure embedded H2 , HSQL ,
+and Derby (deprecated) databases. You need not provide any connection URLs. You
+need only include a build dependency to the embedded database that you want to
+use. If there are multiple embedded databases on the classpath, set the
+spring.datasource.embedded-database-connection configuration property to control
+which one is used. Setting the property to none disables auto-configuration of
+an embedded database. If you are using this feature in your tests, you may
+notice that the same database is reused by your whole test suite regardless of
+the number of application contexts that you use. If you want to make sure that
+each context has a separate embedded database, you should set
+spring.datasource.generate-unique-name to true . For example, the typical POM
+dependencies would be as follows: <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-data-jpa</artifactId> </dependency> <dependency>
+<groupId>org.hsqldb</groupId> <artifactId>hsqldb</artifactId>
+<scope>runtime</scope> </dependency> You need a dependency on spring-jdbc for an
+embedded database to be auto-configured. In this example, it is pulled in
+transitively through spring-boot-starter-data-jpa . If, for whatever reason, you
+do configure the connection URL for an embedded database, take care to ensure
+that the database’s automatic shutdown is disabled. If you use H2, you should
+use DB_CLOSE_ON_EXIT=FALSE to do so. If you use HSQLDB, you should ensure that
+shutdown=true is not used. Disabling the database’s automatic shutdown lets
+Spring Boot control when the database is closed, thereby ensuring that it
+happens once access to the database is no longer needed. Connection to a
+Production Database Production database connections can also be
+----------------------------------------------------------------------------------------------------
+Index: 56652 <<"chunk_id": 173, "docno": 9200>>
+
+When running in externally managed environments, you must explicitly set a
+username and password to authenticate, as described in Non-Managed Auth for
+Clients . To completely override the auto-configuration of client
+authentication, you can set both a username and a password: Example 199.
+Overriding Security Authentication Auto-configuration with explicit username and
+password # Spring Boot application.properties
+spring.data.gemfire.security.username=MyUser
+spring.data.gemfire.security.password=MyPassword In this case, SBDG’s
+auto-configuration for authentication is effectively disabled and security
+credentials are not extracted from the environment. 23.2. Targeting Specific
+Pivotal Cloud Cache Service Instances It is possible to provision multiple
+instances of the Pivotal Cloud Cache service in your Pivotal CloudFoundry
+environment. You can then bind multiple PCC service instances to your Spring
+Boot application. However, Spring Boot for Apache Geode (SBDG) only
+auto-configures one PCC service instance for your Spring Boot application. This
+does not mean that it is not possible to use multiple PCC service instances with
+your Spring Boot application, just that SBDG only auto-configures one service
+instance for you. You must select which PCC service instance your Spring Boot
+application automatically auto-configures for you when you have multiple
+instances and want to target a specific PCC service instance to use. To do so,
+declare the following SBDG property in Spring Boot application.properties :
+Example 200. Spring Boot application.properties targeting a specific PCC service
+instance by name # Spring Boot application.properties
+spring.boot.data.gemfire.cloud.cloudfoundry.service.cloudcache.name=pccServiceInstanceTwo
+The spring.boot.data.gemfire.cloud.cloudfoundry.service.cloudcache.name property
+tells SBDG which PCC service instance to auto-configure. If the PCC service
+instance identified by the property does not exist, SBDG throws an
+IllegalStateException stating the PCC
+----------------------------------------------------------------------------------------------------
+Index: 7799 <<"chunk_id": 7, "docno": 1081>>
+
+The attributes of the auto-configured Resource can be configured via the
+management.opentelemetry.resource-attributes configuration property.
+Auto-configured attributes will be merged with attributes from the
+OTEL_RESOURCE_ATTRIBUTES and OTEL_SERVICE_NAME environment variables, with
+attributes configured through the configuration property taking precedence over
+those from the environment variables. If you have defined your own Resource
+bean, this will no longer be the case. Spring Boot does not provide automatic
+exporting of OpenTelemetry metrics or logs. Exporting OpenTelemetry traces is
+only auto-configured when used together with Micrometer Tracing . Disabling
+OpenTelemetry The OpenTelemetry support can be disabled by setting the
+management.opentelemetry.enabled property to false . This behaves similarly to
+the OTEL_SDK_DISABLED environment variable (but negated): when the SDK is
+disabled, metrics, traces, and logging will use no-op implementations. Context
+propagators are not affected and continue to function normally. Keep in mind
+that Spring Boot doesn’t use OpenTelemetry’s metrics functionality, so metrics
+might still be enabled even when disabling OpenTelemetry. Environment variables
+Spring Boot supports a subset of the OpenTelemetry SDK environment variables .
+These environment variables are automatically mapped to Spring Boot
+configuration properties at startup. When an environment variable has a
+signal-specific variant (for example, OTEL_EXPORTER_OTLP_TRACES_ENDPOINT ) and a
+general variant ( OTEL_EXPORTER_OTLP_ENDPOINT ), the signal-specific variant
+takes precedence and is used as-is. When the general variant is used as a
+fallback, the signal-specific path ( v1/traces , v1/metrics , or v1/logs ) is
+appended to it. For example, setting
+OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318 results in
+collector:4318/v1/traces for traces. This mapping can be disabled by setting
+management.opentelemetry.map-environment-variables to false . General
+Environment Variable Spring
+----------------------------------------------------------------------------------------------------
+Index: 37830 <<"chunk_id": 1, "docno": 5564>>
+
+the effects of the management.security.enabled flag based on whether Spring
+Security was on the classpath or not was quite confusing. There were a number of
+properties under security.* and management.security.* that were applicable only
+to the auto-configuration provided by Spring Boot. For example, if
+security.basic.enabled was set to false , setting security.sessions would have
+absolutely no effect and this turned out to be quite misleading. Improvements in
+2.0 In Spring Boot 2.0, our main goal was to greatly simplify the default
+security configuration and and make adding custom security easy. Simplified
+default configuration Providing sensible defaults for security is challenging.
+We've decided to opt for the most secure default, which is, secure everything,
+even public and static resources. By default, if Spring Security is on the
+classpath, Spring Boot will add @EnableWebSecurity , and rely on Spring
+Security's content-negotiation to decide which authentication mechanism to use.
+A default user with a generated password will be provided. If actuator is on the
+classpath, the same default security configuration will also apply to actuator
+endpoints. In order to prevent actuators from exposing sensitive data
+accidentally, most web endpoints will be disabled by default ( status and info
+are enabled by default however). Users need to take an explicit step to enable
+those web endpoints. This behavior is consistent, regardless of whether Spring
+Security is present on the classpath or not. Consistent customization Once users
+decide that they want to add custom security, the default security configuration
+provided by Spring Boot will back off completely. At this point, users
+----------------------------------------------------------------------------------------------------
+Index: 7659 <<"chunk_id": 13, "docno": 1055>>
+
+and will, therefore, provide a handler for all requests. If no static content is
+available, ResourceHttpRequestHandler will throw a NoResourceFoundException .
+For a NoHandlerFoundException to be thrown, set spring.mvc.static-path-pattern
+to a more specific value such as /resources/** or set
+spring.web.resources.add-mappings to false to disable serving of static content
+entirely. ConfigurableWebBindingInitializer Spring MVC uses a
+WebBindingInitializer to initialize a WebDataBinder for a particular request. If
+you create your own ConfigurableWebBindingInitializer @Bean , Spring Boot
+automatically configures Spring MVC to use it. Template Engines As well as REST
+web services, you can also use Spring MVC to serve dynamic HTML content. Spring
+MVC supports a variety of templating technologies, including Thymeleaf,
+FreeMarker, and JSPs. Also, many other templating engines include their own
+Spring MVC integrations. Spring Boot includes auto-configuration support for the
+following templating engines: FreeMarker Groovy Thymeleaf Mustache If possible,
+JSPs should be avoided. There are several known limitations when using them with
+embedded servlet containers. When you use one of these templating engines with
+the default configuration, your templates are picked up automatically from
+src/main/resources/templates . Depending on how you run your application, your
+IDE may order the classpath differently. Running your application in the IDE
+from its main method results in a different ordering than when you run your
+application by using Maven or Gradle or from its packaged jar. This can cause
+Spring Boot to fail to find the expected template. If you have this problem, you
+can reorder the classpath in the IDE to place the module’s classes and resources
+first. Error Handling
+----------------------------------------------------------------------------------------------------
+Index: 6830 <<"chunk_id": 4, "docno": 914>>
+
+your project: <dependencies> <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-devtools</artifactId> <optional>true</optional>
+</dependency> </dependencies> When devtools is running, it detects changes when
+you recompile your application and automatically refreshes it. This works for
+not only resources but code as well. It also provides a LiveReload server so
+that it can automatically trigger a browser refresh whenever things change.
+Devtools can also be configured to only refresh the browser whenever a static
+resource has changed (and ignore any change in the code). Just include the
+following property in your project: spring.devtools.remote.restart.enabled=false
+Prior to devtools , the plugin supported hot refreshing of resources by default
+which has now been disabled in favour of the solution described above. You can
+restore it at any time by configuring your project: <build> <plugins> <plugin>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-maven-plugin</artifactId> <configuration>
+<addResources>true</addResources> </configuration> </plugin> </plugins> </build>
+When addResources is enabled, any src/main/resources directory will be added to
+the application classpath when you run the application and any duplicate found
+in the classes output will be removed. This allows hot refreshing of resources
+which can be very useful when developing web applications. For example, you can
+work on HTML, CSS or JavaScript files and see your changes immediately without
+recompiling your application. It is also a helpful way of allowing your front
+end developers to work without needing to download and install a Java IDE. A
+side effect of using this feature is that filtering of resources at build time
+will not work. In order to be consistent with the repackage goal, the run goal
+builds the classpath in such a
+----------------------------------------------------------------------------------------------------
+Index: 13510 <<"chunk_id": 10, "docno": 1805>>
+
+from, and the infrastructure should restart the application. In general, the
+"Liveness" state should not be based on external checks, such as health checks .
+If it did, a failing external system (a database, a Web API, an external cache)
+would trigger massive restarts and cascading failures across the platform. The
+internal state of Spring Boot applications is mostly represented by the Spring
+ApplicationContext . If the application context has started successfully, Spring
+Boot assumes that the application is in a valid state. An application is
+considered live as soon as the context has been refreshed, see Spring Boot
+application lifecycle and related Application Events . Readiness State The
+“Readiness” state of an application tells whether the application is ready to
+handle traffic. A failing “Readiness” state tells the platform that it should
+not route traffic to the application for now. This typically happens during
+startup, while CommandLineRunner and ApplicationRunner components are being
+processed, or at any time if the application decides that it is too busy for
+additional traffic. An application is considered ready as soon as application
+and command-line runners have been called, see Spring Boot application lifecycle
+and related Application Events . Tasks expected to run during startup should be
+executed by CommandLineRunner and ApplicationRunner components instead of using
+Spring component lifecycle callbacks such as @PostConstruct . Managing the
+Application Availability State Application components can retrieve the current
+availability state at any time, by injecting the ApplicationAvailability
+interface and calling methods on it. More often, applications will want to
+listen to state updates
+----------------------------------------------------------------------------------------------------
+Index: 9567 <<"chunk_id": 7, "docno": 1372>>
+
+that would have been included by default anyway (such as
+JacksonJsonHttpMessageConverter for JSON conversions), it replaces the default
+value. A convenience bean of type HttpMessageConverters is provided and is
+always available if you use the default MVC configuration. It has some useful
+methods to access the default and user-enhanced message converters (For example,
+it can be useful if you want to manually inject them into a custom RestTemplate
+). As in normal MVC usage, any WebMvcConfigurer beans that you provide can also
+contribute converters by overriding the configureMessageConverters method.
+However, unlike with normal MVC, you can supply only additional converters that
+you need (because Spring Boot uses the same mechanism to contribute its
+defaults). Finally, if you opt out of the default Spring Boot MVC configuration
+by providing your own @EnableWebMvc configuration, you can take control
+completely and do everything manually by using getMessageConverters from
+WebMvcConfigurationSupport . See the WebMvcAutoConfiguration source code for
+more details. Handling Multipart File Uploads Spring Boot embraces the servlet 5
+Part API to support uploading files. By default, Spring Boot configures Spring
+MVC with a maximum size of 1MB per file and a maximum of 10MB of file data in a
+single request. You may override these values, the location to which
+intermediate data is stored (for example, to the /tmp directory), and the
+threshold past which data is flushed to disk by using the properties exposed in
+the MultipartProperties class. For example, if you want to specify that files be
+unlimited, set the spring.servlet.multipart.max-file-size property to -1 . The
+multipart
+----------------------------------------------------------------------------------------------------
+Index: 54932 <<"chunk_id": 3, "docno": 8918>>
+
+instead Use the spring-context-indexer . It’s not going to add much, but every
+little helps. Don’t use actuators if you can afford not to. Use Spring Boot 2.1
+and Spring 5.1. Switch to 2.2 and 5.2 when they are available. Fix the location
+of the Spring Boot config file(s) with spring.config.location (command line
+argument or System property etc.). Example for testing in IDE:
+spring.config.location=file://./src/main/resources/application.properties .
+Switch off JMX if you don’t need it with spring.jmx.enabled=false (this is the
+default in Spring Boot 2.2) Make bean definitions lazy by default. There’s a new
+flag spring.main.lazy-initialization=true in Spring Boot 2.2 (and there’s a
+LazyInitBeanFactoryPostProcessor in this project you can copy). Unpack the fat
+jar and run with an explicit classpath. Run the JVM with -noverify . Also
+consider -XX:TieredStopAtLevel=1 (that will slow down the JIT later at the
+expense of the saved startup time). A more extreme choice is to re-write all
+your application configuration using functional bean definitions. This includes
+all the Spring Boot autoconfiguration you are using, most of which can be
+re-used, but it’s stll manual work to identify which classes to use and register
+all the bean definitions. If you try this approach you might see a 2x
+improvement in startup time, but not all of that will be because of the
+functional bean definitions (estimates usually end up in the range of 10%
+startup time premium for functional beans, but there may be other benefits).
+Look at the BuncApplication in the micro apps to see how to start Spring Boot
+without the @Configuration
+----------------------------------------------------------------------------------------------------
+Index: 483 <<"chunk_id": 26, "docno": 84>>
+
+configuring a "startupProbe" that uses the liveness HTTP probe to make sure that
+Kubernetes won’t kill your application while it is in the process of starting.
+See the section that describes how probes behave during the application
+lifecycle . If your Actuator endpoints are deployed on a separate management
+context, the endpoints do not use the same web infrastructure (port, connection
+pools, framework components) as the main application. In this case, a probe
+check could be successful even if the main application does not work properly
+(for example, it cannot accept new connections). For this reason, it is a good
+idea to make the liveness and readiness health groups available on the main
+server port. This can be done by setting the following property:
+management.endpoint.health.probes.add-additional-paths=true This would make the
+liveness group available at /livez and the readiness group available at /readyz
+on the main server port. Paths can be customized using the additional-path
+property on each group, see health groups for details. Checking External State
+With Kubernetes Probes Actuator configures the “liveness” and “readiness” probes
+as Health Groups. This means that all the health groups features are available
+for them. You can, for example, configure additional Health Indicators:
+Properties YAML
+management.endpoint.health.group.readiness.include=readinessState,customCheck
+management: endpoint: health: group: readiness: include:
+"readinessState,customCheck" By default, Spring Boot does not add other health
+indicators to these groups. The “liveness” probe should not depend on health
+checks for external systems. If the liveness state of an application is broken,
+Kubernetes tries to solve that problem by restarting the application instance.
+This means that
+----------------------------------------------------------------------------------------------------
+Index: 5106 <<"chunk_id": 13, "docno": 709>>
+
+is deferred until the ApplicationContext has started. Open EntityManager in View
+If you are running a web application, Spring Boot by default registers
+OpenEntityManagerInViewInterceptor to apply the “Open EntityManager in View”
+pattern, to allow for lazy loading in web views. If you do not want this
+behavior, you should set spring.jpa.open-in-view to false in your
+application.properties . Spring Data JDBC Spring Data includes repository
+support for JDBC and will automatically generate SQL for the methods on
+CrudRepository . For more advanced queries, a @Query annotation is provided.
+Spring Boot will auto-configure Spring Data’s JDBC repositories when the
+necessary dependencies are on the classpath. They can be added to your project
+with a single dependency on spring-boot-starter-data-jdbc . If necessary, you
+can take control of Spring Data JDBC’s configuration by adding the
+@EnableJdbcRepositories annotation or an AbstractJdbcConfiguration subclass to
+your application. If you’re using Spring Data JDBC with ahead-of-time processing
+(targeting either the JVM or a native image), some additional configuration is
+recommended. To prevent the need for a DB connection during AOT processing,
+define a JdbcDialect bean that’s appropriate for your application’s database.
+For example, if you’re using Postgres, define a JdbcPostgresDialect bean. For
+complete details of Spring Data JDBC, see the reference documentation . Using
+H2’s Web Console The H2 database provides a browser-based console that Spring
+Boot can auto-configure for you. The console is auto-configured when the
+following conditions are met: You are developing a servlet-based web
+application. org.springframework.boot:spring-boot-h2console is on the classpath.
+You are using Spring Boot’s developer tools . If you are
+----------------------------------------------------------------------------------------------------

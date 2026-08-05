@@ -1,0 +1,469 @@
+Index: 3837 <<"chunk_id": 6, "docno": 519>>
+
+depend on others. Thread Locals ¶ Flask uses thread local objects (context local
+objects in fact, they support greenlet contexts as well) for request, session
+and an extra object you can put your own things on ( g ). Why is that and isn’t
+that a bad idea? Yes it is usually not such a bright idea to use thread locals.
+They cause troubles for servers that are not based on the concept of threads and
+make large applications harder to maintain. However Flask is just not designed
+for large applications or asynchronous servers. Flask wants to make it quick and
+easy to write a traditional web application. Async/await and ASGI support ¶
+Flask supports async coroutines for view functions by executing the coroutine on
+a separate thread instead of using an event loop on the main thread as an
+async-first (ASGI) framework would. This is necessary for Flask to remain
+backwards compatible with extensions and code built before async was introduced
+into Python. This compromise introduces a performance cost compared with the
+ASGI frameworks, due to the overhead of the threads. Due to how tied to WSGI
+Flask’s code is, it’s not clear if it’s possible to make the Flask class support
+ASGI and WSGI at the same time. Work is currently being done in Werkzeug to work
+with ASGI, which may eventually enable support in Flask as well. See Using async
+and await for more discussion. What Flask is, What Flask is Not ¶ Flask will
+never have a database layer. It will not
+----------------------------------------------------------------------------------------------------
+Index: 32167 <<"chunk_id": 2, "docno": 4263>>
+
+"lucky" in this respect. We had the good fortune to be able to design the
+SpringSource dm Server (part of the SpringSource Application Platform) from the
+ground up on OSGi, with no legacy to be concerned with. This has enabled us to
+exploit OSGi to the full. Other vendors have had to retrofit OSGi into large
+existing code bases. I know from first hand experience how difficult it is to
+retrospectively try and modularize a large existing code base. If you do manage
+to modularize it, making it behave well in a dynamic environment is even harder
+(even Eclipse struggles to pull off that latter requirement, often requiring
+restarts after updates).Â A characteristic you tend to see in products where
+OSGi has been retrofitted are a small number of large bundles (very coarse
+grained modularity) and limited dynamic support for managing modules at runtime.
+Vendors such as SpringSource, Paremus, and ProSyst go one crucial step further.
+Building a server platform on OSGi can only get you so far. What if you actually
+want to take advantage of OSGi for building your own applications? For this you
+need an OSGi technology-based programming and deployment model. This is where
+the true frontier for next generation server platforms is - not in making things
+easier for the server vendor to build their platform, but in making things
+easier for the application developer to build and deploy their applications onto
+that platform. The SpringSource dm Server supports traditional war files, OSGi
+bundles, and applications consisting of several bundles (modules) working
+----------------------------------------------------------------------------------------------------
+Index: 4050 <<"chunk_id": 0, "docno": 555>>
+
+Modular Applications with Blueprints — Flask Documentation (3.1.x) Navigation
+index modules | next | previous | Flask Documentation (3.1.x) » Modular
+Applications with Blueprints Modular Applications with Blueprints ¶ Changelog
+Added in version 0.7. Flask uses a concept of blueprints for making application
+components and supporting common patterns within an application or across
+applications. Blueprints can greatly simplify how large applications work and
+provide a central means for Flask extensions to register operations on
+applications. A Blueprint object works similarly to a Flask application object,
+but it is not actually an application. Rather it is a blueprint of how to
+construct or extend an application. Why Blueprints? ¶ Blueprints in Flask are
+intended for these cases: Factor an application into a set of blueprints. This
+is ideal for larger applications; a project could instantiate an application
+object, initialize several extensions, and register a collection of blueprints.
+Register a blueprint on an application at a URL prefix and/or subdomain.
+Parameters in the URL prefix/subdomain become common view arguments (with
+defaults) across all view functions in the blueprint. Register a blueprint
+multiple times on an application with different URL rules. Provide template
+filters, static files, templates, and other utilities through blueprints. A
+blueprint does not have to implement applications or view functions. Register a
+blueprint on an application for any of these cases when initializing a Flask
+extension. A blueprint in Flask is not a pluggable app because it is not
+actually an application – it’s a set of operations which can be registered on an
+application, even
+----------------------------------------------------------------------------------------------------
+Index: 4051 <<"chunk_id": 1, "docno": 555>>
+
+not a pluggable app because it is not actually an application – it’s a set of
+operations which can be registered on an application, even multiple times. Why
+not have multiple application objects? You can do that (see Application
+Dispatching ), but your applications will have separate configs and will be
+managed at the WSGI layer. Blueprints instead provide separation at the Flask
+level, share application config, and can change an application object as
+necessary with being registered. The downside is that you cannot unregister a
+blueprint once an application was created without having to destroy the whole
+application object. The Concept of Blueprints ¶ The basic concept of blueprints
+is that they record operations to execute when registered on an application.
+Flask associates view functions with blueprints when dispatching requests and
+generating URLs from one endpoint to another. My First Blueprint ¶ This is what
+a very basic blueprint looks like. In this case we want to implement a blueprint
+that does simple rendering of static templates: from flask import Blueprint ,
+render_template , abort from jinja2 import TemplateNotFound simple_page =
+Blueprint ( 'simple_page' , __name__ , template_folder = 'templates' )
+@simple_page . route ( '/' , defaults = { 'page' : 'index' }) @simple_page .
+route ( '/<page>' ) def show ( page ): try : return render_template ( f 'pages/
+{ page } .html' ) except TemplateNotFound : abort ( 404 ) When you bind a
+function with the help of the @simple_page.route decorator, the blueprint will
+record the intention of registering the
+----------------------------------------------------------------------------------------------------
+Index: 31970 <<"chunk_id": 1, "docno": 4247>>
+
+to our open source projects and SpringSource product offerings. Nothing changes
+that is, apart from the fact that we’ll have even more opportunity in the future
+to add exciting new features to them. Spring 3.0 is coming soon, and we just
+released milestone 4 . dm Server is making rapid progress towards a 2.0 release
+, and we have some very cool stuff up our sleeves for a forthcoming release of
+tc Server. The Eclipse tool support for Groovy is generating masses of interest,
+Grails is pushing on towards a 1.2 release , and exciting things are happening
+across our Spring projects. All of this will continue at pace. The power of
+blueprints Every Spring-powered application has what we call an “ application
+blueprint ”. This blueprint contains a description of all of the components
+(beans) that make up the application, how they are configured and connected, how
+they interact with the surrounding environment, and how cross-cutting concerns
+such as security and transactions should be handled. The blueprint is
+represented at runtime by a collection of BeanDefinitions , The BeanDefinitions
+are derived from a variety of sources including XML definitions, annotations,
+JavaConfig, Groovy DSLs, and any other configuration mechanism that can be
+plugged into Spring. It’s the job of the Spring container to take the blueprint
+that you have specified for your application and “make it so”. The application
+blueprint gives Spring a high degree of insight into the workings of your
+application. We’ll come back to that thought... What happens when a
+Spring-powered application is
+----------------------------------------------------------------------------------------------------
+Index: 3748 <<"chunk_id": 1, "docno": 505>>
+
+unlimited streams unless the WSGI server indicates support. MAX_FORM_MEMORY_SIZE
+or Request.max_form_memory_size controls how large any non-file
+multipart/form-data field can be. It is set to 500kB by default. MAX_FORM_PARTS
+or Request.max_form_parts controls how many multipart/form-data fields can be
+parsed. It is set to 1000 by default. Combined with the default
+max_form_memory_size , this means that a form will occupy at most 500MB of
+memory. Regardless of these settings, you should also review what settings are
+available from your operating system, container deployment (Docker etc), WSGI
+server, HTTP server, and hosting platform. They typically have ways to set
+process resource limits, timeouts, and other checks regardless of how Flask is
+configured. Cross-Site Scripting (XSS) ¶ Cross site scripting is the concept of
+injecting arbitrary HTML (and with it JavaScript) into the context of a website.
+To remedy this, developers have to properly escape text so that it cannot
+include arbitrary HTML tags. For more information on that have a look at the
+Wikipedia article on Cross-Site Scripting . Flask configures Jinja to
+automatically escape all values unless explicitly told otherwise. This should
+rule out all XSS problems caused in templates, but there are still other places
+where you have to be careful: generating HTML without the help of Jinja calling
+Markup on data submitted by users sending out HTML from uploaded files, never do
+that, use the Content-Disposition: attachment header to prevent that problem.
+sending out textfiles from uploaded files. Some browsers are using content-type
+guessing based on the first few bytes so users could trick a browser
+----------------------------------------------------------------------------------------------------
+Index: 2849 <<"chunk_id": 0, "docno": 410>>
+
+Flask Extension Development — Flask Documentation (3.1.x) Navigation index
+modules | next | previous | Flask Documentation (3.1.x) » Flask Extension
+Development Flask Extension Development ¶ Extensions are extra packages that add
+functionality to a Flask application. While PyPI contains many Flask extensions,
+you may not find one that fits your need. If this is the case, you can create
+your own, and publish it for others to use as well. This guide will show how to
+create a Flask extension, and some of the common patterns and requirements
+involved. Since extensions can do anything, this guide won’t be able to cover
+every possibility. The best ways to learn about extensions are to look at how
+other extensions you use are written, and discuss with others. Discuss your
+design ideas with others on our Discord Chat or GitHub Discussions . The best
+extensions share common patterns, so that anyone familiar with using one
+extension won’t feel completely lost with another. This can only work if
+collaboration happens early. Naming ¶ A Flask extension typically has flask in
+its name as a prefix or suffix. If it wraps another library, it should include
+the library name as well. This makes it easy to search for extensions, and makes
+their purpose clearer. A general Python packaging recommendation is that the
+install name from the package index and the name used in import statements
+should be related. The import name is lowercase, with words separated by
+underscores ( _ ). The install name is either lower case or title
+----------------------------------------------------------------------------------------------------
+Index: 3838 <<"chunk_id": 7, "docno": 519>>
+
+Using async and await for more discussion. What Flask is, What Flask is Not ¶
+Flask will never have a database layer. It will not have a form library or
+anything else in that direction. Flask itself just bridges to Werkzeug to
+implement a proper WSGI application and to Jinja to handle templating. It also
+binds to a few common standard library packages such as logging. Everything else
+is up for extensions. Why is this the case? Because people have different
+preferences and requirements and Flask could not meet those if it would force
+any of this into the core. The majority of web applications will need a template
+engine in some sort. However not every application needs a SQL database. As your
+codebase grows, you are free to make the design decisions appropriate for your
+project. Flask will continue to provide a very simple glue layer to the best
+that Python has to offer. You can implement advanced patterns in SQLAlchemy or
+another database tool, introduce non-relational data persistence as appropriate,
+and take advantage of framework-agnostic tools built for WSGI, the Python web
+interface. The idea of Flask is to build a good foundation for all applications.
+Everything else is up to you or extensions. Contents Design Decisions in Flask
+The Explicit Application Object The Routing System One Template Engine What does
+“micro” mean? Thread Locals Async/await and ASGI support What Flask is, What
+Flask is Not Navigation Overview Previous: API Next: Flask Extension Development
+Quick search © Copyright 2010 Pallets. Created using Sphinx 8.2.3.
+----------------------------------------------------------------------------------------------------
+Index: 3747 <<"chunk_id": 0, "docno": 505>>
+
+Security Considerations — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » Security Considerations Security
+Considerations ¶ Web applications face many types of potential security
+problems, and it can be hard to get everything right, or even to know what
+“right” is in general. Flask tries to solve a few of these things by default,
+but there are other parts you may have to take care of yourself. Many of these
+solutions are tradeoffs, and will depend on each application’s specific needs
+and threat model. Many hosting platforms may take care of certain types of
+problems without the need for the Flask application to handle them. Resource Use
+¶ A common category of attacks is “Denial of Service” (DoS or DDoS). This is a
+very broad category, and different variants target different layers in a
+deployed application. In general, something is done to increase how much
+processing time or memory is used to handle each request, to the point where
+there are not enough resources to handle legitimate requests. Flask provides a
+few configuration options to handle resource use. They can also be set on
+individual requests to customize only that request. The documentation for each
+goes into more detail. MAX_CONTENT_LENGTH or Request.max_content_length controls
+how much data will be read from a request. It is not set by default, although it
+will still block truly unlimited streams unless the WSGI server indicates
+support. MAX_FORM_MEMORY_SIZE or Request.max_form_memory_size controls how large
+any non-file multipart/form-data field can be. It is set to 500kB
+----------------------------------------------------------------------------------------------------
+Index: 4413 <<"chunk_id": 0, "docno": 608>>
+
+Application Factories — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » Patterns for Flask » Application
+Factories Application Factories ¶ If you are already using packages and
+blueprints for your application ( Modular Applications with Blueprints ) there
+are a couple of really nice ways to further improve the experience. A common
+pattern is creating the application object when the blueprint is imported. But
+if you move the creation of this object into a function, you can then create
+multiple instances of this app later. So why would you want to do this? Testing.
+You can have instances of the application with different settings to test every
+case. Multiple instances. Imagine you want to run different versions of the same
+application. Of course you could have multiple instances with different configs
+set up in your webserver, but if you use factories, you can have multiple
+instances of the same application running in the same application process which
+can be handy. So how would you then actually implement that? Basic Factories ¶
+The idea is to set up the application in a function. Like this: def create_app (
+config_filename ): app = Flask ( __name__ ) app . config . from_pyfile (
+config_filename ) from yourapplication.model import db db . init_app ( app )
+from yourapplication.views.admin import admin from
+yourapplication.views.frontend import frontend app . register_blueprint ( admin
+) app . register_blueprint ( frontend ) return app The downside is that you
+cannot use the application object in the blueprints at
+----------------------------------------------------------------------------------------------------
+Index: 27339 <<"chunk_id": 3, "docno": 3954>>
+
+unable to articulate source code to the business in the terms that they
+understand, that functionality becomes ornamental and difficult to change or
+replace. Even the most complex domains can be divided into… Smaller but still
+quite complex subdomains (so-called core domains) - this is probably the largest
+competitive advantage of our enterprise hence, we invest much effort there.
+Simple and understandable subdomains that might not be unique to our enterprise
+(so-called generic subdomains) - we need them for our enterprise to operate but
+it does not give our customers competitive advantage. Think about inventory or
+invoicing. Our users will not come back attracted by even the prettiest
+invoices. Identifying those smaller products gives us a first draft of how to
+organize our code into modules. Each subdomain equals separate module.
+Understanding distinction between core and generic domains helps us see that
+they probably need different architectural style. Fortunately, there are a lot
+of ingredients we can pick and choose from! The example From this place I am
+happy to announce that together with my friend Michał Michaluk , we've created
+an initiative called #dddbyexamples. The purpose of the initiative is to bridge
+the many different parts of the Spring ecosystem with the interests of DDD
+enthusiasts. You can check our samples here . So far, there are two samples. One
+sample focuses on Event Sourcing and Command Query Responsibility Segregation,
+while the other focuses on an end-to-end DDD example. Both are implemented with
+Spring Boot. Let's dive into the end-to-end example. We are going to
+----------------------------------------------------------------------------------------------------
+Index: 3834 <<"chunk_id": 3, "docno": 519>>
+
+design decision with the Werkzeug routing system is that routes in Werkzeug try
+to ensure that URLs are unique. Werkzeug will go quite far with that in that it
+will automatically redirect to a canonical URL if a route is ambiguous. One
+Template Engine ¶ Flask decides on one template engine: Jinja. Why doesn’t Flask
+have a pluggable template engine interface? You can obviously use a different
+template engine, but Flask will still configure Jinja for you. While that
+limitation that Jinja is always configured will probably go away, the decision
+to bundle one template engine and use that will not. Template engines are like
+programming languages and each of those engines has a certain understanding
+about how things work. On the surface they all work the same: you tell the
+engine to evaluate a template with a set of variables and take the return value
+as string. But that’s about where similarities end. Jinja for example has an
+extensive filter system, a certain way to do template inheritance, support for
+reusable blocks (macros) that can be used from inside templates and also from
+Python code, supports iterative template rendering, configurable syntax and
+more. On the other hand an engine like Genshi is based on XML stream evaluation,
+template inheritance by taking the availability of XPath into account and more.
+Mako on the other hand treats templates similar to Python modules. When it comes
+to connecting a template engine with an application or framework there is more
+than just rendering templates. For instance, Flask uses Jinja’s
+----------------------------------------------------------------------------------------------------
+Index: 42381 <<"chunk_id": 5, "docno": 6503>>
+
+this makes sense at all or that it's a good thing but I think it's a reality.
+What do you think? I think it's fortunate that this is not a reality, because it
+makes no sense at all, is a Very Bad Thing and could potentially destroy the
+software industry. The blog concludes that: This is one of the reasons we worked
+hard to make sure our OpenLogic Expert Community compensates fairly. So I
+followed the link to their "Expert Community" FAQ to understand exactly how this
+works in practice. The interesting answers are: Do I get paid to be a part of
+the Expert Community? Yes, the OpenLogic Rewards program pays Expert Community
+members in points (redeemable for your choice of cash or rewards) upon
+successful resolution of an incident. OpenLogic charges enterprise for support.
+OpenLogic's internal technical support team resolves basic issues. OpenLogic, in
+turn, contracts with members of the community to resolve more complex issues.
+Right, so it works like this. OpenLogic hope that enterprise customers will pay
+them money up front for support contracts. OpenLogic don't appear to believe in
+paying developers salaries, so they expect that they won't be able to handle
+complex support issues internally. So in that case they reach out to the
+"community," and pay only if an incident is resolved. That works like this: What
+will I have to do as a Member of the Expert Community? As a member, you will
+have access to a list of customer incidents that we need help resolving. You can
+----------------------------------------------------------------------------------------------------
+Index: 31971 <<"chunk_id": 2, "docno": 4247>>
+
+Spring a high degree of insight into the workings of your application. We’ll
+come back to that thought... What happens when a Spring-powered application is
+deployed in a production setting? In a typical scenario there are multiple
+components working in concert that need to be configured and connected. An http
+Server load balancing across a set of t c Server instances for example, which in
+turn talk to a database configured in a master/slave setup. These (middleware)
+components form logical tiers of an application (using the term application “in
+the large” now). The logical tiers are mapped to physical tiers in an actual
+deployment (e.g. you can deploy a database and app server on the same machine,
+or on different machines). When this terminology was first invented, physical
+tiers really were physical. But nowadays your physical tier may of course be
+virtual, and those virtual machines are in turn mapped onto physical
+resources..... still with me??? Just as we have an application blueprint that
+describes the components of a Spring-powered application and how they fit
+together, so a deployment blueprint can describe the components of a given
+deployment scenario - what components there are, how they are connected and
+configured, and how cross-cutting concerns such as security, and (anti-)affinity
+should be handled. As a starting point, there are some common deployment
+patterns (such as the tc Server farm example I gave earlier) that can be
+captured in a catalog. In time you can imagine an operations team extending that
+catalog with their own custom blueprints for
+----------------------------------------------------------------------------------------------------
+Index: 33481 <<"chunk_id": 1, "docno": 4436>>
+
+taught myself Python in my final year at university by doing Project Euler
+problems and then decided I wanted to learn how to make a website. Django was
+the first Python web framework I looked at and it worked really well for me.
+What other framework do you know and if there is anything you would like to have
+in Django if you had magical powers? I’ve done a small amount with Flask and
+FastAPI. More than any new features, I think the thing that I’d most like to see
+is more long-term contributors to spread the work of keeping Django awesome.
+What projects are you working on now? The side project I’m most excited about is
+Django Rusty Templates , which is a re-implementation of Django’s templating
+language in Rust. Which Django libraries are your favorite (core or 3rd party)?
+The ORM of course! What are the top three things in Django that you like? Django
+Conferences, the mentorship program Djangonaut Space and the whole community!
+You have been a mentor multiple times with GSoC and Djangonaut Space program,
+what is required according to you to be a good mentor? I think being willing to
+invest time is really important. Checking in with your mentees frequently and
+being an early reviewer of their work. I think this helps keep their motivation
+up and allows for small corrections early on. Any advice for future
+contributors? Start small and as you get more familiar with Django and the
+process of contributing you can take on bigger issues.
+----------------------------------------------------------------------------------------------------
+Index: 9087 <<"chunk_id": 1, "docno": 1292>>
+
+state changes, without compromising on React’s core mental model . We believe
+that React’s approach — UI as a simple function of state, with standard
+JavaScript values and idioms — is a key part of why React has been approachable
+for so many developers. That’s why we’ve invested in building an optimizing
+compiler for React. JavaScript is a notoriously challenging language to
+optimize, thanks to its loose rules and dynamic nature. React Compiler is able
+to compile code safely by modeling both the rules of JavaScript and the “rules
+of React”. For example, React components must be idempotent — returning the same
+value given the same inputs — and can’t mutate props or state values. These
+rules limit what developers can do and help to carve out a safe space for the
+compiler to optimize. Of course, we understand that developers sometimes bend
+the rules a bit, and our goal is to make React Compiler work out of the box on
+as much code as possible. The compiler attempts to detect when code doesn’t
+strictly follow React’s rules and will either compile the code where safe or
+skip compilation if it isn’t safe. We’re testing against Meta’s large and varied
+codebase in order to help validate this approach. For developers who are curious
+about making sure their code follows React’s rules, we recommend enabling Strict
+Mode and configuring React’s ESLint plugin . These tools can help to catch
+subtle bugs in your React code, improving the quality of your applications
+today, and future-proofs your applications for
+----------------------------------------------------------------------------------------------------
+Index: 3275 <<"chunk_id": 10, "docno": 457>>
+
+be wondering how that object can be global and how Flask manages to still be
+threadsafe. The answer is context locals: Context Locals ¶ Insider Information
+If you want to understand how that works and how you can implement tests with
+context locals, read this section, otherwise just skip it. Certain objects in
+Flask are global objects, but not of the usual kind. These objects are actually
+proxies to objects that are local to a specific context. What a mouthful. But
+that is actually quite easy to understand. Imagine the context being the
+handling thread. A request comes in and the web server decides to spawn a new
+thread (or something else, the underlying object is capable of dealing with
+concurrency systems other than threads). When Flask starts its internal request
+handling it figures out that the current thread is the active context and binds
+the current application and the WSGI environments to that context (thread). It
+does that in an intelligent way so that one application can invoke another
+application without breaking. So what does this mean to you? Basically you can
+completely ignore that this is the case unless you are doing something like unit
+testing. You will notice that code which depends on a request object will
+suddenly break because there is no request object. The solution is creating a
+request object yourself and binding it to the context. The easiest solution for
+unit testing is to use the test_request_context() context manager. In
+combination with the with statement it will bind a test
+----------------------------------------------------------------------------------------------------
+Index: 4492 <<"chunk_id": 12, "docno": 618>>
+
+solution for this problem in general, but there are a couple of things you can
+keep in mind to improve that experience: Create your application in a function
+and register blueprints on it. That way you can create multiple instances of
+your application with different configurations attached which makes unit testing
+a lot easier. You can use this to pass in configuration as needed. Do not write
+code that needs the configuration at import time. If you limit yourself to
+request-only accesses to the configuration you can reconfigure the object later
+on as needed. Make sure to load the configuration very early on, so that
+extensions can access the configuration when calling init_app . Development /
+Production ¶ Most applications need more than one configuration. There should be
+at least separate configurations for the production server and the one used
+during development. The easiest way to handle this is to use a default
+configuration that is always loaded and part of the version control, and a
+separate configuration that overrides the values as necessary as mentioned in
+the example above: app = Flask ( __name__ ) app . config . from_object (
+'yourapplication.default_settings' ) app . config . from_envvar (
+'YOURAPPLICATION_SETTINGS' ) Then you just have to add a separate config.py file
+and export YOURAPPLICATION_SETTINGS=/path/to/config.py and you are done. However
+there are alternative ways as well. For example you could use imports or
+subclassing. What is very popular in the Django world is to make the import
+explicit in the config file by adding from yourapplication.default_settings
+----------------------------------------------------------------------------------------------------
+Index: 26566 <<"chunk_id": 1, "docno": 3766>>
+
+on how to or whether to do it. Furthermore, different applications have
+different needs that depend on the business domain, company dynamics, point of
+evolution, and more, making it necessary to consider how published advice
+applies to your own specific situation. All of this coupled with the fact that
+it’s not too hard to express the various ways (path, header, media type, etc.)
+through @RequestMapping annotations, has practically meant no official support
+in Spring, until now. What changed? As is often the case with new features, they
+begin with a user request, in this case stating that while implementing API
+Versioning in a Spring application is possible, it in fact requires a lot of
+work. Looking back on the subtasks of the umbrella issue this was indeed a valid
+point. The amount of feedback and interest we’ve seen since in this topic
+further demonstrates a clear need. It is not the goal of this blog post to talk
+further about API versioning practices. For a longer introduction to the topic,
+you can check my talk at the Spring I/O conference earlier this year. Generally
+the goal with this feature is to provide the building blocks necessary for what
+is a very common practice and need. Server Handling At the core of server-side
+handling is the ApiVersionStrategy , a key contract with knowledge of all
+application preferences for API versioning. It can resolve, parse, and validate
+request versions; it knows about the range of supported versions; and it can
+help to send deprecation hints in the response.
+----------------------------------------------------------------------------------------------------
+Index: 23017 <<"chunk_id": 2, "docno": 2886>>
+
+to translate for the Japanese language in the first place? I went through
+several joint surgeries and suddenly had a lot of time. I’d always wanted to
+contribute to open source, but I knew my coding skills weren’t my strongest
+asset. I did, however, have years of experience writing manuals—so translation
+felt like a meaningful way to help. Do you have any advice for people who could
+be hesitant to contribute to translation of Django documentation? Translation
+has fewer strict rules than code contributions, and you can start simply by
+creating a Transifex account. If a passage feels unclear, improve it! And if you
+have questions, the Django-ja translation team is happy to help on our Discord .
+I know you have some interest in AI as a technical writer, do you have an idea
+on how Django could evolve with AI? Today’s AI is excellent at working with
+existing code—spotting N+1 queries or refactoring SQL without changing behavior.
+But code written entirely by AI often has weak security. That’s why solid unit
+tests and Django’s strong security guardrails will remain essential: they let us
+harness AI’s creativity safely. Django is celebrating its 20th anniversary, do
+you have a nice story to share? The surgeries were tough, but they led me to
+documentation translation, which reconnected me with both English and Django.
+I’m grateful for that path. What are your hobbies or what do you do when you’re
+not working? Outside of computers, I enjoy playing drums in a band and watching
+musicals and stage plays!
+----------------------------------------------------------------------------------------------------

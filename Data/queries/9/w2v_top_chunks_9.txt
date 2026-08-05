@@ -1,0 +1,508 @@
+Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+
+that would cause the required CSRF cookie to be sent. Solution: use
+ensure_csrf_cookie() on the view that sends the page. CSRF protection in
+reusable applications ¶ Because it is possible for the developer to turn off the
+CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
+decorator to ensure the security of these applications against CSRF. It is
+recommended that the developers of other reusable apps that want the same
+guarantees also use the csrf_protect decorator on their views. Previous page and
+next page How to use Django’s Content Security Policy How to write a custom
+storage class Back to Top Additional Information Support Django! Abu Ashraf
+Masnun donated to the Django Software Foundation to support Django development.
+Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
+with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
+False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
+Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
+Using the decorator method Handling rejected requests Using CSRF protection with
+caching Testing and CSRF protection Edge cases Disabling CSRF protection for
+just a few views Setting the token when CsrfViewMiddleware.process_view() is not
+used Including the CSRF token in an unprotected view Protecting a view for only
+one path Protecting a page that uses AJAX without an HTML form CSRF protection
+in reusable applications Browse Prev: How to use Django’s Content Security
+Policy Next: How to write a custom storage class Table of contents General Index
+Python Module Index You are
+----------------------------------------------------------------------------------------------------
+Index: 36507 <<"chunk_id": 11, "docno": 5248>>
+
+Python code is outside of the web server’s root. This will ensure that your
+Python code is not accidentally served as plain text (or accidentally executed).
+Take care with any user uploaded files . Django does not throttle requests to
+authenticate users. To protect against brute-force attacks against the
+authentication system, you may consider deploying a Django plugin or web server
+module to throttle these requests. Keep your SECRET_KEY , and
+SECRET_KEY_FALLBACKS if in use, secret. It is a good idea to limit the
+accessibility of your caching system and database using a firewall. Take a look
+at the Open Web Application Security Project (OWASP) Top 10 list which
+identifies some common vulnerabilities in web applications. While Django has
+tools to address some of the issues, other issues must be accounted for in the
+design of your project. Mozilla discusses various topics regarding web security
+. Their pages also include security principles that apply to any system.
+Previous page and next page Pagination Performance and optimization Back to Top
+Additional Information Support Django! Django Debug Toolbar donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Security in Django Always sanitize user input Cross-site scripting (XSS)
+protection Cross-site request forgery (CSRF) protection SQL injection protection
+Clickjacking protection SSL/HTTPS Host header validation Referrer policy
+Cross-origin opener policy Session security User-uploaded content Form
+Submissions Content Security Policy Limitations and considerations Additional
+security topics Browse Prev: Pagination Next: Performance and optimization Table
+of contents General Index Python Module Index You are here: Django dev
+documentation Using
+----------------------------------------------------------------------------------------------------
+Index: 27802 <<"chunk_id": 6, "docno": 4038>>
+
+wish to return them in other cases, set them in your view. See RFC 9110 Section
+9.3.4 to learn about the distinction between setting a validator header in
+response to requests made with PUT versus POST . Comparison with middleware
+conditional processing ¶ Django provides conditional GET handling via
+django.middleware.http.ConditionalGetMiddleware . While being suitable for many
+situations, the middleware has limitations for advanced usage: It’s applied
+globally to all views in your project. It doesn’t save you from generating the
+response, which may be expensive. It’s only appropriate for HTTP GET requests.
+You should choose the most appropriate tool for your particular problem here. If
+you have a way to compute ETags and modification times quickly and if some view
+takes a while to generate the content, you should consider using the condition
+decorator described in this document. If everything already runs fairly quickly,
+stick to using the middleware and the amount of network traffic sent back to the
+clients will still be reduced if the view hasn’t changed. Previous page and next
+page Django’s cache framework Composite primary keys Back to Top Additional
+Information Support Django! Ken Whitesell donated to the Django Software
+Foundation to support Django development. Donate today! Contents Conditional
+View Processing The condition decorator Shortcuts for only computing one value
+Use condition when testing both conditions Using the decorators with other HTTP
+methods Comparison with middleware conditional processing Browse Prev: Django’s
+cache framework Next: Composite primary keys Table of contents General Index
+Python Module Index You are here: Django 6.0 documentation Using
+----------------------------------------------------------------------------------------------------
+Index: 21539 <<"chunk_id": 3, "docno": 2637>>
+
+in Django 1.2 ¶ Support for multiple databases ¶ Django 1.2 adds the ability to
+use more than one database in your Django project. Queries can be issued at a
+specific database with the using() method on QuerySet objects. Individual
+objects can be saved to a specific database by providing a using argument when
+you call save() . Model validation ¶ Model instances now have support for
+validating their own data , and both model and form fields now accept
+configurable lists of validators specifying reusable, encapsulated validation
+behavior. Note, however, that validation must still be performed explicitly.
+Simply invoking a model instance’s save() method will not perform any validation
+of the instance’s data. Improved CSRF protection ¶ Django now has much improved
+protection against Cross-Site Request Forgery (CSRF) attacks . This type of
+attack occurs when a malicious website contains a link, a form button or some
+JavaScript that is intended to perform some action on your website, using the
+credentials of a logged-in user who visits the malicious site in their browser.
+A related type of attack, “login CSRF,” where an attacking site tricks a user’s
+browser into logging into a site with someone else’s credentials, is also
+covered. Messages framework ¶ Django now includes a robust and configurable
+messages framework with built-in support for cookie- and session-based
+messaging, for both anonymous and authenticated clients. The messages framework
+replaces the deprecated user message API and allows you to temporarily store
+messages in one request and retrieve them for display in a subsequent request
+(usually
+----------------------------------------------------------------------------------------------------
+Index: 33602 <<"chunk_id": 35, "docno": 4450>>
+
+of known directives can be found in the IANA registry (note that not all of them
+apply to responses). If you want to use headers to disable caching altogether,
+never_cache() is a view decorator that adds headers to ensure the response won’t
+be cached by browsers or other caches. Example: from
+django.views.decorators.cache import never_cache @never_cache def myview (
+request ): ... Order of MIDDLEWARE ¶ If you use caching middleware, it’s
+important to put each half in the right place within the MIDDLEWARE setting.
+That’s because the cache middleware needs to know which headers by which to vary
+the cache storage. Middleware always adds something to the Vary response header
+when it can. UpdateCacheMiddleware runs during the response phase, where
+middleware is run in reverse order, so an item at the top of the list runs last
+during the response phase. Thus, you need to make sure that
+UpdateCacheMiddleware appears before any other middleware that might add
+something to the Vary header. The following middleware modules do so:
+SessionMiddleware adds Cookie GZipMiddleware adds Accept-Encoding
+LocaleMiddleware adds Accept-Language FetchFromCacheMiddleware , on the other
+hand, runs during the request phase, where middleware is applied first-to-last,
+so an item at the top of the list runs first during the request phase. The
+FetchFromCacheMiddleware also needs to run after other middleware updates the
+Vary header, so FetchFromCacheMiddleware must be after any item that does so.
+Previous page and next page Customizing authentication in Django Conditional
+View Processing Back to Top Additional Information Support Django! revolunet
+donated to the Django Software
+----------------------------------------------------------------------------------------------------
+Index: 16077 <<"chunk_id": 6, "docno": 2149>>
+
+between GET and POST data. Cache Framework ¶ The core goals of Django’s cache
+framework are: Less code ¶ A cache should be as fast as possible. Hence, all
+framework code surrounding the cache backend should be kept to the absolute
+minimum, especially for get() operations. Consistency ¶ The cache API should
+provide a consistent interface across the different cache backends.
+Extensibility ¶ The cache API should be extensible at the application level
+based on the developer’s needs (for example, see Cache key transformation ).
+Previous page and next page API stability Third-party distributions of Django
+Back to Top Additional Information Support Django! Kai Diefenbach donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Design philosophies Overall Loose coupling Less code Quick development Don’t
+repeat yourself (DRY) Explicit is better than implicit Consistency Models
+Explicit is better than implicit Include all relevant domain logic Database API
+SQL efficiency Terse, powerful syntax Option to drop into raw SQL easily, when
+needed URL design Loose coupling Infinite flexibility Encourage best practices
+Definitive URLs Template system Separate logic from presentation Discourage
+redundancy Be decoupled from HTML XML should not be used for template languages
+Assume designer competence Treat whitespace obviously Don’t invent a programming
+language Safety and security Extensibility Views Simplicity Use request objects
+Loose coupling Differentiate between GET and POST Cache Framework Less code
+Consistency Extensibility Browse Prev: API stability Next: Third-party
+distributions of Django Table of contents General Index Python Module Index You
+are here: Django 6.0 documentation Meta-documentation and miscellany Design
+philosophies
+----------------------------------------------------------------------------------------------------
+Index: 36506 <<"chunk_id": 10, "docno": 5248>>
+
+endpoint, enabling monitoring and debugging. For configuration instructions, see
+the Using CSP documentation, and refer to the CSP overview for details on
+directives and settings. Limitations and considerations ¶ While CSP is a
+powerful security mechanism, it’s important to understand its limitations and
+implications, particularly when used in Django: Policy exclusion risks: Avoid
+excluding specific paths or responses from CSP protection. Due to the browser’s
+same-origin policy, a vulnerability on an unprotected page (e.g., one allowing
+arbitrary script injection) may be leveraged to attack protected pages.
+Excluding any route can significantly weaken the site’s overall CSP protection.
+Performance overhead: Although typically negligible, CSP adds some processing
+overhead. Nonce generation involves secure randomness for each applicable
+request. For high-traffic applications or resource-constrained environments,
+measure the performance impact accordingly. Browser support: While CSP Levels 1
+and 2 are widely supported, newer directives (CSP Level 3+) or complex policy
+behaviors may vary across browsers. Test your policy across the environments you
+intend to support. Despite these limitations, CSP remains an important and
+recommended security layer for web applications. Understanding its constraints
+will help you design a more effective and reliable deployment. Additional
+security topics ¶ While Django provides good security protection out of the box,
+it is still important to properly deploy your application and take advantage of
+the security protection of the web server, operating system and other
+components. Make sure that your Python code is outside of the web server’s root.
+This will ensure that your Python code is not accidentally served as plain text
+(or accidentally
+----------------------------------------------------------------------------------------------------
+Index: 41715 <<"chunk_id": 7, "docno": 6384>>
+
+get the best performance from their databases. The database optimization
+documentation gathers together links to the relevant documentation and adds
+various tips that outline the steps to take when attempting to optimize your
+database usage. Other database-related tips ¶ Enabling Persistent connections
+can speed up connections to the database accounts for a significant part of the
+request processing time. This helps a lot on virtualized hosts with limited
+network performance, for example. HTTP performance ¶ Middleware ¶ Django comes
+with a few helpful pieces of middleware that can help optimize your site’s
+performance. They include: ConditionalGetMiddleware ¶ Adds support for modern
+browsers to conditionally GET responses based on the ETag and Last-Modified
+headers. It also calculates and sets an ETag if needed. GZipMiddleware ¶
+Compresses responses for all modern browsers, saving bandwidth and transfer
+time. Note that GZipMiddleware is currently considered a security risk, and is
+vulnerable to attacks that nullify the protection provided by TLS/SSL. See the
+warning in GZipMiddleware for more information. Sessions ¶ Using cached sessions
+¶ Using cached sessions may be a way to increase performance by eliminating the
+need to load session data from a slower storage source like the database and
+instead storing frequently used session data in memory. Static files ¶ Static
+files, which by definition are not dynamic, make an excellent target for
+optimization gains. ManifestStaticFilesStorage ¶ By taking advantage of web
+browsers’ caching abilities, you can eliminate network hits entirely for a given
+file after the initial download. ManifestStaticFilesStorage appends a
+content-dependent tag to the filenames of
+----------------------------------------------------------------------------------------------------
+Index: 41774 <<"chunk_id": 4, "docno": 6391>>
+
+STATIC_ROOT directory where collectstatic will copy them. See How to manage
+static files (e.g. images, JavaScript, CSS) for more information. MEDIA_ROOT and
+MEDIA_URL ¶ Media files are uploaded by your users. They’re untrusted! Make sure
+your web server never attempts to interpret them. For instance, if a user
+uploads a .php file, the web server shouldn’t execute it. Now is a good time to
+check your backup strategy for these files. HTTPS ¶ Any website which allows
+users to log in should enforce site-wide HTTPS to avoid transmitting access
+tokens in clear. In Django, access tokens include the login/password, the
+session cookie, and password reset tokens. (You can’t do much to protect
+password reset tokens if you’re sending them by email.) Protecting sensitive
+areas such as the user account or the admin isn’t sufficient, because the same
+session cookie is used for HTTP and HTTPS. Your web server must redirect all
+HTTP traffic to HTTPS, and only transmit HTTPS requests to Django. Once you’ve
+set up HTTPS, enable the following settings. CSRF_COOKIE_SECURE ¶ Set this to
+True to avoid transmitting the CSRF cookie over HTTP accidentally.
+SESSION_COOKIE_SECURE ¶ Set this to True to avoid transmitting the session
+cookie over HTTP accidentally. Performance optimizations ¶ Setting DEBUG = False
+disables several features that are only useful in development. In addition, you
+can tune the following settings. Sessions ¶ Consider using cached sessions to
+improve performance. If using database-backed sessions, regularly clear old
+sessions to avoid storing unnecessary data. CONN_MAX_AGE ¶ Enabling persistent
+database connections can result in
+----------------------------------------------------------------------------------------------------
+Index: 33597 <<"chunk_id": 30, "docno": 4450>>
+
+a man-in-the-middle attack. Your Django website may sit behind a proxy cache ,
+such as Squid Web Proxy Cache ( http://www.squid-cache.org/ ), that caches pages
+for performance. In this case, each request first would be handled by the proxy,
+and it would be passed to your application only if needed. Your web browser
+caches pages, too. If a web page sends out the appropriate headers, your browser
+will use the local cached copy for subsequent requests to that page, without
+even contacting the web page again to see whether it has changed. Downstream
+caching is a nice efficiency boost, but there’s a danger to it: Many web pages’
+contents differ based on authentication and a host of other variables, and cache
+systems that blindly save pages based purely on URLs could expose incorrect or
+sensitive data to subsequent visitors to those pages. For example, if you
+operate a web email system, then the contents of the “inbox” page depend on
+which user is logged in. If an ISP blindly cached your site, then the first user
+who logged in through that ISP would have their user-specific inbox page cached
+for subsequent visitors to the site. That’s not cool. Fortunately, HTTP provides
+a solution to this problem. A number of HTTP headers exist to instruct
+downstream caches to differ their cache contents depending on designated
+variables, and to tell caching mechanisms not to cache particular pages. We’ll
+look at some of these headers in the sections that follow. Using Vary headers ¶
+The Vary header defines which
+----------------------------------------------------------------------------------------------------
+Index: 22793 <<"chunk_id": 12, "docno": 2852>>
+
+usage details, including security considerations. CSRF protection middleware ¶
+class CsrfViewMiddleware [source] ¶ Adds protection against Cross Site Request
+Forgeries by adding hidden form fields to POST forms and checking requests for
+the correct value. See the Cross Site Request Forgery protection documentation .
+You can add Cross Site Request Forgery protection to individual views using the
+csrf_protect() decorator. X-Frame-Options middleware ¶ class
+XFrameOptionsMiddleware [source] ¶ Simple clickjacking protection via the
+X-Frame-Options header . Content Security Policy middleware ¶ class
+ContentSecurityPolicyMiddleware [source] ¶ New in Django 6.0. Adds support for
+Content Security Policy (CSP), which helps mitigate risks such as Cross-Site
+Scripting (XSS) and data injection attacks by controlling the sources of content
+that can be loaded in the browser. See the Overview documentation for details on
+configuring policies. This middleware sets the following headers on the response
+depending on the available settings: Content-Security-Policy , based on
+SECURE_CSP . Content-Security-Policy-Report-Only , based on
+SECURE_CSP_REPORT_ONLY . Middleware ordering ¶ Here are some hints about the
+ordering of various Django middleware classes: SecurityMiddleware It should go
+near the top of the list if you’re going to turn on the SSL redirect as that
+avoids running through a bunch of other unnecessary middleware.
+UpdateCacheMiddleware Before those that modify the Vary header (
+SessionMiddleware , GZipMiddleware , LocaleMiddleware ). GZipMiddleware Before
+any middleware that may change or use the response body. After
+UpdateCacheMiddleware : Modifies Vary header. SessionMiddleware Before any
+middleware that may raise an exception to trigger an error view (such as
+PermissionDenied ) if you’re using CSRF_USE_SESSIONS .
+----------------------------------------------------------------------------------------------------
+Index: 1088 <<"chunk_id": 13, "docno": 165>>
+
+the cookie and adds a custom request header with the token in all following
+requests. The server compares the received cookie value to the request header
+value and rejects the request if the values are missing or don't match. This
+technique is effective because all browsers implement the same origin policy .
+Only code from the website on which cookies are set can read the cookies from
+that site and set custom headers on requests to that site. That means only your
+application can read this cookie token and set the custom header. The malicious
+code on evil.com can't. HttpClient XSRF/CSRF security HttpClient supports a
+common mechanism used to prevent XSRF attacks. When performing HTTP requests, an
+interceptor reads a token from a cookie, by default XSRF-TOKEN , and sets it as
+an HTTP header, X-XSRF-TOKEN . Because only code that runs on your domain could
+read the cookie, the backend can be certain that the HTTP request came from your
+client application and not an attacker. By default, an interceptor sends this
+header on all mutating requests (such as POST ) to relative and same origin
+URLs, but not on GET or HEAD requests. Why not protect GET requests? CSRF
+protection is only needed for requests that can change state on the backend. By
+their nature, CSRF attacks cross domain boundaries, and the web's same-origin
+policy will prevent an attacking page from retrieving the results of
+authenticated GET requests. To take advantage of this, your server needs to set
+a token in a JavaScript readable
+----------------------------------------------------------------------------------------------------
+Index: 3751 <<"chunk_id": 4, "docno": 505>>
+
+of little kittens. When users would go to that page, their profiles would get
+deleted while they are looking at images of fluffy cats. How can you prevent
+that? Basically for each request that modifies content on the server you would
+have to either use a one-time token and store that in the cookie and also
+transmit it with the form data. After receiving the data on the server again,
+you would then have to compare the two tokens and ensure they are equal. Why
+does Flask not do that for you? The ideal place for this to happen is the form
+validation framework, which does not exist in Flask. JSON Security ¶ In Flask
+0.10 and lower, jsonify() did not serialize top-level arrays to JSON. This was
+because of a security vulnerability in ECMAScript 4. ECMAScript 5 closed this
+vulnerability, so only extremely old browsers are still vulnerable. All of these
+browsers have other more serious vulnerabilities , so this behavior was changed
+and jsonify() now supports serializing arrays. Security Headers ¶ Browsers
+recognize various response headers in order to control security. We recommend
+reviewing each of the headers below for use in your application. The
+Flask-Talisman extension can be used to manage HTTPS and the security headers
+for you. HTTP Strict Transport Security (HSTS) ¶ Tells the browser to convert
+all HTTP requests to HTTPS, preventing man-in-the-middle (MITM) attacks.
+response . headers [ 'Strict-Transport-Security' ] = 'max-age=31536000;
+includeSubDomains'
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
+Content Security Policy (CSP) ¶ Tell the browser where it can load various types
+of
+----------------------------------------------------------------------------------------------------
+Index: 40824 <<"chunk_id": 3, "docno": 6231>>
+
+application that uses GET requests for admin forms is a security risk: it can be
+easy for an attacker to mimic a form’s request to gain access to sensitive parts
+of the system. POST , coupled with other protections like Django’s CSRF
+protection offers more control over access. On the other hand, GET is suitable
+for things like a web search form, because the URLs that represent a GET request
+can easily be bookmarked, shared, or resubmitted. Django’s role in forms ¶
+Handling forms is a complex business. Consider Django’s admin, where numerous
+items of data of several different types may need to be prepared for display in
+a form, rendered as HTML, edited using a convenient interface, returned to the
+server, validated and cleaned up, and then saved or passed on for further
+processing. Django’s form functionality can simplify and automate vast portions
+of this work, and can also do it more securely than most programmers would be
+able to do in code they wrote themselves. Django handles three distinct parts of
+the work involved in forms: preparing and restructuring data to make it ready
+for rendering creating HTML forms for the data receiving and processing
+submitted forms and data from the client It is possible to write code that does
+all of this manually, but Django can take care of it all for you. Forms in
+Django ¶ We’ve described HTML forms briefly, but an HTML <form> is just one part
+of the machinery required. In the context of a web application, ‘form’ might
+----------------------------------------------------------------------------------------------------
+Index: 27642 <<"chunk_id": 3, "docno": 4017>>
+
+The middleware will only add a trailing slash and redirect (by looking at the
+APPEND_SLASH setting) if the resulting URL refers to a valid flatpage. Redirects
+are permanent (301 status code). If it doesn’t find a match, the request
+continues to be processed as usual. The middleware only gets activated for 404s
+– not for 500s or responses of any other status code. Flatpages will not apply
+view middleware Because the FlatpageFallbackMiddleware is applied only after URL
+resolution has failed and produced a 404, the response it returns will not apply
+any view middleware methods. Only requests which are successfully routed to a
+view via normal URL resolution apply view middleware. Note that the order of
+MIDDLEWARE matters. Generally, you can put FlatpageFallbackMiddleware at the end
+of the list. This means it will run first when processing the response, and
+ensures that any other response-processing middleware see the real flatpage
+response rather than the 404. For more on middleware, read the middleware docs .
+Ensure that your 404 template works Note that the FlatpageFallbackMiddleware
+only steps in once another view has successfully produced a 404 response. If
+another view or middleware class attempts to produce a 404 but ends up raising
+an exception instead, the response will become an HTTP 500 (“Internal Server
+Error”) and the FlatpageFallbackMiddleware will not attempt to serve a flatpage.
+How to add, change and delete flatpages ¶ Warning Permissions to add or edit
+flatpages should be restricted to trusted users. Flatpages are defined by raw
+HTML and are not sanitized by
+----------------------------------------------------------------------------------------------------
+Index: 36505 <<"chunk_id": 9, "docno": 5248>>
+
+For example, if your site runs on example.com , you would want to serve uploaded
+content (the MEDIA_URL setting) from something like usercontent-example.com .
+It’s not sufficient to serve content from a subdomain like
+usercontent.example.com . Beyond this, applications may choose to define a list
+of allowable file extensions for user uploaded files and configure the web
+server to only serve such files. Form Submissions ¶ Form submissions containing
+files are not limited by DATA_UPLOAD_MAX_MEMORY_SIZE . Under ASGI, the entire
+request may be spooled to disk before any file size validation is performed. It
+is strongly advised that you limit the maximum request body size in your web
+server configuration to prevent denial of service (DOS) attacks. Content
+Security Policy ¶ Content Security Policy (CSP) is a browser security mechanism
+that helps protect web applications against attacks such as cross-site scripting
+(XSS) and other content injection attacks. CSP allows web applications to define
+which sources of content are trusted, instructing the browser to load, execute,
+or render resources only from those sources. This effectively creates an
+allowlist of content origins, reducing the risk of malicious code execution. Key
+benefits of enabling CSP include: Mitigating XSS attacks by blocking inline
+scripts and restricting external script loading. Controlling which external
+resources (e.g., images, fonts, stylesheets) can be loaded. Preventing unwanted
+framing of your site to protect against clickjacking. Reporting violations to a
+specified endpoint, enabling monitoring and debugging. For configuration
+instructions, see the Using CSP documentation, and refer to the CSP overview for
+details on directives and settings.
+----------------------------------------------------------------------------------------------------
+Index: 50853 <<"chunk_id": 6, "docno": 8103>>
+
+CSRF protection, but a few do not. Solution: rather than disabling the
+middleware and applying csrf_protect to all the views that need it, enable the
+middleware and use csrf_exempt() . Setting the token when
+CsrfViewMiddleware.process_view() is not used ¶ There are cases when
+CsrfViewMiddleware.process_view may not have run before your view is run - 404
+and 500 handlers, for example - but you still need the CSRF token in a form.
+Solution: use requires_csrf_token() Including the CSRF token in an unprotected
+view ¶ There may be some views that are unprotected and have been exempted by
+csrf_exempt , but still need to include the CSRF token. Solution: use
+csrf_exempt() followed by requires_csrf_token() . (i.e. requires_csrf_token
+should be the innermost decorator). Protecting a view for only one path ¶ A view
+needs CSRF protection under one set of conditions only, and mustn’t have it for
+the rest of the time. Solution: use csrf_exempt() for the whole view function,
+and csrf_protect() for the path within it that needs protection. Example: from
+django.views.decorators.csrf import csrf_exempt , csrf_protect @csrf_exempt def
+my_view ( request ): @csrf_protect def protected_path ( request ): do_something
+() if some_condition (): return protected_path ( request ) else :
+do_something_else () Protecting a page that uses AJAX without an HTML form ¶ A
+page makes a POST request via AJAX, and the page does not have an HTML form with
+a csrf_token that would cause the required CSRF cookie to be sent. Solution: use
+ensure_csrf_cookie() on the view that sends the page. CSRF protection in
+reusable applications
+----------------------------------------------------------------------------------------------------
+Index: 15217 <<"chunk_id": 27, "docno": 2002>>
+
+JSON encoder class you can pass the encoder parameter to the constructor method:
+>>> response = JsonResponse ( data , encoder = MyJSONEncoder )
+StreamingHttpResponse objects ¶ class StreamingHttpResponse [source] ¶ The
+StreamingHttpResponse class is used to stream a response from Django to the
+browser. Advanced usage StreamingHttpResponse is somewhat advanced, in that it
+is important to know whether you’ll be serving your application synchronously
+under WSGI or asynchronously under ASGI, and adjust your usage appropriately.
+Please read these notes with care. An example usage of StreamingHttpResponse
+under WSGI is streaming content when generating the response would take too long
+or uses too much memory. For instance, it’s useful for generating large CSV
+files . There are performance considerations when doing this, though. Django,
+under WSGI, is designed for short-lived requests. Streaming responses will tie a
+worker process for the entire duration of the response. This may result in poor
+performance. Generally speaking, you would perform expensive tasks outside of
+the request-response cycle, rather than resorting to a streamed response. When
+serving under ASGI, however, a StreamingHttpResponse need not stop other
+requests from being served whilst waiting for I/O. This opens up the possibility
+of long-lived requests for streaming content and implementing patterns such as
+long-polling, and server-sent events. Even under ASGI note,
+StreamingHttpResponse should only be used in situations where it is absolutely
+required that the whole content isn’t iterated before transferring the data to
+the client. Because the content can’t be accessed, many middleware can’t
+function normally. For example the ETag and Content-Length headers
+----------------------------------------------------------------------------------------------------
+Index: 27903 <<"chunk_id": 1, "docno": 4054>>
+
+have already been set by another layer. Settings ¶ The
+ContentSecurityPolicyMiddleware is configured using the following settings:
+SECURE_CSP : defines the enforced Content Security Policy .
+SECURE_CSP_REPORT_ONLY : defines a report-only Content Security Policy . These
+settings can be used independently or together Use SECURE_CSP alone to enforce a
+policy that has already been tested and verified. Use SECURE_CSP_REPORT_ONLY on
+its own to evaluate a new policy without disrupting site behavior. This mode
+does not block violations, it only logs them. It’s useful for testing and
+monitoring, but provides no protection against active threats. Use both to
+maintain an enforced baseline while experimenting with changes. Even for
+well-established policies, continuing to collect reports can help detect
+regressions, unexpected changes in behavior, or potential tampering in
+production environments. Policy violation reports ¶ When a CSP violation occurs,
+browsers typically log details to the developer console, providing immediate
+feedback during development. To also receive these reports programmatically, the
+policy must include a reporting directive such as report-uri that specifies
+where violation data should be sent. Django supports configuring these
+directives via the SECURE_CSP_REPORT_ONLY settings, but reports will only be
+issued by the browser if the policy explicitly includes a valid reporting
+directive. Django does not provide built-in functionality to receive, store, or
+process violation reports. To collect and analyze them, you must implement your
+own reporting endpoint or integrate with a third-party monitoring service. CSP
+constants ¶ Django provides predefined constants representing common CSP source
+expression keywords such as 'self' , 'none' , and 'unsafe-inline' . These
+constants
+----------------------------------------------------------------------------------------------------
+Index: 18581 <<"chunk_id": 3, "docno": 2457>>
+
+(and other requests that are defined as ‘safe’ by RFC 9110 Section 9.2.1 ).
+These requests ought never to have any potentially dangerous side effects, and
+so a CSRF attack with a GET request ought to be harmless. RFC 9110 Section 9.2.1
+defines POST, PUT, and DELETE as ‘unsafe’, and all other methods are also
+assumed to be unsafe, for maximum protection. The CSRF protection cannot protect
+against man-in-the-middle attacks, so use HTTPS with HTTP Strict Transport
+Security . It also assumes validation of the HOST header and that there aren’t
+any cross-site scripting vulnerabilities on your site (because XSS
+vulnerabilities already let an attacker do anything a CSRF vulnerability allows
+and much worse). Removing the Referer header To avoid disclosing the referrer
+URL to third-party sites, you might want to disable the referer on your site’s
+<a> tags. For example, you might use the <meta name="referrer"
+content="no-referrer"> tag or include the Referrer-Policy: no-referrer header.
+Due to the CSRF protection’s strict referer checking on HTTPS requests, those
+techniques cause a CSRF failure on requests with ‘unsafe’ methods. Instead, use
+alternatives like <a rel="noreferrer" ...>" for links to third-party sites.
+Limitations ¶ Subdomains within a site will be able to set cookies on the client
+for the whole domain. By setting the cookie and using a corresponding token,
+subdomains will be able to circumvent the CSRF protection. The only way to avoid
+this is to ensure that subdomains are controlled by trusted users (or, are at
+least unable to set cookies). Note that even without CSRF, there
+----------------------------------------------------------------------------------------------------

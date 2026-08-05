@@ -1,0 +1,587 @@
+Index: 56679 <<"chunk_id": 200, "docno": 9200>>
+
+and passwords, or otherwise. This is due, in part, because TAS supplies the
+security details in the VCAP environment when the application is deployed to TAS
+and bound to services (such as VMware Tanzu GemFire). So, in short, you need not
+explicitly declare the @EnableSecurity annotation (or @ClientCacheApplication ).
+However, if you do explicitly declare the @ClientCacheApplication or
+@EnableSecurity annotations, you are now responsible for this configuration, and
+SBDG’s auto-configuration no longer applies. While explicitly declaring
+@EnableSecurity makes more sense when “overriding” the SBDG security
+auto-configuration, explicitly declaring the @ClientCacheApplication annotation
+most likely makes less sense with regard to its impact on security
+configuration. This is entirely due to the internals of Apache Geode, because,
+in certain cases (such as security), not even Spring is able to completely
+shield you from the nuances of Apache Geode’s configuration. No framework can.
+You must configure both auth and SSL before the cache instance (whether a
+ClientCache or a peer Cache ) is created. This is because security is enabled
+and configured during the “construction” of the cache. Also,, the cache pulls
+the configuration from JVM System properties that must be set before the cache
+is constructed. Structuring the “exact” order of the auto-configuration classes
+provided by SBDG when the classes are triggered, is no small feat. Therefore, it
+should come as no surprise to learn that the security auto-configuration classes
+in SBDG must be triggered before the ClientCache auto-configuration class, which
+is why a ClientCache instance cannot “auto” authenticate properly in PCC when
+the @ClientCacheApplication is explicitly declared
+----------------------------------------------------------------------------------------------------
+Index: 5338 <<"chunk_id": 5, "docno": 739>>
+
+you want to order certain auto-configurations that should not have any direct
+knowledge of each other, you can also use @AutoConfigureOrder . That annotation
+has the same semantic as the regular @Order annotation but provides a dedicated
+order for auto-configuration classes. As with standard @Configuration classes,
+the order in which auto-configuration classes are applied only affects the order
+in which their beans are defined. The order in which those beans are
+subsequently created is unaffected and is determined by each bean’s dependencies
+and any @DependsOn relationships. Deprecating and Replacing Auto-configuration
+Classes You may need to occasionally deprecate auto-configuration classes and
+offer an alternative. For example, you may want to change the package name where
+your auto-configuration class resides. Since auto-configuration classes may be
+referenced in before / after ordering and excludes , you’ll need to add an
+additional file that tells Spring Boot how to deal with replacements. To define
+replacements, create a
+META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.replacements
+file indicating the link between the old class and the new one. For example:
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration=com.mycorp.libx.autoconfigure.core.LibXAutoConfiguration
+The AutoConfiguration.imports file should also be updated to only reference the
+replacement class. Condition Annotations You almost always want to include one
+or more @Conditional annotations on your auto-configuration class. The
+@ConditionalOnMissingBean annotation is one common example that is used to allow
+developers to override auto-configuration if they are not happy with your
+defaults. Spring Boot includes a number of @Conditional annotations that you can
+reuse in your own code by annotating @Configuration classes or individual @Bean
+methods. These annotations include: Class Conditions Bean Conditions Property
+Conditions
+----------------------------------------------------------------------------------------------------
+Index: 13893 <<"chunk_id": 26, "docno": 1843>>
+
+the logging context. That means that these fields would end up as key-value
+pairs in e.g. MDC. management.tracing.baggage.enabled Whether to enable
+Micrometer Tracing baggage propagation. true
+management.tracing.baggage.local-fields List of fields that should be accessible
+within the JVM process but not propagated over the wire. Local fields are not
+supported with OpenTelemetry. management.tracing.baggage.remote-fields List of
+fields that are referenced the same in-process as it is on the wire. For
+example, the field "x-vcap-request-id" would be set as-is including the prefix.
+management.tracing.baggage.tag-fields List of fields that should automatically
+become tags. management.tracing.exemplars.include Traces to include as
+exemplars. 'all' is not supported when using Prometheus. sampled-traces
+management.tracing.export.enabled Whether auto-configuration of tracing is
+enabled to export and propagate traces. true
+management.tracing.export.otlp.enabled Whether auto-configuration of tracing is
+enabled to export OTLP traces. true
+management.tracing.export.zipkin.connect-timeout Connection timeout for requests
+to Zipkin. 1s management.tracing.export.zipkin.enabled Whether
+auto-configuration of tracing is enabled to export Zipkin traces. true
+management.tracing.export.zipkin.encoding How to encode the POST body to the
+Zipkin API. json management.tracing.export.zipkin.endpoint URL to the Zipkin
+API. http://localhost:9411/api/v2/spans
+management.tracing.export.zipkin.read-timeout Read timeout for requests to
+Zipkin. 10s management.tracing.propagation.consume Tracing context propagation
+types consumed by the application. [W3C, B3, B3_MULTI]
+management.tracing.propagation.produce Tracing context propagation types
+produced by the application. [W3C] management.tracing.propagation.type Tracing
+context propagation types produced and consumed by the application. Setting this
+property overrides the more fine-grained propagation type properties.
+management.tracing.sampling.probability Probability in the range from 0.0 to 1.0
+that a trace will be sampled. 0.1 Cache Properties Name Description Default
+Value spring.cache.cache-names List of cache names to create if supported by the
+underlying cache manager. Usually, this disables
+----------------------------------------------------------------------------------------------------
+Index: 6297 <<"chunk_id": 7, "docno": 824>>
+
+favor of dynamic class reloading. Other devtools features (such as property
+overrides) can still be used. DevTools relies on the application context’s
+shutdown hook to close it during a restart. It does not work correctly if you
+have disabled the shutdown hook (
+SpringApplication.setRegisterShutdownHook(false) ). DevTools needs to customize
+the ResourceLoader used by the ApplicationContext . If your application provides
+one already, it is going to be wrapped. Direct override of the getResource
+method on the ApplicationContext is not supported. Automatic restart is not
+supported when using AspectJ weaving. Restart vs Reload The restart technology
+provided by Spring Boot works by using two classloaders. Classes that do not
+change (for example, those from third-party jars) are loaded into a base
+classloader. Classes that you are actively developing are loaded into a restart
+classloader. When the application is restarted, the restart classloader is
+thrown away and a new one is created. This approach means that application
+restarts are typically much faster than “cold starts”, since the base
+classloader is already available and populated. If you find that restarts are
+not quick enough for your applications or you encounter classloading issues, you
+could consider reloading technologies such as JRebel from ZeroTurnaround. These
+work by rewriting classes as they are loaded to make them more amenable to
+reloading. Logging Changes in Condition Evaluation By default, each time your
+application restarts, a report showing the condition evaluation delta is logged.
+The report shows the changes to your application’s auto-configuration as you
+make changes such as adding or removing beans and
+----------------------------------------------------------------------------------------------------
+Index: 35320 <<"chunk_id": 2, "docno": 4836>>
+
+and enforced boundaries, the team and our contributors can reason about each
+domain more clearly. Module boundaries become contracts rather than soft
+conventions. Your IDE also offers a much more focused view of the world. No more
+code completion suggestions of classes you're never going to need, and only the
+configuration properties you're actually using show up in the IDE popups.
+Reduced artifact sizes and footprint : Instead of shipping one large
+autoconfigure jar containing many features you might not use, your application
+only pulls in the relevant modules. This reduces classpath overhead, startup
+scan costs, and disk space. Stronger signals and avoidance of accidental
+auto-configuration : Because modules are scoped, Spring Boot has a much stronger
+signal about the reason you've pulled in a dependency. Did you include the
+spring-webflux jar for server-side @Controller support, or because you want to
+use WebClient ? With focused modules, we actually know. You'll never again need
+to call SpringApplication.setWebApplicationType(WebApplicationType.NONE) because
+there won't even be any web server auto-configuration on the classpath if you're
+only using WebClient through the new spring-boot-webclient module. New use-cases
+enabled : We're already seeing modularization open up new use-cases, and we
+think there will be more in the future. For example, you may now use Micrometer
+metrics independently of Actuator. You may bring in just the module that
+publishes metrics without needing the full actuator dependency chain, which is
+difficult with Spring Boot 3. Test Support It turns out that
+spring-boot-autoconfigure is not the only jar that needed modularizing. Whilst
+not as large, the
+----------------------------------------------------------------------------------------------------
+Index: 56514 <<"chunk_id": 35, "docno": 9200>>
+
+Boot or SBDG, declare your intent in the @SpringBootApplication annotation:
+Example 29. Disabling Specific Auto-configuration Classes
+@SpringBootApplication( exclude = { DataSourceAutoConfiguration.class,
+PdxAutoConfiguration.class } ) class SpringBootApacheGeodeClientCacheApplication
+{ // ... } Make sure you understand what you are doing when you disable
+auto-configuration. 6.3. Overriding Auto-configuration Overriding explains how
+to override SBDG auto-configuration. In a nutshell, if you want to override the
+default auto-configuration provided by SBDG, you must annotate your
+@SpringBootApplication class with your intent. For example, suppose you want to
+configure and bootstrap an Apache Geode CacheServer application (a peer, not a
+client): Example 30. Overriding the default ClientCache Auto-Configuration by
+configuring & bootstrapping a CacheServer application @SpringBootApplication
+@CacheServerApplication class SpringBootApacheGeodeCacheServerApplication { //
+... } You can also explicitly declare the @ClientCacheApplication annotation on
+your @SpringBootApplication class: Example 31. Overriding by explicitly
+declaring @ClientCacheApplication @SpringBootApplication @ClientCacheApplication
+class SpringBootApacheGeodeClientCacheApplication { // ... } You are overriding
+SBDG’s auto-configuration of the ClientCache instance. As a result, you have now
+also implicitly consented to being responsible for other aspects of the
+configuration (such as security). Why does that happen? It happens because, in
+certain cases, such as security, certain aspects of security configuration (such
+as SSL) must be configured before the cache instance is created. Also, Spring
+Boot always applies user configuration before auto-configuration partially to
+determine what needs to be auto-configured in the first place. Make sure you
+understand what you are doing when you override auto-configuration. 6.4.
+Replacing Auto-configuration See the Spring Boot reference documentation on
+replacing auto-configuration . 6.5. Understanding Auto-configuration This
+section covers the
+----------------------------------------------------------------------------------------------------
+Index: 43093 <<"chunk_id": 0, "docno": 6656>>
+
+EnableAutoConfiguration (Spring Boot 4.1.0 API) Skip navigation links Overview
+Class Use Tree Deprecated Index Search Help
+org.springframework.boot.autoconfigure EnableAutoConfiguration Contents
+Description Field Summary Optional Element Summary Field Details
+ENABLED_OVERRIDE_PROPERTY Element Details exclude excludeName Hide sidebar Show
+sidebar Annotation Interface EnableAutoConfiguration @Target ( TYPE ) @Retention
+( RUNTIME ) @Documented @Inherited @AutoConfigurationPackage @Import (
+AutoConfigurationImportSelector .class) public @interface
+EnableAutoConfiguration Enable auto-configuration of the Spring Application
+Context, attempting to guess and configure beans that you are likely to need.
+Auto-configuration classes are usually applied based on your classpath and what
+beans you have defined. When using @SpringBootApplication , the
+auto-configuration of the context is automatically enabled and adding this
+annotation has therefore no additional effect. Auto-configuration tries to be as
+intelligent as possible and will back-away as you define more of your own
+configuration. You can always manually exclude() any configuration that you
+never want to apply (use excludeName() if you don't have access to them). You
+can also exclude them through the spring.autoconfigure.exclude property.
+Auto-configuration is always applied after user-defined beans have been
+registered. The package of the class that is annotated with
+@EnableAutoConfiguration , usually through @SpringBootApplication , has specific
+significance and is often used as a 'default'. For example, it will be used when
+scanning for @Entity classes. It is generally recommended that you place
+@EnableAutoConfiguration (if you're not using @SpringBootApplication ) in a root
+package so that all sub-packages and classes can be searched. Auto-configuration
+classes are regular Spring @Configuration beans. They are located using
+ImportCandidates . Generally auto-configuration beans are @Conditional beans
+(most often
+----------------------------------------------------------------------------------------------------
+Index: 9245 <<"chunk_id": 4, "docno": 1319>>
+
+Spring Boot auto-configuration tries its best to “do the right thing”, but
+sometimes things fail, and it can be hard to tell why. There is a really useful
+ConditionEvaluationReport available in any Spring Boot ApplicationContext . You
+can see it if you enable DEBUG logging output. If you use the
+spring-boot-actuator (see the Actuator section), there is also a conditions
+endpoint that renders the report in JSON. Use that endpoint to debug the
+application and see what features have been added (and which have not been
+added) by Spring Boot at runtime. Many more questions can be answered by looking
+at the source code and the API documentation. When reading the code, remember
+the following rules of thumb: Look for classes called *AutoConfiguration and
+read their sources. Pay special attention to the @Conditional* annotations to
+find out what features they enable and when. Add --debug to the command line or
+the System property -Ddebug to get a log on the console of all the
+auto-configuration decisions that were made in your app. In a running
+application with actuator enabled, look at the conditions endpoint (
+/actuator/conditions or the JMX equivalent) for the same information. Look for
+classes that are @ConfigurationProperties (such as ServerProperties ) and read
+from there the available external configuration options. The
+@ConfigurationProperties annotation has a name attribute that acts as a prefix
+to external properties. Thus, ServerProperties has prefix="server" and its
+configuration properties are server.port , server.address , and others. In a
+running application with actuator enabled, look at the configprops endpoint.
+Look
+----------------------------------------------------------------------------------------------------
+Index: 21191 <<"chunk_id": 1, "docno": 2590>>
+
+layers that the jar should be split into for image creation was evident,
+changing the format of the jar to do so no longer seemed necessary. Spring Boot
+2.3 includes support for layering a jar using a layers.idx file. The layers
+index file provides a list of layers and the parts of the jar that should be
+contained within them. Layers are written in the order that they should be added
+to the Docker/OCI image. By default, the following layers are defined:
+dependencies for any dependency whose version does not contain SNAPSHOT .
+spring-boot-loader for the jar loader classes. snapshot-dependencies for any
+dependency whose version contains SNAPSHOT . application for application classes
+and resources. The corresponding layers.idx file looks like this: -
+"dependencies": - "BOOT-INF/lib/dependency1.jar" -
+"BOOT-INF/lib/dependency2.jar" - "spring-boot-loader": - "org/" -
+"snapshot-dependencies": - "BOOT-INF/lib/dependency3-SNAPSHOT.jar" -
+"BOOT-INF/lib/dependency4-SNAPSHOT.jar" - "application": - "BOOT-INF/classes/" -
+"META-INF/" The layers order is important as it determines how likely previous
+layers are to be cached when part of the application changes. The default order
+is dependencies , spring-boot-loader , snapshot-dependencies , application .
+Content that is least likely to change should be added first, followed by layers
+that are more likely to change. To use this feature with Spring Boot 2.3, the
+layering feature must be explicitly enabled. The following example shows how to
+enable layering with the Maven plugin: <project> <build> <plugins> <plugin>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-maven-plugin</artifactId>
+<version>{gradle-project-version}</version> <configuration> <layers>
+<enabled>true</enabled> </layers> </configuration> </plugin> </plugins> </build>
+</project> NOTE: In the latest Spring Boot 2.4 snapshots, layering is enabled by
+default . Once a
+----------------------------------------------------------------------------------------------------
+Index: 56680 <<"chunk_id": 201, "docno": 9200>>
+
+be triggered before the ClientCache auto-configuration class, which is why a
+ClientCache instance cannot “auto” authenticate properly in PCC when the
+@ClientCacheApplication is explicitly declared without some assistance. In other
+words you must also explicitly declare the @EnableSecurity annotation in this
+case, since you overrode the auto-configuration of the cache, and implicitly
+security, as well. Again, this is due to the way security (auth) and SSL
+metadata must be supplied to Apache Geode on startup. See the Reference Guide
+for more details. Extension Most of the time, many of the other auto-configured
+annotations for CQ, Functions, PDX, Repositories, and so on need not ever be
+declared explicitly. Many of these features are enabled automatically by having
+SBDG or other libraries (such as Spring Session) on the application classpath or
+are enabled based on other annotations applied to beans in the Spring
+ApplicationContext . We review a few examples in the following sections. Caching
+It is rarely, if ever, necessary to explicitly declare either the Spring
+Framework’s @EnableCaching or the SDG-specific @EnableGemfireCaching annotation
+in Spring configuration when you use SBDG. SBDG automatically enables caching
+and configures the SDG GemfireCacheManager for you. You need only focus on which
+application service components are appropriate for caching: Example 236. Service
+Caching @Service class CustomerService { @Autowired private CustomerRepository
+customerRepository; @Cacheable("CustomersByName") public Customer findBy(String
+name) { return customerRepository.findByName(name); } } You need to create
+Apache Geode Regions that back the caches declared in your application service
+components ( CustomersByName in the preceding example) by using Spring’s caching
+annotations (such as @Cacheable
+----------------------------------------------------------------------------------------------------
+Index: 56652 <<"chunk_id": 173, "docno": 9200>>
+
+When running in externally managed environments, you must explicitly set a
+username and password to authenticate, as described in Non-Managed Auth for
+Clients . To completely override the auto-configuration of client
+authentication, you can set both a username and a password: Example 199.
+Overriding Security Authentication Auto-configuration with explicit username and
+password # Spring Boot application.properties
+spring.data.gemfire.security.username=MyUser
+spring.data.gemfire.security.password=MyPassword In this case, SBDG’s
+auto-configuration for authentication is effectively disabled and security
+credentials are not extracted from the environment. 23.2. Targeting Specific
+Pivotal Cloud Cache Service Instances It is possible to provision multiple
+instances of the Pivotal Cloud Cache service in your Pivotal CloudFoundry
+environment. You can then bind multiple PCC service instances to your Spring
+Boot application. However, Spring Boot for Apache Geode (SBDG) only
+auto-configures one PCC service instance for your Spring Boot application. This
+does not mean that it is not possible to use multiple PCC service instances with
+your Spring Boot application, just that SBDG only auto-configures one service
+instance for you. You must select which PCC service instance your Spring Boot
+application automatically auto-configures for you when you have multiple
+instances and want to target a specific PCC service instance to use. To do so,
+declare the following SBDG property in Spring Boot application.properties :
+Example 200. Spring Boot application.properties targeting a specific PCC service
+instance by name # Spring Boot application.properties
+spring.boot.data.gemfire.cloud.cloudfoundry.service.cloudcache.name=pccServiceInstanceTwo
+The spring.boot.data.gemfire.cloud.cloudfoundry.service.cloudcache.name property
+tells SBDG which PCC service instance to auto-configure. If the PCC service
+instance identified by the property does not exist, SBDG throws an
+IllegalStateException stating the PCC
+----------------------------------------------------------------------------------------------------
+Index: 51900 <<"chunk_id": 1, "docno": 8288>>
+
+Spring YARN Intro Development life cycle from a moment when a developer starts
+his work to a point when someone actually executes an application on a Hadoop
+cluster is a bit more complicated than just creating a few lines of code. Lets
+see what needs to be considered: What is a project structure for an application
+code How project is build and packaged How packaged application is configured
+How application is executed We believe that Spring YARN and Spring Boot provides
+a simple programming model to develop applications than can easily be test and
+deployed as either a YARN application or a traditional application. At a high
+level, Spring YARN provides three components, YarnClient , YarnAppmaster and
+YarnContainer that mirror the key processes in the YARN architecture. Taken
+together, these three components provide the foundation of the Spring YARN
+application model. It has always been a cumbersome process to get your own code
+packaged and executed on a Hadoop cluster. One need to put compiled package in
+Hadoop's classpath or let Hadoop's tools to copy your package into Hadoop during
+a job submission. Once you get past WordCount, your code will depend on third
+party libraries that are not present in Hadoop's default classpath. How should
+you package you dependent libraries? Furthermore, what if your dependencies
+collide with libraries already part of Hadoop's default classpath. Spring Boot
+helps to provide an elegant solution to these build and packaging issues. You
+either create an executable jar(sometimes called as uber or fat jar) which
+bundles your application code
+----------------------------------------------------------------------------------------------------
+Index: 7671 <<"chunk_id": 25, "docno": 1055>>
+
+a Spring Boot application, you should register a bean that implements the
+ServletContextInitializer interface. The single onStartup method provides access
+to the ServletContext and, if necessary, can easily be used as an adapter to an
+existing WebApplicationInitializer . Init Parameters Init parameters can be
+configured on the ServletContext using server.servlet.context-parameters.*
+properties. For example, the property
+server.servlet.context-parameters.com.example.parameter=example will configure a
+ServletContext init parameter named com.example.parameter with the value example
+. Scanning for Servlets, Filters, and listeners When using an embedded
+container, automatic registration of classes annotated with @WebServlet ,
+@WebFilter , and @WebListener can be enabled by using @ServletComponentScan .
+@ServletComponentScan has no effect in a standalone container, where the
+container’s built-in discovery mechanisms are used instead. The
+ServletWebServerApplicationContext Under the hood, Spring Boot uses a different
+type of ApplicationContext for embedded servlet container support. The
+ServletWebServerApplicationContext is a special type of WebApplicationContext
+that bootstraps itself by searching for a single ServletWebServerFactory bean.
+Usually a TomcatServletWebServerFactory , or JettyServletWebServerFactory has
+been auto-configured. You usually do not need to be aware of these
+implementation classes. Most applications are auto-configured, and the
+appropriate ApplicationContext and ServletWebServerFactory are created on your
+behalf. In an embedded container setup, the ServletContext is set as part of
+server startup which happens during application context initialization. Because
+of this beans in the ApplicationContext cannot be reliably initialized with a
+ServletContext . One way to get around this is to inject ApplicationContext as a
+dependency of the bean and access the ServletContext only when it is needed.
+Another way is to use a callback once
+----------------------------------------------------------------------------------------------------
+Index: 5337 <<"chunk_id": 4, "docno": 739>>
+
+you have not declared your own @Configuration . You can browse the source code
+of spring-boot-autoconfigure to see the core @AutoConfiguration classes that
+Spring provides (see the
+META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+file). You can also look at the equivalent file in other modules to see the
+auto-configurations that they provide. Locating Auto-configuration Candidates
+Spring Boot checks for the presence of a
+META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+file within your published jar. The file should list your configuration classes,
+with one class name per line, as shown in the following example:
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration You can add comments to
+the imports file using the # character. In the unusual case that an
+auto-configuration class is not a top-level class, its class name should use $
+to separate it from its containing class, for example
+com.example.Outer$NestedAutoConfiguration . Auto-configurations must be loaded
+only by being named in the imports file. Make sure that they are defined in a
+specific package space and that they are never the target of component scanning.
+Furthermore, auto-configuration classes should not enable component scanning to
+find additional components. Specific @Import annotations should be used instead.
+If your configuration needs to be applied in a specific order, you can use the
+before , beforeName , after and afterName attributes on the @AutoConfiguration
+annotation or the dedicated @AutoConfigureBefore and @AutoConfigureAfter
+annotations. For example, if you provide web-specific configuration, your class
+may need to be applied after WebMvcAutoConfiguration . If you want to order
+certain auto-configurations that should not have any direct knowledge of each
+other, you can also use @AutoConfigureOrder . That annotation has
+----------------------------------------------------------------------------------------------------
+Index: 6304 <<"chunk_id": 14, "docno": 824>>
+
+quiet-period: "1s" The monitored classpath directories are now polled every 2
+seconds for changes, and a 1 second quiet period is maintained to make sure
+there are no additional class changes. Remote Applications The Spring Boot
+developer tools are not limited to local development. You can also use several
+features when running applications remotely. Remote support is opt-in as
+enabling it can be a security risk. It should only be enabled when running on a
+trusted network or when secured with SSL. If neither of these options is
+available to you, you should not use DevTools' remote support. You should never
+enable support on a production deployment. To enable it, you need to make sure
+that devtools is included in the repackaged archive, as shown in the following
+listing: <build> <plugins> <plugin> <groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-maven-plugin</artifactId> <configuration>
+<includeOptional>true</includeOptional> <excludeDevtools>false</excludeDevtools>
+</configuration> </plugin> </plugins> </build> Optional dependencies are not
+included by default, which explains why includeOptional is also present. Then
+you need to set the spring.devtools.remote.secret property. Like any important
+password or secret, the value should be unique and strong such that it cannot be
+guessed or brute-forced. Remote devtools support is provided in two parts: a
+server-side endpoint that accepts connections and a client application that you
+run in your IDE. The server component is automatically enabled when the
+spring.devtools.remote.secret property is set. The client component must be
+launched manually. Remote devtools is not supported for Spring WebFlux
+applications. Running the Remote Client Application The remote client
+application is designed to be run from within your IDE. You need
+----------------------------------------------------------------------------------------------------
+Index: 11209 <<"chunk_id": 3, "docno": 1563>>
+
+spring-boot-micrometer-metrics spring-boot-micrometer-observation
+spring-boot-micrometer-tracing spring-boot-micrometer-tracing-brave
+spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
+spring-boot-mustache spring-boot-neo4j spring-boot-netty
+spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
+spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
+spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
+spring-boot-rsocket spring-boot-security
+spring-boot-security-oauth2-authorization-server
+spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
+spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
+spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
+spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
+spring-boot-transaction spring-boot-validation spring-boot-webclient
+spring-boot-webflux spring-boot-webmvc spring-boot-webservices
+spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
+Test Slices Dependency Versions Managed Dependency Coordinates Version
+Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
+Reference Developing with Spring Boot Auto-configuration Auto-configuration
+Spring Boot auto-configuration attempts to automatically configure your Spring
+application based on the jar dependencies that you have added. For example, if
+HSQLDB is on your classpath, and you have not manually configured any database
+connection beans, then Spring Boot auto-configures an in-memory database. You
+need to opt-in to auto-configuration by adding the @EnableAutoConfiguration or
+@SpringBootApplication annotations to one of your @Configuration classes. You
+should only ever add one @SpringBootApplication or @EnableAutoConfiguration
+annotation. We generally recommend that you add one or the other to your primary
+@Configuration class only. Gradually Replacing Auto-configuration
+Auto-configuration is non-invasive. At any point, you can start to define your
+own configuration to replace specific parts of the auto-configuration. For
+example, if you add your own DataSource bean, the default embedded database
+support backs away. If you need to find out what auto-configuration is currently
+being applied, and why, start your application with the --debug switch. Doing so
+enables debug logs for a selection of core loggers and logs a conditions report
+to the console. Disabling Specific Auto-configuration Classes If you find that
+specific auto-configuration classes that you do not want are being
+----------------------------------------------------------------------------------------------------
+Index: 43094 <<"chunk_id": 1, "docno": 6656>>
+
+classes can be searched. Auto-configuration classes are regular Spring
+@Configuration beans. They are located using ImportCandidates . Generally
+auto-configuration beans are @Conditional beans (most often using
+@ConditionalOnClass and @ConditionalOnMissingBean annotations). Since: 1.0.0
+Author: Phillip Webb, Stephane Nicoll See Also: ConditionalOnBean
+ConditionalOnMissingBean ConditionalOnClass AutoConfigureAfter
+SpringBootApplication Field Summary Fields Modifier and Type Field Description
+static final String ENABLED_OVERRIDE_PROPERTY Environment property that can be
+used to override when auto-configuration is enabled. Optional Element Summary
+Optional Elements Modifier and Type Optional Element Description Class <?>[]
+exclude Exclude specific auto-configuration classes such that they will never be
+applied. String [] excludeName Exclude specific auto-configuration class names
+such that they will never be applied. Field Details ENABLED_OVERRIDE_PROPERTY
+static final String ENABLED_OVERRIDE_PROPERTY Environment property that can be
+used to override when auto-configuration is enabled. See Also: Constant Field
+Values Element Details exclude Class <?>[] exclude Exclude specific
+auto-configuration classes such that they will never be applied. Since this
+annotation is parsed by loading class bytecode, it is safe to specify classes
+here that may ultimately not be on the classpath, but only if this annotation is
+directly on the affected component and not if this annotation is used as a
+composed, meta-annotation. In order to use this annotation as a meta-annotation,
+only use the excludeName() attribute. Returns: the classes to exclude Default:
+{} excludeName String [] excludeName Exclude specific auto-configuration class
+names such that they will never be applied. Returns: the class names to exclude
+Since: 1.3.0 Default: {}
+----------------------------------------------------------------------------------------------------
+Index: 11210 <<"chunk_id": 4, "docno": 1563>>
+
+logs a conditions report to the console. Disabling Specific Auto-configuration
+Classes If you find that specific auto-configuration classes that you do not
+want are being applied, you can use the exclude attribute of
+@SpringBootApplication to disable them, as shown in the following example: Java
+Kotlin import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class }) public
+class MyApplication { } import
+org.springframework.boot.autoconfigure.SpringBootApplication import
+org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+@SpringBootApplication(exclude = [DataSourceAutoConfiguration::class]) class
+MyApplication If the class is not on the classpath, you can use the excludeName
+attribute of the annotation and specify the fully qualified name instead. If you
+prefer to use @EnableAutoConfiguration rather than @SpringBootApplication ,
+exclude and excludeName are also available. Finally, you can also control the
+list of auto-configuration classes to exclude by using the
+spring.autoconfigure.exclude property. You can define exclusions both at the
+annotation level and by using the property. Even though auto-configuration
+classes are public , the only aspect of the class that is considered public API
+is the name of the class which can be used for disabling the auto-configuration.
+The actual contents of those classes, such as nested configuration classes or
+bean methods are for internal use only and we do not recommend using those
+directly. Auto-configuration Packages Auto-configuration packages are the
+packages that various auto-configured features look in by default when scanning
+for things such as entities and Spring Data repositories. The
+@EnableAutoConfiguration annotation (either directly or through its presence on
+@SpringBootApplication ) determines the default auto-configuration package.
+Additional packages can be configured using the @AutoConfigurationPackage
+annotation. Configuration Classes Spring Beans and Dependency
+----------------------------------------------------------------------------------------------------
+Index: 7659 <<"chunk_id": 13, "docno": 1055>>
+
+and will, therefore, provide a handler for all requests. If no static content is
+available, ResourceHttpRequestHandler will throw a NoResourceFoundException .
+For a NoHandlerFoundException to be thrown, set spring.mvc.static-path-pattern
+to a more specific value such as /resources/** or set
+spring.web.resources.add-mappings to false to disable serving of static content
+entirely. ConfigurableWebBindingInitializer Spring MVC uses a
+WebBindingInitializer to initialize a WebDataBinder for a particular request. If
+you create your own ConfigurableWebBindingInitializer @Bean , Spring Boot
+automatically configures Spring MVC to use it. Template Engines As well as REST
+web services, you can also use Spring MVC to serve dynamic HTML content. Spring
+MVC supports a variety of templating technologies, including Thymeleaf,
+FreeMarker, and JSPs. Also, many other templating engines include their own
+Spring MVC integrations. Spring Boot includes auto-configuration support for the
+following templating engines: FreeMarker Groovy Thymeleaf Mustache If possible,
+JSPs should be avoided. There are several known limitations when using them with
+embedded servlet containers. When you use one of these templating engines with
+the default configuration, your templates are picked up automatically from
+src/main/resources/templates . Depending on how you run your application, your
+IDE may order the classpath differently. Running your application in the IDE
+from its main method results in a different ordering than when you run your
+application by using Maven or Gradle or from its packaged jar. This can cause
+Spring Boot to fail to find the expected template. If you have this problem, you
+can reorder the classpath in the IDE to place the module’s classes and resources
+first. Error Handling
+----------------------------------------------------------------------------------------------------
+Index: 11846 <<"chunk_id": 27, "docno": 1622>>
+
+spring-boot-data-elasticsearch-test module to test Data Elasticsearch
+applications. By default, it configures an ElasticsearchTemplate , scans for
+@Document classes, and configures Spring Data Elasticsearch repositories.
+Regular @Component and @ConfigurationProperties beans are not scanned when the
+@DataElasticsearchTest annotation is used. @EnableConfigurationProperties can be
+used to include @ConfigurationProperties beans. (For more about using
+Elasticsearch with Spring Boot, see Elasticsearch , earlier in this chapter.) A
+list of the auto-configuration settings that are enabled by
+@DataElasticsearchTest can be found in the appendix . The following example
+shows a typical setup for using Elasticsearch tests in Spring Boot: Java Kotlin
+import org.springframework.beans.factory.annotation.Autowired; import
+org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest;
+@DataElasticsearchTest class MyDataElasticsearchTests { @Autowired private
+SomeRepository repository; // ... } import
+org.springframework.beans.factory.annotation.Autowired import
+org.springframework.boot.data.elasticsearch.test.autoconfigure.DataElasticsearchTest
+@DataElasticsearchTest class MyDataElasticsearchTests(@Autowired val repository:
+SomeRepository) { // ... } Auto-configured Data JPA Tests You can use the
+@DataJpaTest annotation from the spring-boot-data-jpa-test module to test Data
+JPA applications. By default, it scans for @Entity classes and configures Spring
+Data JPA repositories. If an embedded database is available on the classpath, it
+configures one as well. SQL queries are logged by default by setting the
+spring.jpa.show-sql property to true . This can be disabled using the showSql
+attribute of the annotation. Regular @Component and @ConfigurationProperties
+beans are not scanned when the @DataJpaTest annotation is used.
+@EnableConfigurationProperties can be used to include @ConfigurationProperties
+beans. A list of the auto-configuration settings that are enabled by
+@DataJpaTest can be found in the appendix . By default, data JPA tests are
+transactional and roll back at the end of each test. See the relevant section in
+----------------------------------------------------------------------------------------------------

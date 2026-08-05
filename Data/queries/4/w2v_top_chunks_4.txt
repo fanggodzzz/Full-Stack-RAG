@@ -1,0 +1,497 @@
+Index: 43588 <<"chunk_id": 2, "docno": 6732>>
+
+JSON (Jackson) and XML (JAXB), a reactive web framework that supports the
+@Controller programming model, and a reactive WebClient . It becomes easy to
+support input and output streaming scenarios for microservices, scatter/gather,
+data ingestion, and so on. Below is a controller that obtains and streams data
+from a remote server in a completely non-blocking and reactive manner:
+@GetMapping("/accounts/{id}/alerts") public Flux<Alert>
+getAccountAlerts(@PathVariable Long id) { return this.repository.getAccount(id)
+.flatMap(account -> this.webClient .perform(get("/alerts/{key}",
+account.getKey())) .extract(bodyStream(Alert.class))); } What is the reactive
+stack that supports this? Spring Web Reactive lives in the new
+spring-web-reactive module next to the existing (and popular!) Spring Web MVC
+that lives in the spring-webmvc module. The two modules share many algorithms
+and mechanisms but cannot actually share any code. This is because Spring Web
+Reactive runs on a Reactive Streams HTTP adapter layer that's fully non-blocking
+and reactive all the way down to the HTTP runtime. So while Spring MVC is built
+for and runs on Servlet containers, Spring Web Reactive runs also on non-Servlet
+runtimes such as on Netty and Undertow Spring Web Reactive vs Spring Web MVC How
+does the Spring Framework team view these two frameworks you might wonder at
+this point and what do we recommend that you use? First and foremost we aim for
+the greatest possible consistency within reason. There is nothing fundamentally
+incompatible between the @Controller programming model and the reactive ways.
+It's all about what happens underneath to support that model so on the surface
+there is no difference except for the full support for reactive types
+----------------------------------------------------------------------------------------------------
+Index: 52741 <<"chunk_id": 2, "docno": 8447>>
+
+lets start with a little 1.0 history. A Little 1.0 History... In Spring Web Flow
+1.0, the SWF controller engine cared for one half of the web request lifecycle;
+the half related to request processing, often called the action phase . The
+other half, the render phase , was pushed off on the caller: either Spring MVC,
+Struts, or JSF front controllers. This can be shown in the SWF 1.0 architectural
+diagram below: The primary benefit of this architecture is it makes it natural
+to introduce Spring Web Flow onto existing projects. Whether you are using
+Struts, Spring MVC, or JSF, you can plug Web Flow in to handle your more complex
+user interactions, and use plain controllers for the rest. The downside of this
+approach is it makes it difficult to apply application control logic during the
+view rendering phase of the request lifecycle without resulting to front
+controller specific adapters. Consider, for example, the desire for a
+flow-managed persistence context. Such a context should be allocated when a new
+flow execution begins, de-allocated when it ends, and disconnected after
+intermediate view renderings while we wait for the user to continue. If view
+rendering is not under the flow's control, how do you issue the disconnect
+callback at the right time? Similar problems exist in the areas of exception
+handling, concurrency management, and security. Another downside of the SWF 1.x
+approach is it requires duplication of effort to "fit" Web Flow in to some
+environments, particularly a JSF FacesServlet. In the JSF case, both Web
+----------------------------------------------------------------------------------------------------
+Index: 56746 <<"chunk_id": 4, "docno": 9212>>
+
+taken seriously is going to require supporting "multiple deployment
+environments". In other words, this particular topic often gets distorted as if
+it applies only to multiple production environments. In reality, having to
+deploy to an Application Server during each development and testing cycle is a
+major obstacle to agility. Typically Spring users will modularize their
+configuration such that "infrastructure" configuration (e.g. DataSource,
+TransactionManager, JMS ConnectionFactory) is separate and dynamic properties
+are externalized. Since Spring provides support for replacing '${placeholders}'
+based on the externalized properties, the inclusion of different properties
+files typically becomes a transparent concern. 3. EJB with JPA, Spring with
+Hibernate I must admit this one bothered me the most. In the comparison slides,
+the EJB 3 examples showed JPA with data-access via entityManager and the
+entityManager instance being provided with the @PersistenceContext annotation.
+On the other hand, the Spring examples used Hibernate and showed setter
+injection of the Hibernate SessionFactory. In my mind, this violates the first
+rule of a bona-fide "comparative analysis": use the most similar feature
+available on both sides of the comparison. In this particular case, Spring does
+provide support for using the JPA API directly (i.e. JpaTemplate is completely
+optional; direct usage of the 'entityManager' still participates in Spring
+transactions, etc), and Spring also recognizes the @PersistenceContext
+annotation. This support has been available since Spring 2.0 (final release was
+more than a year ago), so I don't understand why the comparison does not use JPA
+on the Spring side as well. Other parts of the comparison were clearly based on
+----------------------------------------------------------------------------------------------------
+Index: 33346 <<"chunk_id": 4, "docno": 4412>>
+
+within the source: composed-source | sink As always, there is no right answer
+here. There are always trade-offs to consider: Function composition results in
+less deployments. This reduces cost, latency, operational complexity, and so on.
+Individual deployments are loosely coupled and can scale independently. The
+message broker provides guaranteed delivery. When a simple stateless application
+goes down and is restarted, it can continue where it left off, processing the
+pending results of the previous processing step. A single application that
+performs complex processing is harder to reason about and keeps intermediate
+processing results in memory, or possibly in an interim data store. When a
+stateful application fails, it can lead to inconsistent state, making recovery
+harder. If these trade-offs look familiar, it’s because they are pretty much the
+same as any microservice vs monolith debate. In the end, do what works best for
+you. Function Composition with Prepackaged Source Applications In some cases,
+function composition is a no-brainer. From the start, we have provided
+pre-packaged processors to perform simple transformations, or filtering using
+SpEL . The legacy architecture required a separate processor when using the
+prepackaged sources or sinks. A common complaint from users was “why do I need
+to deploy a separate application just to evaluate a SpEL expression?” To address
+this, we initially introduced a form of support for function composition in an
+earlier release. To use this feature with the prepackaged applications required
+forking them to modify the code or the build dependencies to provide the
+functions. The current release provides function composition
+----------------------------------------------------------------------------------------------------
+Index: 58302 <<"chunk_id": 1, "docno": 9536>>
+
+that we could provide more to the Spring community, with more opinions and
+guidance when it comes to Kubernetes. Liveness and Readiness in Kubernetes In
+Kubernetes, the Liveness and Readiness Kubernetes concepts represent facets of
+the application state. The Liveness state of an application tells whether the
+internal state is valid. If Liveness is broken, this means that the application
+itself is in a failed state and cannot recover from it. In this case, the best
+course of action is to restart the application instance. For example, an
+application relying on a local cache should fail its Liveness state if the local
+cache is corrupted and cannot be repaired. The Readiness state tells whether the
+application is ready to accept client requests. If the Readiness state is
+unready, Kubernetes should not route traffic to this instance. If an application
+is too busy processing a task queue, then it could declare itself as busy until
+its load is manageable again. Promoting Liveness and Readiness as core Spring
+Boot concepts These Liveness and Readiness concepts are not only applicable to
+Kubernetes and they are generally useful, regardless of the deployment platform.
+We’re introducing LivenessState and ReadinessState , which are immutable
+representations of those concepts. You can get them at any time from the
+ApplicationAvailability : // Available as a component in the application context
+ApplicationAvailability availability; LivenessState livenessState =
+availabilityProvider.getLivenessState(); ReadinessState readinessState =
+availabilityProvider.getReadinessState() A polling-only model where you need to
+exercise checks to know the state of the application is incomplete . Only the
+application knows about
+----------------------------------------------------------------------------------------------------
+Index: 26622 <<"chunk_id": 8, "docno": 3780>>
+
+operator restores ThreadLocal values during subscription time (as well as for
+other lifecycle events). To have the user code have logs during the assembly
+time, the entire call to that code needs to be part of a reactive chain. In that
+way, the user’s code is executed during subscription of the outer Mono and the
+returned inner Mono is subscribed to immediately. For the entire execution, the
+outer Mono ’s Context is made available in ThreadLocal s if we do this in our
+“framework” code: Mono<Void> requestHandler = Mono.defer(() -> handleRequest())
+.contextWrite(Context.of("CORRELATION_ID", correlationId())); All that we needed
+to do was use Mono.defer() and attach the Context to it. Luckily, Spring
+Framework does its job well and handles our assembly during the subscription
+phase as well. Are We Done Solving the Context-propagation Problem? This new
+approach looks very encouraging. One might wonder, with the approaches taken in
+the past, how will this new mechanism break? We feel more confident about this
+approach because it is more aligned with the nature of Reactive Streams. The
+approaches that were not based around Reactor Context had one major
+misconception embedded in them – they propagate ThreadLocal values downstream –
+hopefully, trying to clean up at some point. However, there were no semantic
+boundaries for the propagation to stop. Relying on downstream propagation of
+ThreadLocal values can be a source of errors, too. Reactive libraries propagate
+signals upstream and downstream. One signal potentially triggers another signal,
+but it doesn’t have to. A different Thread can continue processing. Certain
+optimizations (such as
+----------------------------------------------------------------------------------------------------
+Index: 43589 <<"chunk_id": 3, "docno": 6732>>
+
+all about what happens underneath to support that model so on the surface there
+is no difference except for the full support for reactive types such as Flux and
+Mono and Observable and Single from RxJava both for input and for output. Is
+Spring Web Reactive better than Spring MVC? The greatest value proposition of
+the Spring Framework reactive support and our unique positioning is that we
+don't leave existing applications behind. In Spring 5, traditional Spring MVC
+keeps running on any Servlet 3.1 stack, including Java EE 7 servers. For Spring
+Web Reactive, we support Tomcat, Jetty, Undertow, and Netty without a compromise
+and can also adapt to any Servlet 3.1 container. We plan to continue the synergy
+between Spring MVC and Spring Web Reactive in terms of shared algorithms and
+mechanisms in support of the same programming model on top. Improvement requests
+or bug reports on the Spring MVC side will benefit Spring Web Reactive and vice
+versa. That means you the developer can choose what’s better for your purposes.
+If anyone tells you that synchronous or blocking is evil look the other way.
+It's not and in reality it is a trade-off. Imperative style logic is simple to
+write and simpler to debug. Sure it doesn't scale as well or as efficiently but
+that's where the trade-off comes. There will always be many cases where
+imperative is just fine for the task at hand and others where reactive and
+non-blocking are a must. In a microservices scenario, you may even choose the
+implementation
+----------------------------------------------------------------------------------------------------
+Index: 52743 <<"chunk_id": 4, "docno": 8447>>
+
+Each of these strategies is highlighted in turn below: Java Server Faces The
+first view handling strategy supported is Java Server Faces. Through the Spring
+Faces project, the SWF engine can now act as a container for JSF and fully drive
+the JSF UI component lifecycle, combining all the strengths of the SWF
+application controller model with all the strengths of the JSF UI component
+model. As a result of this, we bring the following to the table for our
+community: A Spring-centric way of configuring and deploying a Spring Web
+application that uses JSF. To get up and running, you deploy a Spring Web
+Servlet and point it at your bean definition files, very similar to how you
+configure a Spring MVC web app today. No faces-config.xml or any other special
+JSF artifacts are required. This makes it very easy for Spring users to take
+advantage of JSF without any of the traditional drawbacks. You can even use JSF
+inside a Spring MVC DispatcherServlet if you desire, when running in "embedded"
+mode. Automatic support for POST+REDIRECT+GET pattern to prevent duplicate
+submits and browser warnings when using browser navigational buttons. This is
+possible for the same reasons: Spring Web Flow supports this pattern natively,
+and we have integrated JSF into our model. Flow-managed UI component state. This
+is particularly interesting as use of JSF traditionally implies a large amount
+of HTTP Session state for storing the component tree. JSF component state is now
+fully managed as SWF FlowExecution instance state, which means how that state is
+----------------------------------------------------------------------------------------------------
+Index: 56749 <<"chunk_id": 7, "docno": 9212>>
+
+capable resources. In such cases, Spring allows for simpler transaction managers
+with less-overhead: DataSourceTransactionManager (for JDBC),
+HibernateTransactionManager, or JpaTransactionManager. I would have expected to
+hear a bit more detail on that particular Spring strength if the goal was to
+accurately describe the pros and cons. For example, this is a huge benefit for
+testing outside of the container or developing within a lightweight IDE
+environment such as Eclipse or IDEA. Furthermore, if you do require JTA for
+distributed transactions but want to run in a lightweight container like Tomcat
+or Jetty, Spring easily supports standalone JTA providers like Atomikos and
+JOTM. Sure Spring's transaction manager setup requires configuration of a single
+bean definition, but it really is a one-time cost - and well worth the benefit.
+5. Spring does not have a stateful application paradigm. The benefits of a
+stateless service layer are fairly well-established as a best practice, and
+Spring embraces that. Spring does provide scopes other than singleton however.
+Spring's "prototype" scope enables a distinct instance for each injection or
+lookup, and Spring 2.0 introduced web scopes: "request" and "session". The
+scoping mechanism itself is even extensible; it's possible to define and map a
+custom scope to the notion of a conversation. Spring also supports simple object
+pooling with the CommonsPoolTargetSource, but object pooling is rarely the best
+solution for state management. More importantly, Spring does provide very
+robust, highly configurable state-management for web applications via Spring Web
+Flow . There the conversational state is managed transparently, contrary to the
+claim of this presentation
+----------------------------------------------------------------------------------------------------
+Index: 56575 <<"chunk_id": 96, "docno": 9200>>
+
+resides, perform the required computations, summarize the results, and then send
+the reduced data set back to the client. Additionally, when the computations are
+handled in parallel, across the cluster of computing resources, the operation
+can be performed much more quickly. This typically involves intelligently
+organizing the data using various partitioning (a.k.a. sharding) strategies to
+uniformly balance the data set across the cluster. Apache Geode addresses this
+very important application concern in its Function execution framework. Spring
+Data for Apache Geode builds on this Function execution framework by letting
+developers implement and execute Apache Geode functions with a simple POJO-based
+annotation configuration model. See the section about implementation versus
+execution for the difference between Function implementation and execution.
+Taking this a step further, Spring Boot for Apache Geode auto-configures and
+enables both Function implementation and execution out-of-the-box. Therefore,
+you can immediately begin writing Functions and invoking them without having to
+worry about all the necessary plumbing to begin with. You can rest assured that
+it works as expected. 13.2. Applying Functions Earlier, when we talked about
+caching , we described a FinancialLoanApplicationService class that could
+process eligibility when someone (represented by a Person object) applied for a
+financial loan. This can be a very resource intensive and expensive operation,
+since it might involve collecting credit and employment history, gathering
+information on outstanding loans, and so on. We applied caching in order to not
+have to recompute or redetermine eligibility every time a loan office may want
+to review the decision with the customer. But, what about
+----------------------------------------------------------------------------------------------------
+Index: 52851 <<"chunk_id": 6, "docno": 8466>>
+
+same JSF view is re-rendered. If she decides to do something that fires off some
+Ajax request from the same page, that's fine as well - the flow execution is
+again restored automatically, and JSF components participating in the Ajax call
+can update flow-managed state in a thread-safe manner seamlessly (no pun
+intended). Once the user decides to invoke a UI command, for example by clicking
+a command link, the standard JSF postback lifecycle kicks in. After UI component
+validations are processed and model values are updated, the JSF action outcome
+is signaled as an event against the view-state of the restored flow execution.
+The flow takes over from there, processing the event by invoking the appropriate
+application behavior and selecting the next view according to the navigation
+rules of the flow definition. This Web Flow navigation step is handled by the
+last key construct in the JSF integration, a custom NavigationHandler . To
+summarize, from the point of view of the JSF view and component developer, it's
+just standard JSF - doesn't matter whether you are using JSP or Facelets with
+XYZ component provider. Web Flow executions are restored for you automatically
+and access to conversatioal state is completely transparent. Web Flow events are
+just standard JSF UI command outcomes. From the perspective of the controller
+developer, it's all Web Flow. As a result, verbose and limited navigation rules
+in faces-config.xml are replaced by modular, concise flow definitions based on a
+much richer flow definition language. The bottom line is you get all the
+advantages
+----------------------------------------------------------------------------------------------------
+Index: 25710 <<"chunk_id": 1, "docno": 3549>>
+
+via Channels (Pipes). The producing endpoint sends Message to the Channel and
+the Message is retrieved by the Consuming endpoint. This architecture is meant
+to define various mechanisms that describe How information is exchanged between
+the endpoints, without any awareness of What those endpoints are or What
+information they are exchanging, thus providing for a very loosely coupled and
+flexible collaboration model while also, decoupling Integration concerns from
+Business concerns . EIP extends this architecture by further defining: the types
+of pipes (Point-to-Point Channel, Publish-Subscribe Channel, Channel Adapter,
+etc.) the core filters and patterns around how filters collaborate with pipes
+(Message Router, Splitters and Aggregators, various Message Transformation
+patterns, etc.) The Spring Integration (SI) messaging framework is designed to
+provide a POJO-based programming model built on top of Enterprise Integration
+Patterns. Use Case The details and variations of this use case are very nicely
+described in Chapter 9 of the EIP Book , but here is the brief summary; A
+Consumer while shopping for the best Loan Quote(s) subscribes to the services of
+a Loan Broker, which handles details such as: Consumer pre-screening (e.g.,
+obtain and review the consumer's Credit history) Determine the most appropriate
+Banks (e.g., based on consumer's credit history/score) Send a Loan quote request
+to each selected Bank Collect responses from each Bank Filter responses and
+determine the best quote(s), based on consumer's requirements. Pass the Loan
+quote(s) back to the consumer. Obviously the real process of obtaining a loan
+quote is a bit more complex, but since our goal here is to
+----------------------------------------------------------------------------------------------------
+Index: 56752 <<"chunk_id": 10, "docno": 9212>>
+
+another pro of Spring here - namely Spring's listener adapter. The adapter
+provides automatic conversion from the JMS Message to a simple Java payload and
+then delegates to any Spring-managed object to handle that payload. For example,
+in the configuration above, the "logger" and "tradeService" listeners do not
+even have to implement the MessageListener interface. If they do not, then
+Spring automatically wraps those POJOs with an adapter that converts the Message
+and determines which method to invoke. It even converts a return value (if there
+is one) into a JMS reply Message and automatically replies to the destination
+specified by the incoming Message's 'reply-to' property. This same behavior is
+extremely difficult to implement from scratch since the JMS MessageListener
+handling method has a 'void' return type: public interface MessageListener {
+void onMessage(Message message); } 8. Spring's usage of the AspectJ expression
+language is powerful but cryptic. EJB 3 is limited to @AroundInvoke, and the
+example showed this with some simple auditing applied through interception. The
+Spring example showed @Before advice since the auditing only required something
+to happen before the method execution (not around). I appreciated that the
+example emphasized the need to call context.proceed() on the EJB 3 side while
+the AspectJ @Before advice is much simpler. I was disappointed however that some
+of the attendees seemed to think that the AspectJ model was limited to @Before
+and therefore that EJB 3 @AroundInvoke was more powerful. To be comprehensive
+here, I would have included an example of @Around advice on the Spring side -
+----------------------------------------------------------------------------------------------------
+Index: 23085 <<"chunk_id": 9, "docno": 2900>>
+
+it was determined by the framework that the target destination is Apache Kafka.
+This last point is worth elaborating a bit. We already established that setting
+Cloud Event attributes is a non-functional aspect and that, because of it, we
+have exposed a mechanism to let you deal with it outside of your business logic.
+But what about attribute prefixes? Note that we are running the same code in
+different execution contexts. This means that the attribute prefixes actually
+depend on the execution context. So, by being aware of the execution context,
+the framework ensures the correctness of the Cloud Event attribute prefixes.
+Here, we rely on the Spring Cloud Stream framework and its defaults, such as
+destination auto-provisioning (both Kafka and Rabbit), binding names,
+connectivity, and more. The details of these defaults and configuration options
+are out of scope for this post, since none of them are relevant to Cloud Events.
+See the Spring Cloud Stream documentation for more details on the framework
+itself and its configuration options. Also, as with the previous example, this
+one also includes commented variations with which you are welcome to experiment.
+Use Case 3 (from RSocket to Kafka) The full source code for the example is
+available in the Spring Cloud Function samples . It assumes a certain level of
+familiarity with RSocket and Apache Kafka. This section should be even shorter
+than the previous one, as it is very similar. However, there are a few
+interesting variants here that are worth discussing. Well, the obvious one is
+RSocket .
+----------------------------------------------------------------------------------------------------
+Index: 43598 <<"chunk_id": 4, "docno": 6734>>
+
+functional approach to processing a sequence of data exists in all Reactive
+libraries, and also in Java 8 Streams . Consider this, similar looking code,
+using a Stream with the same contents as the Flux : Stream<String> stream =
+Streams.of("red", "white", "blue"); Stream<String> upper = stream.map(value -> {
+System.out.println(value); return value.toUpperCase(); }); The observation we
+made about Flux applies here: no data is processed, it’s just a plan of
+execution. There are, however, some important differences between Flux and
+Stream , which make Stream an inappropriate API for Reactive use cases. Flux has
+a lot more operators, much of which is just convenience, but the real difference
+comes when you want to consume the data, so that’s what we need to look at next.
+Tip There is a useful blog by Sebastien Deleuze on Reactive Types , where he
+describes the differences between the various streaming and reactive APIs by
+looking at the types they define, and how you would use them. The differences
+between Flux and Stream are highlighted there in more detail. Subscribers To
+make the data flow you have to subscribe to the Flux using one of the
+subscribe() methods. Only those methods make the data flow. They reach back
+through the chain of operators you declared on your sequence (if any) and
+request the publisher to start creating data. In the sample samples we have been
+working with, this means the underlying collection of strings is iterated. In
+more complicated use case it might trigger a file to be read from the
+----------------------------------------------------------------------------------------------------
+Index: 37976 <<"chunk_id": 6, "docno": 5596>>
+
+that, originally, Kafka Streams applications were the reason why Apache Kafka
+added transactional support and exactly-once semantics, but we haven’t talked
+about it yet. The reason is that achieving exactly-once semantics in Kafka
+Streams applications is straightforward and almost non-trivial. As they call it,
+it is a single configuration knob. To learn more about exactly-once semantics in
+Kafka Streams, see this blog from Confluent As with regular Kafka client-based
+applications, in the case of Kafka Streams, the exactly-once guarantee comes
+into play when you produce the final output in a consume-process-produce
+pattern, implying that any downstream consumers of the produced data consume
+exactly one as long as they use the read_committed isolation level. The Kafka
+Streams configuration property processing.guarantee property enables
+exactly-once semantics in Kafka Streams applications. You can set it in Spring
+Cloud Stream by setting the
+spring.cloud.stream.kafka.streams.binder.configuration.processing.guarantee
+property. You need to set the value to exactly_once . By default, Kafka Streams
+uses the value of at_least_once . The three main activities that generally occur
+in a stateful Kafka Streams application are: Initial consumption of the records
+State store updates through changelog topics. Producing the data The pattern is
+that the record is received and processed. Along the way, any state information
+materializes into a state store, essentially updating specific changelog topics.
+Finally, the outbound record gets published to another Kafka topic. If you
+noticed this pattern, it looks similar to many scenarios we have already seen,
+except for the state store part. When setting the processing.guarantee to
+exactly_once , Kafka Streams guarantees that, if
+----------------------------------------------------------------------------------------------------
+Index: 33279 <<"chunk_id": 4, "docno": 4401>>
+
+approach is favored over the legacy annotation-based model ( @EnableBinding ,
+@StreamListener ). Spring Cloud Stream can bind directly to the input(s) and
+output(s) of a Function @Bean . With this model, neither the legacy Spring Cloud
+Stream annotations nor the Source, Processor, and Sink interfaces are needed.
+The figure below illustrates this concept by using simple functions packaged as
+Spring Cloud Stream applications. The binder implementation and external
+configuration properties enable the applications to communicate through a
+message broker, but the application code is not concerned with any of this.
+Spring Cloud Stream invokes the helloTime Function in the ProcessorApplication
+whenever a message arrives on the time topic and directs its output to the hello
+topic. Likewise, the printTime Consumer in the SinkApplication is triggered by a
+message arriving on the hello topic. But what triggers the SourceApplication? As
+you may have guessed, Spring Cloud Stream auto-configures a poller, which
+invokes the currentTime Supplier every second (by default). Of course, this is
+configurable. The functional components are available to be packaged and
+deployed in a wide range of uses other than Spring Cloud Stream, particularly in
+FaaS environments. The functional components are built with Project Reactor ,
+where appropriate, to enable non-blocking reactive streaming. The stream
+applications (or any Spring Boot application built with the functional
+components) can take advantage of Spring Cloud Function’s declarative function
+composition features. This means that the pre-packaged stream applications can
+be configured to perform common transformation and filtering operations with no
+customization required. The new stream-applications Git repository is
+----------------------------------------------------------------------------------------------------
+Index: 56755 <<"chunk_id": 13, "docno": 9212>>
+
+Application Server to another would agree that Spring provides a significant
+amount of abstraction in this regard. In point #4 above, I mentioned that
+Spring's JtaTransactionManager uses auto-detection within any Java EE
+Application Server and that the same applies for MBean servers, and RMI
+registries. Along these same lines, when using JPA, Spring detects
+persistence.xml and creates the EntityManagerFactory accordingly. In all of
+these cases, Spring metadata - whether it be annotations (@PersistenceContext,
+@Transactional, @Resource, etc) or XML ('jee:jndi-lookup', etc) is just as
+portable as any EJB 3 application. Even when moving beyond the capabilities of a
+typical EJB 3 application, minimal configuration changes provide significant
+convenience. In this regard, Spring actually facilitates portability to a much
+wider variety of environments: Tomcat, Jetty, standalone, Eclipse, IDEA, and so
+on. My suggestion here would be to grab the Spring distribution's PetClinic
+sample application and try building and deploying the WAR file into multiple
+Application Servers. Then, notice that it can just as easily be deployed within
+Tomcat, and that the degree of portability actually far exceeds that of an EJB 3
+application as soon as you want to switch between the different data access
+strategies that are supported by the application: JDBC, Hibernate and JPA. Take
+a close look at the different configuration files for those different versions
+(located within the 'samples/petclinic/war/WEB-INF' directory). Especially with
+the additions of Spring 2.5, the configuration is extremely concise. Notice that
+the only change necessary to switch between these different versions is one line
+in the web.xml where the Spring context
+----------------------------------------------------------------------------------------------------
+Index: 57500 <<"chunk_id": 2, "docno": 9351>>
+
+. Blogger Carlo Scarioni has a great blog introducing how to create custom
+Spring 3 XML namespaces . Blogger Duck Ranger follows with the second part of
+his series introducing how to setup Spring MVC applications with SpringSource
+Tool Suite . This blog goes beyond relying on the built-in templates, and looks
+at tailoring the Spring MVC request mapping. </LI> simple-spring-memcached
+client , version 2.0, is out. The project is a Spring integration for the
+Memcached caching server. It provides a way to configure the behavior of the
+cache. This API's pretty awesome, but I (personally) would love to see a Spring
+3.1 CacheManager and Cache implementation. </LI> Blogger benkiew has put
+together a blog that explains how to retrieve references to a prototype -scoped
+bean that's been injected using some of the supported Spring annotations (
+@Resource , @Autowired , or @Inject ). The problem's easy to imagine: suppose I
+have a bean that's bound to the HTTP scope. It will be recreated each time it's
+accessed in a unique HTTP request. Scoping works to ensure that a bean is only
+uniquely recreated once per scope. So, ten accesses of the same
+HTTP-request-scoped bean during a single HTTP request will result in the same
+reference, but separate accesses across two different requests will result in
+the creation of two beans. So far, this maps nicely with what we would expect.
+What happens when I inject a reference to a bean that is not scoped - or, it's
+scope is longer lived than the bean that's
+----------------------------------------------------------------------------------------------------
+Index: 46602 <<"chunk_id": 3, "docno": 7289>>
+
+actual Spring MVC configuration is loaded through the TestContext framework and
+that the request is performed by actually invoking the DispatcherServlet and all
+the same Spring MVC infrastructure that is used at runtime. Also similar to
+existing controller unit tests, you may consider injecting controllers with mock
+services in order to focus on testing the web layer and avoid hitting a database
+for example. So instead of loading actual business and persistence services, you
+can load configuration that creates mocks. For example: @Configuration public
+class MyConfig { @Bean public FooService fooService() { return
+Mockito.mock(FooService.class); } } or in XML configuration: <bean
+class="org.mockito.Mockito" factory-method="mock"> <constructor-arg
+value="org.example.FooService"/> </bean> Given that we're not running in an
+actual servlet container, just how much will and will not work? For the most
+part everything will work just like it does at runtime. You can even register
+Servlet filters, enabling things like Spring Security. Most rendering
+technologies like JSON/XML, Freemarker, Velocity, Thymeleaf, Excel, PDF, etc.
+All of that will work. The only rendering technology excluded is JSPs since
+since that requires a servlet container. For JSPs you can still verify the JSP
+the request was forwarded, what attributes are in the model, whether any
+exception was raised, and so on. Client-side REST Tests What's the idea behind
+client-side REST tests? If you have code using the RestTemplate , you'll
+probably want to test it and to that you can target a running server or mock the
+RestTemplate. The client-side REST test support offers a third alternative,
+which is to use the actual
+----------------------------------------------------------------------------------------------------

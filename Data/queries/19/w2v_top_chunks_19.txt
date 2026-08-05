@@ -1,0 +1,527 @@
+Index: 23979 <<"chunk_id": 2, "docno": 3136>>
+
+an AngularJS service that wraps and exposes an Angular injectable so that it can
+be injected into an AngularJS context. See downgradeInjectable . Bootstrapping
+of a hybrid Angular application which contains both of the frameworks coexisting
+in a single application. Usage Notes import { UpgradeModule } from
+'@angular/upgrade/static' ; See also the examples below. Mental Model When
+reasoning about how a hybrid application works it is useful to have a mental
+model which describes what is happening and explains what is happening at the
+lowest level. There are two independent frameworks running in a single
+application, each framework treats the other as a black box. Each DOM element on
+the page is owned exactly by one framework. Whichever framework instantiated the
+element is the owner. Each framework only updates/interacts with its own DOM
+elements and ignores others. AngularJS directives always execute inside the
+AngularJS framework codebase regardless of where they are instantiated. Angular
+components always execute inside the Angular framework codebase regardless of
+where they are instantiated. An AngularJS component can be "upgraded"" to an
+Angular component. This is achieved by defining an Angular directive, which
+bootstraps the AngularJS component at its location in the DOM. See
+UpgradeComponent . An Angular component can be "downgraded" to an AngularJS
+component. This is achieved by defining an AngularJS directive, which bootstraps
+the Angular component at its location in the DOM. See downgradeComponent .
+Whenever an "upgraded"/"downgraded" component is instantiated the host element
+is owned by the framework doing the instantiation. The other framework then
+instantiates and owns the
+----------------------------------------------------------------------------------------------------
+Index: 34359 <<"chunk_id": 11, "docno": 4594>>
+
+in standalone component configurations. Debugging dependency resolution
+Understanding the resolution process Angular resolves dependencies by walking up
+the injector hierarchy. When a NullInjectorError occurs, understanding this
+search order helps you identify where to add the missing provider. Angular
+searches in this order: Element injector - The current component or directive
+Parent element injectors - Up the DOM tree through parent components Environment
+injector - The route or application injector NullInjector - Throws
+NullInjectorError if not found When you see a NullInjectorError , the service
+isn't provided at any level the component can access. Check that: The service
+has @Service() or The service has @Injectable({providedIn: 'root'}) , or The
+service is in a providers array the component can reach You can modify this
+search behavior with resolution modifiers like self , skipSelf , host , and
+optional . For complete coverage of resolution rules and modifiers, see the
+Hierarchical injectors guide . Using Angular DevTools Angular DevTools includes
+an injector tree inspector that visualizes the entire injector hierarchy and
+shows which providers are available at each level. For installation and general
+usage, see the Angular DevTools injector documentation . When debugging DI
+issues, use DevTools to answer these questions: Is the service provided? Select
+the component that fails to inject and check if the service appears in the
+Injector section. At what level? Walk up the component tree to find where the
+service is actually provided (component, route, or application level). Multiple
+instances? If a singleton service appears in multiple component injectors, it's
+likely provided in component
+----------------------------------------------------------------------------------------------------
+Index: 34303 <<"chunk_id": 4, "docno": 4586>>
+
+decorator using its providers or viewProviders property configures an
+ElementInjector . For example, the following TestComponent configures the
+ElementInjector by providing the service as follows: @ Component ({ /* … */
+providers: [{ provide: ItemService, useValue: { name: 'lamp' } }] }) export
+class TestComponent HELPFUL: See the resolution rules section to understand the
+relationship between the EnvironmentInjector tree, the ModuleInjector and the
+ElementInjector tree. When you provide services in a component, that service is
+available by way of the ElementInjector at that component instance. It may also
+be visible at child component/directives based on visibility rules described in
+the resolution rules section. When the component instance is destroyed, so is
+that service instance. @Directive() and @Component() A component is a special
+type of directive, which means that just as @Directive() has a providers
+property, @Component() does too. This means that directives as well as
+components can configure providers, using the providers property. When you
+configure a provider for a component or directive using the providers property,
+that provider belongs to the ElementInjector of that component or directive.
+Components and directives on the same element share an injector. Resolution
+rules When resolving a token for a component/directive, Angular resolves it in
+two phases: Against its parents in the ElementInjector hierarchy. Against its
+parents in the EnvironmentInjector hierarchy. When a component declares a
+dependency, Angular tries to satisfy that dependency with its own
+ElementInjector . If the component's injector lacks the provider, it passes the
+request up to its parent component's ElementInjector . The requests keep
+forwarding
+----------------------------------------------------------------------------------------------------
+Index: 34378 <<"chunk_id": 5, "docno": 4597>>
+
+component gets its own instance @ Component ({ selector: 'app-isolated' , //
+Creates new instance of `DataStore` rather than using the root-provided
+instance. providers: [DataStore], template: `...` , }) export class Isolated {
+dataStore = inject (DataStore); // Component -specific instance } Injector
+hierarchy in Angular Angular's dependency injection system is hierarchical. When
+a component requests a dependency, Angular starts with that component's injector
+and walks up the tree until it finds a provider for that dependency. Each
+component in your application tree can have its own injector, and these
+injectors form a hierarchy that mirrors your component tree. This hierarchy
+enables: Scoped instances : Different parts of your app can have different
+instances of the same service Override behavior : Child components can override
+providers from parent components Memory efficiency : Services are only
+instantiated where needed In Angular, any element with a component or directive
+can provide values to all of its descendants. platform root SocialApp
+UserProfile FriendList FriendEntry In the example above: SocialApp can provide
+values for UserProfile and FriendList FriendList can provide values for
+injection to FriendEntry , but cannot provide values for injection in
+UserProfile because it's not part of the tree Declaring a provider Think of
+Angular's dependency injection system as a hash map or dictionary. Each provider
+configuration object defines a key-value pair: Key (Provider identifier) : The
+unique identifier you use to request a dependency Value : What Angular should
+return when that token is requested When manually providing dependencies, you
+typically see this shorthand syntax: import {
+----------------------------------------------------------------------------------------------------
+Index: 34304 <<"chunk_id": 5, "docno": 4586>>
+
+own ElementInjector . If the component's injector lacks the provider, it passes
+the request up to its parent component's ElementInjector . The requests keep
+forwarding up until Angular finds an injector that can handle the request or
+runs out of ancestor ElementInjector hierarchies. If Angular doesn't find the
+provider in any ElementInjector hierarchies, it goes back to the element where
+the request originated and looks in the EnvironmentInjector hierarchy. If
+Angular still doesn't find the provider, it throws an error. If you have
+registered a provider for the same DI token at different levels, the first one
+Angular encounters is the one it uses to resolve the dependency. If, for
+example, a provider is registered locally in the component that needs a service,
+Angular doesn't look for another provider of the same service. HELPFUL: For
+NgModule based applications, Angular will search the ModuleInjector hierarchy if
+it cannot find a provider in the ElementInjector hierarchies. Resolution
+modifiers Angular's resolution behavior can be modified with optional , self ,
+skipSelf and host . Import each of them from @angular/core and use each in the
+inject configuration when you inject your service. Types of modifiers Resolution
+modifiers fall into three categories: What to do if Angular doesn't find what
+you're looking for, that is optional Where to start looking, that is skipSelf
+Where to stop looking, host and self By default, Angular always starts at the
+current Injector and keeps searching all the way up. Modifiers allow you to
+change the starting, or self , location and the ending
+----------------------------------------------------------------------------------------------------
+Index: 34335 <<"chunk_id": 1, "docno": 4590>>
+
+and injectable services to optimize bundle size by using tree-shakable
+providers. This normally ensures that if a provided component or service is
+never actually used by the application, the compiler can remove its code from
+the bundle. Due to the way Angular stores injection tokens, it is possible that
+such an unused component or service can end up in the bundle anyway. This page
+describes a dependency injection design pattern that supports proper
+tree-shaking by using lightweight injection tokens. The lightweight injection
+token design pattern is especially important for library developers. It ensures
+that when an application uses only some of your library's capabilities, the
+unused code can be eliminated from the client's application bundle. When an
+application uses your library, there might be some services that your library
+supplies which the client application doesn't use. In this case, the application
+developer should expect that service to be tree-shaken, and not contribute to
+the size of the compiled application. Because the application developer cannot
+know about or remedy a tree-shaking problem in the library, it is the
+responsibility of the library developer to do so. To prevent the retention of
+unused components, your library should use the lightweight injection token
+design pattern. On this page arrow_upward_alt Back to the top When tokens are
+retained To better explain the condition under which token retention occurs,
+consider a library that provides a library-card component. This component
+contains a body and can contain an optional header: < lib-card > < lib-header
+>…</ lib-header > </ lib-card > In a
+----------------------------------------------------------------------------------------------------
+Index: 23978 <<"chunk_id": 1, "docno": 3136>>
+
+apps to that of the Angular PlatformRef . @returns UpgradeModule $injector any
+The AngularJS $injector for the upgrade application. injector Injector The
+Angular Injector * ngZone NgZone The bootstrap zone for the upgrade application
+bootstrap any Bootstrap an AngularJS application from this NgModule @param
+element Element the element on which to bootstrap the AngularJS application
+@param modules string[] the AngularJS modules to bootstrap for this application
+@param config any optional extra AngularJS bootstrap configuration @returns any
+Description An NgModule , which you import to provide AngularJS core services,
+and has an instance method used to bootstrap the hybrid upgrade application.
+Part of the upgrade/static library for hybrid upgrade apps that support AOT
+compilation The upgrade/static package contains helpers that allow AngularJS and
+Angular components to be used together inside a hybrid upgrade application,
+which supports AOT compilation. Specifically, the classes and functions in the
+upgrade/static module allow the following: Creation of an Angular directive that
+wraps and exposes an AngularJS component so that it can be used in an Angular
+template. See UpgradeComponent . Creation of an AngularJS directive that wraps
+and exposes an Angular component so that it can be used in an AngularJS
+template. See downgradeComponent . Creation of an Angular root injector provider
+that wraps and exposes an AngularJS service so that it can be injected into an
+Angular context. See Upgrading an AngularJS service below. Creation of an
+AngularJS service that wraps and exposes an Angular injectable so that it can be
+injected into an AngularJS context. See downgradeInjectable . Bootstrapping of
+----------------------------------------------------------------------------------------------------
+Index: 34337 <<"chunk_id": 3, "docno": 4590>>
+
+token that occurs in the value position. This prevents the referenced component
+from being tree-shaken, even if the application does not actually use
+<lib-header> anywhere. If LibHeader 's code, template, and styles combine to
+become too large, including it unnecessarily can significantly increase the size
+of the client application. When to use the lightweight injection token pattern
+The tree-shaking problem arises when a component is used as an injection token.
+There are two cases when that can happen: The token is used in the value
+position of a content query . The token is used with the inject function. In the
+following example, both uses of the CustomOther token cause retention of
+CustomOther , preventing it from being tree-shaken when it is not used: class
+App { private readonly other = inject (CustomOther, {optional: true }); readonly
+header = contentChild (CustomOther); } Although tokens used only as type
+specifiers are removed when converted to JavaScript, all tokens used for
+dependency injection are needed at runtime. When using inject(CustomOther) ,
+CustomOther is passed as a value argument. The token is now in a value position,
+which causes the tree-shaker to keep the reference. HELPFUL: Libraries should
+use tree-shakable providers for all services, providing dependencies at the root
+level rather than in components or modules. Using lightweight injection tokens
+The lightweight injection token design pattern consists of using a small
+abstract class as an injection token, and providing the actual implementation at
+a later stage. The abstract class is retained, not tree-shaken, but it is small
+and has
+----------------------------------------------------------------------------------------------------
+Index: 28514 <<"chunk_id": 1, "docno": 4166>>
+
+when an application has an especially large component tree, running change
+detection across the whole application can cause performance issues. You can
+address this by configuring change detection to only run on a subset of the
+component tree. On this page arrow_upward_alt Back to the top Using OnPush
+OnPush is the default change detection strategy in Angular (since v22). It
+instructs Angular to run change detection for a component subtree only when: The
+root component of the subtree receives new inputs as the result of a template
+binding. Angular compares the current and past value of the input with == .
+Angular handles an event (for example using event binding, output binding, or
+@HostListener ) in the subtree's root component or any of its children whether
+they are using OnPush change detection or not. Common change detection scenarios
+This section examines several common change detection scenarios to illustrate
+Angular's behavior. An event is handled by a component with Eager change
+detection If Angular handles an event within a component with the Eager
+strategy, the framework executes change detection on the entire component tree.
+Angular will skip descendant component subtrees with roots using OnPush , which
+have not received new inputs. As an example, if we set the change detection
+strategy of MainComponent to OnPush and the user interacts with a component
+outside the subtree with root MainComponent , Angular will check all the pink
+components from the diagram below ( AppComponent , HeaderComponent ,
+SearchComponent , ButtonComponent ) unless MainComponent receives new inputs:
+AppComponent HeaderComponent MainComponent
+----------------------------------------------------------------------------------------------------
+Index: 5298 <<"chunk_id": 8, "docno": 734>>
+
+can additionally alias inputs and outputs by putting a colon and the alias after
+the original input or output name. For example, if a directive applied via
+hostDirectives defines an input named menuDisabled , you can alias this to
+disabled by adding 'menuDisabled: disabled' as an entry to inputs . Description
+Decorator that marks a class as an Angular component and provides configuration
+metadata that determines how the component should be processed, instantiated,
+and used at runtime. Components are the most basic UI building block of an
+Angular app. An Angular app contains a tree of Angular components. Angular
+components are a subset of directives, always associated with a template. Unlike
+other directives, only one component can be instantiated for a given element in
+a template. Standalone components can be directly imported in any other
+standalone component or NgModule. NgModule based apps on the other hand require
+components to belong to an NgModule in order for them to be available to another
+component or application. To make a component a member of an NgModule, list it
+in the declarations field of the NgModule metadata. Note that, in addition to
+these options for configuring a directive, you can control a component's runtime
+behavior by implementing life-cycle hooks. For more information, see the
+Lifecycle Hooks guide. HELPFUL: You may not use this interface to describe a
+class that is a component. Decorators do not affect the typing of the decorated
+classes. Use Type<unknown> instead of Type<Component> . Usage Notes Setting
+component inputs The following example creates a component
+----------------------------------------------------------------------------------------------------
+Index: 5773 <<"chunk_id": 136, "docno": 788>>
+
+or directive. Components and directives on the same element share an injector.
+## Resolution rules When resolving a token for a component/directive, Angular
+resolves it in two phases: 1. Against its parents in the `ElementInjector`
+hierarchy. 2. Against its parents in the `EnvironmentInjector` hierarchy. When a
+component declares a dependency, Angular tries to satisfy that dependency with
+its own `ElementInjector`. If the component's injector lacks the provider, it
+passes the request up to its parent component's `ElementInjector`. The requests
+keep forwarding up until Angular finds an injector that can handle the request
+or runs out of ancestor `ElementInjector` hierarchies. If Angular doesn't find
+the provider in any `ElementInjector` hierarchies, it goes back to the element
+where the request originated and looks in the `EnvironmentInjector` hierarchy.
+If Angular still doesn't find the provider, it throws an error. If you have
+registered a provider for the same DI token at different levels, the first one
+Angular encounters is the one it uses to resolve the dependency. If, for
+example, a provider is registered locally in the component that needs a service,
+Angular doesn't look for another provider of the same service. HELPFUL: For
+`NgModule` based applications, Angular will search the `ModuleInjector`
+hierarchy if it cannot find a provider in the `ElementInjector` hierarchies. ##
+Resolution modifiers Angular's resolution behavior can be modified with
+`optional`, `self`, `skipSelf` and `host`. Import each of them from
+`@angular/core` and use each in the [`inject`](/api/core/inject) configuration
+when you inject your service. ### Types of modifiers Resolution modifiers fall
+into three categories: - What to
+----------------------------------------------------------------------------------------------------
+Index: 23980 <<"chunk_id": 3, "docno": 3136>>
+
+Whenever an "upgraded"/"downgraded" component is instantiated the host element
+is owned by the framework doing the instantiation. The other framework then
+instantiates and owns the view for that component. This implies that the
+component bindings will always follow the semantics of the instantiation
+framework. The DOM attributes are parsed by the framework that owns the current
+template. So attributes in AngularJS templates must use kebab-case, while
+AngularJS templates must use camelCase. However the template binding syntax will
+always use the Angular style, e.g. square brackets ( [...] ) for property
+binding. Angular is bootstrapped first; AngularJS is bootstrapped second.
+AngularJS always owns the root component of the application. The new application
+is running in an Angular zone, and therefore it no longer needs calls to
+$apply() . The UpgradeModule class This class is an NgModule , which you import
+to provide AngularJS core services, and has an instance method used to bootstrap
+the hybrid upgrade application. Core AngularJS services Importing this NgModule
+will add providers for the core AngularJS services to the root injector.
+Bootstrap The runtime instance of this class contains a bootstrap() method,
+which you use to bootstrap the top level AngularJS module onto an element in the
+DOM for the hybrid upgrade app. It also contains properties to access the root
+injector , the bootstrap NgZone and the AngularJS $injector . Examples Import
+the UpgradeModule into your top level Angular NgModule . // This NgModule
+represents the Angular pieces of the application @ NgModule ({ declarations:
+[Ng2HeroesComponent, Ng1HeroComponentWrapper], providers: [ HeroesService, //
+Register
+----------------------------------------------------------------------------------------------------
+Index: 34301 <<"chunk_id": 2, "docno": 4586>>
+
+ModuleInjector is configured by the @NgModule.providers and NgModule.imports
+property. ModuleInjector is a flattening of all the providers arrays that can be
+reached by following the NgModule.imports recursively. Child ModuleInjector
+hierarchies are created when lazy loading other @NgModules . Platform injector
+There are two more injectors above root , an additional EnvironmentInjector and
+NullInjector() . Consider how Angular bootstraps the application with the
+following in main.ts : bootstrapApplication (App, appConfig); The
+bootstrapApplication() method creates a child injector of the platform injector
+which is configured by the ApplicationConfig instance. This is the root
+EnvironmentInjector . The platformBrowserDynamic() method creates an injector
+configured by a PlatformModule , which contains platform-specific dependencies.
+This allows multiple applications to share a platform configuration. For
+example, a browser has only one URL bar, no matter how many applications you
+have running. You can configure additional platform-specific providers at the
+platform level by supplying extraProviders using the platformBrowser() function.
+The next parent injector in the hierarchy is the NullInjector() , which is the
+top of the tree. If you've gone so far up the tree that you are looking for a
+service in the NullInjector() , you'll get an error unless you've used
+@Optional() because ultimately, everything ends at the NullInjector() and it
+returns an error or, in the case of @Optional() , null . For more information on
+@Optional() , see the @Optional() section of this guide. The following diagram
+represents the relationship between the root ModuleInjector and its parent
+injectors as the previous paragraphs describe. EnvironmentInjector (configured
+by Angular) has special things
+----------------------------------------------------------------------------------------------------
+Index: 5794 <<"chunk_id": 157, "docno": 788>>
+
+its injector produces: - An instance of `Car` resolved by injector (C) - An
+`Engine` resolved by injector (B) - Its `Tires` resolved by the root injector
+(A). ```mermaid graph BT; subgraph A[" "] direction LR RootInjector["(A)
+RootInjector"] ServicesA["CarService, EngineService, TiresService"] end subgraph
+B[" "] direction LR ParentInjector["(B) ParentInjector"] ServicesB["CarService2,
+EngineService2"] end subgraph C[" "] direction LR ChildInjector["(C)
+ChildInjector"] ServicesC["CarService3"] end direction LR car["(C) Car"]
+engine["(B) Engine"] tires["(A) Tires"] direction BT car-->ChildInjector
+ChildInjector-->ParentInjector-->RootInjector class
+car,engine,tires,RootInjector,ParentInjector,ChildInjector,ServicesA,ServicesB,ServicesC,A,B,C
+noShadow style car fill:#A9D18E,color:#000 style ChildInjector
+fill:#A9D18E,color:#000 style engine fill:#FFE699,color:#000 style
+ParentInjector fill:#FFE699,color:#000 style tires fill:#BDD7EE,color:#000 style
+RootInjector fill:#BDD7EE,color:#000 ``` ## More on dependency injection #
+Optimizing client application size with lightweight injection tokens This page
+provides a conceptual overview of a dependency injection technique that is
+recommended for library developers. Designing your library with _lightweight
+injection tokens_ helps optimize the bundle size of client applications that use
+your library. You can manage the dependency structure among your components and
+injectable services to optimize bundle size by using tree-shakable providers.
+This normally ensures that if a provided component or service is never actually
+used by the application, the compiler can remove its code from the bundle. Due
+to the way Angular stores injection tokens, it is possible that such an unused
+component or service can end up in the bundle anyway. This page describes a
+dependency injection design pattern that supports proper tree-shaking by using
+lightweight injection tokens. The lightweight injection token design pattern is
+especially important for library developers. It ensures that when an application
+uses only some of your
+----------------------------------------------------------------------------------------------------
+Index: 28515 <<"chunk_id": 2, "docno": 4166>>
+
+all the pink components from the diagram below ( AppComponent , HeaderComponent
+, SearchComponent , ButtonComponent ) unless MainComponent receives new inputs:
+AppComponent HeaderComponent MainComponent (OnPush) SearchComponent
+ButtonComponent LoginComponent (OnPush) DetailsComponent Event An event is
+handled by a component with OnPush If Angular handles an event within a
+component with OnPush strategy, the framework will execute change detection
+within the entire component tree. Angular will ignore component subtrees with
+roots using OnPush, which have not received new inputs and are outside the
+component which handled the event. As an example, if Angular handles an event
+within MainComponent , the framework will run change detection in the entire
+component tree. Angular will ignore the subtree with root LoginComponent because
+it has OnPush and the event happened outside of its scope. AppComponent
+HeaderComponent MainComponent (OnPush) SearchComponent ButtonComponent
+LoginComponent (OnPush) DetailsComponent Event An event is handled by a
+descendant of a component with OnPush If Angular handles an event in a component
+with OnPush, the framework will execute change detection in the entire component
+tree, including the component’s ancestors. As an example, in the diagram below,
+Angular handles an event in LoginComponent which uses OnPush. Angular will
+invoke change detection in the entire component subtree including MainComponent
+( LoginComponent ’s parent), even though MainComponent has OnPush as well.
+Angular checks MainComponent as well because LoginComponent is part of its view.
+AppComponent HeaderComponent MainComponent (OnPush) SearchComponent
+ButtonComponent LoginComponent (OnPush) DetailsComponent Event New inputs to
+component with OnPush Angular will run change detection within a child component
+with OnPush when setting
+----------------------------------------------------------------------------------------------------
+Index: 34302 <<"chunk_id": 3, "docno": 4586>>
+
+following diagram represents the relationship between the root ModuleInjector
+and its parent injectors as the previous paragraphs describe.
+EnvironmentInjector (configured by Angular) has special things like DomSanitizer
+=> providedIn 'platform' root EnvironmentInjector (configured by AppConfig) has
+things for your app => bootstrapApplication(..., AppConfig) NullInjector always
+throws an error unless you use @Optional() While the name root is a special
+alias, other EnvironmentInjector hierarchies don't have aliases. You have the
+option to create EnvironmentInjector hierarchies whenever a dynamically loaded
+component is created, such as with the Router, which will create child
+EnvironmentInjector hierarchies. All requests forward up to the root injector,
+whether you configured it with the ApplicationConfig instance passed to the
+bootstrapApplication() method, or registered all providers with root in their
+own services. @Injectable() vs. ApplicationConfig If you configure an app-wide
+provider in the ApplicationConfig of bootstrapApplication , it overrides one
+configured for root in the @Injectable() metadata. You can do this to configure
+a non-default provider of a service that is shared with multiple applications.
+Here is an example of the case where the component router configuration includes
+a non-default location strategy by listing its provider in the providers list of
+the ApplicationConfig . providers : [{provide: LocationStrategy , useClass:
+HashLocationStrategy }]; For NgModule based applications, configure app-wide
+providers in the AppModule providers . ElementInjector Angular creates
+ElementInjector hierarchies implicitly for each DOM element. Providing a service
+in the @Component() decorator using its providers or viewProviders property
+configures an ElementInjector . For example, the following TestComponent
+configures the ElementInjector by providing the service as follows:
+----------------------------------------------------------------------------------------------------
+Index: 18695 <<"chunk_id": 7, "docno": 2474>>
+
+your intention, you can have a shared module (that will act as act as the "root"
+module) and create all downgraded modules using that module's injector:
+{@example upgrade/static/ts/lite-multi-shared/module.ts
+region="shared-root-module"} Description A helper function for creating an
+AngularJS module that can bootstrap an Angular module "on-demand" (possibly
+lazily) when a downgraded component needs to be instantiated. Part of the
+upgrade/static library for hybrid upgrade apps that support AOT compilation. It
+allows loading/bootstrapping the Angular part of a hybrid application lazily and
+not having to pay the cost up-front. For example, you can have an AngularJS
+application that uses Angular for specific routes and only instantiate the
+Angular modules if/when the user visits one of these routes. The Angular module
+will be bootstrapped once (when requested for the first time) and the same
+reference will be used from that point onwards. downgradeModule() requires
+either an NgModuleFactory , NgModule class or a function: NgModuleFactory : If
+you pass an NgModuleFactory , it will be used to instantiate a module using
+platformBrowser 's bootstrapModuleFactory() . NOTE: this type of the argument is
+deprecated. Please either provide an NgModule class or a bootstrap function
+instead. NgModule class: If you pass an NgModule class, it will be used to
+instantiate a module using platformBrowser 's bootstrapModule() . Function : If
+you pass a function, it is expected to return a promise resolving to an
+NgModuleRef . The function is called with an array of extra Providers that are
+expected to be available from the returned NgModuleRef 's Injector .
+downgradeModule() returns the
+----------------------------------------------------------------------------------------------------
+Index: 5720 <<"chunk_id": 83, "docno": 788>>
+
+a structural directive when you need reusable rendering behavior that control
+flow doesn't cover, such as gating content behind a permission check or
+providing a template with data from an external source. ## Example use case This
+guide uses a directive called `SelectDirective` as its running example. The
+directive fetches data from a given data source and renders its template when
+that data is available. It is named after the SQL keyword `SELECT` and matched
+with an attribute selector, `[select]`. `SelectDirective` has an input naming
+the data source to use, called `selectFrom`. The `select` prefix for this input
+is important for the [shorthand syntax](#structural-directive-shorthand). The
+directive instantiates its `<ng-template>` with a template context providing the
+selected data. Using this directive directly on an `<ng-template>` looks like
+this: ```html <ng-template select let-data [selectFrom]="source"> <p>The data
+is: {{ data }}</p> </ng-template> ``` The structural directive can wait for the
+data to become available and then render its `<ng-template>`. HELPFUL: Angular's
+`<ng-template>` element defines a template that doesn't render anything by
+default. If you wrap elements in an `<ng-template>` without applying a
+structural directive, those elements are not rendered. For more information, see
+the [ng-template API](api/core/ng-template) documentation. ## Structural
+directive shorthand Angular supports a shorthand syntax for structural
+directives which avoids the need to explicitly author an `<ng-template>`
+element. Structural directives can be applied directly on an element by
+prefixing the directive attribute selector with an asterisk (`*`), such as
+`*select`. Angular transforms the asterisk in front of a structural directive
+into an `<ng-template>` that hosts the directive and
+----------------------------------------------------------------------------------------------------
+Index: 39511 <<"chunk_id": 4, "docno": 5923>>
+
+allows checking whether a given instance has already been destroyed. This is
+useful for avoiding operations on destroyed components, especially when dealing
+with delayed or asynchronous logic. By checking destroyRef.destroyed , you can
+prevent executing code after the instance has been cleaned up, avoiding
+potential errors such as NG0911: View has already been destroyed. . ngDoCheck
+The ngDoCheck method runs before every time Angular checks a component's
+template for changes. You can use this lifecycle hook to manually check for
+state changes outside of Angular's normal change detection, manually updating
+the component's state. This method runs very frequently and can significantly
+impact your page's performance. Avoid defining this hook whenever possible, only
+using it when you have no alternative. During initialization, the first
+ngDoCheck runs after ngOnInit . ngAfterContentInit The ngAfterContentInit method
+runs once after all the children nested inside the component (its content ) have
+been initialized. You can use this lifecycle hook to read the results of content
+queries . While you can access the initialized state of these queries,
+attempting to change any state in this method results in an
+ExpressionChangedAfterItHasBeenCheckedError ngAfterContentChecked The
+ngAfterContentChecked method runs every time the children nested inside the
+component (its content ) have been checked for changes. This method runs very
+frequently and can significantly impact your page's performance. Avoid defining
+this hook whenever possible, only using it when you have no alternative. While
+you can access the updated state of content queries here, attempting to change
+any state in this method results in an
+ExpressionChangedAfterItHasBeenCheckedError . ngAfterViewInit
+----------------------------------------------------------------------------------------------------
+Index: 5651 <<"chunk_id": 14, "docno": 788>>
+
+matches _any_ of the selectors in the list. ## Choosing a selector The vast
+majority of components should use a custom element name as their selector. All
+custom element names should include a hyphen as described by [the HTML
+specification](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name).
+By default, Angular reports an error if it encounters a custom tag name that
+does not match any available components, preventing bugs due to mistyped
+component names. See [Advanced component
+configuration](guide/components/advanced-configuration) for details on using
+[native custom elements](https://developer.mozilla.org/docs/Web/Web_Components)
+in Angular templates. ### Selector prefixes The Angular team recommends using a
+short, consistent prefix for all the custom components defined inside your
+project. For example, if you were to build YouTube with Angular, you might
+prefix your components with `yt-`, with components like `yt-menu`, `yt-player`,
+etc. Namespacing your selectors like this makes it immediately clear where a
+particular component comes from. By default, the Angular CLI uses `app-`.
+IMPORTANT: Angular uses the `ng` selector prefix for its own framework APIs.
+Never use `ng` as a selector prefix for your own custom components. ### When to
+use an attribute selector You should consider an attribute selector when you
+want to create a component on a standard native element. For example, if you
+want to create a custom button component, you can take advantage of the standard
+`<button>` element by using an attribute selector: ```typescript {highlight:
+[2]} @Component({ selector: 'button[yt-upload]', ... }) export class
+YouTubeUploadButton { } ``` This approach allows consumers of the component to
+directly use all the element's standard APIs without extra work. This is
+especially
+----------------------------------------------------------------------------------------------------

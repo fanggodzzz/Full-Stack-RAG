@@ -1,0 +1,477 @@
+Index: 16220 <<"chunk_id": 30, "docno": 2165>>
+
+This has a similar purpose to select_related , in that both are designed to stop
+the deluge of database queries that is caused by accessing related objects, but
+the strategy is quite different. select_related works by creating an SQL join
+and including the fields of the related object in the SELECT statement. For this
+reason, select_related gets the related objects in the same database query.
+However, to avoid the much larger result set that would result from joining
+across a ‘many’ relationship, select_related is limited to single-valued
+relationships - foreign key and one-to-one. prefetch_related , on the other
+hand, does a separate lookup for each relationship, and does the ‘joining’ in
+Python. This allows it to prefetch many-to-many, many-to-one, and
+GenericRelation objects which cannot be done using select_related , in addition
+to the foreign key and one-to-one relationships that are supported by
+select_related . It also supports prefetching of GenericForeignKey , however,
+the queryset for each ContentType must be provided in the querysets parameter of
+GenericPrefetch . For example, suppose you have these models: from django.db
+import models class Topping ( models . Model ): name = models . CharField (
+max_length = 30 ) class Pizza ( models . Model ): name = models . CharField (
+max_length = 50 ) toppings = models . ManyToManyField ( Topping ) def __str__ (
+self ): return " %s ( %s )" % ( self . name , ", " . join ( topping . name for
+topping in self . toppings . all ()), ) and
+----------------------------------------------------------------------------------------------------
+Index: 33321 <<"chunk_id": 0, "docno": 4409>>
+
+Performing raw SQL queries | Django documentation | Django Skip to main content
+Django The web framework for perfectionists with deadlines. Menu Main navigation
+Overview Download Documentation News Code Issues Community Foundation ♥ Donate
+Search Submit Toggle theme (current theme: auto) Toggle theme (current theme:
+light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto color theme
+Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it id fr es el
+Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 4.0 3.2 3.1 3.0 2.2 2.1
+2.0 1.11 1.10 1.9 1.8 Performing raw SQL queries ¶ Django gives you three ways
+of performing raw SQL queries: you can embed raw SQL fragments into ORM queries
+using RawSQL (see Raw SQL fragments ), use Manager.raw() to perform raw queries
+and return model instances , or avoid the model layer entirely and execute
+custom SQL directly . Explore the ORM before using raw SQL! The Django ORM
+provides many tools to express queries without writing raw SQL. For example: The
+QuerySet API is extensive. You can annotate and aggregate using many built-in
+database functions . Beyond those, you can create custom query expressions .
+Before using raw SQL, explore the ORM . Ask on one of the support channels to
+see if the ORM supports your use case. Warning You should be very careful
+whenever you write raw SQL. Every time you use it, you should properly escape
+any parameters that the user can control by using params in order to protect
+against
+----------------------------------------------------------------------------------------------------
+Index: 16223 <<"chunk_id": 33, "docno": 2165>>
+
+here; in fact it hurts performance, since you have done a database query that
+you haven’t used. So use this feature with caution! Also, if you call the
+database-altering methods add() , create() , remove() , clear() or set() , on
+related managers , any prefetched cache for the relation will be cleared. You
+can also use the normal join syntax to do related fields of related fields.
+Suppose we have an additional model to the example above: class Restaurant (
+models . Model ): pizzas = models . ManyToManyField ( Pizza , related_name =
+"restaurants" ) best_pizza = models . ForeignKey ( Pizza , related_name =
+"championed_by" , on_delete = models . CASCADE ) The following are all legal:
+>>> Restaurant . objects . prefetch_related ( "pizzas__toppings" ) This will
+prefetch all pizzas belonging to restaurants, and all toppings belonging to
+those pizzas. This will result in a total of 3 database queries - one for the
+restaurants, one for the pizzas, and one for the toppings. >>> Restaurant .
+objects . prefetch_related ( "best_pizza__toppings" ) This will fetch the best
+pizza and all the toppings for the best pizza for each restaurant. This will be
+done in 3 database queries - one for the restaurants, one for the ‘best pizzas’,
+and one for the toppings. The best_pizza relationship could also be fetched
+using select_related to reduce the query count to 2: >>> Restaurant . objects .
+select_related ( "best_pizza" ) . prefetch_related ( "best_pizza__toppings" )
+Since the prefetch is executed after the main query
+----------------------------------------------------------------------------------------------------
+Index: 17736 <<"chunk_id": 6, "docno": 2350>>
+
+has been added to QuerySet . This method returns a new QuerySet that will
+prefetch each of the specified related lookups in a single batch as soon as the
+query begins to be evaluated. Unlike select_related , it does the joins in
+Python, not in the database, and supports many-to-many relationships,
+GenericForeignKey and more. This allows you to fix a very common performance
+problem in which your code ends up doing O(n) database queries (or worse) if
+objects on your primary QuerySet each have many related objects that you also
+need to fetch. Improved password hashing ¶ Django’s auth system (
+django.contrib.auth ) stores passwords using a one-way algorithm. Django 1.3
+uses the SHA1 algorithm, but increasing processor speeds and theoretical attacks
+have revealed that SHA1 isn’t as secure as we’d like. Thus, Django 1.4
+introduces a new password storage system: by default Django now uses the PBKDF2
+algorithm (as recommended by NIST ). You can also easily choose a different
+algorithm (including the popular bcrypt algorithm). For more details, see How
+Django stores passwords . HTML5 doctype ¶ We’ve switched the admin and other
+bundled templates to use the HTML5 doctype. While Django will be careful to
+maintain compatibility with older browsers, this change means that you can use
+any HTML5 features you need in admin pages without having to lose HTML validity
+or override the provided templates to change the doctype. List filters in admin
+interface ¶ Prior to Django 1.4, the admin app let you specify change list
+filters by specifying a field
+----------------------------------------------------------------------------------------------------
+Index: 16219 <<"chunk_id": 29, "docno": 2165>>
+
+or OneToOneField relation in the list of fields passed to select_related() . You
+can also refer to the reverse direction of a OneToOneField in the list of fields
+passed to select_related — that is, you can traverse a OneToOneField back to the
+object on which the field is defined. Instead of specifying the field name, use
+the related_name for the field on the related object. There may be some
+situations where you wish to call select_related() with a lot of related
+objects, or where you don’t know all of the relations. In these cases it is
+possible to call select_related() with no arguments. This will follow all
+non-null foreign keys it can find - nullable foreign keys must be specified.
+This is not recommended in most cases as it is likely to make the underlying
+query more complex, and return more data, than is actually needed. If you need
+to clear the list of related fields added by past calls of select_related on a
+QuerySet , you can pass None as a parameter: >>> without_relations = queryset .
+select_related ( None ) Chaining select_related calls works in a similar way to
+other methods - that is that select_related('foo', 'bar') is equivalent to
+select_related('foo').select_related('bar') . prefetch_related() ¶
+prefetch_related ( * lookups ) ¶ Returns a QuerySet that will automatically
+retrieve, in a single batch, related objects for each of the specified lookups.
+This has a similar purpose to select_related , in that both are designed to stop
+the deluge of database queries that is caused by accessing
+----------------------------------------------------------------------------------------------------
+Index: 16217 <<"chunk_id": 27, "docno": 2165>>
+
+( * fields ) ¶ Returns a QuerySet that will “follow” foreign-key relationships,
+selecting additional related-object data when it executes its query. This is a
+performance booster which results in a single more complex query but means later
+use of foreign-key relationships won’t require database queries. The following
+examples illustrate the difference between plain lookups and select_related()
+lookups. Here’s standard lookup: # Hits the database. e = Entry . objects . get
+( id = 5 ) # Hits the database again to get the related Blog object. b = e .
+blog And here’s select_related lookup: # Hits the database. e = Entry . objects
+. select_related ( "blog" ) . get ( id = 5 ) # Doesn't hit the database, because
+e.blog has been prepopulated # in the previous query. b = e . blog You can use
+select_related() with any queryset of objects: from django.utils import timezone
+# Find all the blogs with entries scheduled to be published in the future. blogs
+= set () for e in Entry . objects . filter ( pub_date__gt = timezone . now ()) .
+select_related ( "blog" ): # Without select_related(), this would make a
+database query for each # loop iteration in order to fetch the related blog for
+each entry. blogs . add ( e . blog ) The order of filter() and select_related()
+chaining isn’t important. These querysets are equivalent: Entry . objects .
+filter ( pub_date__gt = timezone . now ()) . select_related ( "blog" ) Entry .
+objects . select_related
+----------------------------------------------------------------------------------------------------
+Index: 25598 <<"chunk_id": 1, "docno": 3532>>
+
+aspect that triggers the underlying persistence mechanism (JPA, Hibernate,
+TopLink) to send any dirty data to the database. I presented this aspect by the
+way during one of my sessions at The Spring Experience last December and this
+post also has the source code for those of you who were waiting for it. The need
+for mixing usage of ORM engines with straight JDBC In many enterprise
+applications, an Object-Relational Mapping engine is used to manage the storage
+and retrieval of (sometimes complex) domain models. I don't think I have to
+argue that in situations where a heavily interlinked domain model needs to be
+persisted an ORM tool might increase productivity not to speak of efficiency
+over straight JDBC. This does not mean however that writing explicit SQL in an
+application can be completely disposed of. In many situations, one still needs
+to write the occasional SQL query to satisfy a certain requirement in an
+application. I usually see several reasons why people still write SQL queries by
+hand and execute them in Java code such as: Testing code: code that uses an ORM
+tool still needs to be tested. To be absolutely certain that a piece of data
+access code (using an ORM tool) is correctly inserting records in the database,
+one need to verify the database itself... using straight SQL queries. I consider
+it a very good practice to for example first insert an object using an ORM tool
+to then verify the number of rows has increased Stored procedures: it's best to
+call
+----------------------------------------------------------------------------------------------------
+Index: 6346 <<"chunk_id": 4, "docno": 828>>
+
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version How to install Django on Windows How to
+deploy Django How to deploy static files Other guides How to authenticate using
+REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
+protection How to write a custom storage class How to create custom django-admin
+commands How to customize the shell command Django FAQ FAQ: General Why does
+this project exist? What does “Django” mean, and how do you pronounce it? Is
+Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
+does Django
+----------------------------------------------------------------------------------------------------
+Index: 31460 <<"chunk_id": 10, "docno": 4212>>
+
+code within the deprecation timeline for a given feature, its removal may appear
+as a backwards incompatible change. Database backend API ¶ GIS’s AreaField uses
+an unspecified underlying numeric type that could in practice be any numeric
+Python type. decimal.Decimal values retrieved from the database are now
+converted to float to make it easier to combine them with values used by the GIS
+libraries. In order to enable temporal subtraction you must set the
+supports_temporal_subtraction database feature flag to True and implement the
+DatabaseOperations.subtract_temporals() method. This method should return the
+SQL and parameters required to compute the difference in microseconds between
+the lhs and rhs arguments in the datatype used to store DurationField .
+select_related() prohibits non-relational fields for nested relations ¶ Django
+1.8 added validation for non-relational fields in select_related() : >>> Book .
+objects . select_related ( "title" ) Traceback (most recent call last): ...
+FieldError : Non-relational field given in select_related: 'title' But it didn’t
+prohibit nested non-relation fields as it does now: >>> Book . objects .
+select_related ( "author__name" ) Traceback (most recent call last): ...
+FieldError : Non-relational field given in select_related: 'name'
+_meta.get_fields() returns consistent reverse fields for proxy models ¶ Before
+Django 1.10, the get_fields() method returned different reverse fields when
+called on a proxy model compared to its proxied concrete class. This
+inconsistency was fixed by returning the full set of fields pointing to a
+concrete class or one of its proxies in both cases. AbstractUser.username
+max_length increased to 150 ¶ A migration for
+django.contrib.auth.models.User.username is included.
+----------------------------------------------------------------------------------------------------
+Index: 16224 <<"chunk_id": 34, "docno": 2165>>
+
+to 2: >>> Restaurant . objects . select_related ( "best_pizza" ) .
+prefetch_related ( "best_pizza__toppings" ) Since the prefetch is executed after
+the main query (which includes the joins needed by select_related ), it is able
+to detect that the best_pizza objects have already been fetched, and it will
+skip fetching them again. Chaining prefetch_related calls will accumulate the
+lookups that are prefetched. To clear any prefetch_related behavior, pass None
+as a parameter: >>> non_prefetched = qs . prefetch_related ( None ) One
+difference to note when using prefetch_related is that objects created by a
+query can be shared between the different objects that they are related to i.e.
+a single Python model instance can appear at more than one point in the tree of
+objects that are returned. This will normally happen with foreign key
+relationships. Typically this behavior will not be a problem, and will in fact
+save both memory and CPU time. While prefetch_related supports prefetching
+GenericForeignKey relationships, the number of queries will depend on the data.
+Since a GenericForeignKey can reference data in multiple tables, one query per
+table referenced is needed, rather than one query for all the items. There could
+be additional queries on the ContentType table if the relevant rows have not
+already been fetched. prefetch_related in most cases will be implemented using
+an SQL query that uses the ‘IN’ operator. This means that for a large QuerySet a
+large ‘IN’ clause could be generated, which, depending on the database, might
+have performance problems of its own when it
+----------------------------------------------------------------------------------------------------
+Index: 14469 <<"chunk_id": 22, "docno": 1896>>
+
+to __repr__() only returns a slice of the entire queryset. Asynchronous queries
+¶ If you are writing asynchronous views or code, you cannot use the ORM for
+queries in quite the way we have described above, as you cannot call blocking
+synchronous code from asynchronous code - it will block up the event loop (or,
+more likely, Django will notice and raise a SynchronousOnlyOperation to stop
+that from happening). Fortunately, you can do many queries using Django’s
+asynchronous query APIs. Every method that might block - such as get() or
+delete() - has an asynchronous variant ( aget() or adelete() ), and when you
+iterate over results, you can use asynchronous iteration ( async for ) instead.
+Query iteration ¶ The default way of iterating over a query - with for - will
+result in a blocking database query behind the scenes as Django loads the
+results at iteration time. To fix this, you can swap to async for : async for
+entry in Authors . objects . filter ( name__startswith = "A" ): ... Be aware
+that you also can’t do other things that might iterate over the queryset, such
+as wrapping list() around it to force its evaluation (you can use async for in a
+comprehension, if you want it). Because QuerySet methods like filter() and
+exclude() do not actually run the query - they set up the queryset to run when
+it’s iterated over - you can use those freely in asynchronous code. For a guide
+to which methods can keep being used
+----------------------------------------------------------------------------------------------------
+Index: 10277 <<"chunk_id": 0, "docno": 1486>>
+
+App Router: Fetching Data | Next.js Skip to content Search documentation... ⌘K
+Search... ⌘K Showcase Docs Blog Templates Enterprise Search documentation... ⌘K
+Search... ⌘K Deploy Learn 7 Chapter 7 Fetching Data Now that you've created and
+seeded your database, let's discuss the different ways you can fetch data for
+your application, and build out your dashboard overview page. In this chapter...
+Here are the topics we'll cover Learn about some approaches to fetching data:
+APIs, ORMs, SQL, etc. How Server Components can help you access back-end
+resources more securely. What network waterfalls are. How to implement parallel
+data fetching using a JavaScript Pattern. Choosing how to fetch data API layer
+APIs are an intermediary layer between your application code and database. There
+are a few cases where you might use an API: If you're using third-party services
+that provide an API. If you're fetching data from the client, you want to have
+an API layer that runs on the server to avoid exposing your database secrets to
+the client. In Next.js, you can create API endpoints using Route Handlers .
+Database queries When you're creating a full-stack application, you'll also need
+to write logic to interact with your database. For relational databases like
+Postgres, you can do this with SQL or with an ORM . There are a few cases where
+you have to write database queries: When creating your API endpoints, you need
+to write logic to interact with your database. If you are using React Server
+Components (fetching data on the server), you can
+----------------------------------------------------------------------------------------------------
+Index: 15315 <<"chunk_id": 2, "docno": 2018>>
+
+rather than serially. This is especially handy when dealing with external APIs
+or data stores. If you want to call a part of Django that is still synchronous,
+you will need to wrap it in a sync_to_async() call. For example: from
+asgiref.sync import sync_to_async results = await sync_to_async ( sync_function
+, thread_sensitive = True )( pk = 123 ) If you accidentally try to call a part
+of Django that is synchronous-only from an async view, you will trigger Django’s
+asynchronous safety protection to protect your data from corruption. Decorators
+¶ The following decorators can be used with both synchronous and asynchronous
+view functions: cache_control() never_cache() no_append_slash() csp_override()
+csp_report_only_override() csrf_exempt() csrf_protect() ensure_csrf_cookie()
+requires_csrf_token() sensitive_variables() sensitive_post_parameters()
+gzip_page() condition() conditional_page() etag() last_modified()
+require_http_methods() require_GET() require_POST() require_safe()
+vary_on_cookie() vary_on_headers() xframe_options_deny()
+xframe_options_sameorigin() xframe_options_exempt() For example: from
+django.views.decorators.cache import never_cache @never_cache def my_sync_view (
+request ): ... @never_cache async def my_async_view ( request ): ... Queries &
+the ORM ¶ With some exceptions, Django can run ORM queries asynchronously: async
+for author in Author . objects . filter ( name__startswith = "A" ): book = await
+author . books . afirst () Detailed notes can be found in Asynchronous queries ,
+but in short: All QuerySet methods that cause an SQL query to occur have an a
+-prefixed asynchronous variant. async for is supported on all QuerySets
+(including the output of values() and values_list() .) Asynchronous model
+methods that use the database are also supported: async def make_book ( * args ,
+** kwargs ): book = Book ( ... )
+----------------------------------------------------------------------------------------------------
+Index: 568 <<"chunk_id": 1, "docno": 98>>
+
+complete. Use the use cache directive to cache results, or wrap the fetching
+component in to stream fresh data at request time. See caching for details.
+During development, you can log fetch calls for better visibility and debugging.
+See the logging API reference . With an ORM or database Since Server Components
+are rendered on the server, credentials and query logic will not be included in
+the client bundle so you can safely make database queries using an ORM or
+database client. tsx filename="app/blog/page.tsx" switcher import { db, posts }
+from '@/lib/db' export default async function Page() { const allPosts = await
+db.select().from(posts) return ( {allPosts.map((post) => ( {post.title} ))} ) }
+jsx filename="app/blog/page.js" switcher import { db, posts } from '@/lib/db'
+export default async function Page() { const allPosts = await
+db.select().from(posts) return ( {allPosts.map((post) => ( {post.title} ))} ) }
+You should still ensure requests are properly authenticated and authorized. For
+best practices on securing server-side data access, see the data security guide
+. Streaming When you fetch data in Server Components, the data is fetched and
+rendered on the server for each request. If you have any slow data requests, the
+whole route will be blocked from rendering until all the data is fetched. To
+improve the initial load time and user experience, you can break the page into
+smaller chunks and progressively send those chunks from the server to the
+client. This is called streaming. See the Streaming guide for a deeper look at
+how streaming works, including the HTTP contract, infrastructure
+----------------------------------------------------------------------------------------------------
+Index: 18777 <<"chunk_id": 45, "docno": 2483>>
+
+reference](/docs/app/api-reference/config/next-config-js/logging). #### With an
+ORM or database Since Server Components are rendered on the server, credentials
+and query logic will not be included in the client bundle so you can safely make
+database queries using an ORM or database client. ```tsx
+filename="app/blog/page.tsx" switcher import { db, posts } from '@/lib/db'
+export default async function Page() { const allPosts = await
+db.select().from(posts) return ( <ul> {allPosts.map((post) => ( <li
+key={post.id}>{post.title}</li> ))} </ul> ) } ``` ```jsx
+filename="app/blog/page.js" switcher import { db, posts } from '@/lib/db' export
+default async function Page() { const allPosts = await db.select().from(posts)
+return ( <ul> {allPosts.map((post) => ( <li key={post.id}>{post.title}</li> ))}
+</ul> ) } ``` You should still ensure requests are properly authenticated and
+authorized. For best practices on securing server-side data access, see the
+[data security guide](/docs/app/guides/data-security). ### Streaming When you
+fetch data in Server Components, the data is fetched and rendered on the server
+for each request. If you have any slow data requests, the whole route will be
+blocked from rendering until all the data is fetched. To improve the initial
+load time and user experience, you can break the page into smaller *chunks* and
+progressively send those chunks from the server to the client. This is called
+streaming. See the [Streaming guide](/docs/app/guides/streaming) for a deeper
+look at how streaming works, including the HTTP contract, infrastructure
+considerations, and performance trade-offs. ![How Server Rendering with
+Streaming
+Works](https://h8DxKfmAPhn8O0p3.public.blob.vercel-storage.com/docs/light/server-rendering-with-streaming.png)
+There are two ways you can use streaming in your application: 1. Wrapping a page
+with a [`loading.js` file](#with-loadingjs) 2. Wrapping a component with
+----------------------------------------------------------------------------------------------------
+Index: 16274 <<"chunk_id": 84, "docno": 2165>>
+
+evaluate the list of values instead of providing a list of literal values:
+inner_qs = Blog . objects . filter ( name__contains = "Cheddar" ) entries =
+Entry . objects . filter ( blog__in = inner_qs ) This queryset will be evaluated
+as subselect statement: SELECT ... WHERE blog . id IN ( SELECT id FROM ... WHERE
+NAME LIKE '%Cheddar%' ) If you pass in a QuerySet resulting from values() or
+values_list() as the value to an __in lookup, you need to ensure you are only
+extracting one field in the result. For example, this will work (filtering on
+the blog names): inner_qs = Blog . objects . filter ( name__contains = "Ch" ) .
+values ( "name" ) entries = Entry . objects . filter ( blog__name__in = inner_qs
+) This example will raise an exception, since the inner query is trying to
+extract two field values, where only one is expected: # Bad code! Will raise a
+TypeError. inner_qs = Blog . objects . filter ( name__contains = "Ch" ) . values
+( "name" , "id" ) entries = Entry . objects . filter ( blog__name__in = inner_qs
+) Performance considerations Be cautious about using nested queries and
+understand your database server’s performance characteristics (if in doubt,
+benchmark!). Some database backends, most notably MySQL, don’t optimize nested
+queries very well. It is more efficient, in those cases, to extract a list of
+values and then pass that into the second query. That is, execute two queries
+instead of one: values = Blog .
+----------------------------------------------------------------------------------------------------
+Index: 25599 <<"chunk_id": 2, "docno": 3532>>
+
+for example first insert an object using an ORM tool to then verify the number
+of rows has increased Stored procedures: it's best to call stored procedures
+with a JDBC call instead of via clunky APIs. I really don't want to get into the
+debate whether or not stored procedures are good. If you're into that, just read
+some of these posts. Story is: I come across projects frequently that use stored
+procs and want to mix code that does so with code that uses an ORM engine. For
+example to first insert several new objects, after which an aggregation needs to
+be performed over the newly inserted records and the records already available.
+Operations that involves a very large amount of similar objects. This could be
+the case when for example you need to set the canceled flag of a million orders
+from true to false . I personally might not want to use an ORM engine for this
+(sometimes even if the ORM engine has a clean DML to handle the dirty work for
+me). Issue with mixing ORM operations with straight SQL There is one big issue
+with mixing operations executed by an ORM engine with operations using straight
+SQL in your application. To understand this, first have a look at the following
+piece of pseudo code (considering the database is empty): start transaction
+create part with name Bolt associate with ORM engine (i.e. save using entity
+manager) update part set stock = 15 where name='Bolt' end transaction The update
+statement here will
+----------------------------------------------------------------------------------------------------
+Index: 41062 <<"chunk_id": 2, "docno": 6274>>
+
+manage.py migrate Test and tweak ¶ Those are the basic steps – from here you’ll
+want to tweak the models Django generated until they work the way you’d like.
+Try accessing your data via the Django database API, and try editing objects via
+Django’s admin site, and edit the models file accordingly. Previous page and
+next page How to provide initial data for models How to create custom model
+fields Back to Top Additional Information Support Django! Valtteri Mäkelä
+donated to the Django Software Foundation to support Django development. Donate
+today! Contents How to integrate Django with a legacy database Give Django your
+database parameters Auto-generate the models Install the core Django tables Test
+and tweak Browse Prev: How to provide initial data for models Next: How to
+create custom model fields Table of contents General Index Python Module Index
+You are here: Django dev documentation How-to guides How to integrate Django
+with a legacy database Getting help FAQ Try the FAQ — it's got answers to many
+common questions. Index , Module Index , or Table of Contents Handy when looking
+for specific information. Django Discord Server Join the Django Discord
+Community. Official Django Forum Join the community on the Django Forum. Ticket
+tracker Report bugs with Django or Django documentation in our ticket tracker.
+Download: Offline (development version): HTML | PDF | ePub Provided by Read the
+Docs . Diamond and Platinum Members Sentry Monitor your Django Code Resolve
+performance bottlenecks and errors using monitoring, replays, logs and Seer an
+AI agent for debugging.
+----------------------------------------------------------------------------------------------------
+Index: 33322 <<"chunk_id": 1, "docno": 4409>>
+
+SQL. Every time you use it, you should properly escape any parameters that the
+user can control by using params in order to protect against SQL injection
+attacks. Please read more about SQL injection protection . Raw SQL fragments ¶
+In some cases, you may need to embed raw SQL fragments directly into ORM queries
+— for example, in annotate() or filter() calls. Use Func() expressions for
+calling database functions across backends, or RawSQL for arbitrary
+parameterized SQL fragments. Performing raw queries ¶ The raw() manager method
+can be used to perform raw SQL queries that return model instances: Manager. raw
+( raw_query , params = () , translations = None ) ¶ This method takes a raw SQL
+query, executes it, and returns a django.db.models.query.RawQuerySet instance.
+This RawQuerySet instance can be iterated over like a normal QuerySet to provide
+object instances. This is best illustrated with an example. Suppose you have the
+following model: class Person ( models . Model ): first_name = models .
+CharField ( ... ) last_name = models . CharField ( ... ) birth_date = models .
+DateField ( ... ) You could then execute custom SQL like so: >>> for p in Person
+. objects . raw ( "SELECT * FROM myapp_person" ): ... print ( p ) ... John Smith
+Jane Jones This example isn’t very exciting – it’s exactly the same as running
+Person.objects.all() . However, raw() has a bunch of other options that make it
+very powerful. Model table names Where did the name of the Person
+----------------------------------------------------------------------------------------------------
+Index: 27790 <<"chunk_id": 0, "docno": 4036>>
+
+Models and databases | Django documentation | Django Skip to main content Django
+The web framework for perfectionists with deadlines. Menu Main navigation
+Overview Download Documentation News Code Issues Community Foundation ♥ Donate
+Search Submit Toggle theme (current theme: auto) Toggle theme (current theme:
+light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto color theme
+Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it id fr es el
+Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 4.0 3.2 3.1 3.0 2.2 2.1
+2.0 1.11 1.10 1.9 1.8 Models and databases ¶ A model is the single, definitive
+source of information about your data. It contains the essential fields and
+behaviors of the data you’re storing. Generally, each model maps to a single
+database table. Models Making queries Aggregation Search Managers Performing raw
+SQL queries Database transactions Multiple databases Tablespaces Database access
+optimization Database instrumentation Fixtures Examples of model relationship
+API usage Previous page and next page How to install Django Models Back to Top
+Additional Information Support Django! Daniel Rios donated to the Django
+Software Foundation to support Django development. Donate today! Contents Models
+and databases Browse Prev: How to install Django Next: Models Table of contents
+General Index Python Module Index You are here: Django 6.0 documentation Using
+Django Models and databases Getting help FAQ Try the FAQ — it's got answers to
+many common questions. Index , Module Index , or Table of Contents Handy when
+looking for specific information. Django Discord Server Join the Django
+----------------------------------------------------------------------------------------------------

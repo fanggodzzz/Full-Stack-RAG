@@ -1,0 +1,463 @@
+Index: 105 <<"chunk_id": 0, "docno": 22>>
+
+The Request Context — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » The Request Context The Request
+Context ¶ The request context keeps track of the request-level data during a
+request. Rather than passing the request object to each function that runs
+during a request, the request and session proxies are accessed instead. This is
+similar to The Application Context , which keeps track of the application-level
+data independent of a request. A corresponding application context is pushed
+when a request context is pushed. Purpose of the Context ¶ When the Flask
+application handles a request, it creates a Request object based on the
+environment it received from the WSGI server. Because a worker (thread, process,
+or coroutine depending on the server) handles only one request at a time, the
+request data can be considered global to that worker during that request. Flask
+uses the term context local for this. Flask automatically pushes a request
+context when handling a request. View functions, error handlers, and other
+functions that run during a request will have access to the request proxy, which
+points to the request object for the current request. Lifetime of the Context ¶
+When a Flask application begins handling a request, it pushes a request context,
+which also pushes an app context . When the request ends it pops the request
+context then the application context. The context is unique to each thread (or
+other worker type). request cannot be passed to another thread, the other thread
+has
+----------------------------------------------------------------------------------------------------
+Index: 2900 <<"chunk_id": 0, "docno": 419>>
+
+The Application Context — Flask Documentation (3.1.x) Navigation index modules |
+next | previous | Flask Documentation (3.1.x) » The Application Context The
+Application Context ¶ The application context keeps track of the
+application-level data during a request, CLI command, or other activity. Rather
+than passing the application around to each function, the current_app and g
+proxies are accessed instead. This is similar to The Request Context , which
+keeps track of request-level data during a request. A corresponding application
+context is pushed when a request context is pushed. Purpose of the Context ¶ The
+Flask application object has attributes, such as config , that are useful to
+access within views and CLI commands . However, importing the app instance
+within the modules in your project is prone to circular import issues. When
+using the app factory pattern or writing reusable blueprints or extensions there
+won’t be an app instance to import at all. Flask solves this issue with the
+application context . Rather than referring to an app directly, you use the
+current_app proxy, which points to the application handling the current
+activity. Flask automatically pushes an application context when handling a
+request. View functions, error handlers, and other functions that run during a
+request will have access to current_app . Flask will also automatically push an
+app context when running CLI commands registered with Flask.cli using
+@app.cli.command() . Lifetime of the Context ¶ The application context is
+created and destroyed as necessary. When a Flask application begins handling a
+request, it pushes an application
+----------------------------------------------------------------------------------------------------
+Index: 107 <<"chunk_id": 2, "docno": 22>>
+
+code not related to testing, it most likely indicates that you should move that
+code into a view function. For information on how to use the request context
+from the interactive Python shell, see Working with the Shell . How the Context
+Works ¶ The Flask.wsgi_app() method is called to handle each request. It manages
+the contexts during the request. Internally, the request and application
+contexts work like stacks. When contexts are pushed, the proxies that depend on
+them are available and point at information from the top item. When the request
+starts, a RequestContext is created and pushed, which creates and pushes an
+AppContext first if a context for that application is not already the top
+context. While these contexts are pushed, the current_app , g , request , and
+session proxies are available to the original thread handling the request. Other
+contexts may be pushed to change the proxies during a request. While this is not
+a common pattern, it can be used in advanced applications to, for example, do
+internal redirects or chain different applications together. After the request
+is dispatched and a response is generated and sent, the request context is
+popped, which then pops the application context. Immediately before they are
+popped, the teardown_request() and teardown_appcontext() functions are executed.
+These execute even if an unhandled exception occurred during dispatch. Callbacks
+and Errors ¶ Flask dispatches a request in multiple stages which can affect the
+request, response, and how errors are handled. The contexts are active during
+all of these stages. A
+----------------------------------------------------------------------------------------------------
+Index: 3275 <<"chunk_id": 10, "docno": 457>>
+
+be wondering how that object can be global and how Flask manages to still be
+threadsafe. The answer is context locals: Context Locals ¶ Insider Information
+If you want to understand how that works and how you can implement tests with
+context locals, read this section, otherwise just skip it. Certain objects in
+Flask are global objects, but not of the usual kind. These objects are actually
+proxies to objects that are local to a specific context. What a mouthful. But
+that is actually quite easy to understand. Imagine the context being the
+handling thread. A request comes in and the web server decides to spawn a new
+thread (or something else, the underlying object is capable of dealing with
+concurrency systems other than threads). When Flask starts its internal request
+handling it figures out that the current thread is the active context and binds
+the current application and the WSGI environments to that context (thread). It
+does that in an intelligent way so that one application can invoke another
+application without breaking. So what does this mean to you? Basically you can
+completely ignore that this is the case unless you are doing something like unit
+testing. You will notice that code which depends on a request object will
+suddenly break because there is no request object. The solution is creating a
+request object yourself and binding it to the context. The easiest solution for
+unit testing is to use the test_request_context() context manager. In
+combination with the with statement it will bind a test
+----------------------------------------------------------------------------------------------------
+Index: 3548 <<"chunk_id": 32, "docno": 493>>
+
+accessible from. If it was not configured during init, it is derived from
+static_folder . teardown_appcontext ( f ) ¶ Registers a function to be called
+when the application context is popped. The application context is typically
+popped after the request context for each request, at the end of CLI commands,
+or after a manually pushed context ends. with app . app_context (): ... When the
+with block exits (or ctx.pop() is called), the teardown functions are called
+just before the app context is made inactive. Since a request context typically
+also manages an application context it would also be called when you pop a
+request context. When a teardown function was called because of an unhandled
+exception it will be passed an error object. If an errorhandler() is registered,
+it will handle the exception and the teardown will not receive it. Teardown
+functions must avoid raising exceptions. If they execute code that might fail
+they must surround that code with a try / except block and log any errors. The
+return values of teardown functions are ignored. Changelog Added in version 0.9.
+Parameters : f ( T_teardown ) Return type : T_teardown teardown_request ( f ) ¶
+Register a function to be called when the request context is popped. Typically
+this happens at the end of each request, but contexts may be pushed manually as
+well during testing. with app . test_request_context (): ... When the with block
+exits (or ctx.pop() is called), the teardown functions are called just before
+the request context is made
+----------------------------------------------------------------------------------------------------
+Index: 2901 <<"chunk_id": 1, "docno": 419>>
+
+of the Context ¶ The application context is created and destroyed as necessary.
+When a Flask application begins handling a request, it pushes an application
+context and a request context . When the request ends it pops the request
+context then the application context. Typically, an application context will
+have the same lifetime as a request. See The Request Context for more
+information about how the contexts work and the full life cycle of a request.
+Manually Push a Context ¶ If you try to access current_app , or anything that
+uses it, outside an application context, you’ll get this error message:
+RuntimeError: Working outside of application context. This typically means that
+you attempted to use functionality that needed to interface with the current
+application object in some way. To solve this, set up an application context
+with app.app_context(). If you see that error while configuring your
+application, such as when initializing an extension, you can push a context
+manually since you have direct access to the app . Use app_context() in a with
+block, and everything that runs in the block will have access to current_app .
+def create_app (): app = Flask ( __name__ ) with app . app_context (): init_db
+() return app If you see that error somewhere else in your code not related to
+configuring the application, it most likely indicates that you should move that
+code into a view function or CLI command. Storing Data ¶ The application context
+is a good place to store common data during a request
+----------------------------------------------------------------------------------------------------
+Index: 1348 <<"chunk_id": 3, "docno": 204>>
+
+take the return value of that call and modify it further. From the WSGI server’s
+perspective, there is one WSGI application, the one it calls directly.
+Typically, Flask is the “real” application at the end of the chain of
+middleware. But even Flask can call further WSGI applications, although that’s
+an advanced, uncommon use case. A common middleware you’ll see used with Flask
+is Werkzeug’s ProxyFix , which modifies the request to look like it came
+directly from a client even if it passed through HTTP proxies on the way. There
+are other middleware that can handle serving static files, authentication, etc.
+How a Request is Handled ¶ For us, the interesting part of the steps above is
+when Flask gets called by the WSGI server (or middleware). At that point, it
+will do quite a lot to handle the request and generate the response. At the most
+basic, it will match the URL to a view function, call the view function, and
+pass the return value back to the server. But there are many more parts that you
+can use to customize its behavior. WSGI server calls the Flask object, which
+calls Flask.wsgi_app() . A RequestContext object is created. This converts the
+WSGI environ dict into a Request object. It also creates an AppContext object.
+The app context is pushed, which makes current_app and g available. The
+appcontext_pushed signal is sent. The request context is pushed, which makes
+request and session available. The session is opened, loading any existing
+session data using the app’s session_interface
+----------------------------------------------------------------------------------------------------
+Index: 3618 <<"chunk_id": 102, "docno": 493>>
+
+given, passes an instance of ScriptInfo that knows how to load the Flask app
+being tested. Parameters : cli ( Any ) – Command object to invoke. Default is
+the app’s cli group. args ( Any ) – List of strings to invoke the command with.
+kwargs ( Any ) Returns : a Result object. Return type : Result Application
+Globals ¶ To share data that is valid for one request only from one function to
+another, a global variable is not good enough because it would break in threaded
+environments. Flask provides you with a special object that ensures it is only
+valid for the active request and that will return different values for each
+request. In a nutshell: it does the right thing, like it does for request and
+session . flask. g ¶ A namespace object that can store data during an
+application context . This is an instance of Flask.app_ctx_globals_class , which
+defaults to ctx._AppCtxGlobals . This is a good place to store resources during
+a request. For example, a before_request function could load a user object from
+a session id, then set g.user to be used in the view function. This is a proxy.
+See Notes On Proxies for more information. Changelog Changed in version 0.10:
+Bound to the application context instead of the request context. class
+flask.ctx. _AppCtxGlobals ¶ A plain object. Used as a namespace for storing data
+during an application context. Creating an app context automatically creates
+this object, which is made available as the g proxy. 'key'
+----------------------------------------------------------------------------------------------------
+Index: 977 <<"chunk_id": 28, "docno": 150>>
+
+how JSON is handled by Flask or any Flask extension. Removed deprecated internal
+flask.session module alias. Use flask.sessions instead to get the session
+module. This is not to be confused with flask.session the session proxy.
+Templates can now be rendered without request context. The behavior is slightly
+different as the request , session and g objects will not be available and
+blueprint’s context processors are not called. The config object is now
+available to the template as a real global and not through a context processor
+which makes it available even in imported templates by default. Added an option
+to generate non-ascii encoded JSON which should result in less bytes being
+transmitted over the network. It’s disabled by default to not cause confusion
+with existing libraries that might expect flask.json.dumps to return bytes by
+default. flask.g is now stored on the app context instead of the request
+context. flask.g now gained a get() method for not erroring out on non existing
+items. flask.g now can be used with the in operator to see what’s defined and it
+now is iterable and will yield all attributes stored.
+flask.Flask.request_globals_class got renamed to
+flask.Flask.app_ctx_globals_class which is a better name to what it does since
+0.10. request , session and g are now also added as proxies to the template
+context which makes them available in imported templates. One has to be very
+careful with those though because usage outside of macros might cause caching.
+Flask will no longer invoke the wrong error handlers if a proxy exception is
+passed
+----------------------------------------------------------------------------------------------------
+Index: 955 <<"chunk_id": 6, "docno": 150>>
+
+will become an error just like the application setup methods. #4571
+before_first_request is deprecated. Run setup code when creating the application
+instead. #4605 Added the View.init_every_request class attribute. If a view
+subclass sets this to False , the view will not create a new instance on every
+request. #2520 . A flask.cli.FlaskGroup Click group can be nested as a
+sub-command in a custom CLI. #3263 Add --app and --debug options to the flask
+CLI, instead of requiring that they are set through environment variables. #2836
+Add --env-file option to the flask CLI. This allows specifying a dotenv file to
+load in addition to .env and .flaskenv . #3108 It is no longer required to
+decorate custom CLI commands on app.cli or blueprint.cli with @with_appcontext ,
+an app context will already be active at that point. #2410
+SessionInterface.get_expiration_time uses a timezone-aware value. #4645 View
+functions can return generators directly instead of wrapping them in a Response
+. #4629 Add stream_template and stream_template_string functions to render a
+template as a stream of pieces. #4629 A new implementation of context
+preservation during debugging and testing. #4666 request , g , and other
+context-locals point to the correct data when running code in the interactive
+debugger console. #2836 Teardown functions are always run at the end of the
+request, even if the context is preserved. They are also run after the preserved
+context is popped. stream_with_context preserves context separately from a with
+client block. It will be cleaned up when response.get_data() or response.close()
+is called. Allow returning a list from
+----------------------------------------------------------------------------------------------------
+Index: 1671 <<"chunk_id": 0, "docno": 247>>
+
+Using SQLite 3 with Flask — Flask Documentation (3.1.x) Navigation index modules
+| next | previous | Flask Documentation (3.1.x) » Patterns for Flask » Using
+SQLite 3 with Flask Using SQLite 3 with Flask ¶ In Flask you can easily
+implement the opening of database connections on demand and closing them when
+the context dies (usually at the end of the request). Here is a simple example
+of how you can use SQLite 3 with Flask: import sqlite3 from flask import g
+DATABASE = '/path/to/database.db' def get_db (): db = getattr ( g , '_database'
+, None ) if db is None : db = g . _database = sqlite3 . connect ( DATABASE )
+return db @app . teardown_appcontext def close_connection ( exception ): db =
+getattr ( g , '_database' , None ) if db is not None : db . close () Now, to use
+the database, the application must either have an active application context
+(which is always true if there is a request in flight) or create an application
+context itself. At that point the get_db function can be used to get the current
+database connection. Whenever the context is destroyed the database connection
+will be terminated. Example: @app . route ( '/' ) def index (): cur = get_db ()
+. cursor () ... Note Please keep in mind that the teardown request and
+appcontext functions are always executed, even if a before-request handler
+failed or was never executed. Because of this we have to make sure here that
+----------------------------------------------------------------------------------------------------
+Index: 2853 <<"chunk_id": 4, "docno": 410>>
+
+It’s up to you to decide what configuration is appropriate for your extension,
+based on what you need and what you want to support. Configuration should not be
+changed after the application setup phase is complete and the server begins
+handling requests. Configuration is global, any changes to it are not guaranteed
+to be visible to other workers. Data During a Request ¶ When writing a Flask
+application, the g object is used to store information during a request. For
+example the tutorial stores a connection to a SQLite database as g.db .
+Extensions can also use this, with some care. Since g is a single global
+namespace, extensions must use unique names that won’t collide with user data.
+For example, use the extension name as a prefix, or as a namespace. # an
+internal prefix with the extension name g . _hello_user_id = 2 # or an internal
+prefix as a namespace from types import SimpleNamespace g . _hello =
+SimpleNamespace () g . _hello . user_id = 2 The data in g lasts for an
+application context. An application context is active when a request context is,
+or when a CLI command is run. If you’re storing something that should be closed,
+use teardown_appcontext() to ensure that it gets closed when the application
+context ends. If it should only be valid during a request, or would not be used
+in the CLI outside a request, use teardown_request() . Views and Models ¶ Your
+extension views might want to interact with specific models in your
+----------------------------------------------------------------------------------------------------
+Index: 3650 <<"chunk_id": 134, "docno": 493>>
+
+at the end of the request. It will create the URL adapter and request object for
+the WSGI environment provided. Do not attempt to use this class directly,
+instead use test_request_context() and request_context() to create this object.
+When the request context is popped, it will evaluate all the functions
+registered on the application for teardown execution ( teardown_request() ). The
+request context is automatically popped at the end of the request. When using
+the interactive debugger, the context will be restored so request is still
+accessible. Similarly, the test client can preserve the context after the
+request ends. However, teardown functions may already have closed some resources
+such as database connections. Parameters : app ( Flask ) environ (
+WSGIEnvironment ) request ( Request | None ) session ( SessionMixin | None )
+copy ( ) ¶ Creates a copy of this request context with the same request object.
+This can be used to move a request context to a different greenlet. Because the
+actual request object is the same this cannot be used to move a request context
+to a different thread unless access to the request object is locked. Changelog
+Changed in version 1.1: The current session object is used instead of reloading
+the original data. This prevents flask.session pointing to an out-of-date
+object. Added in version 0.10. Return type : RequestContext match_request ( ) ¶
+Can be overridden by a subclass to hook into the matching of the request. Return
+type : None property session : SessionMixin ¶ The session data associated with
+----------------------------------------------------------------------------------------------------
+Index: 3522 <<"chunk_id": 6, "docno": 493>>
+
+can be called outside a request when the URL adapter is created for an
+application context. Added in version 0.6. Parameters : request ( Request | None
+) Return type : MapAdapter | None update_template_context ( context ) ¶ Update
+the template context with some commonly used variables. This injects request,
+session, config and g into the template context as well as everything template
+context processors want to inject. Note that the as of Flask 0.6, the original
+values in the context will not be overridden if a context processor decides to
+return a value with the same key. Parameters : context ( dict [ str , Any ] ) –
+the context as a dictionary that is updated in place to add extra variables.
+Return type : None make_shell_context ( ) ¶ Returns the shell context for an
+interactive shell for this application. This runs all the registered shell
+context processors. Changelog Added in version 0.11. Return type : dict [ str ,
+Any ] run ( host = None , port = None , debug = None , load_dotenv = True , **
+options ) ¶ Runs the application on a local development server. Do not use run()
+in a production setting. It is not intended to meet security and performance
+requirements for a production server. Instead, see Deploying to Production for
+WSGI server recommendations. If the debug flag is set the server will
+automatically reload for code changes and show a debugger in case an exception
+happened. If you want to run the
+----------------------------------------------------------------------------------------------------
+Index: 109 <<"chunk_id": 4, "docno": 22>>
+
+If debug mode is enabled, unhandled exceptions are not converted to a 500
+response and instead are propagated to the WSGI server. This allows the
+development server to present the interactive debugger with the traceback.
+Teardown Callbacks ¶ The teardown callbacks are independent of the request
+dispatch, and are instead called by the contexts when they are popped. The
+functions are called even if there is an unhandled exception during dispatch,
+and for manually pushed contexts. This means there is no guarantee that any
+other parts of the request dispatch have run first. Be sure to write these
+functions in a way that does not depend on other callbacks and will not fail.
+During testing, it can be useful to defer popping the contexts after the request
+ends, so that their data can be accessed in the test function. Use the
+test_client() as a with block to preserve the contexts until the with block
+exits. from flask import Flask , request app = Flask ( __name__ ) @app . route (
+'/' ) def hello (): print ( 'during view' ) return 'Hello, World!' @app .
+teardown_request def show_teardown ( exception ): print ( 'after with block' )
+with app . test_request_context (): print ( 'during with block' ) # teardown
+functions are called after the context with block exits with app . test_client
+() as client : client . get ( '/' ) # the contexts are not popped even though
+the request ended print ( request . path ) # the contexts are popped
+----------------------------------------------------------------------------------------------------
+Index: 3651 <<"chunk_id": 135, "docno": 493>>
+
+by a subclass to hook into the matching of the request. Return type : None
+property session : SessionMixin ¶ The session data associated with this request.
+Not available until this context has been pushed. Accessing this property, also
+accessed by the session proxy, sets SessionMixin.accessed . pop ( exc =
+_sentinel ) ¶ Pops the request context and unbinds it by doing that. This will
+also trigger the execution of functions registered by the teardown_request()
+decorator. Changelog Changed in version 0.9: Added the exc argument. Parameters
+: exc ( BaseException | None ) Return type : None flask.globals. request_ctx ¶
+The current RequestContext . If a request context is not active, accessing
+attributes on this proxy will raise a RuntimeError . This is an internal object
+that is essential to how Flask handles requests. Accessing this should not be
+needed in most cases. Most likely you want request and session instead. class
+flask.ctx. AppContext ( app ) ¶ The app context contains application-specific
+information. An app context is created and pushed at the beginning of each
+request if one is not already active. An app context is also pushed when running
+CLI commands. Parameters : app ( Flask ) push ( ) ¶ Binds the app context to the
+current context. Return type : None pop ( exc = _sentinel ) ¶ Pops the app
+context. Parameters : exc ( BaseException | None ) Return type : None
+flask.globals. app_ctx ¶ The current AppContext . If an app context is not
+active, accessing attributes on
+----------------------------------------------------------------------------------------------------
+Index: 3554 <<"chunk_id": 38, "docno": 493>>
+
+a function returns None or raises a BuildError , it is skipped. Otherwise, its
+return value is returned by url_for . Changelog Added in version 0.9.
+teardown_appcontext_funcs : list [ ft.TeardownCallable ] ¶ A list of functions
+that are called when the application context is destroyed. Since the application
+context is also torn down if the request ends this is the place to store code
+that disconnects from databases. Changelog Added in version 0.9.
+shell_context_processors : list [ ft.ShellContextProcessorCallable ] ¶ A list of
+shell context processor functions that should be run when a shell context is
+created. Changelog Added in version 0.11. blueprints : dict [ str , Blueprint ]
+¶ Maps registered blueprint names to blueprint objects. The dict retains the
+order the blueprints were registered in. Blueprints can be registered multiple
+times, this dict does not track how often they were attached. Changelog Added in
+version 0.7. extensions : dict [ str , t.Any ] ¶ a place where extensions can
+store application specific state. For example this is where an extension could
+store database engines and similar things. The key must match the name of the
+extension module. For example in case of a “Flask-Foo” extension in flask_foo ,
+the key would be 'foo' . Changelog Added in version 0.7. url_map ¶ The Map for
+this instance. You can use this to change the routing converters after the class
+was created but before any routes are connected. Example: from werkzeug.routing
+import BaseConverter class ListConverter ( BaseConverter ): def to_python ( self
+,
+----------------------------------------------------------------------------------------------------
+Index: 3533 <<"chunk_id": 17, "docno": 493>>
+
+: None Changelog Changed in version 0.9: Added the exc argument.
+do_teardown_appcontext ( exc = _sentinel ) ¶ Called right before the application
+context is popped. When handling a request, the application context is popped
+after the request context. See do_teardown_request() . This calls all functions
+decorated with teardown_appcontext() . Then the appcontext_tearing_down signal
+is sent. This is called by AppContext.pop() . Changelog Added in version 0.9.
+Parameters : exc ( BaseException | None ) Return type : None app_context ( ) ¶
+Create an AppContext . Use as a with block to push the context, which will make
+current_app point at this application. An application context is automatically
+pushed by RequestContext.push() when handling a request, and when running a CLI
+command. Use this to manually create a context outside of these situations. with
+app . app_context (): init_db () See The Application Context . Changelog Added
+in version 0.9. Return type : AppContext request_context ( environ ) ¶ Create a
+RequestContext representing a WSGI environment. Use a with block to push the
+context, which will make request point at this request. See The Request Context
+. Typically you should not call this from your own code. A request context is
+automatically pushed by the wsgi_app() when handling a request. Use
+test_request_context() to create an environment and context instead of this
+method. Parameters : environ ( WSGIEnvironment ) – a WSGI environment Return
+type : RequestContext test_request_context ( * args , ** kwargs ) ¶ Create a
+RequestContext for a WSGI environment created from the given
+----------------------------------------------------------------------------------------------------
+Index: 2902 <<"chunk_id": 2, "docno": 419>>
+
+code into a view function or CLI command. Storing Data ¶ The application context
+is a good place to store common data during a request or CLI command. Flask
+provides the g object for this purpose. It is a simple namespace object that has
+the same lifetime as an application context. Note The g name stands for
+“global”, but that is referring to the data being global within a context . The
+data on g is lost after the context ends, and it is not an appropriate place to
+store data between requests. Use the session or a database to store data across
+requests. A common use for g is to manage resources during a request. get_X()
+creates resource X if it does not exist, caching it as g.X . teardown_X() closes
+or otherwise deallocates the resource if it exists. It is registered as a
+teardown_appcontext() handler. For example, you can manage a database connection
+using this pattern: from flask import g def get_db (): if 'db' not in g : g . db
+= connect_to_database () return g . db @app . teardown_appcontext def
+teardown_db ( exception ): db = g . pop ( 'db' , None ) if db is not None : db .
+close () During a request, every call to get_db() will return the same
+connection, and it will be closed automatically at the end of the request. You
+can use LocalProxy to make a new context local from get_db() : from
+werkzeug.local import LocalProxy db = LocalProxy ( get_db )
+----------------------------------------------------------------------------------------------------
+Index: 4486 <<"chunk_id": 6, "docno": 618>>
+
+if subdomain_matching is enabled, to be able to extract the subdomain from the
+request. Must be set for url_for to generate external URLs outside of a request
+context. Default: None Changed in version 3.1: Does not restrict requests to
+only this domain, for both subdomain_matching and host_matching . Changelog
+Changed in version 2.3: Does not affect SESSION_COOKIE_DOMAIN . Changed in
+version 1.0: Does not implicitly enable subdomain_matching . APPLICATION_ROOT ¶
+Inform the application what path it is mounted under by the application / web
+server. This is used for generating URLs outside the context of a request
+(inside a request, the dispatcher is responsible for setting SCRIPT_NAME
+instead; see Application Dispatching for examples of dispatch configuration).
+Will be used for the session cookie path if SESSION_COOKIE_PATH is not set.
+Default: '/' PREFERRED_URL_SCHEME ¶ Use this scheme for generating external URLs
+when not in a request context. Default: 'http' MAX_CONTENT_LENGTH ¶ The maximum
+number of bytes that will be read during this request. If this limit is
+exceeded, a 413 RequestEntityTooLarge error is raised. If it is set to None , no
+limit is enforced at the Flask application level. However, if it is None and the
+request has no Content-Length header and the WSGI server does not indicate that
+it terminates the stream, then no data is read to avoid an infinite stream. Each
+request defaults to this config. It can be set on a specific
+Request.max_content_length to apply the limit to that specific view. This should
+be set appropriately based on an application’s or view’s
+----------------------------------------------------------------------------------------------------

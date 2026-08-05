@@ -1,0 +1,520 @@
+Index: 43989 <<"chunk_id": 1, "docno": 6810>>
+
+defaults as well as rich validation and tool support. Powerful AOP Unification -
+you may apply aspects that weave custom behavior before, after, and around your
+objects concisely with AspectJ while still benefiting from the simplicity of the
+Spring AOP runtime. JSR 220 Java Persistence Archtecture (JPA) - to provide you
+choice in persistence provider implementation. Spring is the first to support
+JPA in both JEE and JSE environments with full portability between the two.
+Asynchronous JMS Messaging - Message-Driven POJOs bring you lightweight
+asynchronous components for JSE environments with the choice of JMS provider.
+JSR-168 Portlets - Spring Portlet MVC delivers a framework for developing JSR
+168 portlets which includes integration with Spring Web Flow for orchestrating
+user interactions. It is important to emphasize that Spring 2.0 provides
+backwards compatability with the Spring 1.x series . Compatability is critically
+important to our user base and we are committed to providing it. Further major
+new features for each of these areas include... Configuration Simplification
+Bean definitions based on XML schema, with out-of-the-box XML namespaces for
+simplifying common configuration tasks Support for extended bean scopes in
+application contexts, with web request and session scopes as main targets Bean
+definition enhancements: lazy loading of bean classes, collection merging, and
+intelligent error messages AOP Simplified AOP configuration based on XML schema
+namespaces Support for AspectJ pointcut expression language and @AspectJ-style
+aspects Support for dependency injection on any object, including fine grained
+domain objects (based on AspectJ) Persistence and JPA Enhanced JDBC support:
+named SQL parameters, generics-based SimpleJdbcTemplate Explicit support
+----------------------------------------------------------------------------------------------------
+Index: 52848 <<"chunk_id": 3, "docno": 8466>>
+
+be a bit too confusing for my team to have navigation rules defined in multiple
+places. In the domain of state management, Web Flow introduces several
+conversational scopes that compliment JSF's existing request, session, and
+application scopes. These scopes are Conversation scope - a managed scope that
+lives for the duration of an user dialog Flow scope - a managed scope that lives
+for the duration of a flow executing within a conversation Flash scope - a
+managed scope that lives for the duration of a view participating in a flow
+These scopes are 'managed' because they are cleaned up for you by Web Flow
+automatically. Conversation scope is ideal for storing model state to be
+persisted at the end of a user interaction such as an account registration
+wizard. Flash scope has proven quite useful to users integrating Ajax libraries
+such as Ajax4JSF and ICEFaces where multiple requests from the same view are the
+norm. In this case, flash scope allows model state to be manipulated across
+fine-grained Ajax requests coming from the same page and then automatically
+cleared on the next navigation. Going back to what our leading users are saying:
+Jeremy Grelle: I find that even with the simpler pages in JSF, you oftentimes
+need something to manage the state of your model across multiple requests to the
+page...there are many solutions for this problem in the JSF community
+(Tomahawk's saveState tag, Shale's dialog framework, etc.), but I personally
+find SWF's multiple scopes to be the most robust and elegant solution. The
+Approach
+----------------------------------------------------------------------------------------------------
+Index: 57161 <<"chunk_id": 1, "docno": 9270>>
+
+with singleton="[true | false]" . So in Spring 2.0, this notation was removed
+from the XSD style of configuration and now you see a notation that is more
+clear with scope="[singleton | prototype | ...]" . Spring itself adds three more
+bean scopes; request , session , and globalSession which are related to web
+applications. With the latest snapshots of Spring Web Flow 1.1, we now see bean
+scopes for the three major Web Flow scopes, flash , flow , and conversation .
+<bean id="sale" class="org.springframework.webflow.samples.sellitem.Sale"
+scope="flash"/> <bean id="sale"
+class="org.springframework.webflow.samples.sellitem.Sale" scope="flow"/> <bean
+id="sale" class="org.springframework.webflow.samples.sellitem.Sale"
+scope="conversation"/> To utilize these bean scopes you'll need to leverage the
+a new 1.1 version of the configuration (included in the Web Flow jar) and add a
+single element to your bean definition. <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:flow="http://www.springframework.org/schema/webflow-config"
+xsi:schemaLocation=" http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/webflow-config
+http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.1.xsd">
+<flow:enable-scopes/> <bean id="sale"
+class="org.springframework.webflow.samples.sellitem.Sale" scope="conversation"/>
+</beans> The <enable-scopes/> tag only needs to exist once in a given
+application context and will allow you to use any of the three scopes
+contributed by Spring Web Flow. Scoped Beans and JSF Right now the most
+compelling use of these new scopes is in JSF. By using the scope notation in a
+standard Spring bean definition file instead of the <var/> notation in a flow
+definition, the experience for JSF users is much closer to standard JSF
+behavior. To add this ability to JSF you register the standard Spring JSF
+DelegatingVariableResolver . The other definitions ( FlowNavigationHandler , and
+FlowPhaseListener ) are standard for using JSF with Spring. <?xml
+version="1.0"?>
+----------------------------------------------------------------------------------------------------
+Index: 43588 <<"chunk_id": 2, "docno": 6732>>
+
+JSON (Jackson) and XML (JAXB), a reactive web framework that supports the
+@Controller programming model, and a reactive WebClient . It becomes easy to
+support input and output streaming scenarios for microservices, scatter/gather,
+data ingestion, and so on. Below is a controller that obtains and streams data
+from a remote server in a completely non-blocking and reactive manner:
+@GetMapping("/accounts/{id}/alerts") public Flux<Alert>
+getAccountAlerts(@PathVariable Long id) { return this.repository.getAccount(id)
+.flatMap(account -> this.webClient .perform(get("/alerts/{key}",
+account.getKey())) .extract(bodyStream(Alert.class))); } What is the reactive
+stack that supports this? Spring Web Reactive lives in the new
+spring-web-reactive module next to the existing (and popular!) Spring Web MVC
+that lives in the spring-webmvc module. The two modules share many algorithms
+and mechanisms but cannot actually share any code. This is because Spring Web
+Reactive runs on a Reactive Streams HTTP adapter layer that's fully non-blocking
+and reactive all the way down to the HTTP runtime. So while Spring MVC is built
+for and runs on Servlet containers, Spring Web Reactive runs also on non-Servlet
+runtimes such as on Netty and Undertow Spring Web Reactive vs Spring Web MVC How
+does the Spring Framework team view these two frameworks you might wonder at
+this point and what do we recommend that you use? First and foremost we aim for
+the greatest possible consistency within reason. There is nothing fundamentally
+incompatible between the @Controller programming model and the reactive ways.
+It's all about what happens underneath to support that model so on the surface
+there is no difference except for the full support for reactive types
+----------------------------------------------------------------------------------------------------
+Index: 16862 <<"chunk_id": 5, "docno": 2237>>
+
+The preceding example uses the @GetMapping annotation, which acts as a shortcut
+for @RequestMapping(method = RequestMethod.GET) . We use GET in this case
+because it is convenient for testing. Spring will still reject a GET request
+where the origin doesn’t match the CORS configuration. The browser is not
+required to send a CORS preflight request, but we could use @PostMapping and
+accept some JSON in the body if we wanted to trigger a pre-flight check.
+@RequestParam binds the value of the name query string parameter into the name
+parameter of the greeting() method. This query string parameter is not required
+. If it is absent in the request, the defaultValue of World is used. The
+implementation of the method body creates and returns a new Greeting object,
+with the value of the id attribute based on the next value from the counter and
+the value of the content based on the query parameter or the default value. It
+also formats the given name by using the greeting template . A key difference
+between a traditional MVC controller and the RESTful web service controller
+shown earlier is the way that the HTTP response body is created. Rather than
+relying on a view technology to perform server-side rendering of the greeting
+data to HTML, this RESTful web service controller populates and returns a
+Greeting object. The object data is written directly to the HTTP response as
+JSON. To accomplish this, the @RestController annotation assumes that every
+method inherits the @ResponseBody semantics by default. Therefore, returned
+object data is
+----------------------------------------------------------------------------------------------------
+Index: 24852 <<"chunk_id": 6, "docno": 3360>>
+
+we’re showing an integration between the two technologies. This enables Speed
+Tracer users to see Insight traces seamlessly inserted into their Speed Tracer
+screens, and drill down to specific server-side operations such as JDBC queries.
+The combination of Speed Tracer and Insight is unprecedented, and powerful. For
+the first time, it is possible to see browser and backend servers coordinating
+to show exactly what work a request did from a holistic perspective . What It
+All Means What a difference a few weeks makes! Until the announcement of VMforce
+and today’s announcement, Java developers lacked a PaaS destination to which
+they could easily deploy their applications. This was an important gap that
+threatened to become a danger to the long-term future of Java. I’m delighted
+that VMware/SpringSource is leading the charge to fill this gap. Today’s
+announcement is great news for Spring developers. Spring skills have never been
+more valuable; the reach of the Spring ecosystem continues to grow; Spring’s
+core values continue to guide its evolution; and Spring is placed to grow the
+Java community and lead its charge into cloud computing. Whether you want to
+deploy Java applications in an existing data center, private Java cloud or
+public cloud, Spring is the best programming model. I’m excited, and hope you
+are, too. Get the Spring newsletter Stay connected with the Spring newsletter
+Subscribe Get ahead VMware offers training and certification to turbo-charge
+your progress. Learn more Get support Tanzu Spring offers support and binaries
+for OpenJDK™, Spring, and Apache Tomcat® in one simple subscription.
+----------------------------------------------------------------------------------------------------
+Index: 33698 <<"chunk_id": 7, "docno": 4470>>
+
+bean a candidate for getting autowired into some other bean based on the plain
+type, without any further indications such as a qualifier match? Default is true
+; set this to false for restricted delegates that are supposed to be injectable
+in certain areas but are not meant to get in the way of beans of the same type
+in other places. This is a variation of autowireCandidate() which does not
+disable injection in general, just enforces an additional indication such as a
+qualifier. Since: 6.2 See Also: autowireCandidate() Default: true bootstrap
+Bean.Bootstrap bootstrap The bootstrap mode for this bean: default is the main
+pre-instantiation thread for non-lazy singleton beans and the caller thread for
+prototype beans. Set Bean.Bootstrap.BACKGROUND to allow for instantiating this
+bean on a background thread. For a non-lazy singleton, a background
+pre-instantiation thread can be used then, while still enforcing the completion
+at the end of ConfigurableApplicationContext.refresh() . For a lazy singleton, a
+background pre-instantiation thread can be used as well - with completion
+allowed at a later point, enforcing it when actually accessed. Since: 6.2 See
+Also: Lazy Default: DEFAULT initMethod String initMethod The optional name of a
+method to call on the bean instance during initialization. Not commonly used,
+given that the method may be called programmatically directly within the body of
+a Bean-annotated method. The default value is "" , indicating no init method to
+be called. See Also: InitializingBean ConfigurableApplicationContext.refresh()
+Default: "" destroyMethod String destroyMethod The optional name of a method to
+call on the bean instance upon
+----------------------------------------------------------------------------------------------------
+Index: 4759 <<"chunk_id": 1, "docno": 660>>
+
+transpilation Running TypeScript with a runner Publishing a TypeScript package
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Why is NODE_ENV considered an
+antipattern? Node.js, the difference between development and production There is
+no difference between development and production in Node.js , i.e., there are no
+specific settings you need to apply to make Node.js work in a production
+configuration. However, a few libraries in the npm registry recognize using the
+NODE_ENV variable and default it to a development setting. Always run your
+Node.js with the NODE_ENV=production set. A popular way of configuring your
+application is by using the twelve factor methodology . Why is NODE_ENV
+considered an antipattern? An environment is a digital platform or a system
+where engineers can build, test, deploy , and manage software products.
+Conventionally, there are four stages or types of environments where our
+application is run: Development Testing Staging Production The fundamental
+problem of NODE_ENV stems
+----------------------------------------------------------------------------------------------------
+Index: 45656 <<"chunk_id": 8, "docno": 7128>>
+
+properties are put together inside the method call. py-amqplib declares the
+entire message and its properties in a slightly different structure, and then
+passes it into basic_publish as one argument. Good thing about the spec is
+knowing that all the important pieces are in both libraries. pika supports
+different waiting mechanisms compared to py-amqplib. py-amqplib has a blocking
+wait, while pika offers both a blocking mechanism as well as one that uses
+Python's asyncore utility for asynchronous operations. We can explore this in
+future blog entries about RabbitMQ and Python. There is a slight difference in
+the method signature of the callback between these two libraries. We need to
+update our brokerage client to handle it suitably. def
+handle_pyamqplib_delivery(self, msg): self.handle(msg.delivery_info["channel"],
+msg.delivery_info["delivery_tag"], msg.body) Compare this with pika's callback
+method signature. def handle_pika_delivery(self, ch, method, header, body):
+self.handle(ch, delivery_tag, body) They are very close. The important parts are
+there. The difference is based on the fact that pika splits up the parts of the
+message while py-amqplib combines it all inside a single class. This is the
+reason there is a decoupling between the callback method and the actual method
+that extracts the body of our message. By extracting the necessary parts, it is
+possible to switch between these two libraries without rewriting our buy/sell
+algorithm. Running things With all this code, we need to run things. It's easy
+to code a runner script and just spin things up.
+######################################## # To run this demo using py-amqplib, #
+uncomment this block, and comment out # the next
+----------------------------------------------------------------------------------------------------
+Index: 28287 <<"chunk_id": 14, "docno": 4124>>
+
+I had to write Javascript for my web application, I had to manage the variable
+names and construct special name-spaced objects in order to store my scoped
+properties. However, AngularJS does it for you automatically based on its MVx
+concept. Every directive will inherit a scope from its controller (or if you
+would like, an isolated scope that does not inherit other scope properties). The
+properties and variables created in this scope do not pollute the rest of the
+scopes or global context. Scopes are used as the "glue" of an AngularJS
+application. Controllers in AngularJS use scopes to interact with the views.
+Scopes are also used to pass models and properties between directives and
+controllers. The advantage of this is that we are now forced to design our
+application in a way that components are self-contained and relationships
+between components have to be considered carefully through a use of a model that
+can be prototypically inherited from a parent scope. A scope can be nested in
+another scope prototypically in the same way Javascript implements its
+inheritance model via prototyping. However, any property name that is declared
+in the child scope that is similar to the parent will hide the parent property
+from the child scope thereafter. An example of this can be described in the code
+below: <!DOCTYPE html> <html> <head> <script data-require="angular.js@*"
+data-semver="1.4.0-rc.0"
+src="https://code.angularjs.org/1.4.0-rc.0/angular.js"></script> <link
+rel="stylesheet" href="style.css" /> <script src="script.js"></script> </head>
+<body data-ng-app="demo"> <h1>Scopes in AngularJS</h1> <div
+data-ng-controller="parentController"> <div
+data-ng-controller="childController"> <span>This is a demonstration of
+scopes</span> <div> Parent model: <span
+data-ng-bind="$parent.model.name"></span> </div> <div>
+----------------------------------------------------------------------------------------------------
+Index: 55002 <<"chunk_id": 6, "docno": 8924>>
+
+all the differences come from the autoconfigurations that we left out, and which
+would not have been conditionally excluded by Spring Boot. Here’s the list
+(assuming that you are using spring-boot-start-webflux with no manual
+exclusions): AutoConfigurationPackages CodecsAutoConfiguration
+JacksonAutoConfiguration JmxAutoConfiguration ProjectInfoAutoConfiguration
+ReactorCoreAutoConfiguration TaskExecutionAutoConfiguration
+TaskSchedulingAutoConfiguration ValidationAutoConfiguration
+HttpMessageConvertersAutoConfiguration RestTemplateAutoConfiguration
+WebClientAutoConfiguration So that’s 12 autoconfigurations that we didn’t need
+(yet anyway) and which led to 56 additional beans in the autoconfigured
+application. They all provide useful features, so we might want to include them
+again one day, but for now let’s assume that we are happy to live without
+whatever they are doing. Note spring-boot-autoconfigure has 122
+autoconfigurations (there are more in spring-boot-actuator-autoconfigure ) and
+the fully leaded autoconfigured sample application above only used 18 of them.
+The computation of which ones to use takes place very early and most of them are
+discarded by Spring Boot before any classes are even loaded. It’s very fast (a
+few milliseconds). Spring Boot Autoconfiguration Imports The ordering issue
+associated with the difference between user configuration (which has to be
+applied first) and autoconfiguration can be addressed partially by using a
+different annotation. Spring Boot provides an annotation for this:
+@ImportAutoConfiguration , which is from spring-boot-autoconfigure but used in
+the test slices features that ship with Spring Boot Test. So you can replace the
+@Import annotation in the examples above with @ImportAutoConfiguration and the
+effect is to defer processing of the autoconfigurations until after all the user
+configurations (e.g. picked up via @ComponentScan or @Import ). We can even go a
+stage further
+----------------------------------------------------------------------------------------------------
+Index: 32983 <<"chunk_id": 3, "docno": 4334>>
+
+reset between tests, as demonstrated in the following example: @Configuration
+class ProdConfiguration { @Bean MyService customService() { return new
+ProdService(); } } @SpringJUnitConfig class MyServiceIntegrationTests {
+@MockitoSpyBean(reset = MockReset.NONE) MyService customService; @Test void
+test() { //... } } In the above example, the spy will not be reset between
+tests. By default, mocks and spies are reset after a test method runs. Note that
+in order to spy on a bean, an actual instance of the spied class must exist in
+the first place. The Bean Overriding feature supports this special case and
+allows to create the override from the metadata once a bean is instantiated, in
+addition to the more common case of replacing the bean definition. Extending
+with your own implementation The new Bean Overriding in Test support comes in
+the shape of an annotation-based model applicable to fields in your test
+classes. It is extensible and customizable, and the 3 annotations introduced
+above are just the default implementations that we provide out of the box.
+Implementing your own flavor of Bean Overriding is as easy as implementing the
+following: An annotation that is meta-annotated with @BeanOverride which defines
+the BeanOverrideProcessor to use. The BeanOverrideProcessor implementation
+itself. One or more concrete OverrideMetadata implementations provided by the
+processor. The Spring TestContext Framework parses test classes looking for any
+field meta-annotated with @BeanOverride and instantiates the relevant
+BeanOverrideProcessor in order to register an instance of OverrideMetadata . A
+BeanFactoryPostProcessor will then use that information to alter the context,
+registering and replacing bean definitions as defined by
+----------------------------------------------------------------------------------------------------
+Index: 4061 <<"chunk_id": 2, "docno": 556>>
+
+all your work on the web - both on the client and on the server, you're in a
+unique position of advantage. What changes is the ecosystem. In the browser,
+most of the time what you are doing is interacting with the DOM, or other Web
+Platform APIs like Cookies. Those do not exist in Node.js, of course. You don't
+have the document , window and all the other objects that are provided by the
+browser. And in the browser, we don't have all the nice APIs that Node.js
+provides through its modules, like the filesystem access functionality. Another
+big difference is that in Node.js you control the environment. Unless you are
+building an open source application that anyone can deploy anywhere, you know
+which version of Node.js you will run the application on. Compared to the
+browser environment, where you don't get the luxury to choose what browser your
+visitors will use, this is very convenient. This means that you can write all
+the modern ES2015+ JavaScript that your Node.js version supports. Since
+JavaScript moves so fast, but browsers can be a bit slow to upgrade, sometimes
+on the web you are stuck with using older JavaScript / ECMAScript releases. You
+can use Babel to transform your code to be ES5-compatible before shipping it to
+the browser, but in Node.js, you won't need that. Another difference is that
+Node.js supports both the CommonJS and ES module systems (since Node.js v12),
+while in the browser, we are starting to see the ES Modules standard being
+implemented.
+----------------------------------------------------------------------------------------------------
+Index: 27361 <<"chunk_id": 2, "docno": 3957>>
+
+service where there is an appreciable delay on the response. The test web
+application simulated this in the Service class. The Servlet used with the
+virtual thread based executor accessed the service in a blocking style while the
+Servlet used with standard thread pool accessed the service using the Servlet
+asynchronous API. There wasn't any network IO involved, but that shouldn't have
+impacted the results. The initial tests, unsurprisingly, showed no measurable
+difference between the blocking approach and the asynchronous approach as the
+timing was dominated by the 5 second delay. To explore the differences without
+the effects of the delay, the delay was reduced to zero and a similar set of
+tests to the throughput tests were executed. The results are shown in the
+following graph: Again we see that virtual threads are generally more
+performant, with the difference being most pronounced at low concurrency and
+when concurrency exceeds the number of processor cores available to the test.
+Analysis The differences between a virtual thread based executor and Tomcat's
+standard thread pool are not as stark as they may first appear from the graphs
+above. The tests were designed to examine the overhead associated with each
+approach and are not representative of real-world applications. In real-world
+applications, the differences shown in the tests are likely to be negligible
+compared to the time taken to complete a request. The primary driver for the
+performance difference between Tomcat's standard thread pool and a virtual
+thread based executor is contention adding and removing tasks from the thread
+pool's
+----------------------------------------------------------------------------------------------------
+Index: 3090 <<"chunk_id": 1, "docno": 444>>
+
+they read, like a prop or a state variable, is different from what it was during
+the last render. Sometimes, you also want a mix of both behaviors: an Effect
+that re-runs in response to some values but not others. This page will teach you
+how to do that. You will learn How to choose between an event handler and an
+Effect Why Effects are reactive, and event handlers are not What to do when you
+want a part of your Effect’s code to not be reactive What Effect Events are, and
+how to extract them from your Effects How to read the latest props and state
+from Effects using Effect Events Choosing between event handlers and Effects
+First, let’s recap the difference between event handlers and Effects. Imagine
+you’re implementing a chat room component. Your requirements look like this:
+Your component should automatically connect to the selected chat room. When you
+click the “Send” button, it should send a message to the chat. Let’s say you’ve
+already implemented the code for them, but you’re not sure where to put it.
+Should you use event handlers or Effects? Every time you need to answer this
+question, consider why the code needs to run. Event handlers run in response to
+specific interactions From the user’s perspective, sending a message should
+happen because the particular “Send” button was clicked. The user will get
+rather upset if you send their message at any other time or for any other
+reason. This is why sending a message should be an
+----------------------------------------------------------------------------------------------------
+Index: 52854 <<"chunk_id": 9, "docno": 8466>>
+
+errorClass="error"/> </td> </tr> <tr> <td>Item count:</td> <td> <h:inputText
+id="itemCount" value="#{sale.itemCount}" required="true"> <f:validateLongRange
+minimum="1"/> </h:inputText> </td> <td> <h:message for="itemCount"
+errorClass="error"/> </td> </tr> <tr> <td colspan="2" class="buttonBar">
+<h:commandButton type="submit" value="Next" action="submit"/> </td> <td></td>
+</tr> </h:form> </table> </div> </f:view> That's it! You can try out the
+application and see for yourself how Web Flow cares for navigation and
+application controller logic, while JSF UI components care for content rendering
+and data binding and validation behavior. It really is a great fit. Future We
+didn't just get here by accident, we got here by working with clients building
+applications with Spring Web Flow and JSF everyday on our forums and support
+centers. Special thanks go out to Jeremy Grelle, James Clinton, Ed Burns, Craig
+McClanahan, and Colin Sampaleanu for all their contributions in getting the
+Spring Web Flow JSF integration to where it is today - rock solid. Work on
+Spring Web Flow 1.1 has begun, and greater levels of integration is a major
+theme in an exciting roadmap. Notable on the JSF front, we will be adding
+support for the Unified Expression Language (EL) within flow definitions, as
+well as support for leveraging Spring 2.0 as a comprehensive provider of JSF
+managed-beans beans across all scopes - including the conversational scopes
+provided by Spring Web Flow. This work is in addition to new core features that
+will benefit Web Flow users in all environments, such as support for
+conversation scoped persistence contexts. Participate in the 1.1 Roadmap
+discussion on the forums for more information and to get involved! I'd
+----------------------------------------------------------------------------------------------------
+Index: 5520 <<"chunk_id": 4, "docno": 764>>
+
+name parameter is absent in the request, the defaultValue of World is used. The
+implementation of the method body creates and returns a new Greeting object with
+id and content attributes based on the next value from the counter and formats
+the given name by using the greeting template . A key difference between a
+traditional MVC controller and the RESTful web service controller shown earlier
+is the way that the HTTP response body is created. Rather than relying on a view
+technology to perform server-side rendering of the greeting data to HTML, this
+RESTful web service controller populates and returns a Greeting object. The
+object data will be written directly to the HTTP response as JSON. This code
+uses Spring @RestController annotation, which marks the class as a controller
+where every method returns a domain object instead of a view. It is shorthand
+for including both @Controller and @ResponseBody . The Greeting object must be
+converted to JSON. Thanks to Spring’s HTTP message converter support, you need
+not do this conversion manually. Because Jackson is on the classpath, Spring’s
+JacksonJsonHttpMessageConverter is automatically chosen to convert the Greeting
+instance to JSON. Run the Service The Spring Initializr creates an application
+class for you. In this case, you do not need to further modify the class. The
+following listing shows the RestServiceApplication application class (in
+src/main/java/com/example/restservice/RestServiceApplication.java for Java or
+src/main/kotlin/com/example/restservice/RestServiceApplication.kt for Kotlin):
+Java package com.example.restservice; import
+org.springframework.boot.SpringApplication; import
+org.springframework.boot.autoconfigure.SpringBootApplication;
+@SpringBootApplication public class RestServiceApplication { public static void
+main(String[] args) { SpringApplication.run(RestServiceApplication.class, args);
+} } Kotlin package com.example.restservice
+----------------------------------------------------------------------------------------------------
+Index: 55296 <<"chunk_id": 4, "docno": 8965>>
+
+time in seconds on the y-axis): Testing Functional Applications Spring Cloud
+Function 2.0 also has some utilities for integration testing that will be very
+familiar to Spring Boot users. For example, here is an integration test for the
+HTTP server wrapping the app above: @RunWith(SpringRunner.class)
+@FunctionalSpringBootTest @AutoConfigureWebTestClient public class
+FunctionalTests { @Autowired private WebTestClient client; @Test public void
+words() throws Exception { client.post().uri("/").body(Mono.just("foo"),
+String.class) .exchange().expectStatus().isOk()
+.expectBody(String.class).isEqualTo("FOO"); } } This test is almost identical to
+the one you would write for the @Bean version of the same app - the only
+difference is the @FunctionalSpringBootTest annotation, instead of the regular
+@SpringBootTest . All the other pieces, like the @Autowired WebTestClient , are
+standard Spring Boot features. Functional Bean Definitions in Mainstream Spring
+Boot Applications Spring Boot works just fine with functional bean registrations
+- Spring Cloud Function builds and runs on Spring Boot - but some of the most
+useful features in Spring Boot, the autoconfigurations, are all coded in the
+non-functional style. Most Spring Cloud Function apps have a relatively small
+scope compared to the whole of Spring Boot, so we are able to adapt it to these
+functional bean definitions easily. If you step outside that limited scope, you
+can extend your Spring Cloud Function app by switching back to @Bean style
+configuration, or by using a hybrid approach. It will take a little longer to
+extend the same kind of features to the rest of the Spring Boot ecosystem, but
+it is something we are working on quite actively. Please take Spring Cloud
+Function
+----------------------------------------------------------------------------------------------------
+Index: 41259 <<"chunk_id": 5, "docno": 6308>>
+
+or methods that are specific to Dog , even though you're working with a proxy.
+It has to be said, GORM does an amazing job of shielding developers from
+proxies. They only rarely leak through to your application code, particularly
+with more recent versions of Grails. Still, some people will run into issues
+with them so it's useful to be aware what the symptoms are and why they occur. I
+showed in the last example how the behaviour of the session combined with lazy
+loading can produce some interesting results. That combination also lies behind
+a more common error: the org.hibernate.LazyInitializationException . Lazy
+loading and the session As I've already mentioned, when you have a lazily loaded
+relationship Hibernate has to execute an extra query if you then want to
+navigate that relationship at a later date. In the normal course of events this
+isn't a problem (unless you're worried about performance) since Hibernate does
+it transparently. But what happens if you try to access the relationship in a
+different session? Let's say you have loaded the Author instance with ID 1 in a
+controller action and stored it in the HTTP session. At this point, no code has
+touched the books collection. On the next request, the user goes to a URL that
+corresponds to this controller action: class MyController { def index = { if
+(session.author) { render "Author ${session.author.name} has written the books:
+${session.author.books*.title}" else { render "No author in session" } } ... }
+The intention here is that if our HTTP
+----------------------------------------------------------------------------------------------------
+Index: 41342 <<"chunk_id": 2, "docno": 6316>>
+
+either the publisher or consumer creates the exchange with a given name and then
+makes that name public. How that publication happens depends on the
+circumstances, but one might put it in public API documentation or send it to
+known clients. How are the messages routed from the exchange to the queue? Good
+question. First, the queue has to be attached to the given exchange. Typically,
+a consumer creates a queue and attaches it to an exchange at the same time.
+Second, messages received by the exchange have to be matched to the queue - a
+process called "binding". To understand binding, it's useful to understand the
+structure of an AMQP message: The headers and properties of the message are
+basically key/value pairs. The difference between them is that headers are
+defined by the AMQP specification whereas properties can contain arbitrary,
+application-specific information. The actual message content is just a sequence
+of bytes, so if you want to pass text around in your messages, then you should
+standardise on an encoding. UTF-8 is a good bet. You can specify a content type
+and encoding in the message headers if you want, but that's apparently not
+particularly common. What does this have to do with binding? One of the standard
+headers is called routing-key and it is this that the broker uses to match
+messages to queues. Each queue specifies a "binding key" and if that key matches
+the value of the routing-key header, the queue receives the message. Things are
+slightly complicated by the concept of
+----------------------------------------------------------------------------------------------------

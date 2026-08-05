@@ -1,0 +1,449 @@
+Index: 3405 <<"chunk_id": 1, "docno": 476>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Using Custom Elements in Vue Building Custom Elements
+with Vue Non-Vue Web Components and TypeScript Web Components vs. Vue Components
+Sponsors Become a Sponsor Are you an LLM? You can read better optimized
+documentation at /guide/extras/web-components.md for this page in Markdown
+format Vue and Web Components ​ Web Components is an umbrella term for a set of
+web native APIs that allows developers to create reusable custom elements. We
+consider Vue and Web Components to be primarily complementary technologies. Vue
+has excellent support for both consuming and creating custom elements. Whether
+you are integrating custom elements into an existing Vue application, or using
+Vue to build and distribute custom elements, you are in good company. Using
+Custom Elements in Vue ​ Vue scores a perfect 100% in the Custom Elements
+Everywhere tests . Consuming custom elements inside a Vue application largely
+works the same as using native HTML elements, with a few things to keep in mind:
+Skipping Component Resolution ​ By default, Vue will attempt to resolve a
+non-native HTML tag as a registered Vue component before falling back to
+rendering it as a custom element. This will cause Vue to emit a "failed to
+resolve component" warning during development. To let Vue know that certain
+elements should be treated as custom elements and skip component resolution, we
+can specify the compilerOptions.isCustomElement option . If you are using Vue
+with a build setup, the option should be passed
+----------------------------------------------------------------------------------------------------
+Index: 1667 <<"chunk_id": 1, "docno": 246>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Standalone Script Embedded Web Components Single-Page
+Application (SPA) Fullstack / SSR JAMStack / SSG Beyond the Web Sponsors Become
+a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/ways-of-using-vue.md for this page in Markdown format Ways of
+Using Vue ​ We believe there is no "one size fits all" story for the web. This
+is why Vue is designed to be flexible and incrementally adoptable. Depending on
+your use case, Vue can be used in different ways to strike the optimal balance
+between stack complexity, developer experience and end performance. Standalone
+Script ​ Vue can be used as a standalone script file - no build step required!
+If you have a backend framework already rendering most of the HTML, or your
+frontend logic isn't complex enough to justify a build step, this is the easiest
+way to integrate Vue into your stack. You can think of Vue as a more declarative
+replacement of jQuery in such cases. We previously provided an alternative
+distribution called petite-vue that was specifically optimized for progressively
+enhancing existing HTML. However, petite-vue is no longer actively maintained,
+with the last version published at Vue 3.2.27. Embedded Web Components ​ You can
+use Vue to build standard Web Components that can be embedded in any HTML page,
+regardless of how they are rendered. This option allows you to leverage Vue in a
+completely consumer-agnostic fashion: the resulting web components can be
+embedded
+----------------------------------------------------------------------------------------------------
+Index: 363 <<"chunk_id": 6, "docno": 68>>
+
+import since this ensures its version is in sync with the Vue runtime.
+@vitejs/plugin-vue ​ Docs Official plugin that provides Vue SFC support in Vite.
+vue-loader ​ Docs The official loader that provides Vue SFC support in webpack.
+If you are using Vue CLI, also see docs on modifying vue-loader options in Vue
+CLI . Other Online Playgrounds ​ VueUse Playground Vue + Vite on Repl.it Vue on
+CodeSandbox Vue on Codepen Vue on WebComponents.dev Backend Framework
+Integrations ​ If you are using Vue with Laravel , the framework ships an
+official Vite plugin that handles asset bundling and hot-module replacement out
+of the box. For any other backend, refer to Vite's Backend Integration guide to
+wire it up manually. Edit this page on GitHub Previous Single-File Components
+Next Routing Tooling has loaded
+----------------------------------------------------------------------------------------------------
+Index: 359 <<"chunk_id": 2, "docno": 68>>
+
+Vue project scaffolding tool. To learn more about Vite, check out the Vite docs
+. To configure Vue-specific behavior in a Vite project, for example passing
+options to the Vue compiler, check out the docs for @vitejs/plugin-vue . Both
+online playgrounds mentioned above also support downloading files as a Vite
+project. Vue CLI ​ Vue CLI is the official webpack-based toolchain for Vue. It
+is now in maintenance mode and we recommend starting new projects with Vite
+unless you rely on specific webpack-only features. Vite will provide superior
+developer experience in most cases. For information on migrating from Vue CLI to
+Vite: Vue CLI -> Vite Migration Guide from VueSchool.io Tools / Plugins that
+help with auto migration Note on In-Browser Template Compilation ​ When using
+Vue without a build step, component templates are written either directly in the
+page's HTML or as inlined JavaScript strings. In such cases, Vue needs to ship
+the template compiler to the browser in order to perform on-the-fly template
+compilation. On the other hand, the compiler would be unnecessary if we
+pre-compile the templates with a build step. To reduce client bundle size, Vue
+provides different "builds" optimized for different use cases. Build files that
+start with vue.runtime.* are runtime-only builds : they do not include the
+compiler. When using these builds, all templates must be pre-compiled via a
+build step. Build files that do not include .runtime are full builds : they
+include the compiler and support compiling templates directly in the browser.
+However, they will increase the payload
+----------------------------------------------------------------------------------------------------
+Index: 2939 <<"chunk_id": 3, "docno": 423>>
+
+the effect re-runs. This time, a new, updated Virtual DOM tree is created. The
+runtime renderer walks the new tree, compares it with the old one, and applies
+necessary updates to the actual DOM. Templates vs. Render Functions ​ Vue
+templates are compiled into virtual DOM render functions. Vue also provides APIs
+that allow us to skip the template compilation step and directly author render
+functions. Render functions are more flexible than templates when dealing with
+highly dynamic logic, because you can work with vnodes using the full power of
+JavaScript. So why does Vue recommend templates by default? There are a number
+of reasons: Templates are closer to actual HTML. This makes it easier to reuse
+existing HTML snippets, apply accessibility best practices, style with CSS, and
+for designers to understand and modify. Templates are easier to statically
+analyze due to their more deterministic syntax. This allows Vue's template
+compiler to apply many compile-time optimizations to improve the performance of
+the virtual DOM (which we will discuss below). In practice, templates are
+sufficient for most use cases in applications. Render functions are typically
+only used in reusable components that need to deal with highly dynamic rendering
+logic. Render function usage is discussed in more detail in Render Functions &
+JSX . Compiler-Informed Virtual DOM ​ The virtual DOM implementation in React
+and most other virtual-DOM implementations are purely runtime: the
+reconciliation algorithm cannot make any assumptions about the incoming virtual
+DOM tree, so it has to fully traverse the tree and diff the props of
+----------------------------------------------------------------------------------------------------
+Index: 42 <<"chunk_id": 2, "docno": 9>>
+
+example demonstrates the two core features of Vue: Declarative Rendering : Vue
+extends standard HTML with a template syntax that allows us to declaratively
+describe HTML output based on JavaScript state. Reactivity : Vue automatically
+tracks JavaScript state changes and efficiently updates the DOM when changes
+happen. You may already have questions - don't worry. We will cover every little
+detail in the rest of the documentation. For now, please read along so you can
+have a high-level understanding of what Vue offers. Prerequisites The rest of
+the documentation assumes basic familiarity with HTML, CSS, and JavaScript. If
+you are totally new to frontend development, it might not be the best idea to
+jump right into a framework as your first step - grasp the basics and then come
+back! You can check your knowledge level with these overviews for JavaScript ,
+HTML and CSS if needed. Prior experience with other frameworks helps, but is not
+required. The Progressive Framework ​ Vue is a framework and ecosystem that
+covers most of the common features needed in frontend development. But the web
+is extremely diverse - the things we build on the web may vary drastically in
+form and scale. With that in mind, Vue is designed to be flexible and
+incrementally adoptable. Depending on your use case, Vue can be used in
+different ways: Enhancing static HTML without a build step Embedding as Web
+Components on any page Single-Page Application (SPA) Fullstack / Server-Side
+Rendering (SSR) Jamstack / Static Site Generation (SSG) Targeting desktop,
+mobile, WebGL,
+----------------------------------------------------------------------------------------------------
+Index: 690 <<"chunk_id": 6, "docno": 108>>
+
+as a user. TypeScript support is an important consideration when new features
+are added to Vue. APIs that are designed with TypeScript in mind are typically
+easier for IDEs and linters to understand, even if you aren't using TypeScript
+yourself. Everybody wins. Vue APIs are also designed to work the same way in
+both JavaScript and TypeScript as much as possible. Adopting TypeScript involves
+a trade-off between onboarding complexity and long-term maintainability gains.
+Whether such a trade-off can be justified can vary depending on your team's
+background and project scale, but Vue isn't really an influencing factor in
+making that decision. How does Vue compare to Web Components? ​ Vue was created
+before Web Components were natively available, and some aspects of Vue's design
+(e.g. slots) were inspired by the Web Components model. The Web Components specs
+are relatively low-level, as they are centered around defining custom elements.
+As a framework, Vue addresses additional higher-level concerns such as efficient
+DOM rendering, reactive state management, tooling, client-side routing, and
+server-side rendering. Vue also fully supports consuming or exporting to native
+custom elements - check out the Vue and Web Components Guide for more details.
+Edit this page on GitHub Frequently Asked Questions has loaded
+----------------------------------------------------------------------------------------------------
+Index: 43 <<"chunk_id": 3, "docno": 9>>
+
+Embedding as Web Components on any page Single-Page Application (SPA) Fullstack
+/ Server-Side Rendering (SSR) Jamstack / Static Site Generation (SSG) Targeting
+desktop, mobile, WebGL, and even the terminal If you find these concepts
+intimidating, don't worry! The tutorial and guide only require basic HTML and
+JavaScript knowledge, and you should be able to follow along without being an
+expert in any of these. If you are an experienced developer interested in how to
+best integrate Vue into your stack, or you are curious about what these terms
+mean, we discuss them in more detail in Ways of Using Vue . Despite the
+flexibility, the core knowledge about how Vue works is shared across all these
+use cases. Even if you are just a beginner now, the knowledge gained along the
+way will stay useful as you grow to tackle more ambitious goals in the future.
+If you are a veteran, you can pick the optimal way to leverage Vue based on the
+problems you are trying to solve, while retaining the same productivity. This is
+why we call Vue "The Progressive Framework": it's a framework that can grow with
+you and adapt to your needs. Single-File Components ​ In most build-tool-enabled
+Vue projects, we author Vue components using an HTML-like file format called
+Single-File Component (also known as *.vue files, abbreviated as SFC ). A Vue
+SFC, as the name suggests, encapsulates the component's logic (JavaScript),
+template (HTML), and styles (CSS) in a single file. Here's the previous example,
+written in SFC format: vue <
+----------------------------------------------------------------------------------------------------
+Index: 1316 <<"chunk_id": 1, "docno": 202>>
+
+Security Updates for Vue 2 On this page Table of Contents for current page Why
+Test? When to Test Testing Types Overview Unit Testing Component Testing E2E
+Testing Recipes Sponsors Become a Sponsor Are you an LLM? You can read better
+optimized documentation at /guide/scaling-up/testing.md for this page in
+Markdown format Testing ​ Why Test? ​ Automated tests help you and your team
+build complex Vue applications quickly and confidently by preventing regressions
+and encouraging you to break apart your application into testable functions,
+modules, classes, and components. As with any application, your new Vue app can
+break in many ways, and it's important that you can catch these issues and fix
+them before releasing. In this guide, we'll cover basic terminology and provide
+our recommendations on which tools to choose for your Vue 3 application. There
+is one Vue-specific section covering composables. See Testing Composables below
+for more details. When to Test ​ Start testing early! We recommend you begin
+writing tests as soon as you can. The longer you wait to add tests to your
+application, the more dependencies your application will have, and the harder it
+will be to start. Testing Types ​ When designing your Vue application's testing
+strategy, you should leverage the following testing types: Unit : Checks that
+inputs to a given function, class, or composable are producing the expected
+output or side effects. Component : Checks that your component mounts, renders,
+can be interacted with, and behaves as expected. These tests import more code
+than unit tests, are more
+----------------------------------------------------------------------------------------------------
+Index: 2466 <<"chunk_id": 9, "docno": 355>>
+
+features, makes it difficult to reason about when a piece of hooks code is run,
+and makes working with mutable state that should persist across renders (via
+useRef ) cumbersome. Note: some of the above issues that are related to
+memoization can be resolved by the upcoming React Compiler . In comparison, Vue
+Composition API: Invokes setup() or <script setup> code only once. This makes
+the code align better with the intuitions of idiomatic JavaScript usage as there
+are no stale closures to worry about. Composition API calls are also not
+sensitive to call order and can be conditional. Vue's runtime reactivity system
+automatically collects reactive dependencies used in computed properties and
+watchers, so there's no need to manually declare dependencies. No need to
+manually cache callback functions to avoid unnecessary child updates. In
+general, Vue's fine-grained reactivity system ensures child components only
+update when they need to. Manual child-update optimizations are rarely a concern
+for Vue developers. We acknowledge the creativity of React Hooks, and it is a
+major source of inspiration for Composition API. However, the issues mentioned
+above do exist in its design and we noticed Vue's reactivity model happens to
+provide a way around them. Edit this page on GitHub Previous Ways of Using Vue
+Next Reactivity in Depth Composition API FAQ has loaded
+----------------------------------------------------------------------------------------------------
+Index: 1670 <<"chunk_id": 4, "docno": 246>>
+
+new page on every navigation. The upside is that it can ship minimal JS - or no
+JS at all if the page requires no interaction! Some multi-page SSG frameworks
+such as Astro also support "partial hydration" - which allows you to use Vue
+components to create interactive "islands" inside static HTML. Single-page SSGs
+are better suited if you expect non-trivial interactivity, deep session lengths,
+or persisted elements / state across navigations. Otherwise, multi-page SSG
+would be the better choice. The Vue team maintains a static-site generator
+called VitePress , which powers this website you are reading right now and
+support boths flavors of SSG! In addition, be sure to check out other Vue
+frameworks that usually support SSG. Beyond the Web ​ Although Vue is primarily
+designed for building web applications, it is by no means limited to just the
+browser. You can: Build desktop apps with Electron or Wails Build mobile apps
+with Ionic Vue Build desktop and mobile apps from the same codebase with Quasar
+or Tauri Build 3D WebGL experiences with TresJS Use Vue's Custom Renderer API to
+build custom renderers, like those for the terminal ! Edit this page on GitHub
+Previous TS with Options API Next Composition API FAQ Ways of Using Vue has
+loaded
+----------------------------------------------------------------------------------------------------
+Index: 10872 <<"chunk_id": 0, "docno": 1539>>
+
+App Router: Improving Accessibility | Next.js Skip to content Search
+documentation... ⌘K Search... ⌘K Showcase Docs Blog Templates Enterprise Search
+documentation... ⌘K Search... ⌘K Deploy Learn 13 Chapter 13 Improving
+Accessibility In the previous chapter, we looked at how to catch errors
+(including 404 errors) and display a fallback to the user. However, we still
+need to discuss another piece of the puzzle: form validation. Let's see how to
+implement server-side validation with Server Actions, and how you can show form
+errors using React's useActionState hook - while keeping accessibility in mind!
+In this chapter... Here are the topics we'll cover How to use
+eslint-plugin-jsx-a11y with Next.js to implement accessibility best practices.
+How to implement server-side form validation. How to use the React
+useActionState hook to handle form errors, and display them to the user. What is
+accessibility? Accessibility refers to designing and implementing web
+applications that everyone can use, including those with disabilities. It's a
+vast topic that covers many areas, such as keyboard navigation, semantic HTML,
+images, colors, videos, etc. While we won't go in-depth into accessibility in
+this course, we'll discuss the accessibility features available in Next.js and
+some common practices to make your applications more accessible. If you'd like
+to learn more about accessibility, we recommend the Learn Accessibility course
+by web.dev . Using the ESLint accessibility plugin in Next.js Next.js's ESLint
+configuration includes the eslint-plugin-jsx-a11y plugin, which helps catch
+accessibility issues early. For example, this plugin warns if you have images
+without alt text, use the aria-* and role attributes incorrectly,
+----------------------------------------------------------------------------------------------------
+Index: 360 <<"chunk_id": 3, "docno": 68>>
+
+not include .runtime are full builds : they include the compiler and support
+compiling templates directly in the browser. However, they will increase the
+payload by ~14kb. Our default tooling setups use the runtime-only build since
+all templates in SFCs are pre-compiled. If, for some reason, you need in-browser
+template compilation even with a build step, you can do so by configuring the
+build tool to alias vue to vue/dist/vue.esm-bundler.js instead. If you are
+looking for a lighter-weight alternative for no-build-step usage, check out
+petite-vue . IDE Support ​ The recommended IDE setup is VS Code + the Vue -
+Official extension (previously Volar). The extension provides syntax
+highlighting, TypeScript support, and intellisense for template expressions and
+component props. TIP Vue - Official replaces Vetur , our previous official VS
+Code extension for Vue 2. If you have Vetur currently installed, make sure to
+disable it in Vue 3 projects. WebStorm also provides great built-in support for
+Vue SFCs. Other IDEs that support the Language Service Protocol (LSP) can also
+leverage Volar's core functionalities via LSP: Sublime Text support via
+LSP-Volar . vim / Neovim support via coc-volar . emacs support via lsp-mode
+Browser Devtools ​ The Vue browser devtools extension allows you to explore a
+Vue app's component tree, inspect the state of individual components, track
+state management events, and profile performance. Documentation Chrome Extension
+Vite Plugin Standalone Electron app TypeScript ​ Main article: Using Vue with
+TypeScript . Vue - Official extension provides type checking for SFCs using
+<script lang="ts"> blocks, including template expressions
+----------------------------------------------------------------------------------------------------
+Index: 3120 <<"chunk_id": 1, "docno": 446>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Project Setup Overview IDE Support Configuring
+tsconfig.json Note on Vue CLI and ts-loader General Usage Notes
+defineComponent() Usage in Single-File Components TypeScript in Templates Usage
+with TSX Generic Components API-Specific Recipes Sponsors Become a Sponsor Are
+you an LLM? You can read better optimized documentation at
+/guide/typescript/overview.md for this page in Markdown format Using Vue with
+TypeScript ​ A type system like TypeScript can detect many common errors via
+static analysis at build time. This reduces the chance of runtime errors in
+production, and also allows us to more confidently refactor code in large-scale
+applications. TypeScript also improves developer ergonomics via type-based
+auto-completion in IDEs. Vue is written in TypeScript itself and provides
+first-class TypeScript support. All official Vue packages come with bundled type
+declarations that should work out-of-the-box. Project Setup ​ create-vue , the
+official project scaffolding tool, offers the options to scaffold a Vite
+-powered, TypeScript-ready Vue project. Overview ​ With a Vite-based setup, the
+dev server and the bundler are transpilation-only and do not perform any
+type-checking. This ensures the Vite dev server stays blazing fast even when
+using TypeScript. During development, we recommend relying on a good IDE setup
+for instant feedback on type errors. If using SFCs, use the vue-tsc utility for
+command line type checking and type declaration generation. vue-tsc is a wrapper
+around tsc , TypeScript's own command line interface. It works largely the same
+as tsc except that it supports Vue
+----------------------------------------------------------------------------------------------------
+Index: 2458 <<"chunk_id": 1, "docno": 355>>
+
+Techniques Get Security Updates for Vue 2 On this page Table of Contents for
+current page What is Composition API? Why Composition API? Better Logic Reuse
+More Flexible Code Organization Better Type Inference Smaller Production Bundle
+and Less Overhead Relationship with Options API Trade-offs Does Composition API
+cover all use cases? Can I use both APIs in the same component? Will Options API
+be deprecated? Relationship with Class API Comparison with React Hooks Sponsors
+Become a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/composition-api-faq.md for this page in Markdown format
+Composition API FAQ ​ TIP This FAQ assumes prior experience with Vue - in
+particular, experience with Vue 2 while primarily using Options API. What is
+Composition API? ​ Watch a free video lesson on Vue School Composition API is a
+set of APIs that allows us to author Vue components using imported functions
+instead of declaring options. It is an umbrella term that covers the following
+APIs: Reactivity API , e.g. ref() and reactive() , that allows us to directly
+create reactive state, computed state, and watchers. Lifecycle Hooks , e.g.
+onMounted() and onUnmounted() , that allow us to programmatically hook into the
+component lifecycle. Dependency Injection , i.e. provide() and inject() , that
+allow us to leverage Vue's dependency injection system while using Reactivity
+APIs. Composition API is a built-in feature of Vue 3 and Vue 2.7 . For older Vue
+2 versions, use the officially maintained @vue/composition-api plugin. In Vue 3,
+it is also primarily used together with
+----------------------------------------------------------------------------------------------------
+Index: 362 <<"chunk_id": 5, "docno": 68>>
+
+your editor during development. This also avoids unnecessary linting cost when
+starting the dev server. Run ESLint as part of the production build command, so
+you get full linter feedback before shipping to production. (Optional) Setup
+tools like lint-staged to automatically lint modified files on git commit.
+Formatting ​ The Vue - Official VS Code extension provides formatting for Vue
+SFCs out of the box. Alternatively, Prettier provides built-in Vue SFC
+formatting support. SFC Custom Block Integrations ​ Custom blocks are compiled
+into imports to the same Vue file with different request queries. It is up to
+the underlying build tool to handle these import requests. If using Vite, a
+custom Vite plugin should be used to transform matched custom blocks into
+executable JavaScript. Example If using Vue CLI or plain webpack, a webpack
+loader should be configured to transform the matched blocks. Example Lower-Level
+Packages ​ @vue/compiler-sfc ​ Docs This package is part of the Vue core
+monorepo and is always published with the same version as the main vue package.
+It is included as a dependency of the main vue package and proxied under
+vue/compiler-sfc so you don't need to install it individually. The package
+itself provides lower-level utilities for processing Vue SFCs and is only meant
+for tooling authors that need to support Vue SFCs in custom tools. TIP Always
+prefer using this package via the vue/compiler-sfc deep import since this
+ensures its version is in sync with the Vue runtime. @vitejs/plugin-vue ​ Docs
+Official plugin that provides Vue SFC support in Vite.
+----------------------------------------------------------------------------------------------------
+Index: 1131 <<"chunk_id": 4, "docno": 169>>
+
+three huge layers that interweave with one another, it makes much more sense to
+divide them into loosely-coupled components and compose them. Inside a
+component, its template, logic, and styles are inherently coupled, and
+colocating them actually makes the component more cohesive and maintainable.
+Note even if you don't like the idea of Single-File Components, you can still
+leverage its hot-reloading and pre-compilation features by separating your
+JavaScript and CSS into separate files using Src Imports . Edit this page on
+GitHub Previous Suspense Next Tooling Single-File Components has loaded
+----------------------------------------------------------------------------------------------------
+Index: 689 <<"chunk_id": 5, "docno": 108>>
+
+However, our research shows that the size difference heavily depends on the
+number of components in the application. While Vue has a heavier baseline size,
+it generates less code per component. In real-world scenarios, a Vue app may
+very well end up being lighter. Does Vue scale? ​ Yes. Despite a common
+misconception that Vue is only suitable for simple use cases, Vue is perfectly
+capable of handling large scale applications: Single-File Components provide a
+modularized development model that allows different parts of an application to
+be developed in isolation. Composition API provides first-class TypeScript
+integration and enables clean patterns for organizing, extracting and reusing
+complex logic. Comprehensive tooling support ensures a smooth development
+experience as the application grows. Lower barrier to entry and excellent
+documentation translate to lower onboarding and training costs for new
+developers. How do I contribute to Vue? ​ We appreciate your interest! Please
+check out our Community Guide . Should I use Options API or Composition API? ​
+If you are new to Vue, we provide a high-level comparison between the two styles
+here . If you have previously used Options API and are currently evaluating
+Composition API, check out this FAQ . Should I use JavaScript or TypeScript with
+Vue? ​ While Vue itself is implemented in TypeScript and provides first-class
+TypeScript support, it does not enforce an opinion on whether you should use
+TypeScript as a user. TypeScript support is an important consideration when new
+features are added to Vue. APIs that are designed with TypeScript in mind are
+----------------------------------------------------------------------------------------------------
+Index: 361 <<"chunk_id": 4, "docno": 68>>
+
+TypeScript ​ Main article: Using Vue with TypeScript . Vue - Official extension
+provides type checking for SFCs using <script lang="ts"> blocks, including
+template expressions and cross-component props validation. Use vue-tsc for
+performing the same type checking from the command line, or for generating d.ts
+files for SFCs. Testing ​ Main article: Testing Guide . Cypress is recommended
+for E2E tests. It can also be used for component testing for Vue SFCs via the
+Cypress Component Test Runner . Vitest is a test runner created by Vue / Vite
+team members that focuses on speed. It is specifically designed for Vite-based
+applications to provide the same instant feedback loop for unit / component
+testing. Jest can be made to work with Vite via vite-jest . However, this is
+only recommended if you have existing Jest-based test suites that you need to
+migrate over to a Vite-based setup, as Vitest provides similar functionalities
+with a much more efficient integration. Linting ​ The Vue team maintains
+eslint-plugin-vue , an ESLint plugin that supports SFC-specific linting rules.
+Users previously using Vue CLI may be used to having linters configured via
+webpack loaders. However when using a Vite-based build setup, our general
+recommendation is: npm install -D eslint eslint-plugin-vue , then follow
+eslint-plugin-vue 's configuration guide . Setup ESLint IDE extensions, for
+example ESLint for VS Code , so you get linter feedback right in your editor
+during development. This also avoids unnecessary linting cost when starting the
+dev server. Run ESLint as part of the production build command, so
+----------------------------------------------------------------------------------------------------
+Index: 7004 <<"chunk_id": 1, "docno": 941>>
+
+forwardRef isValidElement PureComponent API Reference Copy page Copy Rules of
+React Just as different programming languages have their own ways of expressing
+concepts, React has its own idioms — or rules — for how to express patterns in a
+way that is easy to understand and yields high-quality applications. Components
+and Hooks must be pure React calls Components and Hooks Rules of Hooks Note To
+learn more about expressing UIs with React, we recommend reading Thinking in
+React . This section describes the rules you need to follow to write idiomatic
+React code. Writing idiomatic React code can help you write well organized,
+safe, and composable applications. These properties make your app more resilient
+to changes and makes it easier to work with other developers, libraries, and
+tools. These rules are known as the Rules of React . They are rules – and not
+just guidelines – in the sense that if they are broken, your app likely has
+bugs. Your code also becomes unidiomatic and harder to understand and reason
+about. We strongly recommend using Strict Mode alongside React’s ESLint plugin
+to help your codebase follow the Rules of React. By following the Rules of
+React, you’ll be able to find and address these bugs and keep your application
+maintainable. Components and Hooks must be pure Purity in Components and Hooks
+is a key rule of React that makes your app predictable, easy to debug, and
+allows React to automatically optimize your code. Components must be idempotent
+– React components are assumed to always return
+----------------------------------------------------------------------------------------------------

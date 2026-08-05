@@ -1,0 +1,489 @@
+Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+
+that would cause the required CSRF cookie to be sent. Solution: use
+ensure_csrf_cookie() on the view that sends the page. CSRF protection in
+reusable applications ¶ Because it is possible for the developer to turn off the
+CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
+decorator to ensure the security of these applications against CSRF. It is
+recommended that the developers of other reusable apps that want the same
+guarantees also use the csrf_protect decorator on their views. Previous page and
+next page How to use Django’s Content Security Policy How to write a custom
+storage class Back to Top Additional Information Support Django! Abu Ashraf
+Masnun donated to the Django Software Foundation to support Django development.
+Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
+with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
+False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
+Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
+Using the decorator method Handling rejected requests Using CSRF protection with
+caching Testing and CSRF protection Edge cases Disabling CSRF protection for
+just a few views Setting the token when CsrfViewMiddleware.process_view() is not
+used Including the CSRF token in an unprotected view Protecting a view for only
+one path Protecting a page that uses AJAX without an HTML form CSRF protection
+in reusable applications Browse Prev: How to use Django’s Content Security
+Policy Next: How to write a custom storage class Table of contents General Index
+Python Module Index You are
+----------------------------------------------------------------------------------------------------
+Index: 50847 <<"chunk_id": 0, "docno": 8103>>
+
+How to use Django’s CSRF protection | Django documentation | Django Skip to main
+content Django The web framework for perfectionists with deadlines. Menu Main
+navigation Overview Download Documentation News Code Issues Community Foundation
+♥ Donate Search Submit Toggle theme (current theme: auto) Toggle theme (current
+theme: light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto
+color theme Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it
+id fr es el Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 How to use
+Django’s CSRF protection ¶ To take advantage of CSRF protection in your views,
+follow these steps: The CSRF middleware is activated by default in the
+MIDDLEWARE setting. If you override that setting, remember that
+'django.middleware.csrf.CsrfViewMiddleware' should come before any view
+middleware that assume that CSRF attacks have been dealt with. If you disabled
+it, which is not recommended, you can use csrf_protect() on particular views you
+want to protect (see below). In any template that uses a POST form, use the
+csrf_token tag inside the <form> element if the form is for an internal URL,
+e.g.: < form method = "post" > {% csrf_token %} This should not be done for POST
+forms that target external URLs, since that would cause the CSRF token to be
+leaked, leading to a vulnerability. In the corresponding view functions, ensure
+that RequestContext is used to render the response so that {% csrf_token %} will
+work properly. If you’re using the render() function, generic views, or contrib
+apps, you are
+----------------------------------------------------------------------------------------------------
+Index: 50853 <<"chunk_id": 6, "docno": 8103>>
+
+CSRF protection, but a few do not. Solution: rather than disabling the
+middleware and applying csrf_protect to all the views that need it, enable the
+middleware and use csrf_exempt() . Setting the token when
+CsrfViewMiddleware.process_view() is not used ¶ There are cases when
+CsrfViewMiddleware.process_view may not have run before your view is run - 404
+and 500 handlers, for example - but you still need the CSRF token in a form.
+Solution: use requires_csrf_token() Including the CSRF token in an unprotected
+view ¶ There may be some views that are unprotected and have been exempted by
+csrf_exempt , but still need to include the CSRF token. Solution: use
+csrf_exempt() followed by requires_csrf_token() . (i.e. requires_csrf_token
+should be the innermost decorator). Protecting a view for only one path ¶ A view
+needs CSRF protection under one set of conditions only, and mustn’t have it for
+the rest of the time. Solution: use csrf_exempt() for the whole view function,
+and csrf_protect() for the path within it that needs protection. Example: from
+django.views.decorators.csrf import csrf_exempt , csrf_protect @csrf_exempt def
+my_view ( request ): @csrf_protect def protected_path ( request ): do_something
+() if some_condition (): return protected_path ( request ) else :
+do_something_else () Protecting a page that uses AJAX without an HTML form ¶ A
+page makes a POST request via AJAX, and the page does not have an HTML form with
+a csrf_token that would cause the required CSRF cookie to be sent. Solution: use
+ensure_csrf_cookie() on the view that sends the page. CSRF protection in
+reusable applications
+----------------------------------------------------------------------------------------------------
+Index: 6346 <<"chunk_id": 4, "docno": 828>>
+
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version How to install Django on Windows How to
+deploy Django How to deploy static files Other guides How to authenticate using
+REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
+protection How to write a custom storage class How to create custom django-admin
+commands How to customize the shell command Django FAQ FAQ: General Why does
+this project exist? What does “Django” mean, and how do you pronounce it? Is
+Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
+does Django
+----------------------------------------------------------------------------------------------------
+Index: 50848 <<"chunk_id": 1, "docno": 8103>>
+
+to render the response so that {% csrf_token %} will work properly. If you’re
+using the render() function, generic views, or contrib apps, you are covered
+already since these all use RequestContext . Using CSRF protection with AJAX ¶
+While the above method can be used for AJAX POST requests, it has some
+inconveniences: you have to remember to pass the CSRF token in as POST data with
+every POST request. For this reason, there is an alternative method: on each
+XMLHttpRequest, set a custom X-CSRFToken header (as specified by the
+CSRF_HEADER_NAME setting) to the value of the CSRF token. This is often easier
+because many JavaScript frameworks provide hooks that allow headers to be set on
+every request. First, you must get the CSRF token. How to do that depends on
+whether or not the CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY settings are
+enabled. Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
+False ¶ The recommended source for the token is the csrftoken cookie, which will
+be set if you’ve enabled CSRF protection for your views as outlined above. The
+CSRF token cookie is named csrftoken by default, but you can control the cookie
+name via the CSRF_COOKIE_NAME setting. You can acquire the token like this:
+function getCookie ( name ) { let cookieValue = null ; if ( document . cookie &&
+document . cookie !== '' ) { const cookies = document . cookie . split ( ';' );
+for ( let i = 0 ; i < cookies . length ; i ++ ) {
+----------------------------------------------------------------------------------------------------
+Index: 18583 <<"chunk_id": 5, "docno": 2457>>
+
+{} # ... return render ( request , "a_template.html" , c ) ensure_csrf_cookie (
+view ) ¶ This decorator forces a view to send the CSRF cookie. Settings ¶ A
+number of settings can be used to control Django’s CSRF behavior:
+CSRF_COOKIE_AGE CSRF_COOKIE_DOMAIN CSRF_COOKIE_HTTPONLY CSRF_COOKIE_NAME
+CSRF_COOKIE_PATH CSRF_COOKIE_SAMESITE CSRF_COOKIE_SECURE CSRF_FAILURE_VIEW
+CSRF_HEADER_NAME CSRF_TRUSTED_ORIGINS CSRF_USE_SESSIONS Frequently Asked
+Questions ¶ Is posting an arbitrary CSRF token pair (cookie and POST data) a
+vulnerability? ¶ No, this is by design. Without a man-in-the-middle attack,
+there is no way for an attacker to send a CSRF token cookie to a victim’s
+browser, so a successful attack would need to obtain the victim’s browser’s
+cookie via XSS or similar, in which case an attacker usually doesn’t need CSRF
+attacks. Some security audit tools flag this as a problem but as mentioned
+before, an attacker cannot steal a user’s browser’s CSRF cookie. “Stealing” or
+modifying your own token using Firebug, Chrome dev tools, etc. isn’t a
+vulnerability. Is it a problem that Django’s CSRF protection isn’t linked to a
+session by default? ¶ No, this is by design. Not linking CSRF protection to a
+session allows using the protection on sites such as a pastebin that allow
+submissions from anonymous users which don’t have a session. If you wish to
+store the CSRF token in the user’s session, use the CSRF_USE_SESSIONS setting.
+Why might a user encounter a CSRF validation failure after logging in? ¶ For
+security reasons, CSRF tokens are rotated each time a user logs in. Any page
+with a form generated
+----------------------------------------------------------------------------------------------------
+Index: 50852 <<"chunk_id": 5, "docno": 8103>>
+
+without either one. In this case, on any views that will require a CSRF token to
+be inserted you should use the django.views.decorators.csrf.csrf_protect()
+decorator first: from django.views.decorators.cache import cache_page from
+django.views.decorators.csrf import csrf_protect @cache_page ( 60 * 15 )
+@csrf_protect def my_view ( request ): ... If you are using class-based views,
+you can refer to Decorating class-based views . Testing and CSRF protection ¶
+The CsrfViewMiddleware will usually be a big hindrance to testing view
+functions, due to the need for the CSRF token which must be sent with every POST
+request. For this reason, Django’s HTTP client for tests has been modified to
+set a flag on requests which relaxes the middleware and the csrf_protect
+decorator so that they no longer rejects requests. In every other respect (e.g.
+sending cookies etc.), they behave the same. If, for some reason, you want the
+test client to perform CSRF checks, you can create an instance of the test
+client that enforces CSRF checks: >>> from django.test import Client >>>
+csrf_client = Client ( enforce_csrf_checks = True ) Edge cases ¶ Certain views
+can have unusual requirements that mean they don’t fit the normal pattern
+envisaged here. A number of utilities can be useful in these situations. The
+scenarios they might be needed in are described in the following section.
+Disabling CSRF protection for just a few views ¶ Most views requires CSRF
+protection, but a few do not. Solution: rather than disabling the middleware and
+applying csrf_protect to all the views that need it, enable the
+----------------------------------------------------------------------------------------------------
+Index: 50851 <<"chunk_id": 4, "docno": 8103>>
+
+Use of the decorator by itself is not recommended , since if you forget to use
+it, you will have a security hole. The ‘belt and braces’ strategy of using both
+is fine, and will incur minimal overhead. Handling rejected requests ¶ By
+default, a ‘403 Forbidden’ response is sent to the user if an incoming request
+fails the checks performed by CsrfViewMiddleware . This should usually only be
+seen when there is a genuine Cross Site Request Forgery, or when, due to a
+programming error, the CSRF token has not been included with a POST form. The
+error page, however, is not very friendly, so you may want to provide your own
+view for handling this condition. To do this, set the CSRF_FAILURE_VIEW setting.
+CSRF failures are logged as warnings to the django.security.csrf logger. Using
+CSRF protection with caching ¶ If the csrf_token template tag is used by a
+template (or the get_token function is called some other way),
+CsrfViewMiddleware will add a cookie and a Vary: Cookie header to the response.
+This means that the middleware will play well with the cache middleware if it is
+used as instructed ( UpdateCacheMiddleware goes before all other middleware).
+However, if you use cache decorators on individual views, the CSRF middleware
+will not yet have been able to set the Vary header or the CSRF cookie, and the
+response will be cached without either one. In this case, on any views that will
+require a CSRF token to be inserted you should use the
+django.views.decorators.csrf.csrf_protect() decorator first:
+----------------------------------------------------------------------------------------------------
+Index: 18579 <<"chunk_id": 1, "docno": 2457>>
+
+the steps outlined in How to use Django’s CSRF protection . How it works ¶ The
+CSRF protection is based on the following things: A CSRF cookie that is a random
+secret value, which other sites will not have access to. CsrfViewMiddleware
+sends this cookie with the response whenever django.middleware.csrf.get_token()
+is called. It can also send it in other cases. For security reasons, the value
+of the secret is changed each time a user logs in. A hidden form field with the
+name ‘csrfmiddlewaretoken’, present in all outgoing POST forms. In order to
+protect against BREACH attacks, the value of this field is not simply the
+secret. It is scrambled differently with each response using a mask. The mask is
+generated randomly on every call to get_token() , so the form field value is
+different each time. This part is done by the csrf_token template tag. For all
+incoming requests that are not using HTTP GET, HEAD, OPTIONS or TRACE, a CSRF
+cookie must be present, and the ‘csrfmiddlewaretoken’ field must be present and
+correct. If it isn’t, the user will get a 403 error. When validating the
+‘csrfmiddlewaretoken’ field value, only the secret, not the full token, is
+compared with the secret in the cookie value. This allows the use of
+ever-changing tokens. While each request may use its own token, the secret
+remains common to all. This check is done by CsrfViewMiddleware .
+CsrfViewMiddleware verifies the Origin header , if provided by the browser,
+against the current host and the CSRF_TRUSTED_ORIGINS setting. This provides
+----------------------------------------------------------------------------------------------------
+Index: 18578 <<"chunk_id": 0, "docno": 2457>>
+
+Cross Site Request Forgery protection | Django documentation | Django Skip to
+main content Django The web framework for perfectionists with deadlines. Menu
+Main navigation Overview Download Documentation News Code Issues Community
+Foundation ♥ Donate Search Submit Toggle theme (current theme: auto) Toggle
+theme (current theme: light) Toggle theme (current theme: dark) Toggle Light /
+Dark / Auto color theme Documentation Getting Help Language: en zh-hans sv pt-br
+pl ko ja it id fr es el Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1
+4.0 3.2 3.1 3.0 2.2 2.1 2.0 1.11 1.10 1.9 1.8 Cross Site Request Forgery
+protection ¶ The CSRF middleware and template tag provides easy-to-use
+protection against Cross Site Request Forgeries . This type of attack occurs
+when a malicious website contains a link, a form button or some JavaScript that
+is intended to perform some action on your website, using the credentials of a
+logged-in user who visits the malicious site in their browser. A related type of
+attack, ‘login CSRF’, where an attacking site tricks a user’s browser into
+logging into a site with someone else’s credentials, is also covered. The first
+defense against CSRF attacks is to ensure that GET requests (and other ‘safe’
+methods, as defined by RFC 9110 Section 9.2.1 ) are side effect free. Requests
+via ‘unsafe’ methods, such as POST, PUT, and DELETE, can then be protected by
+the steps outlined in How to use Django’s CSRF protection . How it works ¶ The
+CSRF protection is based on the following things: A
+----------------------------------------------------------------------------------------------------
+Index: 18584 <<"chunk_id": 6, "docno": 2457>>
+
+validation failure after logging in? ¶ For security reasons, CSRF tokens are
+rotated each time a user logs in. Any page with a form generated before a login
+will have an old, invalid CSRF token and need to be reloaded. This might happen
+if a user uses the back button after a login or if they log in a different
+browser tab. Previous page and next page Content Security Policy Databases Back
+to Top Additional Information Support Django! Andrew Cordery donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Cross Site Request Forgery protection How it works Limitations Utilities
+Settings Frequently Asked Questions Is posting an arbitrary CSRF token pair
+(cookie and POST data) a vulnerability? Is it a problem that Django’s CSRF
+protection isn’t linked to a session by default? Why might a user encounter a
+CSRF validation failure after logging in? Browse Prev: Content Security Policy
+Next: Databases Table of contents General Index Python Module Index You are
+here: Django 6.0 documentation API Reference Cross Site Request Forgery
+protection Getting help FAQ Try the FAQ — it's got answers to many common
+questions. Index , Module Index , or Table of Contents Handy when looking for
+specific information. Django Discord Server Join the Django Discord Community.
+Official Django Forum Join the community on the Django Forum. Ticket tracker
+Report bugs with Django or Django documentation in our ticket tracker. Download:
+Offline (Django 6.0): HTML | PDF | ePub Provided by Read the Docs . Diamond and
+Platinum Members Sentry Monitor
+----------------------------------------------------------------------------------------------------
+Index: 36280 <<"chunk_id": 7, "docno": 5177>>
+
+coming from the evil website. Since the session is no longer present in the
+transfer request coming from the evil website, the application is protected from
+the CSRF attack. There are some important considerations to be aware of when
+using SameSite attribute to protect against CSRF attacks. Setting the SameSite
+attribute to Strict provides a stronger defense but can confuse users. Consider
+a user who stays logged into a social media site hosted at social.example.com .
+The user receives an email at email.example.org that includes a link to the
+social media site. If the user clicks on the link, they would rightfully expect
+to be authenticated to the social media site. However, if the SameSite attribute
+is Strict , the cookie would not be sent and so the user would not be
+authenticated. Another obvious consideration is that, in order for the SameSite
+attribute to protect users, the browser must support the SameSite attribute.
+Most modern browsers do support the SameSite attribute . However, older browsers
+that are still in use may not. For this reason, we generally recommend using the
+SameSite attribute as a defense in depth rather than the sole protection against
+CSRF attacks. When to use CSRF protection When should you use CSRF protection?
+Our recommendation is to use CSRF protection for any request that could be
+processed by a browser by normal users. If you are creating a service that is
+used only by non-browser clients, you likely want to disable CSRF protection.
+CSRF protection and JSON A common question is “do
+----------------------------------------------------------------------------------------------------
+Index: 13551 <<"chunk_id": 11, "docno": 1811>>
+
+filename="app/page.tsx" async function deletePost(id: number) { "use server"; //
+verify id and that you can still delete it ... } export async function Page({
+slug }) { const post = await getPost(slug); return Delete ; } The principle is
+that the argument list to Server Actions ( "use server" ) must always be treated
+as hostile and the input has to be verified. CSRF All Server Actions can be
+invoked by plain , which could open them up to CSRF attacks. Behind the scenes,
+Server Actions are always implemented using POST and only this HTTP method is
+allowed to invoke them. This alone prevents most CSRF vulnerabilities in modern
+browsers, particularly due to Same-Site cookies being the default. As an
+additional protection Server Actions in Next.js 14 also compares the Origin
+header to the Host header (or X-Forwarded-Host ). If they don't match, the
+Action will be rejected. In other words, Server Actions can only be invoked on
+the same host as the page that hosts it. Very old unsupported and outdated
+browsers that don't support the Origin header could be at risk. Server Actions
+doesn't use CSRF tokens, therefore HTML sanitization is crucial. When Custom
+Route Handlers ( route.tsx ) are used instead, extra auditing can be necessary
+since CSRF protection has to be done manually there. The traditional rules apply
+there. Error Handling Bugs happen. When errors are thrown on the Server they are
+eventually rethrown in Client code to be handled in the UI. The error messages
+and stack traces might end up
+----------------------------------------------------------------------------------------------------
+Index: 58011 <<"chunk_id": 3, "docno": 9464>>
+
+_csrf parameter with a random value. Now the evil website will not be able to
+guess the correct value for the _csrf parameter (which must be explicitly
+provided on the evil website) and the transfer will fail when the server
+compares the actual token to the expected token. Using Spring Security CSRF
+Support So what are the steps necessary to use Spring Security's to protect our
+site against CSRF attacks? The steps to using Spring Security's CSRF protection
+are outlined below: Use proper HTTP verbs Configure CSRF Protection Include CSRF
+Token Use proper HTTP Verbs The first step to protecting against CSRF attacks is
+to ensure your website uses proper HTTP verbs. Specifically, before Spring
+Security's CSRF support can be of use, you need to be certain that your
+application is using PATCH, POST, PUT, and/or DELETE for anything that modifies
+state. This is not a limitation of Spring Security's support, but instead a
+general requirement for proper CSRF prevention. Configuring CSRF Protection The
+next step is to include Spring Security's CSRF protection within your
+application. If you are using the XML configuration, this can be done using the
+<csrf /> element: <http ...> ... <csrf /> </http> CSRF protection is enabled by
+default with Java configuration. If you would like to disable CSRF, the
+corresponding Java configuration can be seen below: @EnableWebSecurity
+@Configuration public class WebSecurityConfig extends
+WebSecurityConfigurerAdapter { @Override protected void configure(HttpSecurity
+http) throws Exception { http .csrf().disable() ...; } } Include CSRF token Form
+Submissions If you are using Spring MVC form:form tag,
+----------------------------------------------------------------------------------------------------
+Index: 48479 <<"chunk_id": 4, "docno": 7649>>
+
+performance Using different versions of available software Serializing Django
+objects Serializing data Deserializing data Serialization formats Natural keys
+Django settings The basics Designating the settings Default settings Using
+settings in Python code Altering settings at runtime Security Available settings
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version Πώς να εγκαταστήσετε το Django στα
+Windows How to deploy Django How to deploy static files Other guides How to
+authenticate using REMOTE_USER How to use Django’s Content Security Policy How
+to use Django’s CSRF protection How to write a custom storage class How to
+create custom django-admin commands How
+----------------------------------------------------------------------------------------------------
+Index: 36281 <<"chunk_id": 8, "docno": 5177>>
+
+a service that is used only by non-browser clients, you likely want to disable
+CSRF protection. CSRF protection and JSON A common question is “do I need to
+protect JSON requests made by JavaScript?” The short answer is: It depends.
+However, you must be very careful, as there are CSRF exploits that can impact
+JSON requests. For example, a malicious user can create a CSRF with JSON by
+using the following form : CSRF with JSON form <form
+action="https://bank.example.com/transfer" method="post" enctype="text/plain">
+<input
+name='{"amount":100,"routingNumber":"evilsRoutingNumber","account":"evilsAccountNumber",
+"ignore_me":"' value='test"}' type='hidden'> <input type="submit" value="Win
+Money!"/> </form> This produces the following JSON structure CSRF with JSON
+request { "amount": 100, "routingNumber": "evilsRoutingNumber", "account":
+"evilsAccountNumber", "ignore_me": "=test" } If an application were not
+validating the Content-Type header, it would be exposed to this exploit.
+Depending on the setup, a Spring MVC application that validates the Content-Type
+could still be exploited by updating the URL suffix to end with .json , as
+follows: CSRF with JSON Spring MVC form <form
+action="https://bank.example.com/transfer.json" method="post"
+enctype="text/plain"> <input
+name='{"amount":100,"routingNumber":"evilsRoutingNumber","account":"evilsAccountNumber",
+"ignore_me":"' value='test"}' type='hidden'> <input type="submit" value="Win
+Money!"/> </form> CSRF and Stateless Browser Applications What if my application
+is stateless? That does not necessarily mean you are protected. In fact, if a
+user does not need to perform any actions in the web browser for a given
+request, they are likely still vulnerable to CSRF attacks. For example, consider
+an application that uses a custom cookie that contains all the state within it
+for authentication (instead of the JSESSIONID). When the CSRF attack is made,
+the custom cookie is sent
+----------------------------------------------------------------------------------------------------
+Index: 18581 <<"chunk_id": 3, "docno": 2457>>
+
+(and other requests that are defined as ‘safe’ by RFC 9110 Section 9.2.1 ).
+These requests ought never to have any potentially dangerous side effects, and
+so a CSRF attack with a GET request ought to be harmless. RFC 9110 Section 9.2.1
+defines POST, PUT, and DELETE as ‘unsafe’, and all other methods are also
+assumed to be unsafe, for maximum protection. The CSRF protection cannot protect
+against man-in-the-middle attacks, so use HTTPS with HTTP Strict Transport
+Security . It also assumes validation of the HOST header and that there aren’t
+any cross-site scripting vulnerabilities on your site (because XSS
+vulnerabilities already let an attacker do anything a CSRF vulnerability allows
+and much worse). Removing the Referer header To avoid disclosing the referrer
+URL to third-party sites, you might want to disable the referer on your site’s
+<a> tags. For example, you might use the <meta name="referrer"
+content="no-referrer"> tag or include the Referrer-Policy: no-referrer header.
+Due to the CSRF protection’s strict referer checking on HTTPS requests, those
+techniques cause a CSRF failure on requests with ‘unsafe’ methods. Instead, use
+alternatives like <a rel="noreferrer" ...>" for links to third-party sites.
+Limitations ¶ Subdomains within a site will be able to set cookies on the client
+for the whole domain. By setting the cookie and using a corresponding token,
+subdomains will be able to circumvent the CSRF protection. The only way to avoid
+this is to ensure that subdomains are controlled by trusted users (or, are at
+least unable to set cookies). Note that even without CSRF, there
+----------------------------------------------------------------------------------------------------
+Index: 36284 <<"chunk_id": 11, "docno": 5177>>
+
+to have some JavaScript that lets the user know their session is about to
+expire. The user can click a button to continue and refresh the session.
+Finally, the expected CSRF token could be stored in a cookie. This lets the
+expected CSRF token outlive the session. One might ask why the expected CSRF
+token is not stored in a cookie by default. This is because there are known
+exploits in which headers (for example, to specify the cookies) can be set by
+another domain. This is the same reason Ruby on Rails no longer skips a CSRF
+checks when the header X-Requested-With is present . See this webappsec.org
+thread for details on how to perform the exploit. Another disadvantage is that
+by removing the state (that is, the timeout), you lose the ability to forcibly
+invalidate the token if it is compromised. Multipart (file upload) Protecting
+multipart requests (file uploads) from CSRF attacks causes a chicken or the egg
+problem. To prevent a CSRF attack from occurring, the body of the HTTP request
+must be read to obtain the actual CSRF token. However, reading the body means
+that the file is uploaded, which means an external site can upload a file. There
+are three options to using CSRF protection with multipart/form-data: Include
+CSRF Token in an HTTP Request Header Place CSRF Token in the Body Place CSRF
+Token in the URL Each option has its trade-offs. Before you integrate Spring
+Security’s CSRF protection with multipart file upload, you should first ensure
+that you can upload
+----------------------------------------------------------------------------------------------------
+Index: 16820 <<"chunk_id": 3, "docno": 2231>>
+
+, max_length = None ) ¶ Returns a filename that is available in the storage
+mechanism, possibly taking the provided filename into account. The name argument
+passed to this method will have already cleaned to a filename valid for the
+storage system, according to the get_valid_name() method described above. The
+length of the filename will not exceed max_length , if provided. If a free
+unique filename cannot be found, a SuspiciousFileOperation exception is raised.
+If a file with name already exists, get_alternative_name() is called to obtain
+an alternative name. Use your custom storage engine ¶ The first step to using
+your custom storage with Django is to tell Django about the file storage backend
+you’ll be using. This is done using the STORAGES setting. This setting maps
+storage aliases, which are a way to refer to a specific storage throughout
+Django, to a dictionary of settings for that specific storage backend. The
+settings in the inner dictionaries are described fully in the STORAGES
+documentation. Storages are then accessed by alias from the
+django.core.files.storage.storages dictionary: from django.core.files.storage
+import storages example_storage = storages [ "example" ] Previous page and next
+page How to use Django’s CSRF protection How to create custom django-admin
+commands Back to Top Additional Information Support Django! Omer Katz donated to
+the Django Software Foundation to support Django development. Donate today!
+Contents How to write a custom storage class Use your custom storage engine
+Browse Prev: How to use Django’s CSRF protection Next: How to create custom
+django-admin commands Table of contents General Index Python
+----------------------------------------------------------------------------------------------------
+Index: 1090 <<"chunk_id": 15, "docno": 165>>
+
+), ], }; Disabling XSRF protection If the built-in XSRF protection mechanism
+doesn't work for your application, you can disable it using the
+withNoXsrfProtection feature: export const appConfig : ApplicationConfig = {
+providers: [ provideHttpClient ( withNoXsrfProtection ())], }; For information
+about CSRF at the Open Web Application Security Project (OWASP), see Cross-Site
+Request Forgery (CSRF) and Cross-Site Request Forgery (CSRF) Prevention Cheat
+Sheet . The Stanford University paper Robust Defenses for Cross-Site Request
+Forgery is a rich source of detail. See also Dave Smith's talk on XSRF at
+AngularConnect 2016 . Cross-site script inclusion (XSSI) Cross-site script
+inclusion, also known as JSON vulnerability, can allow an attacker's website to
+read data from a JSON API. The attack works on older browsers by overriding
+built-in JavaScript object constructors, and then including an API URL using a
+<script> tag. This attack is only successful if the returned JSON is executable
+as JavaScript. Servers can prevent an attack by prefixing all JSON responses to
+make them non-executable, by convention, using the well-known string ")]}',\n" .
+Angular's HttpClient library recognizes this convention and automatically strips
+the string ")]}',\n" from all responses before further parsing. For more
+information, see the XSSI section of this Google web security blog post .
+Preventing Server-Side Request Forgery (SSRF) Angular includes strict validation
+for Host , Forwarded , X-Forwarded-Host , X-Forwarded-Proto , X-Forwarded-Prefix
+, and X-Forwarded-Port headers in the request handling pipeline to prevent
+header-based Server-Side Request Forgery (SSRF) . The validation rules are: Host
+, X-Forwarded-Host , and the host parameter of the
+----------------------------------------------------------------------------------------------------

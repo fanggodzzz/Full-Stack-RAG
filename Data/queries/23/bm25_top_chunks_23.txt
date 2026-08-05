@@ -1,0 +1,519 @@
+Index: 92 <<"chunk_id": 2, "docno": 17>>
+
+Accessibility Join our Community Next Steps Edit this page on GitHub Scroll to
+top For an index of Next.js documentation , see /docs/llms.txt . Next.js Docs
+Welcome to the Next.js documentation! What is Next.js? Next.js is a React
+framework for building full-stack web applications. You use React Components to
+build user interfaces, and Next.js for additional features and optimizations. It
+also automatically configures lower-level tools like bundlers and compilers. You
+can instead focus on building your product and shipping quickly. Whether you're
+an individual developer or part of a larger team, Next.js can help you build
+interactive, dynamic, and fast React applications. How to use the docs The docs
+are organized into 3 sections: Getting Started : Step-by-step tutorials to help
+you create a new application and learn the core Next.js features. Guides :
+Tutorials on specific use cases, choose what's relevant to you. API Reference :
+Detailed technical reference for every feature. Use the sidebar to navigate
+through the sections, or search ( Ctrl+K or Cmd+K ) to quickly find a page. App
+Router and Pages Router Next.js has two different routers: App Router : The
+newer router that supports new React features like Server Components. Pages
+Router : The original router, still supported and being improved. At the top of
+the sidebar, you'll notice a dropdown menu that allows you to switch between the
+App Router and the Pages Router docs. React version handling The App Router and
+Pages Router handle React versions differently: App Router : Uses React canary
+releases built-in, which include
+----------------------------------------------------------------------------------------------------
+Index: 9284 <<"chunk_id": 0, "docno": 1326>>
+
+title: How to migrate from Pages to the App Router description: Learn how to
+upgrade your existing Next.js application from the Pages Router to the App
+Router. url: "https://nextjs.org/docs/app/guides/migrating/app-router-migration"
+docs_index: /docs/llms.txt version: 16.3.0 lastUpdated: 2026-07-07
+prerequisites: - "Guides: /docs/app/guides" - "Migrating:
+/docs/app/guides/migrating" For an index of all Next.js documentation, see
+/docs/llms.txt . This guide will help you: Update your Next.js application from
+version 12 to version 13 Upgrade features that work in both the pages and the
+app directories Incrementally migrate your existing application from pages to
+app Upgrading Node.js Version The minimum Node.js version is now v18.17 . See
+the Node.js documentation for more information. Next.js Version To update to
+Next.js version 13, run the following command using your preferred package
+manager: bash package="pnpm" pnpm add next@latest react@latest react-dom@latest
+bash package="npm" npm install next@latest react@latest react-dom@latest bash
+package="yarn" yarn add next@latest react@latest react-dom@latest bash
+package="bun" bun add next@latest react@latest react-dom@latest ESLint Version
+If you're using ESLint, you need to upgrade your ESLint version: bash
+package="pnpm" pnpm add -D eslint-config-next@latest bash package="npm" npm
+install -D eslint-config-next@latest bash package="yarn" yarn add -D
+eslint-config-next@latest bash package="bun" bun add -D
+eslint-config-next@latest Good to know : You may need to restart the ESLint
+server in VS Code for the ESLint changes to take effect. Open the Command
+Palette ( cmd+shift+p on Mac; ctrl+shift+p on Windows) and search for ESLint:
+Restart ESLint Server . Next Steps After you've updated, see the following
+sections for next steps: Upgrade new features : A guide to help you upgrade to
+new features such as
+----------------------------------------------------------------------------------------------------
+Index: 21949 <<"chunk_id": 0, "docno": 2704>>
+
+title: Getting Started - Pages Router description: Learn how to create
+full-stack web applications with Next.js with the Pages Router. url:
+"https://nextjs.org/docs/pages/getting-started" docs_index: /docs/pages/llms.txt
+version: 16.3.0 lastUpdated: 2024-11-07 router: Pages Router For an index of all
+Next.js documentation, see /docs/pages/llms.txt . Installation How to create a
+new Next.js application with create-next-app . Set up TypeScript, ESLint,and
+configure your next.config.js file. Project Structure Learn about the folder and
+file conventions in a Next.js project, and how to organize your project. Images
+Optimize your images with the built-in next/image component. Fonts Learn how to
+use fonts in Next.js CSS Learn about the different ways to add CSS to your
+application, including CSS Modules, Global CSS, Tailwind CSS, and more.
+Deploying Learn how to deploy your Next.js application. For a semantic overview
+of all documentation, see /docs/sitemap.md For an index of all available
+documentation, see /docs/pages/llms.txt
+----------------------------------------------------------------------------------------------------
+Index: 11466 <<"chunk_id": 4, "docno": 1586>>
+
+in new tracing capabilities (experimental) in Next.js and early explorations
+into server-side developer tools. Improving Stability The Pages Router has been
+around for six years now. The release of the App Router meant the introduction
+of new APIs which are still young, with just six months of usage. We've come a
+long way in a short amount of time, but there are still opportunities to improve
+as we learn more from our community and how they're using it. We appreciate the
+community's willingness to eagerly adopt the App Router and provide feedback.
+There's been a number of bug reports we're investigating and we're thankful for
+the minimal reproductions you have created to help isolate issues and verify
+fixes. Since 13.4, we've already patched a number of high impact bugs around
+stability that are available in the latest patch release ( 13.4.7 ). We will be
+continuing to focus on performance and stability with high intensity. Improving
+Developer Education While we believe the new features of the App Router and
+modern React are powerful, they also require additional education and
+documentation to help teach these new concepts. Next.js features We've been
+working over the past year to re-write the Next.js documentation from scratch.
+This work is now live on nextjs.org/docs . We'd like to highlight some important
+pieces : Pages and App toggles: You can switch between learning the Pages Router
+or App Router documentation using the button on the left side of the
+documentation. Further, you can filter search results based on your router
+choice. Improved
+----------------------------------------------------------------------------------------------------
+Index: 93 <<"chunk_id": 3, "docno": 17>>
+
+Router docs. React version handling The App Router and Pages Router handle React
+versions differently: App Router : Uses React canary releases built-in, which
+include all the stable React 19 changes, as well as newer features being
+validated in frameworks, prior to a new React release. Pages Router : Uses the
+React version installed in your project's package.json . This approach ensures
+new React features work reliably in the App Router while maintaining backwards
+compatibility for existing Pages Router applications. Pre-requisite knowledge
+Our documentation assumes some familiarity with web development. Before getting
+started, it'll help if you're comfortable with: HTML CSS JavaScript React If
+you're new to React or need a refresher, we recommend starting with our React
+Foundations course , and the Next.js Foundations course that has you building an
+application as you learn. Accessibility For the best experience when using a
+screen reader, we recommend using Firefox and NVDA, or Safari and VoiceOver.
+Join our Community If you have questions about anything related to Next.js,
+you're always welcome to ask our community on GitHub Discussions , Discord , X
+(Twitter) , and Reddit . Next Steps Create your first application and learn the
+core Next.js features. Getting Started Learn how to create full-stack web
+applications with the Next.js App Router. Previous Rspack Next App Router Was
+this helpful? supported. Send Resources Docs Support Policy Learn Showcase Blog
+Team Analytics Next.js Conf Previews Evals More Next.js Commerce Contact Sales
+Community GitHub Releases Telemetry Governance Ecosystem Working Group About
+Vercel Next.js + Vercel Open Source Software
+----------------------------------------------------------------------------------------------------
+Index: 7752 <<"chunk_id": 0, "docno": 1073>>
+
+title: How revalidation works in Next.js description: A deep dive into how
+Next.js revalidates cached content, including the tag system, cache consistency,
+and multi-instance coordination. url:
+"https://nextjs.org/docs/app/guides/how-revalidation-works" docs_index:
+/docs/llms.txt version: 16.3.0 lastUpdated: 2026-06-01 prerequisites: - "Guides:
+/docs/app/guides" related: - app/getting-started/caching -
+app/guides/incremental-static-regeneration -
+app/api-reference/config/next-config-js/cacheHandlers -
+app/api-reference/functions/revalidateTag For an index of all Next.js
+documentation, see /docs/llms.txt . The Caching page covers how to use use cache
+, cacheTag , and cacheLife . This page explains how revalidation works
+internally , for platform engineers and advanced users who need to understand
+the system to implement custom cache handlers or debug revalidation behavior.
+The Revalidation Model Most routes in Next.js can be revalidated on demand. This
+includes App Router routes and Pages Router routes that produce ISR/prerender
+cache entries. Pages Router routes that are automatically statically optimized
+(pure static output) are not revalidated on demand. The ability to update cached
+content without redeploying is a core part of Next.js's rendering model . There
+are two types of revalidation: Time-based revalidation uses a
+stale-while-revalidate pattern. The cached content is served immediately, and a
+background regeneration is triggered when the content's age exceeds the
+cacheLife or revalidate duration. The stale content continues to be served until
+the fresh content is ready. On-demand revalidation explicitly invalidates cached
+content by calling revalidateTag() or revalidatePath() . The next request to
+that content triggers a fresh render. Good to know: Pages Router on-demand ISR
+APIs (for example res.revalidate() and the x-prerender-revalidate flow) are
+still supported and use the server cache handler ( cacheHandler , singular).
+----------------------------------------------------------------------------------------------------
+Index: 11462 <<"chunk_id": 0, "docno": 1586>>
+
+title: Next.js App Router Update description: The Next.js team is focused on
+performance, stability, and developer experience for the upcoming months. url:
+"https://nextjs.org/blog/june-2023-update" docs_index: /docs/llms.txt
+publishedAt: June 22nd 2023 authors: - Delba de Oliveira - Lee Robinson The App
+Router represents a new foundation for the future of Next.js, but we recognize
+there are opportunities to make the experience better. We'd like to give an
+update on what our current priorities are. For the upcoming releases of Next.js,
+we are focusing on the following areas: Improving Performance Improving
+Stability Improving Developer Education The App Router First, it's helpful to
+provide some context on how the App Router has been designed. Growing Beyond the
+Pages Router by Aligning with React As we saw increased adoption and larger
+scale applications being built with Next.js, we received feedback from the
+community and identified areas where we started to reach the limits of the Pages
+Router. Most notably, the Next.js Pages Router was not designed for streaming, a
+cornerstone primitive in modern React, that helps us address the limitations we
+were facing and realize our long-term vision for Next.js. Making
+streaming-friendly framework APIs for data fetching, asset loading, and page
+metadata, as well as taking advantage of React's newer primitives required large
+changes to the core architecture of Next.js. We took the opportunity to build on
+top of the latest React concurrent features , like Server Components, Suspense,
+and more, which have been designed for streaming architectures . Incremental
+Adoption is Non-Negotiable We didn't want our community to have to
+----------------------------------------------------------------------------------------------------
+Index: 7617 <<"chunk_id": 0, "docno": 1048>>
+
+title: transpilePackages description: "Transpile and bundle dependencies from
+monorepo workspace packages or node_modules libraries that ship TypeScript, JSX,
+or modern syntax." url:
+"https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages"
+docs_index: /docs/llms.txt version: 16.3.0 lastUpdated: 2026-05-27
+prerequisites: - "Configuration: /docs/app/api-reference/config" -
+"next.config.js: /docs/app/api-reference/config/next-config-js" For an index of
+all Next.js documentation, see /docs/llms.txt . Use transpilePackages to compile
+and bundle a dependency instead of treating it as untouched runtime code. Values
+are package names, including scoped names like @scope/pkg . Paths and glob
+patterns are not supported. js filename="next.config.js" /* @type
+{import('next').NextConfig} / const nextConfig = { transpilePackages:
+['package-name', '@scope/pkg'], } module.exports = nextConfig This replaces the
+next-transpile-modules package. When you need it Turbopack transpiles workspace
+packages (npm, pnpm, or Yarn workspaces) in your monorepo automatically under
+both routers. Webpack does the same for the App Router. Add a package to
+transpilePackages when: A node_modules dependency ships raw TypeScript or JSX.
+Next.js does not compile code inside node_modules by default. Listing the
+package opts it in, or you can build the package to plain JavaScript and point
+its main / exports at the compiled output. You build with webpack for the Pages
+Router and the dependency's source lives outside the next app's directory. For
+example, an apps/web app importing packages/ui in the same monorepo. You use the
+Pages Router and want a node_modules dependency bundled into the route. Pages
+Router loads node_modules server-side dependencies through Node.js require at
+runtime. List the package to bundle its source into the route instead. App
+Router already bundles Server Component and Route Handler dependencies unless
+the package is
+----------------------------------------------------------------------------------------------------
+Index: 20555 <<"chunk_id": 1823, "docno": 2483>>
+
+and `.well-known/subfolder/config.json`. When used with [`output:
+"export"`](/docs/app/guides/static-exports) configuration, the `/about` page
+will output `/about/index.html` (instead of the default `/about.html`). ##
+Version History | Version | Changes | | -------- | ---------------------- | |
+`v9.5.0` | `trailingSlash` added. | --- title: transpilePackages description:
+"Automatically transpile and bundle dependencies from local packages (like
+monorepos) or from external dependencies (`node_modules`)." url:
+"https://nextjs.org/docs/pages/api-reference/config/next-config-js/transpilePackages"
+version: 16.3.0 router: Pages Router --- # transpilePackages Use
+`transpilePackages` to compile and bundle a dependency instead of treating it as
+untouched runtime code. Values are package names, including scoped names like
+`@scope/pkg`. Paths and glob patterns are not supported. ```js
+filename="next.config.js" /** @type {import('next').NextConfig} */ const
+nextConfig = { transpilePackages: ['package-name', '@scope/pkg'], }
+module.exports = nextConfig ``` This replaces the `next-transpile-modules`
+package. ## When you need it Turbopack transpiles workspace packages (npm, pnpm,
+or Yarn workspaces) in your monorepo automatically under both routers. Webpack
+does the same for the App Router. Add a package to `transpilePackages` when: *
+**A `node_modules` dependency ships raw TypeScript or JSX.** Next.js does not
+compile code inside `node_modules` by default. Listing the package opts it in,
+or you can build the package to plain JavaScript and point its `main`/`exports`
+at the compiled output. * **You build with webpack for the Pages Router and the
+dependency's source lives outside the next app's directory.** For example, an
+`apps/web` app importing `packages/ui` in the same monorepo. * **You use the
+Pages Router and want a `node_modules` dependency bundled into the route.**
+Pages Router loads `node_modules` server-side dependencies through Node.js
+`require` at runtime. List the
+----------------------------------------------------------------------------------------------------
+Index: 13330 <<"chunk_id": 12, "docno": 1786>>
+
+Next.js beta docs? Starting today, we recommend building new applications with
+the App Router. The Next.js beta documentation, which has been used to explain
+the App Router and re-written from the ground up, is now merged back into the
+stable Next.js documentation . You can now easily toggle between the App or
+Pages Router. We recommend reading the App Router Incremental Adoption Guide to
+learn how to adopt the App Router. Is the Pages Router going away? No. We are
+committed to supporting pages/ development, including bug fixes, improvements,
+and security patches, for multiple major versions moving forward. We want to
+ensure developers have enough time to incrementally adopt the App Router as
+they're ready. Using both pages/ and app/ in production together is supported
+and encouraged. The App Router can be adopted on a per-route basis . Does this
+mean Server Components are "complete"? Next.js is one framework that is choosing
+the build on the React architecture, which includes Server Components. We hope
+that the experience provided with the App Router will encourage other frameworks
+(or new frameworks) to consider using this architecture, as well. There are
+still patterns yet to be defined in this ecosystem, like handling infinite
+scroll. For now, we recommend using client solutions for these patterns while
+the ecosystem grows and libraries are created or updated. Community Next.js is
+the result of the combined work of over 2,600 individual developers, industry
+partners like Google and Meta, and our core team at Vercel. Join the community
+on GitHub Discussions , Reddit ,
+----------------------------------------------------------------------------------------------------
+Index: 10672 <<"chunk_id": 0, "docno": 1529>>
+
+Pages Router | Next.js Skip to content Search documentation... ⌘K Search... ⌘K
+Showcase Docs Blog Templates Enterprise Search documentation... ⌘K Search... ⌘K
+Deploy Learn Pages Router New App Router Course : You're currently viewing the
+Pages Router course. View the new App Router course here . To build a complete
+web application with React from scratch, there are many important details you
+need to consider: Code has to be bundled using a bundler like webpack and
+transformed using a compiler like Babel. You need to do production optimizations
+such as code splitting. You might want to statically pre-render some pages for
+performance and SEO. You might also want to use server-side rendering or
+client-side rendering. You might have to write some server-side code to connect
+your React app to your data store. A framework can solve these problems. But
+such a framework must have the right level of abstraction — otherwise it won’t
+be very useful. It also needs to have great "Developer Experience", ensuring you
+and your team have an amazing experience while writing code. Next.js: The React
+Framework Enter Next.js , the React Framework. Next.js provides a solution to
+all of the above problems. But more importantly, it puts you and your team in
+the pit of success when building React applications. Next.js aims to have
+best-in-class developer experience and many built-in features, such as: An
+intuitive page-based routing system (with support for dynamic routes )
+Pre-rendering , both static generation (SSG) and server-side rendering (SSR) are
+supported on a per-page basis Automatic code
+----------------------------------------------------------------------------------------------------
+Index: 11558 <<"chunk_id": 5, "docno": 1599>>
+
+, the React 19 upgrade guide , and watch the React Conf Keynote to learn more.
+Pages Router on React 18 Next.js 15 maintains backward compatibility for the
+Pages Router with React 18, allowing users to continue using React 18 while
+benefiting from improvements in Next.js 15. Since the first Release Candidate
+(RC1), we've shifted our focus to include support for React 18 based on
+community feedback. This flexibility enables you to adopt Next.js 15 while using
+the Pages Router with React 18, giving you greater control over your upgrade
+path. Note: While it is possible to run the Pages Router on React 18 and the App
+Router on React 19 in the same application, we don't recommend this setup. Doing
+so could result in unpredictable behavior and typings inconsistencies, as the
+underlying APIs and rendering logic between the two versions may not fully
+align. React Compiler (Experimental) The React Compiler is a new experimental
+compiler created by the React team at Meta. The compiler understands your code
+at a deep level through its understanding of plain JavaScript semantics and the
+Rules of React , which allows it to add automatic optimizations to your code.
+The compiler reduces the amount of manual memoization developers have to do
+through APIs such as useMemo and useCallback - making code simpler, easier to
+maintain, and less error prone. With Next.js 15, we've added support for the
+React Compiler . Learn more about the React Compiler, and the available Next.js
+config options . Note: The React Compiler is currently only
+----------------------------------------------------------------------------------------------------
+Index: 11557 <<"chunk_id": 4, "docno": 1599>>
+
+won't be refetched from the server to continue to support partial rendering .
+Back/forward navigation will still restore from cache to ensure the browser can
+restore scroll position. loading.js will remain cached for 5 minutes (or the
+value of the staleTimes.static configuration). You can opt into the previous
+Client Router Cache behavior by setting the following configuration: ts
+filename="next.config.ts" const nextConfig = { experimental: { staleTimes: {
+dynamic: 30, }, }, }; export default nextConfig; React 19 As part of the Next.js
+15 release, we've made the decision to align with the upcoming release of React
+19. In version 15, the App Router uses React 19 RC, and we've also introduced
+backwards compatibility for React 18 with the Pages Router based on community
+feedback. If you're using the Pages Router, this allows you to upgrade to React
+19 when ready. Although React 19 is still in the RC phase, our extensive testing
+across real-world applications and our close work with the React team have given
+us confidence in its stability. The core breaking changes have been well-tested
+and won't affect existing App Router users. Therefore, we've decided to release
+Next.js 15 as stable now, so your projects are fully prepared for React 19 GA.
+To ensure the transition is as smooth as possible, we've provided codemods and
+automated tools to help ease the migration process. Read the Next.js 15 upgrade
+guide , the React 19 upgrade guide , and watch the React Conf Keynote to learn
+more. Pages Router on React 18 Next.js 15 maintains backward
+----------------------------------------------------------------------------------------------------
+Index: 20477 <<"chunk_id": 1745, "docno": 2483>>
+
+// ... } ``` ## Examples ### Sharing components with App Router `useParams` from
+`next/navigation` works in both the Pages Router and App Router. This allows you
+to create shared components that work in either context: ```tsx
+filename="components/breadcrumb.tsx" switcher import { useParams } from
+'next/navigation' // This component works in both pages/ and app/ export
+function Breadcrumb() { const params = useParams<{ slug: string }>() if
+(!params) { // Fallback for Pages Router during prerendering return <nav>Home /
+...</nav> } return <nav>Home / {params.slug}</nav> } ``` ```jsx
+filename="components/breadcrumb.js" switcher import { useParams } from
+'next/navigation' // This component works in both pages/ and app/ export
+function Breadcrumb() { const params = useParams() if (!params) { // Fallback
+for Pages Router during prerendering return <nav>Home / ...</nav> } return
+<nav>Home / {params.slug}</nav> } ``` > **Good to know**: When using this
+component in the App Router, `useParams` never returns `null`, so the fallback
+branch will not be rendered. ## Version History | Version | Changes | |
+--------- | ----------------------- | | `v13.3.0` | `useParams` introduced. |
+--- title: useReportWebVitals description: useReportWebVitals url:
+"https://nextjs.org/docs/pages/api-reference/functions/use-report-web-vitals"
+version: 16.3.0 router: Pages Router --- # useReportWebVitals The
+`useReportWebVitals` hook allows you to report [Core Web
+Vitals](https://web.dev/vitals/), and can be used in combination with your
+analytics service. New functions passed to `useReportWebVitals` are called with
+the available metrics up to that point. To prevent reporting duplicated data,
+ensure that the callback function reference does not change (as shown in the
+code examples below). ```jsx filename="pages/_app.js" import {
+useReportWebVitals } from 'next/web-vitals' const
+----------------------------------------------------------------------------------------------------
+Index: 20556 <<"chunk_id": 1824, "docno": 2483>>
+
+the Pages Router and want a `node_modules` dependency bundled into the route.**
+Pages Router loads `node_modules` server-side dependencies through Node.js
+`require` at runtime. List the package to bundle its source into the route
+instead. App Router already bundles Server Component and Route Handler
+dependencies unless the package is listed in
+[`serverExternalPackages`](/docs/app/api-reference/config/next-config-js/serverExternalPackages).
+> **Good to know**: A package cannot appear in both `transpilePackages` and
+[`serverExternalPackages`](/docs/app/api-reference/config/next-config-js/serverExternalPackages);
+Next.js throws at build start if it does. Packages listed in
+[`optimizePackageImports`](/docs/app/api-reference/config/next-config-js/optimizePackageImports)
+and the entries in
+[`default-transpiled-packages.json`](https://github.com/vercel/next.js/blob/canary/packages/next/src/lib/default-transpiled-packages.json)
+are added automatically; you do not need to repeat them. ## Version History |
+Version | Changes | | --------- | -------------------------- | | `v13.0.0` |
+`transpilePackages` added. | --- title: turbopack description: Configure Next.js
+with Turbopack-specific options url:
+"https://nextjs.org/docs/pages/api-reference/config/next-config-js/turbopack"
+version: 16.3.0 router: Pages Router --- # turbopack The `turbopack` option lets
+you customize [Turbopack](/docs/app/api-reference/turbopack) to transform
+different files and change how modules are resolved. > **Good to know**: The
+`turbopack` option was previously named `experimental.turbo` in Next.js versions
+13.0.0 to 15.2.x. The `experimental.turbo` option will be removed in Next.js 16.
+> > If you are using an older version of Next.js, run `npx @next/codemod@latest
+next-experimental-turbo-to-turbopack .` to automatically migrate your
+configuration. ```ts filename="next.config.ts" switcher import type { NextConfig
+} from 'next' const nextConfig: NextConfig = { turbopack: { // ... }, } export
+default nextConfig ``` ```js filename="next.config.js" switcher /** @type
+{import('next').NextConfig} */ const nextConfig = { turbopack: { // ... }, }
+module.exports = nextConfig ``` > **Good to know**: > > * Turbopack for Next.js
+does not require loaders or loader configuration
+----------------------------------------------------------------------------------------------------
+Index: 9285 <<"chunk_id": 1, "docno": 1326>>
+
+After you've updated, see the following sections for next steps: Upgrade new
+features : A guide to help you upgrade to new features such as the improved
+Image and Link Components. Migrate from the pages to app directory : A
+step-by-step guide to help you incrementally migrate from the pages to the app
+directory. Upgrading New Features Next.js 13 introduced the new App Router with
+new features and conventions. The new Router is available in the app directory
+and co-exists with the pages directory. Upgrading to Next.js 13 does not require
+using the App Router. You can continue using pages with new features that work
+in both directories, such as the updated Image component , Link component ,
+Script component , and Font optimization . Component Next.js 12 introduced new
+improvements to the Image Component with a temporary import: next/future/image .
+These improvements included less client-side JavaScript, easier ways to extend
+and style images, better accessibility, and native browser lazy loading. In
+version 13, this new behavior is now the default for next/image . There are two
+codemods to help you migrate to the new Image Component:
+next-image-to-legacy-image codemod : Safely and automatically renames next/image
+imports to next/legacy/image . Existing components will maintain the same
+behavior. next-image-experimental codemod : Dangerously adds inline styles and
+removes unused props. This will change the behavior of existing components to
+match the new defaults. To use this codemod, you need to run the
+next-image-to-legacy-image codemod first. Component The Component no longer
+requires manually adding an tag as a child. This
+----------------------------------------------------------------------------------------------------
+Index: 11980 <<"chunk_id": 1, "docno": 1637>>
+
+example route.ts in your new project’s app/ folder, demonstrating how to create
+an API endpoint. 1.2 App Router vs. Pages Router Pages Router : Historically,
+Next.js used pages/api/ for APIs. This approach relied on Node.js
+request/response objects and an Express-like API. App Router (Default) :
+Introduced in Next.js 13, the App Router fully embraces web standard
+Request/Response APIs. Instead of pages/api/ , you can now place route.ts or
+route.js files anywhere inside the app/ directory. Why switch? The App Router’s
+“Route Handlers” lean on the Web Platform Request/Response APIs rather than
+Node.js-specific APIs. This simplifies learning, reduces friction, and helps you
+reuse your knowledge across different tools. 2. Why (and when) to build APIs
+with Next.js Public API for Multiple Clients You can build a public API that’s
+consumed by your Next.js web app, a separate mobile app, or any third-party
+service. For example, you might fetch from /api/users both in your React website
+and a React Native mobile app. Proxy to an Existing Backend Sometimes you want
+to hide or consolidate external microservices behind a single endpoint. Next.js
+Route Handlers can act as a proxy or middle layer to another existing backend.
+For instance, you might intercept requests, handle authentication, transform
+data, and then pass the request along to an upstream API. Webhooks and
+Integrations If you receive external callbacks or webhooks (e.g., from Stripe,
+GitHub, Twilio), you can handle them with Route Handlers. Custom Authentication
+If you need sessions, tokens, or other auth logic, you can store cookies, read
+headers, and respond with the
+----------------------------------------------------------------------------------------------------
+Index: 19933 <<"chunk_id": 1201, "docno": 2483>>
+
+used with [`output: "export"`](/docs/app/guides/static-exports) configuration,
+the `/about` page will output `/about/index.html` (instead of the default
+`/about.html`). ## Version History | Version | Changes | | -------- |
+---------------------- | | `v9.5.0` | `trailingSlash` added. | --- title:
+transpilePackages description: "Transpile and bundle dependencies from monorepo
+workspace packages or `node_modules` libraries that ship TypeScript, JSX, or
+modern syntax." url:
+"https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages"
+version: 16.3.0 --- # transpilePackages Use `transpilePackages` to compile and
+bundle a dependency instead of treating it as untouched runtime code. Values are
+package names, including scoped names like `@scope/pkg`. Paths and glob patterns
+are not supported. ```js filename="next.config.js" /** @type
+{import('next').NextConfig} */ const nextConfig = { transpilePackages:
+['package-name', '@scope/pkg'], } module.exports = nextConfig ``` This replaces
+the `next-transpile-modules` package. ## When you need it Turbopack transpiles
+workspace packages (npm, pnpm, or Yarn workspaces) in your monorepo
+automatically under both routers. Webpack does the same for the App Router. Add
+a package to `transpilePackages` when: * **A `node_modules` dependency ships raw
+TypeScript or JSX.** Next.js does not compile code inside `node_modules` by
+default. Listing the package opts it in, or you can build the package to plain
+JavaScript and point its `main`/`exports` at the compiled output. * **You build
+with webpack for the Pages Router and the dependency's source lives outside the
+next app's directory.** For example, an `apps/web` app importing `packages/ui`
+in the same monorepo. * **You use the Pages Router and want a `node_modules`
+dependency bundled into the route.** Pages Router loads `node_modules`
+server-side dependencies through Node.js `require` at runtime. List the package
+to bundle
+----------------------------------------------------------------------------------------------------
+Index: 11979 <<"chunk_id": 0, "docno": 1637>>
+
+title: Building APIs with Next.js description: Learn about how to build APIs
+with Next.js. url: "https://nextjs.org/blog/building-apis-with-nextjs"
+docs_index: /docs/llms.txt publishedAt: February 28th 2025 authors: - Lee
+Robinson This guide will cover how you can build APIs with Next.js, including
+setting up your project, understanding the App Router and Route Handlers,
+handling multiple HTTP methods, implementing dynamic routing, creating reusable
+middleware logic, and deciding when to spin up a dedicated API layer. 1. Getting
+started 1.1 Create a Next.js app 1.2 App Router vs. Pages Router 2. Why (and
+when) to build APIs with Next.js 3. Creating an API with Route Handlers 3.1
+Basic file setup 3.2 Multiple HTTP methods in one file 4. Working with Web APIs
+4.1 Directly using Request & Response 4.2 Query parameters 4.3 Headers and
+cookies 5. Dynamic routes 6. Using Next.js as a proxy or forwarding layer 7.
+Building shared “middleware” logic 8. Deployment and “SPA Mode” considerations
+8.1 Standard Node.js deployment 8.2 SPA/Static Export 8.3 Deploying APIs on
+Vercel 9. When to skip creating an API endpoint 10. Putting It All Together
+Conclusion Frequently Asked Questions What about Server Actions? Can I use
+TypeScript with Route Handlers? What are the best practices for authentication?
+1. Getting started 1.1 Create a Next.js app If you’re starting fresh, you can
+create a new Next.js project using: bash filename="Terminal" npx
+create-next-app@latest --api Note: The --api flag automatically includes an
+example route.ts in your new project’s app/ folder, demonstrating how to create
+an API endpoint. 1.2 App Router vs. Pages Router Pages Router : Historically,
+----------------------------------------------------------------------------------------------------
+Index: 11569 <<"chunk_id": 16, "docno": 1599>>
+
+CSS files with CSS module files deeper in the tree ( PR ) [Improvement] The
+cache handler can be specified via the NEXT_CACHE_HANDLER_PATH environment
+variable ( PR ) [Improvement] The Pages Router now supports both React 18 and
+React 19 ( PR ) [Improvement] The Error Overlay now displays a button to copy
+the Node.js Inspector URL if the inspector is enabled ( PR ) [Improvement]
+Client prefetches on the App Router now use the priority attribute ( PR )
+[Improvement] Next.js now provides an unstable_rethrow function to rethrow
+Next.js internal errors in the App Router ( PR ) [Improvement] unstable_after
+can now be used in static pages ( PR ) [Improvement] If a next/dynamic component
+is used during SSR, the chunk will be prefetched ( PR ) [Improvement] The
+esmExternals option is now supported on the App Router ( PR ) [Improvement] The
+experimental.allowDevelopmentBuild option can be used to allow
+NODE_ENV=development with next build for debugging purposes ( PR ) [Improvement]
+The Server Action transforms are now disabled in the Pages Router ( PR )
+[Improvement] Build workers will now stop the build from hanging when they exit
+( PR ) [Improvement] When redirecting from a Server Action, revalidations will
+now apply correctly ( PR ) [Improvement] Dynamic params are now handled
+correctly for parallel routes on the Edge Runtime ( PR ) [Improvement] Static
+pages will now respect staleTime after initial load ( PR ) [Improvement]
+vercel/og updated with a memory leak fix ( PR ) [Improvement] Patch timings
+updated to allow usage of
+----------------------------------------------------------------------------------------------------

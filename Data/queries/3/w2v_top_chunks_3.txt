@@ -1,0 +1,525 @@
+Index: 59134 <<"chunk_id": 1, "docno": 9773>>
+
+Server 4.0. R2DBC (the specification for reactive SQL database drivers) started
+to emerge, and we decided to pick up on R2DBC with Spring Data R2DBC. Both
+projects wanted to expose transactional behavior, so they eventually provided
+inTransaction(…) methods on their Template APIs to perform units of work guarded
+by native transactions. While it is convenient to use an inTransaction(…) method
+for smaller chunks of work, it does not reflect the Spring way of supporting
+transactions. When working with imperative programming models, Spring Framework
+allows for two arrangements of transaction management: @Transactional and
+TransactionTemplate (declarative respective programmatic transaction
+management). Both approaches to transaction management are built on top of
+PlatformTransactionManager , which manages transactions for transactional
+resources. PlatformTransactionManager can be either a Spring-provided
+transaction manager implementation or a Java EE one based on JTA. Both
+approaches have in common that they bind the transactional state to ThreadLocal
+storage, which allows for transactional state management without passing a
+TransactionStatus object. Transaction management should happen in the background
+in a non-invasive manner. ThreadLocal works in imperative programming
+arrangements because of the underlying assumption that we do not engage threads
+to continue work within a transaction. How Imperative Transaction Management
+Works Transaction management needs to associate its transactional state with an
+execution. In imperative programming, this is typically a ThreadLocal storage –
+Transactional state is bound to a Thread . The underlying assumption is that
+transactional code gets executed on the same thread on which the container has
+invoked it. Reactive programming models remove this fundamental assumption of
+imperative (synchronous/blocking)
+----------------------------------------------------------------------------------------------------
+Index: 56676 <<"chunk_id": 197, "docno": 9200>>
+
+core concepts, such as “convention over configuration”, letting Apache Geode
+applications be built with Spring Boot reliably, quickly, and easily. SDG
+provides this annotation-based configuration model to, first and foremost, give
+application developers “choice” when building Spring applications with Apache
+Geode. SDG makes no assumptions about what application developers are trying to
+create and fails fast anytime the configuration is ambiguous, giving users
+immediate feedback. Second, SDG’s annotations were meant to get application
+developers up and running quickly and reliably with ease. SDG accomplishes this
+by applying sensible defaults so that application developers need not know, or
+even have to learn, all the intricate configuration details and tooling provided
+by Apache Geode to accomplish simple tasks, such as building a prototype. So,
+SDG is all about “choice” and SBDG is all about “convention”. Together these
+frameworks provide application developers with convenience and ease to move
+quickly and reliably. To learn more about the motivation behind SDG’s
+annotation-based configuration model, see the Reference Documentation .
+Conventions Currently, SBDG provides auto-configuration for the following
+features: ClientCache Caching with Spring’s Cache Abstraction Continuous Query
+Function Execution and Implementation Logging PDX GemfireTemplate Spring Data
+Repositories Security (Client/server auth and SSL) Spring Session This means the
+following SDG annotations are not required to use the features above:
+@ClientCacheApplication @EnableGemfireCaching (or by using Spring Framework’s
+@EnableCaching annotation) @EnableContinuousQueries
+@EnableGemfireFunctionExecutions @EnableGemfireFunctions @EnableLogging
+@EnablePdx @EnableGemfireRepositories @EnableSecurity @EnableSsl
+@EnableGemFireHttpSession Since SBDG auto-configures these features for you, the
+above annotations are not strictly required. Typically, you would only declare
+one of these annotations when you want
+----------------------------------------------------------------------------------------------------
+Index: 59352 <<"chunk_id": 2, "docno": 9815>>
+
+to JPA. That separate layer aka Neo4j-OGM (Neo4j Object Graph Mapper) is now
+contained in this module itself. Spring Data Neo4j itself is an object mapper,
+dedicated to be used in Spring and Spring Boot applications and in some
+supported Jakarta EE environments. It does not require or support a separate
+implementation of an object mapper. Noteworthy features that differentiate the
+current SDN version from prior SDN+OGM are SDN is a complete OGM on its own Full
+support for immutable entities and thus full support for Kotlin’s data classes
+Full support for the reactive programming model in the Spring Framework itself
+and Spring Data Neo4j client and reactive client feature, resurrecting the idea
+of a template over the plain driver, easing database access We provide
+repositories as a high-level abstraction for storing and querying documents as
+well as templates and clients for generic domain access or generic query
+execution. All of them are integrated with Spring’s application transactions.
+The core functionality of the Neo4j support can be used directly, through either
+the Neo4jClient or the Neo4jTemplate or the reactive variants thereof. All of
+them provide integration with Spring’s application level transactions. On a
+lower level, you can grab the Bolt driver instance, but than you have to manage
+your own transactions in these cases. You still can use Neo4j-OGM, even in
+modern Spring Boot applications. But you cannot use it with SDN 6+. If you tried
+you would have two different sets of entities in two different - and unrelated -
+persistence context. Hence, if you
+----------------------------------------------------------------------------------------------------
+Index: 56568 <<"chunk_id": 89, "docno": 9200>>
+
+the Spring Cache Abstraction Provider #application.properties
+spring.cache.type=redis ... If you prefer not to use Spring’s Cache Abstraction
+to manage your Spring Boot application’s state at all, then set the
+spring.cache.type property to "none": Example 108. Disable Spring’s Cache
+Abstraction #application.properties spring.cache.type=none ... See the Spring
+Boot documentation for more detail. You can include multiple caching providers
+on the classpath of your Spring Boot application. For instance, you might use
+Redis to cache your application’s state while using Apache Geode as your
+application’s persistent data store (that is, the System of Record (SOR)).
+Spring Boot does not properly recognize spring.cache.type=[gemfire|geode] , even
+though Spring Boot for Apache Geode is set up to handle either of these property
+values (that is, either gemfire or geode ). 11. Data Access with GemfireTemplate
+There are several ways to access data stored in Apache Geode. For instance, you
+can use the Region API directly. If you are driven by the application’s domain
+context, you can use the power of Spring Data Repositories instead. While the
+Region API offers flexibility, it couples your application to Apache Geode,
+which is usually undesirable and unnecessary. While using Spring Data
+Repositories provides a very powerful and convenient abstraction, you give up
+the flexibility provided by a lower-level Region API. A good compromise is to
+use the Template software design pattern . This pattern is consistently and
+widely used throughout the entire Spring portfolio. For example, the Spring
+Framework provides JdbcTemplate and JmsTemplate . Other Spring Data modules,
+such as Spring Data Redis, offer the RedisTemplate
+----------------------------------------------------------------------------------------------------
+Index: 56524 <<"chunk_id": 45, "docno": 9200>>
+
+the classpath) that ultimately help you keep your attention and focus on solving
+the problem at hand and not on the plumbing. For example, if you are building a
+web application, you can include the
+org.springframework.boot:spring-boot-starter-web dependency on your application
+classpath. Not only does Spring Boot enable you to build Spring Web MVC
+Controllers appropriate to your application UC (your responsibility), but it
+also bootstraps your web application in an embedded Servlet container on startup
+(Spring Boot’s responsibility). This saves you from having to handle many
+low-level, repetitive, and tedious development tasks that are error-prone and
+easy to get wrong when you are trying to solve problems. You need not care how
+the plumbing works until you need to customize something. And, when you do, you
+are better informed and prepared to do so. It is also equally essential that
+frameworks, such as Spring Boot, get out of the way quickly when application
+requirements diverge from the provided defaults. This is the beautiful and
+powerful thing about Spring Boot and why it is second to none in its class.
+Still, auto-configuration does not solve every problem all the time. Therefore,
+you need to use declarative configuration in some cases, whether expressed as
+bean definitions, in properties, or by some other means. This is so that
+frameworks do not leave things to chance, especially when things are ambiguous.
+The framework gives you choice. Keeping our goals in mind, this chapter: Refers
+you to the SDG annotations covered by SBDG’s auto-configuration. Lists all SDG
+annotations not covered by
+----------------------------------------------------------------------------------------------------
+Index: 5106 <<"chunk_id": 13, "docno": 709>>
+
+is deferred until the ApplicationContext has started. Open EntityManager in View
+If you are running a web application, Spring Boot by default registers
+OpenEntityManagerInViewInterceptor to apply the “Open EntityManager in View”
+pattern, to allow for lazy loading in web views. If you do not want this
+behavior, you should set spring.jpa.open-in-view to false in your
+application.properties . Spring Data JDBC Spring Data includes repository
+support for JDBC and will automatically generate SQL for the methods on
+CrudRepository . For more advanced queries, a @Query annotation is provided.
+Spring Boot will auto-configure Spring Data’s JDBC repositories when the
+necessary dependencies are on the classpath. They can be added to your project
+with a single dependency on spring-boot-starter-data-jdbc . If necessary, you
+can take control of Spring Data JDBC’s configuration by adding the
+@EnableJdbcRepositories annotation or an AbstractJdbcConfiguration subclass to
+your application. If you’re using Spring Data JDBC with ahead-of-time processing
+(targeting either the JVM or a native image), some additional configuration is
+recommended. To prevent the need for a DB connection during AOT processing,
+define a JdbcDialect bean that’s appropriate for your application’s database.
+For example, if you’re using Postgres, define a JdbcPostgresDialect bean. For
+complete details of Spring Data JDBC, see the reference documentation . Using
+H2’s Web Console The H2 database provides a browser-based console that Spring
+Boot can auto-configure for you. The console is auto-configured when the
+following conditions are met: You are developing a servlet-based web
+application. org.springframework.boot:spring-boot-h2console is on the classpath.
+You are using Spring Boot’s developer tools . If you are
+----------------------------------------------------------------------------------------------------
+Index: 59705 <<"chunk_id": 1, "docno": 9887>>
+
+It builds on top of the Neo4j Java Driver . The instance of the Java driver is
+provided through Spring Boot’s automatic configuration itself. All configuration
+options of the driver are accessible in the namespace spring.neo4j . The driver
+bean provides imperative, asynchronous and reactive methods to interact with
+Neo4j. You can use all transaction methods the driver provides on that bean such
+as auto-commit transactions , transaction functions and unmanaged transactions.
+Be aware that those transactions are not tight to an ongoing Spring transaction.
+Integration with Spring Data and Spring’s platform or reactive transaction
+manager starts at the Neo4j Client . The client is part of SDN is configured
+through a separate starter, spring-boot-starter-data-neo4j . The configuration
+namespace of that starter is spring.data.neo4j . The client is mapping agnostic.
+It doesn’t know about your domain classes, and you are responsible for mapping a
+result to an object suiting your needs. The next higher level of abstraction is
+the Neo4j Template. It is aware of your domain, and you can use it to query
+arbitrary domain objects. The template comes in handy in scenarios with a large
+number of domain classes or custom queries for which you don’t want to create an
+additional repository abstraction each. The highest level of abstraction is a
+Spring Data repository. All abstractions of SDN come in both imperative and
+reactive fashions. It is not recommended mixing both programming styles in the
+same application. The reactive infrastructure requires a Neo4j 4.0+ database.
+Figure 1. SDN building blocks The template mechanism is
+----------------------------------------------------------------------------------------------------
+Index: 7659 <<"chunk_id": 13, "docno": 1055>>
+
+and will, therefore, provide a handler for all requests. If no static content is
+available, ResourceHttpRequestHandler will throw a NoResourceFoundException .
+For a NoHandlerFoundException to be thrown, set spring.mvc.static-path-pattern
+to a more specific value such as /resources/** or set
+spring.web.resources.add-mappings to false to disable serving of static content
+entirely. ConfigurableWebBindingInitializer Spring MVC uses a
+WebBindingInitializer to initialize a WebDataBinder for a particular request. If
+you create your own ConfigurableWebBindingInitializer @Bean , Spring Boot
+automatically configures Spring MVC to use it. Template Engines As well as REST
+web services, you can also use Spring MVC to serve dynamic HTML content. Spring
+MVC supports a variety of templating technologies, including Thymeleaf,
+FreeMarker, and JSPs. Also, many other templating engines include their own
+Spring MVC integrations. Spring Boot includes auto-configuration support for the
+following templating engines: FreeMarker Groovy Thymeleaf Mustache If possible,
+JSPs should be avoided. There are several known limitations when using them with
+embedded servlet containers. When you use one of these templating engines with
+the default configuration, your templates are picked up automatically from
+src/main/resources/templates . Depending on how you run your application, your
+IDE may order the classpath differently. Running your application in the IDE
+from its main method results in a different ordering than when you run your
+application by using Maven or Gradle or from its packaged jar. This can cause
+Spring Boot to fail to find the expected template. If you have this problem, you
+can reorder the classpath in the IDE to place the module’s classes and resources
+first. Error Handling
+----------------------------------------------------------------------------------------------------
+Index: 25770 <<"chunk_id": 4, "docno": 3559>>
+
+right place to find these type of samples. ADVANCED (samples/advanced) This
+category targets develoopers who are very familiar with Spring Integration
+framework but looking to extend it to address a specific custom need by using
+Spring Integration public API. For example; if you are looking for samples
+showing you how to implement a custom Channel or Consumer (event-based or
+polling-based), or you trying to figure out what is the most appropriate way to
+implement custom Bean parser on top of Spring Integration Bean parsers hierarchy
+when implementing custom name space for a custom component, this would be the
+right place to look. Here you can also find samples that will help you with
+Adapter development. Spring Integration comes with an extensive library of
+adapters to allow you to connect remote systems with Spring Integration
+messaging framework. However you might have a need to integrate with system for
+which the core framework does not provide an adapter. So you have to implement
+your own. This category would include samples showing you how to do it.
+APPLICATIONS (samples/applications) This category targets developers and
+architects who have a good understanding of the Messaging architecture, EIP and
+above average understanding of Spring and Spring Integration frameworks and are
+looking for samples that address a particular business problem. In other words
+the emphasis of samples in this category is business use cases and how they
+could be solved via Messaging Architecture and Spring Integration in particular.
+For example; If you are interested to see how a Loan Broker or Travel Agent
+----------------------------------------------------------------------------------------------------
+Index: 42309 <<"chunk_id": 1, "docno": 6489>>
+
+the different transaction manager implementations in different versions Control
+over transaction isolation level: a very useful feature not available in JTA For
+those familiar with JTA, using the UserTransaction, as you do when controlling
+transactions programmatically in Java EE, has some significant gaps, perhaps
+understandable given the now obsolete assumption when J2EE was first conceived
+nearly ten years ago that no one would ever want to do transaction management
+without EJB. The problem is that some operations like suspending a transaction
+(to get "requires new" semantics, for example), are only possible on the
+TransactionManager. This interface is standardized in the JTA spec, but unlike
+the UserTransaction it does not offer a well-known JNDI location or other way of
+obtaining it. Some other things, such as control of isolation level or
+server-specific "transaction naming" (for monitoring or other purposes) are not
+possible at all with JTA. Because Spring provides a rich, portable transaction
+abstraction, it does the work under the covers of driving JTA and other APIs, so
+your code doesn't need to know anything about the underlying infrastructure, and
+thus can take advantage of any proprietary APIs that give more control or
+greater efficiency. Spring supports both declarative and programmatic
+transactions, so you can layer transaction management onto POJOs that don't know
+anything about it; or, if transaction management is part of your business logic,
+you can use a more elegant API that offers more features than JTA, isn't tied to
+JNDI, and is much less verbose to work with. This code will go into the
+----------------------------------------------------------------------------------------------------
+Index: 54760 <<"chunk_id": 5, "docno": 8898>>
+
+is declared. For instance, the Spring Boot BOM declares an explicit (level 1)
+dependency management for spring-core but not on any other Spring Framework jars
+(those are brought in via a reference to the Spring Framework BOM). The rule is
+that the first time it is declared wins, but the whole tree is included
+(including all BOMs), searching from the top, level by level. NOTE: Gradle does
+not have this "last one wins" rule without the Spring Boot (or Spring Dependency
+Management) Plugin. To do the same thing with a "native" Gradle build often
+requires careful and tedious work manually fixing transitive dependency
+versions. Further Manipulating Dependency Versions If you want to bump the
+version of a dependency beyond what is specified in the Spring Boot and Spring
+Cloud BOMs, things can get complicated. Broadly speaking there are 2 options:
+properties and additional BOMs. The first (properties) works with the off the
+shelf parent POMs, and the other doesn't. The second (more BOMs) only works if
+there is a BOM available for the dependency you are interested in, and only if
+the transitive dependencies don't conflict with your requirements. All of the
+Spring Cloud projects have their own BOM, for instance, as does Spring
+Framework, so that's a start. Properties The Spring Boot parent POM (and the
+Spring Cloud one if you use that since it inherits from the Boot one) has all of
+its dependency versions extracted into <properties/> . So you can often just
+change the property value. Example in Maven: <parent>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-parent</artifactId>
+----------------------------------------------------------------------------------------------------
+Index: 27224 <<"chunk_id": 2, "docno": 3936>>
+
+not only fix the vulnerability reported in the CVE, but they also make
+disallowed field patterns more robust in general. Does This Affect My
+Application? These are the necessary conditions for the specific vulnerability:
+Registration of disallowed field patterns in a DataBinder spring-webmvc or
+spring-webflux dependency Spring Framework versions 5.3.0 to 5.3.18, 5.2.0 to
+5.2.20, and older versions Additional notes: The issue relates to data binding
+used to populate an object from request parameters (either query parameters or
+form data). Data binding is used for controller method parameters that are
+annotated with @ModelAttribute or optionally without it, and without any other
+Spring Web annotation. The issue does not relate to @RequestBody controller
+method parameters (e.g. JSON deserialization). However, such methods may still
+be vulnerable if they have another method parameter populated via data binding
+from query parameters. Your Spring MVC or Spring WebFlux application may be
+susceptible to data binding issues even if you do not register disallowed field
+patterns . We highly encourage you to review your DataBinder configuration and
+more broadly your approach to data binding. For more details, please see the new
+Data Binding Model Design section in the Spring Framework reference manual.
+Reassessing Your Data Binding Approach If you're using disallowed field patterns
+and plan to continue using them, you should definitely update to Spring
+Framework 5.3.19 and 5.2.21 or greater as soon as possible. However, there are
+alternatives to relying on disallowed field patterns . As discussed in the new
+Model Design section in the reference manual, our recommended approach is
+----------------------------------------------------------------------------------------------------
+Index: 54931 <<"chunk_id": 2, "docno": 8918>>
+
+between Tomcat, Jetty and Undertow Netty is a bit faster on startup - you won’t
+notice in a large app The more features you use, the more classes are loaded
+Functional bean definitions provide an incremental improvement A minimal Spring
+Boot app with an HTTP endpoint starts in <1sec and uses <10MB heap Some links:
+https://github.com/dsyer/spring-boot-startup-bench - older benchmarks (back to
+Spring Boot 1.3), fat jar data /static benchmarks in the same repo - newer,
+explores classes loaded correlation /flux benchmarks in the same repo - WebFlux
+https://spring.io/blog/2018/10/22/functional-bean-registrations-in-spring-cloud-function
+- blog on functional beans in Spring Cloud Function Spring Fu:
+https://github.com/spring-projects/spring-fu
+https://github.com/dsyer/spring-boot-allocations - benchmarks for functional
+beans and GC pressure https://github.com/dsyer/spring-boot-micro-apps -
+functional beans and AOT (same code as the "allocations" project but sample apps
+not benchmarks) TL;DR How do I make my app go faster? (Copied from here .) You
+are mostly going to have to drop features, so not all of these suggestions will
+be possible for all apps. Some are not so painful, and actually pretty natural
+in a container, e.g. if you are building a docker image it’s better to unpack
+the jar and put application classes in a different filesystem layer anyway.
+Classpath exclusions from Spring Boot web starters: Hibernate Validator Jackson
+(but Spring Boot actuators depend on it). Use Gson if you need JSON rendering
+(only works with MVC out of the box). Logback: use slf4j-jdk14 instead Use the
+spring-context-indexer . It’s not going to add much, but every little helps.
+Don’t use actuators if you can afford not to. Use
+----------------------------------------------------------------------------------------------------
+Index: 9881 <<"chunk_id": 11, "docno": 1417>>
+
+beans that act as database initializers and beans that require that database to
+have been initialized are detected automatically. Beans whose initialization
+depends upon the database having been initialized are configured to depend upon
+those that initialize it. If, during startup, your application tries to access
+the database and it has not been initialized, you can configure additional
+detection of beans that initialize the database and require the database to have
+been initialized. Detect a Database Initializer Spring Boot will automatically
+detect beans of the following types that initialize an SQL database:
+DataSourceScriptDatabaseInitializer EntityManagerFactory Flyway
+FlywayMigrationInitializer R2dbcScriptDatabaseInitializer SpringLiquibase If you
+are using a third-party starter for a database initialization library, it may
+provide a detector such that beans of other types are also detected
+automatically. To have other beans be detected, register an implementation of
+DatabaseInitializerDetector in META-INF/spring.factories . Detect a Bean That
+Depends On Database Initialization Spring Boot will automatically detect beans
+of the following types that depends upon database initialization:
+AbstractEntityManagerFactoryBean (unless
+spring.jpa.defer-datasource-initialization is set to true ) DSLContext (jOOQ)
+EntityManagerFactory (unless spring.jpa.defer-datasource-initialization is set
+to true ) JdbcClient JdbcOperations NamedParameterJdbcOperations If you are
+using a third-party starter data access library, it may provide a detector such
+that beans of other types are also detected automatically. To have other beans
+be detected, register an implementation of
+DependsOnDatabaseInitializationDetector in META-INF/spring.factories .
+Alternatively, annotate the bean’s class or its @Bean method with
+@DependsOnDatabaseInitialization . Data Access NoSQL Spring Boot Stable 4.1.0
+4.0.7 3.5.16 3.4.13 3.3.13 Snapshot 4.2.0-SNAPSHOT 4.1.1-SNAPSHOT 4.0.8-SNAPSHOT
+Related Spring Documentation Spring Boot Spring Framework
+----------------------------------------------------------------------------------------------------
+Index: 41391 <<"chunk_id": 5, "docno": 6322>>
+
+has no dependencies on LDAP or the servlet API, for example, and there are now
+separate jars for web-specific code and for LDAP. We've also split out the
+namespace parsing code out int a separate jar, as it depends on most of the
+other jars and doesn't expose any public APIs that you are likely to use
+directly in your application. You only need to use it if you are using Spring
+Security namespace configuration in your application context XML files. The main
+project jars are shown in the following table. Jar Name Description When to use
+Root Package(s) spring-security-core Core authentication and access-contol
+classes and interfaces. Remoting support and basic provisioning APIs. Required
+by any application which uses Spring Security. Supports standalone applications,
+remote clients, method (service layer) security and JDBC user provisioning.
+org.springframework.security.core , org.springframework.security.access ,
+org.springframework.security.authentication ,
+org.springframework.security.provisioning ,
+org.springframework.security.remoting spring-security-web Filters and other
+web-security infrastructure and related code. Anything with a servlet API
+dependency. If you require Spring Security web authentication services and
+URL-based access-control org.springframework.security.web spring-security-config
+Namespace parsing code. If you are using the Spring Security XML namespace.
+org.springframework.security.config spring-security-ldap LDAP authentication and
+provisioning code. If you need to use LDAP authentication or manage LDAP user
+entries. org.springframework.security.ldap spring-security-acl Domain object ACL
+implementation. If you need to apply security to specific domain object
+instances within your application. org.springframework.security.acls
+spring-security-cas-client Spring Security's CAS client integration. If you want
+to use Spring Security web authentication with a CAS single sign-on server.
+org.springframework.security.cas spring-security-openid OpenID web
+authentication support. If you need to authenticate users
+----------------------------------------------------------------------------------------------------
+Index: 10067 <<"chunk_id": 17, "docno": 1450>>
+
+use to switch the auto-configured repositories on and off in external
+configuration. Doing so is useful, for instance, in case you want to switch off
+the Mongo repositories and still use the auto-configured MongoTemplate . The
+same obstacle and the same features exist for other auto-configured Spring Data
+repository types (Elasticsearch, Redis, and others). To work with them, change
+the names of the annotations and flags accordingly. Customize Spring Data’s Web
+Support Spring Data provides web support that simplifies the use of Spring Data
+repositories in a web application. Spring Boot provides properties in the
+spring.data.web namespace for customizing its configuration. Note that if you
+are using Spring Data REST, you must use the properties in the spring.data.rest
+namespace instead. Expose Spring Data Repositories as REST Endpoint Spring Data
+REST can expose the Repository implementations as REST endpoints for you,
+provided Spring MVC has been enabled for the application. Spring Boot exposes a
+set of useful properties (from the spring.data.rest namespace) that customize
+the RepositoryRestConfiguration . If you need to provide additional
+customization, you should use a RepositoryRestConfigurer bean. If you do not
+specify any order on your custom RepositoryRestConfigurer , it runs after the
+one Spring Boot uses internally. If you need to specify an order, make sure it
+is higher than 0. Configure a Component that is Used by JPA If you want to
+configure a component that JPA uses, then you need to ensure that the component
+is initialized before JPA. When the component is auto-configured, Spring Boot
+takes care of this for
+----------------------------------------------------------------------------------------------------
+Index: 46717 <<"chunk_id": 2, "docno": 7308>>
+
+the specific scenario from the report: Running on JDK 9 or higher Packaged as a
+traditional WAR and deployed on a standalone Servlet container. Typical Spring
+Boot deployments using an embedded Servlet container or reactive web server are
+not impacted. spring-webmvc or spring-webflux dependency. Spring Framework
+versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions. Additional notes:
+The vulnerability involves ClassLoader access and depends on the actual Servlet
+Container in use. Tomcat 10.0.19, 9.0.61, 8.5.77, and earlier versions are known
+to be vulnerable. Payara and Glassfish are also known to be vulnerable. Other
+Servlet containers may also be vulnerable. The issue relates to data binding
+used to populate an object from request parameters (either query parameters or
+form data). Data binding is used for controller method parameters that are
+annotated with @ModelAttribute or optionally without it, and without any other
+Spring Web annotation. The issues does not relate to @RequestBody controller
+method parameters (e.g. JSON deserialization). However, such methods may still
+be vulnerable if they have another method parameter populated via data binding
+from query parameters. Status Spring Framework 5.3.18 and 5.2.20, which contain
+the fixes, have been released. Spring Boot 2.6.6 and 2.5.12 that depend on
+Spring Framework 5.3.18 have been released. CVE-2022-22965 has been published.
+Apache Tomcat has released versions 10.0.20, 9.0.62, and 8.5.78 which close the
+attack vector on Tomcat’s side, see Spring Framework RCE, Mitigation Alternative
+. Suggested Workarounds The preferred response is to update to Spring Framework
+5.3.18 and 5.2.20 or greater. If you have done this, then no workarounds
+----------------------------------------------------------------------------------------------------
+Index: 59136 <<"chunk_id": 3, "docno": 9773>>
+
+. All reactive code that uses Project Reactor can now participate in reactive
+transactions. Code that returns scalar values and that wants to access
+transactional details must be rewritten to use reactive types to participate in
+transactions. Otherwise, the Context is not available. Reactive Transaction
+Management Starting with Spring Framework 5.2 M2, Spring supports reactive
+transaction management through the ReactiveTransactionManager SPI.
+ReactiveTransactionManager is a transaction management abstraction for reactive
+and non-blocking integrations that uses transactional resources. It is a
+foundation for reactive @Transactional methods that return Publisher types and
+for programmatic transaction management that uses TransactionalOperator . The
+first two reactive transaction manager implementations are: R2DBC through Spring
+Data R2DBC 1.0 M2 MongoDB through Spring Data MongoDB 2.2 M4 Let’s take a look
+at how reactive transactions look like: class TransactionalService { final
+DatabaseClient db TransactionalService(DatabaseClient db) { this.db = db; }
+@Transactional Mono<Void> insertRows() { return db.execute() .sql("INSERT INTO
+person (name, age) VALUES('Joe', 34)") .fetch().rowsUpdated()
+.then(db.execute().sql("INSERT INTO contacts (name) VALUES('Joe')") .then(); } }
+Reactive transactions look very similar to imperative transactions in
+annotation-driven arrangements. The main difference though is that we work with
+DatabaseClient , which is a reactive resource abstraction. All transaction
+management happens behind the scenes, leveraging Spring’s transaction
+interceptors and ReactiveTransactionManager . Spring distinguishes (based on
+method return types) which type of transaction management to apply: Method
+returns a Publisher type: Reactive Transaction Management All other return
+types: Imperative Transaction Management This distinction is significant, as you
+could still use imperative components such as a JPA or JDBC query. Wrapping
+these results
+----------------------------------------------------------------------------------------------------
+Index: 35319 <<"chunk_id": 1, "docno": 4836>>
+
+spring-boot-autoconfigure jar is now 2 MiB! While disk space is cheap, most of
+the classes actually aren't interesting for you because they target a technology
+you may not have in your application. That means you'll get a lot of
+auto-complete suggestions for classes and configuration properties that are just
+unnecessary. This adds confusion and mental load, and we're going to change that
+with Spring Boot 4. So, grab a mind-soothing tea and join us for the ride! A
+Modular Spring Boot 4 In Spring Boot 4, we are introducing a fundamental change
+in how auto-configurations are packaged, delivered, and consumed. Instead of a
+single, monolithic spring-boot-autoconfigure jar, we are now splitting
+functionality into small and more focused modules. This change is motivated by
+maintainability, clarity, and a leaner runtime footprint. It has ripple effects
+in package structure, starters, and how end users migrate from Spring Boot 3 to
+Spring Boot 4. Every technology supported by Spring Boot now has its own
+starter, some of which are new in Spring Boot 4. Why Modularize the Codebase?
+Now, you may ask yourself: why do this? Why touch almost everything in the
+codebase and split it up? In fact, this has been a very challenging piece of
+work, and one that we started before Spring Boot 3.5 was even released. The
+benefits, however, are quite compelling: Maintainability and architectural
+clarity : With smaller modules and enforced boundaries, the team and our
+contributors can reason about each domain more clearly. Module boundaries become
+contracts rather than soft conventions. Your IDE
+----------------------------------------------------------------------------------------------------
+Index: 48817 <<"chunk_id": 3, "docno": 7698>>
+
+give us as much flexibility to mark classes and interfaces as internal.
+Generally you can expect anything at the top level of the source tree in
+packages org.springframework.batch.* to be public, but not necessarily
+sub-classable. Extending our concrete implementations of most strategies is
+discouraged in favour of a composition or forking approach. If your code can use
+only the interfaces from Spring Batch, that gives you the greatest possible
+portability. How does Spring Batch differ from Quartz? Is there a place for them
+both in a solution? Spring Batch and Quartz have different goals. Spring Batch
+provides functionality for processing large volumes of data and Quartz provides
+functionality for scheduling tasks. So Quartz could complement Spring Batch, but
+are not excluding technologies. A common combination would be to use Quartz as a
+trigger for a Spring Batch job using a Cron expression and the Spring Core
+convenience SchedulerFactoryBean . How do I schedule a job with Spring Batch?
+Use a scheduling tool. There are plenty of them out there. Examples: Quartz,
+Control-M, Autosys. Quartz doesn’t have all the features of Control-M or Autosys
+- it is supposed to be lightweight. If you want something even more lightweight
+you can just use the OS ( cron , at , etc.). Simple sequential dependencies can
+be implemented using the job-steps model of Spring Batch, and the non-sequential
+features in Spring Batch. We think this is quite common. And in fact it makes it
+easier to correct a common mis-use of schedulers - having hundreds of jobs
+configured, many
+----------------------------------------------------------------------------------------------------

@@ -1,0 +1,485 @@
+Index: 7561 <<"chunk_id": 1, "docno": 1039>>
+
+vs split hydration with Suspense boundaries Raw HTML streaming in a Route
+Handler, with early CSS discovery A configurable ReadableStream API endpoint for
+experimenting with chunk sizes and browser buffering How the App Router delivers
+a page When a browser requests a page, two streams work together during the
+initial page load: The HTML stream React's server renderer produces progressive
+HTML chunks. The static parts of your page (layouts, navigation, Suspense
+fallbacks) render first and are sent immediately. When an async Server Component
+resolves, React streams its completed HTML along with inline
+----------------------------------------------------------------------------------------------------
+Index: 6232 <<"chunk_id": 3, "docno": 814>>
+
+Rendering and Selective Hydration that are integrated with Suspense. Read an
+architectural overview and watch a technical talk to learn more. What activates
+a Suspense boundary A Suspense boundary waits for its content to be ready before
+revealing it. Any of the following keeps a boundary from revealing its content:
+Lazy-loading component code with lazy . Reading a Promise with use , including
+data streamed from Server Components or loaded through a Suspense-enabled
+framework . Loading a stylesheet rendered with <link rel="stylesheet"> and a
+precedence prop. React blocks the boundary until the stylesheet loads, up to a
+timeout. See an example below. Waiting for a large boundary’s HTML to arrive
+during streaming server rendering. Sending HTML takes time, so a boundary with
+enough content activates even when nothing in it suspends. React reveals the
+content as the HTML arrives. Canary only Loading fonts. Suspense doesn’t wait
+for fonts by default, but a <ViewTransition> update waits for new fonts to load,
+up to a timeout, so text doesn’t flash with a fallback font. See an example
+below. Canary only Loading images. Suspense doesn’t wait for images by default,
+but during a <ViewTransition> update, React blocks the boundary until the image
+loads, up to a timeout. Adding an onLoad handler opts a specific image out. See
+an example below. Experimental only Performing CPU-bound render work inside a
+<Suspense defer> boundary. Note Suspense-enabled frameworks A Suspense-enabled
+framework gives you a way to read data in your component in a way that activates
+the closest Suspense boundary. The exact way
+----------------------------------------------------------------------------------------------------
+Index: 1193 <<"chunk_id": 1, "docno": 180>>
+
+Security Updates for Vue 2 On this page Table of Contents for current page Async
+Dependencies async setup() Async Components Loading State Events Error Handling
+Combining with Other Components Nested Suspense Sponsors Become a Sponsor Are
+you an LLM? You can read better optimized documentation at
+/guide/built-ins/suspense.md for this page in Markdown format Suspense ​
+Experimental Feature <Suspense> is an experimental feature. It is not guaranteed
+to reach stable status and the API may change before it does. <Suspense> is a
+built-in component for orchestrating async dependencies in a component tree. It
+can render a loading state while waiting for multiple nested async dependencies
+down the component tree to be resolved. Async Dependencies ​ To explain the
+problem <Suspense> is trying to solve and how it interacts with these async
+dependencies, let's imagine a component hierarchy like the following: <Suspense>
+└─ <Dashboard> ├─ <Profile> │ └─ <FriendStatus> (component with async setup())
+└─ <Content> ├─ <ActivityFeed> (async component) └─ <Stats> (async component) In
+the component tree there are multiple nested components whose rendering depends
+on some async resource to be resolved first. Without <Suspense> , each of them
+will need to handle its own loading / error and loaded states. In the worst case
+scenario, we may see three loading spinners on the page, with content displayed
+at different times. The <Suspense> component gives us the ability to display
+top-level loading / error states while we wait on these nested async
+dependencies to be resolved. There are two types of async dependencies that
+<Suspense> can wait on:
+----------------------------------------------------------------------------------------------------
+Index: 7914 <<"chunk_id": 10, "docno": 1100>>
+
+of static HTML Waiting for all data to load Aborting prerendering
+Troubleshooting My stream doesn’t start until the entire app is rendered
+----------------------------------------------------------------------------------------------------
+Index: 6230 <<"chunk_id": 1, "docno": 814>>
+
+PureComponent API Reference Components Copy page Copy <Suspense> <Suspense> lets
+you display a fallback until its children have finished loading. < Suspense
+fallback = { < Loading /> } > < SomeComponent /> </ Suspense > Reference
+<Suspense> What activates a Suspense boundary Usage Displaying a fallback while
+content is loading Revealing content together at once Revealing nested content
+as it loads Showing stale content while fresh content is loading Preventing
+already revealed content from hiding Indicating that a Transition is happening
+Resetting Suspense boundaries on navigation Providing a fallback for server
+errors and client-only content Waiting for a stylesheet to load Animating from
+Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update? Reference <Suspense>
+Props children : The actual UI you intend to render. If children suspends while
+rendering, the Suspense boundary will switch to rendering fallback . fallback :
+An alternate UI to render in place of the actual UI if it has not finished
+loading. Any valid React node is accepted, though in practice, a fallback is a
+lightweight placeholder view, such as a loading spinner or skeleton. Suspense
+will automatically switch to fallback when children suspends, and back to
+children when the data is ready. If fallback suspends while rendering, it will
+activate the closest parent Suspense boundary. Experimental only optional defer
+: A boolean. When true , React may show the fallback first and render
+----------------------------------------------------------------------------------------------------
+Index: 20053 <<"chunk_id": 1321, "docno": 2483>>
+
+## Static Shell The prerendered HTML structure of a page that's served
+immediately to the browser. With [Partial
+Prerendering](#partial-prerendering-ppr), the static shell includes all
+statically renderable content plus [Suspense boundary](#suspense-boundary)
+fallbacks for dynamic content that streams in later. ## Streaming A technique
+that allows the server to send parts of a page to the client as they become
+ready, rather than waiting for the entire page to render. Enabled automatically
+with [`loading.js`](/docs/app/api-reference/file-conventions/loading) or manual
+`<Suspense>` boundaries. Learn more in the [Streaming
+guide](/docs/app/guides/streaming). ## Suspense boundary A React
+[`<Suspense>`](https://react.dev/reference/react/Suspense) component that wraps
+async content and displays fallback UI while it loads. In Next.js, Suspense
+boundaries define where the [static shell](#static-shell) ends and
+[streaming](#streaming) begins, enabling [Partial
+Prerendering](#partial-prerendering-ppr). # T ## Turbopack A fast, Rust-based
+bundler built for Next.js. Turbopack is the default bundler for `next dev` and
+available for `next build`. It provides significantly faster compilation times
+compared to Webpack. Learn more in
+[Turbopack](/docs/app/api-reference/turbopack). ## Tree Shaking The process of
+removing unused code from your JavaScript bundles during the build process.
+Next.js automatically tree-shakes your code to reduce bundle sizes. Learn more
+in the [Package Bundling guide](/docs/app/guides/package-bundling). # U ## URL
+data Data that identifies a specific URL, such as the pathname and query
+parameters. In the App Router this means
+[`params`](/docs/app/api-reference/file-conventions/page#params-optional) and
+[`searchParams`](/docs/app/api-reference/file-conventions/page#searchparams-optional),
+and the client hooks that read them like
+[`usePathname`](/docs/app/api-reference/functions/use-pathname) and
+[`useSearchParams`](/docs/app/api-reference/functions/use-search-params). URL
+data varies per link, not per session, so it can't be part of a shared [App
+Shell](#app-shell). ## `"use cache"` Directive A directive that marks a
+component or function as cacheable.
+----------------------------------------------------------------------------------------------------
+Index: 18759 <<"chunk_id": 27, "docno": 2483>>
+
+fallback UI that will be shown while the route is loading. return
+<LoadingSkeleton /> } ``` Behind the scenes, Next.js will automatically wrap the
+`page.tsx` contents in a `<Suspense>` boundary. The prefetched fallback UI will
+be shown while the route is loading, and swapped for the actual content once
+ready. > **Good to know**: You can also use
+[`<Suspense>`](https://react.dev/reference/react/Suspense) to create loading UI
+for nested components. Benefits of `loading.tsx`: * Immediate navigation and
+visual feedback for the user. * Shared layouts remain interactive and navigation
+is interruptible. * Improved Core Web Vitals:
+[TTFB](https://web.dev/articles/ttfb), [FCP](https://web.dev/articles/fcp), and
+[TTI](https://web.dev/articles/tti). To further improve the navigation
+experience, Next.js performs a [client-side
+transition](#client-side-transitions) with the `<Link>` component. ###
+Client-side transitions Traditionally, navigation to a server-rendered page
+triggers a full page load. This clears state, resets scroll position, and blocks
+interactivity. Next.js avoids this with client-side transitions using the
+`<Link>` component. Instead of reloading the page, it updates the content
+dynamically by: * Keeping any shared layouts and UI. * Replacing the current
+page with the prefetched loading state or a new page if available. Client-side
+transitions are what makes a server-rendered apps *feel* like client-rendered
+apps. And when paired with [prefetching](#prefetching) and
+[streaming](#streaming), it enables fast transitions, even for dynamic routes.
+Next.js also handles [scrolling to the top of the
+page](/docs/app/api-reference/components/link#scroll) during client-side
+transitions. If content scrolls behind a sticky or fixed header after
+navigation, you can fix this with CSS
+[`scroll-padding-top`](/docs/app/api-reference/components/link#scroll-offset-with-sticky-headers).
+## What can make transitions slow? These Next.js optimizations make navigation
+fast and responsive. However, under certain conditions, transitions can
+----------------------------------------------------------------------------------------------------
+Index: 12027 <<"chunk_id": 1, "docno": 1646>>
+
+with stable features like the improved next/image and next/link components, and
+opt into the app directory at your own pace. The pages directory will continue
+to be supported for the foreseeable future. The app directory includes support
+for: Layouts: Easily share UI between routes while preserving state and avoiding
+expensive re-renders. Server Components: Making server-first the default for the
+most dynamic applications. Streaming: Display instant loading states and stream
+in units of UI as they are rendered. Support for Data Fetching: async Server
+Components and extended fetch API enables component-level fetching. Layouts The
+app/ directory makes it easy to lay out complex interfaces that maintain state
+across navigations, avoid expensive re-renders, and enable advanced routing
+patterns. Further, you can nest layouts, and colocate application code with your
+routes, like components, tests, and styles. Creating routes inside app/ requires
+a single file, page.js : jsx filename="app/page.js" // This file maps to the
+index route (/) export default function Page() { return Hello, Next.js! ; } You
+can then define layouts through the file system. Layouts share UI between
+multiple pages. On navigation, layouts preserve state, remain interactive, and
+do not re-render. jsx filename="app/blog/layout.js" export default function
+BlogLayout({ children }) { return {children} ; } Learn more about layouts and
+pages or deploy an example to try it out . Server Components The app/ directory
+introduces support for React's new Server Components architecture. Server and
+Client Components use the server and the client each for what they're best at -
+allowing you to build fast, highly-interactive apps with
+----------------------------------------------------------------------------------------------------
+Index: 44495 <<"chunk_id": 1, "docno": 6903>>
+
+determine when and where your Angular application's HTML content is generated.
+Each strategy offers different trade-offs between initial page load performance,
+interactivity, SEO capabilities, and server resource usage. Angular supports
+three primary rendering strategies: Client-Side Rendering (CSR) - Content is
+rendered entirely in the browser Static Site Generation (SSG/Prerendering) -
+Content is pre-rendered at build time Server-Side Rendering (SSR) - Content is
+rendered on the server for the initial request for a route Client-Side Rendering
+(CSR) CSR is Angular's default. Content renders entirely in the browser after
+JavaScript loads. When to use CSR ✅ It can be a good fit for: Interactive
+applications (dashboards, admin panels) Real-time applications Internal tools
+where SEO doesn't matter Single-page applications with complex client-side state
+❌ When possible, consider avoiding it for: Public-facing content that needs SEO
+Pages where initial load performance is critical CSR trade-offs Aspect Impact
+SEO Poor - content not visible to crawlers until JS executes Initial load Slower
+- must download and execute JavaScript first Interactivity Immediate once loaded
+Server needs Minimal outside of some configuration Complexity Simplest because
+it works with minimum configuration Static Site Generation (SSG/Prerendering)
+SSG pre-renders pages at build time into static HTML files. The server sends
+pre-built HTML for the initial page load. After hydration, your app runs
+entirely in the browser like a traditional SPA - subsequent navigation, route
+changes, and API calls all happen client-side without server rendering. When to
+use SSG ✅ It can be a good fit for: Marketing pages and landing pages Blog posts
+and documentation Product
+----------------------------------------------------------------------------------------------------
+Index: 8054 <<"chunk_id": 0, "docno": 1123>>
+
+title: How Next.js preserves UI state with Activity description: "Learn how
+React's Activity component preserves UI state across navigations in Next.js and
+how to control what resets." url:
+"https://nextjs.org/docs/app/guides/preserving-ui-state" docs_index:
+/docs/llms.txt version: 16.3.0 lastUpdated: 2026-07-01 prerequisites: - "Guides:
+/docs/app/guides" related: - app/getting-started/caching -
+app/guides/migrating-to-cache-components For an index of all Next.js
+documentation, see /docs/llms.txt . Good to know: This guide assumes Cache
+Components is enabled. Enable it by setting cacheComponents: true in your Next
+config file. Before Cache Components, preserving page-level state across
+navigations required workarounds like hoisting state to a shared layout or using
+an external store. With Cache Components, Next.js preserves state and DOM out of
+the box. Instead of unmounting pages on navigation, Next.js hides them using
+React's component. Activity keeps the DOM in the document (hidden with display:
+none ), so both React state and DOM state are preserved: form drafts, scroll
+positions, expanded elements, video playback progress, and more. Next.js
+preserves up to 3 routes. Beyond that, the oldest route is evicted and will
+re-render fresh. Good to know: Use useRouter().bfcacheId as a React key : a
+single resets an entire subtree on push or replace navigations (including clicks
+and router.push / router.replace ) while still restoring state on browser
+back/forward. bfcacheId is mainly a migration tool. For new code, prefer the
+per-pattern resets below. Choosing what to preserve Activity preserves all
+component state and DOM state by default. For each piece of state, you decide
+whether that's the right behavior for your UI. The patterns below show common
+scenarios and how
+----------------------------------------------------------------------------------------------------
+Index: 6412 <<"chunk_id": 2, "docno": 835>>
+
+boundaries where appropriate. Good to know : Partial Prerendering (experimental)
+will allow parts of a route to be dynamic without opting the whole route into
+dynamic rendering. Data fetching and caching Server Components : Leverage the
+benefits of fetching data on the server using Server Components. Route Handlers
+: Use Route Handlers to access your backend resources from Client Components.
+But do not call Route Handlers from Server Components to avoid an additional
+server request. Streaming : Use Loading UI and React Suspense to progressively
+send UI from the server to the client, and prevent the whole route from blocking
+while data is being fetched. Parallel Data Fetching : Reduce network waterfalls
+by fetching data in parallel, where appropriate. Data Caching : Verify whether
+your data requests are being cached or not, and opt into caching, where
+appropriate. Ensure requests that don't use fetch are cached . Static Images :
+Use the public directory to automatically cache your application's static
+assets, e.g. images. UI and accessibility Forms and Validation : Use Server
+Actions to handle form submissions, server-side validation, and handle errors.
+Global Error UI : Add app/global-error.tsx to provide consistent, accessible
+fallback UI and recovery for uncaught errors across your app. Global 404 : Add
+app/global-not-found.tsx to serve an accessible 404 for unmatched routes across
+your app. Font Module : Optimize fonts by using the Font Module, which
+automatically hosts your font files with other static assets, removes external
+network requests, and reduces layout shift . Component : Optimize images by
+using the Image Component,
+----------------------------------------------------------------------------------------------------
+Index: 8822 <<"chunk_id": 10, "docno": 1250>>
+
+bugs in your components during development so you can fix them before they are
+shipped to production. For example, during development, Strict Mode will
+double-invoke ref callback functions on initial mount, to simulate what happens
+when a mounted component is replaced by a Suspense fallback. Improvements to
+Suspense In React 19, when a component suspends, React will immediately commit
+the fallback of the nearest Suspense boundary without waiting for the entire
+sibling tree to render. After the fallback commits, React schedules another
+render for the suspended siblings to “pre-warm” lazy requests in the rest of the
+tree: Previously, when a component suspended, the suspended siblings were
+rendered and then the fallback was committed. In React 19, when a component
+suspends, the fallback is committed and then the suspended siblings are
+rendered. This change means Suspense fallbacks display faster, while still
+warming lazy requests in the suspended tree. UMD builds removed UMD was widely
+used in the past as a convenient way to load React without a build step. Now,
+there are modern alternatives for loading modules as scripts in HTML documents.
+Starting with React 19, React will no longer produce UMD builds to reduce the
+complexity of its testing and release process. To load React 19 with a script
+tag, we recommend using an ESM-based CDN such as esm.sh . < script type =
+"module" > import React from "https://esm.sh/react@19/?dev" import
+ReactDOMClient from "https://esm.sh/react-dom@19/client?dev" ... </ script >
+Libraries depending on React internals may block upgrades This release includes
+changes to React internals that may impact
+----------------------------------------------------------------------------------------------------
+Index: 27 <<"chunk_id": 1, "docno": 6>>
+
+per-page level. React Server Components Add components without sending
+additional client-side JavaScript. Built on the latest React features. Data
+Fetching Make your React component async and await your data. Next.js supports
+both server and client data fetching. Server Actions Run server code by calling
+a function. Skip the API. Then, easily revalidate cached data and update your UI
+in one network roundtrip. Advanced Routing & Nested Layouts Create routes using
+the file system, including support for more advanced routing patterns and UI
+layouts. CSS Support Style your application with your favorite tools, including
+support for CSS Modules, Tailwind CSS, and popular community libraries. Route
+Handlers Build API endpoints to securely connect with third-party services for
+handling auth or listening for webhooks. Proxy Take control of the incoming
+request. Use code to define routing and access rules for authentication,
+experimentation, and internationalization. Client and Server Rendering Flexible
+rendering and caching options, including Incremental Static Regeneration (ISR),
+on a per-page level. React Server Components Add components without sending
+additional client-side JavaScript. Built on the latest React features. Data
+Fetching Make your React component async and await your data. Next.js supports
+both server and client data fetching. Server Actions Run server code by calling
+a function. Skip the API. Then, easily revalidate cached data and update your UI
+in one network roundtrip. Advanced Routing & Nested Layouts Create routes using
+the file system, including support for more advanced routing patterns and UI
+layouts. CSS Support Style your application with your favorite tools, including
+support for CSS Modules, Tailwind CSS,
+----------------------------------------------------------------------------------------------------
+Index: 19307 <<"chunk_id": 575, "docno": 2483>>
+
+how to use it to progressively render UI as data becomes available. url:
+"https://nextjs.org/docs/app/guides/streaming" version: 16.3.0 --- # Streaming
+## What is streaming? In traditional server-side rendering, the server produces
+the full HTML document before sending anything. A single slow database query or
+API call can block the entire page. Streaming changes this by using [chunked
+transfer
+encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Transfer-Encoding)
+to send parts of the response as they become ready. The browser starts rendering
+HTML while the server is still generating the rest. This is especially impactful
+for pages that combine fast static content (headers, navigation, layout) with
+slower dynamic content (personalized data, analytics, recommendations). The
+static parts can be prerendered and served from a CDN, painting instantly, while
+the dynamic parts stream in from the server as they become ready. React's server
+renderer produces HTML in chunks aligned with `<Suspense>` boundaries. Next.js
+integrates this into the App Router so streaming works without additional
+configuration. ## Example The companion [streaming
+demo](https://streaming-demo.labs.vercel.dev/)
+([source](https://github.com/vercel-labs/streaming-demo)) lets you see each
+concept from this guide in action: * Page-level streaming with `loading.tsx`
+(skeleton appears instantly, content streams in after ~2s) * Granular streaming
+with sibling `<Suspense>` boundaries that resolve independently * Hydration
+comparison: a single blocking pass vs split hydration with Suspense boundaries *
+Raw HTML streaming in a Route Handler, with early CSS discovery * A configurable
+`ReadableStream` API endpoint for experimenting with chunk sizes and browser
+buffering ## How the App Router delivers a page When a browser requests a page,
+two streams work together during the initial page load: ###
+----------------------------------------------------------------------------------------------------
+Index: 28431 <<"chunk_id": 1, "docno": 4154>>
+
+top Loading performance Loading performance determines how quickly your
+application becomes visible and interactive. Slow loading directly impacts Core
+Web Vitals like Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
+Technique What it does When to use it Lazy-loaded routes Defers loading route
+components until navigation, reducing the initial bundle size Applications with
+multiple routes where not all are needed on initial load Deferred loading with
+@defer Splits components into separate bundles that load on demand Components
+not visible on initial render, heavy third-party libraries, below-the-fold
+content Lazy loading services with injectAsync Splits rarely used services into
+separate chunks and loads them on demand Services backed by large libraries or
+infrequently used features Image optimization Prioritizes LCP images, lazy loads
+others, generates responsive srcset attributes Any application that displays
+images Server-side rendering Renders pages on the server for faster first paint
+and better SEO, with hydration to restore interactivity and incremental
+hydration to defer hydrating sections until needed Content-heavy applications,
+pages that need search engine indexing Runtime performance Runtime performance
+determines how responsive your application feels after it loads. Angular's
+change detection system keeps the DOM in sync with your data, and optimizing how
+and when it runs is the primary lever for improving runtime performance.
+Technique What it does When to use it Zoneless change detection Removes ZoneJS
+overhead and triggers change detection only when signals or events indicate a
+change New applications (default in Angular v21+), or existing applications
+ready to migrate Slow computations Identifies and optimizes expensive template
+expressions and lifecycle
+----------------------------------------------------------------------------------------------------
+Index: 6963 <<"chunk_id": 29, "docno": 933>>
+
+View Transition Event Styling View Transitions Usage Animating an element on
+enter/exit Animating enter/exit with Activity Animating a shared element
+Animating reorder of items in a list Animating from Suspense content Opting-out
+of an animation Customizing animations Customizing animations with types
+Animating with JavaScript Animating transition types with JavaScript Building
+View Transition enabled routers Troubleshooting My <ViewTransition> is not
+activating I’m getting an error “There are two <ViewTransition name=%s>
+components with the same name mounted at the same time.”
+----------------------------------------------------------------------------------------------------
+Index: 6099 <<"chunk_id": 3, "docno": 792>>
+
+catches JavaScript errors in its child component tree and displays a fallback
+UI. In Next.js, create an error.js file to automatically wrap a route segment in
+an error boundary. Learn more in Error Handling . F Font Optimization Automatic
+font optimization using next/font . Next.js self-hosts fonts, eliminates layout
+shift, and applies best practices for performance. Works with Google Fonts and
+local font files. Learn more in Fonts . File-system caching A Turbopack feature
+that stores compiler artifacts on disk between runs, reducing work across next
+dev or next build commands for significantly faster compile times. Learn more in
+Turbopack FileSystem Caching . H Hydration React's process of attaching event
+handlers to the DOM to make server-rendered static HTML interactive. During
+hydration, React reconciles the server-rendered markup with the client-side
+JavaScript. Learn more in Server and Client Components . I Import Aliases Custom
+path mappings that provide shorthand references for frequently used directories.
+Import aliases reduce the complexity of relative imports and make code more
+readable and maintainable. Learn more in Absolute Imports and Module Path
+Aliases . Incremental Static Regeneration (ISR) A technique that allows you to
+update static content without rebuilding the entire site. ISR enables you to use
+static generation on a per-page basis while revalidating pages in the background
+as traffic comes in. Learn more in the ISR guide or, when using Cache
+Components, ISR with Cache Components . Good to know : In Next.js, ISR is also
+known as Revalidation . Intercepting Routes A routing pattern that allows
+loading a route
+----------------------------------------------------------------------------------------------------
+Index: 6256 <<"chunk_id": 27, "docno": 814>>
+
+only prevent unwanted fallbacks during non-urgent updates . It will not delay a
+render if it’s the result of an urgent update. You must opt in with an API like
+startTransition or useDeferredValue . If your router is integrated with
+Suspense, it should wrap its updates into startTransition automatically.
+Previous <StrictMode> Next <Activity> Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+Reference <Suspense> What activates a Suspense boundary Usage Displaying a
+fallback while content is loading Revealing content together at once Revealing
+nested content as it loads Showing stale content while fresh content is loading
+Preventing already revealed content from hiding Indicating that a Transition is
+happening Resetting Suspense boundaries on navigation Providing a fallback for
+server errors and client-only content Waiting for a stylesheet to load Animating
+from Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update?
+----------------------------------------------------------------------------------------------------
+Index: 44496 <<"chunk_id": 2, "docno": 6903>>
+
+without server rendering. When to use SSG ✅ It can be a good fit for: Marketing
+pages and landing pages Blog posts and documentation Product catalogs with
+stable content Content that doesn't change per-user ❌ When possible, consider
+avoiding it for: User-specific content Frequently changing data Real-time
+information SSG trade-offs Aspect Impact SEO Excellent - full HTML available
+immediately Initial load Fastest - pre-generated HTML Interactivity After
+hydration completes Server needs None for serving (CDN-friendly) Build time
+Longer - generates all pages upfront Content updates Requires rebuild and
+redeploy 📖 Implementation: See Customizing build-time prerendering in the SSR
+guide. Server-Side Rendering (SSR) SSR generates HTML on the server for the
+initial request for a route , providing dynamic content with good SEO. The
+server renders HTML and sends it to the client. Once the client renders the
+page, Angular hydrates the app and it then runs entirely in the browser like a
+traditional SPA - subsequent navigation, route changes, and API calls all happen
+client-side without additional server rendering. When to use SSR ✅ It can be a
+good fit for: E-commerce product pages (dynamic pricing/inventory) News sites
+and social media feeds Personalized content that changes frequently ❌ When
+possible, consider avoiding it for: Static content (use SSG instead) When server
+costs are a concern SSR trade-offs Aspect Impact SEO Excellent - full HTML for
+crawlers Initial load Fast - immediate content visibility Interactivity Delayed
+until hydration Server needs Requires server Personalization Full access to user
+context Server costs Higher - renders on the initial request
+----------------------------------------------------------------------------------------------------
+Index: 20047 <<"chunk_id": 1315, "docno": 2483>>
+
+layout shift, and applies best practices for performance. Works with Google
+Fonts and local font files. Learn more in
+[Fonts](/docs/app/getting-started/fonts). ## File-system caching A Turbopack
+feature that stores compiler artifacts on disk between runs, reducing work
+across `next dev` or `next build` commands for significantly faster compile
+times. Learn more in [Turbopack FileSystem
+Caching](/docs/app/api-reference/config/next-config-js/turbopackFileSystemCache).
+# H ## Hydration React's process of attaching event handlers to the DOM to make
+server-rendered static HTML interactive. During hydration, React reconciles the
+server-rendered markup with the client-side JavaScript. Learn more in [Server
+and Client
+Components](/docs/app/getting-started/server-and-client-components#how-do-server-and-client-components-work-in-nextjs).
+# I ## Import Aliases Custom path mappings that provide shorthand references for
+frequently used directories. Import aliases reduce the complexity of relative
+imports and make code more readable and maintainable. Learn more in [Absolute
+Imports and Module Path
+Aliases](/docs/app/getting-started/installation#set-up-absolute-imports-and-module-path-aliases).
+## Incremental Static Regeneration (ISR) A technique that allows you to update
+static content without rebuilding the entire site. ISR enables you to use static
+generation on a per-page basis while revalidating pages in the background as
+traffic comes in. Learn more in the [ISR
+guide](/docs/app/guides/incremental-static-regeneration) or, when using Cache
+Components, [ISR with Cache
+Components](/docs/app/guides/incremental-static-regeneration-cache-components).
+> **Good to know**: In Next.js, ISR is also known as
+[Revalidation](#revalidation). ## Intercepting Routes A routing pattern that
+allows loading a route from another part of your application within the current
+layout. Useful for displaying content (like modals) without the user switching
+context, while keeping the URL shareable. Learn more in [Intercepting
+Routes](/docs/app/api-reference/file-conventions/intercepting-routes). ## Image
+Optimization Automatic image optimization using the [`<Image>`
+component](/docs/app/api-reference/components/image). Next.js optimizes images
+on-demand, serves them
+----------------------------------------------------------------------------------------------------

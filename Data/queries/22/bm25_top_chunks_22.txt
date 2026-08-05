@@ -1,0 +1,461 @@
+Index: 1563 <<"chunk_id": 12, "docno": 230>>
+
+chapter, we discussed the Renderless Component pattern based on scoped slots. We
+even implemented the same mouse tracking demo using renderless components. The
+main advantage of composables over renderless components is that composables do
+not incur the extra component instance overhead. When used across an entire
+application, the amount of extra component instances created by the renderless
+component pattern can become a noticeable performance overhead. The
+recommendation is to use composables when reusing pure logic, and use components
+when reusing both logic and visual layout. vs. React Hooks ​ If you have
+experience with React, you may notice that this looks very similar to custom
+React hooks. Composition API was in part inspired by React hooks, and Vue
+composables are indeed similar to React hooks in terms of logic composition
+capabilities. However, Vue composables are based on Vue's fine-grained
+reactivity system, which is fundamentally different from React hooks' execution
+model. This is discussed in more detail in the Composition API FAQ . Further
+Reading ​ Reactivity In Depth : for a low-level understanding of how Vue's
+reactivity system works. State Management : for patterns of managing state
+shared by multiple components. Testing Composables : tips on unit testing
+composables. VueUse : an ever-growing collection of Vue composables. The source
+code is also a great learning resource. Edit this page on GitHub Previous Async
+Components Next Custom Directives Composables has loaded
+----------------------------------------------------------------------------------------------------
+Index: 684 <<"chunk_id": 0, "docno": 108>>
+
+Frequently Asked Questions | Vue.js Skip to content Vue.js Search Main
+Navigation Docs Quick Start Guide Tutorial Examples API Glossary Error Reference
+Vue 2 Docs Migration from Vue 2 Playground Ecosystem Resources Themes UI
+Components Plugins Collection Certification Jobs T-Shirt Shop Official Libraries
+Vue Router Pinia Tooling Guide Video Courses Vue Mastery Vue School Help Discord
+Chat GitHub Discussions DEV Community News Blog Twitter Events Newsletters About
+FAQ Team Releases Community Guide Code of Conduct Privacy Policy The Documentary
+Support Sponsor Partners 简体中文 日本語 Українська Français Deutsch 한국어 Português
+বাংলা Italiano فارسی Русский Čeština 繁體中文 Polski Help Us Translate! github
+twitter discord Appearance github twitter discord On this page Table of Contents
+for current page Who maintains Vue? What's the difference between Vue 2 and Vue
+3? Is Vue 2 Still Supported? What license does Vue use? What browsers does Vue
+support? Is Vue reliable? Is Vue fast? Is Vue lightweight? Does Vue scale? How
+do I contribute to Vue? Should I use Options API or Composition API? Should I
+use JavaScript or TypeScript with Vue? How does Vue compare to Web Components?
+Sponsors Become a Sponsor Are you an LLM? You can read better optimized
+documentation at /about/faq.md for this page in Markdown format Frequently Asked
+Questions ​ Who maintains Vue? ​ Vue is an independent, community-driven
+project. It was created by Evan You in 2014 as a personal side project. Today,
+Vue is actively maintained by a team of both full-time and volunteer members
+from all around the world , where Evan serves as
+----------------------------------------------------------------------------------------------------
+Index: 685 <<"chunk_id": 1, "docno": 108>>
+
+project. Today, Vue is actively maintained by a team of both full-time and
+volunteer members from all around the world , where Evan serves as the project
+lead. You can learn more about the story of Vue in this documentary . Vue's
+development is primarily funded through sponsorships and we have been
+financially sustainable since 2016. If you or your business benefit from Vue,
+consider sponsoring us to support Vue's development! What's the difference
+between Vue 2 and Vue 3? ​ Vue 3 is the current, latest major version of Vue. It
+contains new features that are not present in Vue 2, such as Teleport, Suspense,
+and multiple root elements per template. It also contains breaking changes that
+make it incompatible with Vue 2. Full details are documented in the Vue 3
+Migration Guide . Despite the differences, the majority of Vue APIs are shared
+between the two major versions, so most of your Vue 2 knowledge will continue to
+work in Vue 3. Notably, Composition API was originally a Vue-3-only feature, but
+has now been backported to Vue 2 and is available in Vue 2.7 . In general, Vue 3
+provides smaller bundle sizes, better performance, better scalability, and
+better TypeScript / IDE support. If you are starting a new project today, Vue 3
+is the recommended choice. There are only a few reasons for you to consider Vue
+2 as of now: You need to support IE11. Vue 3 leverages modern JavaScript
+features and does not support IE11. If you intend to migrate an
+----------------------------------------------------------------------------------------------------
+Index: 359 <<"chunk_id": 2, "docno": 68>>
+
+Vue project scaffolding tool. To learn more about Vite, check out the Vite docs
+. To configure Vue-specific behavior in a Vite project, for example passing
+options to the Vue compiler, check out the docs for @vitejs/plugin-vue . Both
+online playgrounds mentioned above also support downloading files as a Vite
+project. Vue CLI ​ Vue CLI is the official webpack-based toolchain for Vue. It
+is now in maintenance mode and we recommend starting new projects with Vite
+unless you rely on specific webpack-only features. Vite will provide superior
+developer experience in most cases. For information on migrating from Vue CLI to
+Vite: Vue CLI -> Vite Migration Guide from VueSchool.io Tools / Plugins that
+help with auto migration Note on In-Browser Template Compilation ​ When using
+Vue without a build step, component templates are written either directly in the
+page's HTML or as inlined JavaScript strings. In such cases, Vue needs to ship
+the template compiler to the browser in order to perform on-the-fly template
+compilation. On the other hand, the compiler would be unnecessary if we
+pre-compile the templates with a build step. To reduce client bundle size, Vue
+provides different "builds" optimized for different use cases. Build files that
+start with vue.runtime.* are runtime-only builds : they do not include the
+compiler. When using these builds, all templates must be pre-compiled via a
+build step. Build files that do not include .runtime are full builds : they
+include the compiler and support compiling templates directly in the browser.
+However, they will increase the payload
+----------------------------------------------------------------------------------------------------
+Index: 731 <<"chunk_id": 1, "docno": 116>>
+
+it easier to enrich all of us and the technical communities in which we
+participate. Stay in the Know ​ Follow our official Twitter account . Follow our
+team members on Twitter or GitHub. Follow the RFC discussions . Subscribe to the
+official blog . Get Support ​ Discord Chat : A place for Vue devs to meet and
+chat in real time. Forum : The best place to ask questions and get answers about
+Vue and its ecosystem. DEV Community : Share and discuss Vue related topics on
+Dev.to. Meetups : Want to find local Vue enthusiasts like yourself? Interested
+in becoming a community leader? We have the help and support you need right
+here! GitHub : If you have a bug to report or feature to request, that's what
+the GitHub issues are for. Please respect the rules specified in each
+repository's issue template. Twitter Community (unofficial) : A Twitter
+community, where you can meet other Vue enthusiasts, get help, or just chat
+about Vue. Explore the Ecosystem ​ The Awesome Vue Page : See what other awesome
+resources have been published by other awesome people. Vue Telescope Explorer :
+Explore websites made with Vue, with insights on what framework / libraries they
+use. Made with Vue.js : showcases of projects and libraries made with Vue. The
+"Show and Tell" Subforum : Another great place to check out what others have
+built with and for the growing Vue ecosystem. What You Can Do ​ Help Fellow
+Users ​ Code contribution is not the only
+----------------------------------------------------------------------------------------------------
+Index: 4353 <<"chunk_id": 3, "docno": 600>>
+
+{ default: 'foo' } } } If it needs to be injected from a property with a
+different name, use from to denote the source property: js const Child = {
+inject: { foo: { from: 'bar' , default: 'foo' } } } Similar to prop defaults,
+you need to use a factory function for non-primitive values: js const Child = {
+inject: { foo: { from: 'bar' , default : () => [ 1 , 2 , 3 ] } } } See also
+Provide / Inject mixins ​ An array of option objects to be mixed into the
+current component. Type ts interface ComponentOptions { mixins ?:
+ComponentOptions [] } Details The mixins option accepts an array of mixin
+objects. These mixin objects can contain instance options like normal instance
+objects, and they will be merged against the eventual options using the certain
+option merging logic. For example, if your mixin contains a created hook and the
+component itself also has one, both functions will be called. Mixin hooks are
+called in the order they are provided, and called before the component's own
+hooks. No Longer Recommended In Vue 2, mixins were the primary mechanism for
+creating reusable chunks of component logic. While mixins continue to be
+supported in Vue 3, Composable functions using Composition API is now the
+preferred approach for code reuse between components. Example js const mixin = {
+created () { console. log ( 1 ) } } createApp ({ created () { console. log ( 2 )
+}, mixins:
+----------------------------------------------------------------------------------------------------
+Index: 2782 <<"chunk_id": 3, "docno": 402>>
+
+a variable is read when there is a currently running effect, make that effect a
+subscriber to that variable. E.g. because A0 and A1 are read when update() is
+being executed, update() becomes a subscriber to both A0 and A1 after the first
+call. Detect when a variable is mutated. E.g. when A0 is assigned a new value,
+notify all its subscriber effects to re-run. How Reactivity Works in Vue ​ We
+can't really track the reading and writing of local variables like in the
+example. There's just no mechanism for doing that in vanilla JavaScript. What we
+can do though, is intercept the reading and writing of object properties . There
+are two ways of intercepting property access in JavaScript: getter / setters and
+Proxies . Vue 2 used getter / setters exclusively due to browser support
+limitations. In Vue 3, Proxies are used for reactive objects and getter /
+setters are used for refs. Here's some pseudo-code that illustrates how they
+work: js function reactive ( obj ) { return new Proxy (obj, { get ( target , key
+) { track (target, key) return target[key] }, set ( target , key , value ) {
+target[key] = value trigger (target, key) } }) } function ref ( value ) { const
+refObject = { get value () { track (refObject, 'value' ) return value }, set
+value ( newValue ) { value = newValue trigger (refObject, 'value' ) } } return
+refObject } TIP Code snippets here and below are meant to explain
+----------------------------------------------------------------------------------------------------
+Index: 686 <<"chunk_id": 2, "docno": 108>>
+
+as of now: You need to support IE11. Vue 3 leverages modern JavaScript features
+and does not support IE11. If you intend to migrate an existing Vue 2 app to Vue
+3, consult the migration guide . Is Vue 2 Still Supported? ​ Vue 2.7, which was
+shipped in July 2022, is the final minor release of the Vue 2 version range. Vue
+2 has entered maintenance mode: it will no longer ship new features, but will
+continue to receive critical bug fixes and security updates for 18 months
+starting from the 2.7 release date. This means Vue 2 reached End of Life on
+December 31st, 2023 . We believe this should provide plenty of time for most of
+the ecosystem to migrate over to Vue 3. However, we also understand that there
+could be teams or projects that cannot upgrade by this timeline while still
+needing to fulfill security and compliance requirements. We are partnering with
+industry experts to provide extended support for Vue 2 for teams with such needs
+- if your team expects to be using Vue 2 beyond the end of 2023, make sure to
+plan ahead and learn more about Vue 2 Extended LTS . What license does Vue use?
+​ Vue is a free and open source project released under the MIT License . What
+browsers does Vue support? ​ The latest version of Vue (3.x) only supports
+browsers with native ES2016 support . This excludes IE11. Vue 3.x uses ES2016
+features that cannot be polyfilled in legacy browsers, so
+----------------------------------------------------------------------------------------------------
+Index: 360 <<"chunk_id": 3, "docno": 68>>
+
+not include .runtime are full builds : they include the compiler and support
+compiling templates directly in the browser. However, they will increase the
+payload by ~14kb. Our default tooling setups use the runtime-only build since
+all templates in SFCs are pre-compiled. If, for some reason, you need in-browser
+template compilation even with a build step, you can do so by configuring the
+build tool to alias vue to vue/dist/vue.esm-bundler.js instead. If you are
+looking for a lighter-weight alternative for no-build-step usage, check out
+petite-vue . IDE Support ​ The recommended IDE setup is VS Code + the Vue -
+Official extension (previously Volar). The extension provides syntax
+highlighting, TypeScript support, and intellisense for template expressions and
+component props. TIP Vue - Official replaces Vetur , our previous official VS
+Code extension for Vue 2. If you have Vetur currently installed, make sure to
+disable it in Vue 3 projects. WebStorm also provides great built-in support for
+Vue SFCs. Other IDEs that support the Language Service Protocol (LSP) can also
+leverage Volar's core functionalities via LSP: Sublime Text support via
+LSP-Volar . vim / Neovim support via coc-volar . emacs support via lsp-mode
+Browser Devtools ​ The Vue browser devtools extension allows you to explore a
+Vue app's component tree, inspect the state of individual components, track
+state management events, and profile performance. Documentation Chrome Extension
+Vite Plugin Standalone Electron app TypeScript ​ Main article: Using Vue with
+TypeScript . Vue - Official extension provides type checking for SFCs using
+<script lang="ts"> blocks, including template expressions
+----------------------------------------------------------------------------------------------------
+Index: 2458 <<"chunk_id": 1, "docno": 355>>
+
+Techniques Get Security Updates for Vue 2 On this page Table of Contents for
+current page What is Composition API? Why Composition API? Better Logic Reuse
+More Flexible Code Organization Better Type Inference Smaller Production Bundle
+and Less Overhead Relationship with Options API Trade-offs Does Composition API
+cover all use cases? Can I use both APIs in the same component? Will Options API
+be deprecated? Relationship with Class API Comparison with React Hooks Sponsors
+Become a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/composition-api-faq.md for this page in Markdown format
+Composition API FAQ ​ TIP This FAQ assumes prior experience with Vue - in
+particular, experience with Vue 2 while primarily using Options API. What is
+Composition API? ​ Watch a free video lesson on Vue School Composition API is a
+set of APIs that allows us to author Vue components using imported functions
+instead of declaring options. It is an umbrella term that covers the following
+APIs: Reactivity API , e.g. ref() and reactive() , that allows us to directly
+create reactive state, computed state, and watchers. Lifecycle Hooks , e.g.
+onMounted() and onUnmounted() , that allow us to programmatically hook into the
+component lifecycle. Dependency Injection , i.e. provide() and inject() , that
+allow us to leverage Vue's dependency injection system while using Reactivity
+APIs. Composition API is a built-in feature of Vue 3 and Vue 2.7 . For older Vue
+2 versions, use the officially maintained @vue/composition-api plugin. In Vue 3,
+it is also primarily used together with
+----------------------------------------------------------------------------------------------------
+Index: 3412 <<"chunk_id": 8, "docno": 476>>
+
+} export function register () { customElements. define ( 'my-foo' , MyFoo)
+customElements. define ( 'my-bar' , MyBar) } A consumer can use the elements in
+a Vue file: vue < script setup > import { register } from 'path/to/elements.js'
+register () </ script > < template > < my-foo ... > < my-bar ... ></ my-bar > </
+my-foo > </ template > Or in any other framework such as one with JSX, and with
+custom names: jsx import { MyFoo, MyBar } from 'path/to/elements.js'
+customElements. define ( 'some-foo' , MyFoo) customElements. define ( 'some-bar'
+, MyBar) export function MyComponent () { return <> < some-foo ... > < some-bar
+... ></ some-bar > </ some-foo > </> } Vue-based Web Components and TypeScript ​
+When writing Vue SFC templates, you may want to type check your Vue components,
+including those that are defined as custom elements. Custom elements are
+registered globally in browsers using their built-in APIs, and by default they
+won't have type inference when used in Vue templates. To provide type support
+for Vue components registered as custom elements, we can register global
+component typings by augmenting the GlobalComponents interface for type checking
+in Vue templates (JSX users can augment the JSX.IntrinsicElements type instead,
+which is not shown here). Here is how to define the type for a custom element
+made with Vue: typescript import { defineCustomElement } from 'vue' // Import
+the Vue component. import SomeComponent from
+'./src/components/SomeComponent.ce.vue' // Turn the Vue component into a Custom
+Element class. export const SomeElement
+----------------------------------------------------------------------------------------------------
+Index: 1667 <<"chunk_id": 1, "docno": 246>>
+
+Animation Techniques Get Security Updates for Vue 2 On this page Table of
+Contents for current page Standalone Script Embedded Web Components Single-Page
+Application (SPA) Fullstack / SSR JAMStack / SSG Beyond the Web Sponsors Become
+a Sponsor Are you an LLM? You can read better optimized documentation at
+/guide/extras/ways-of-using-vue.md for this page in Markdown format Ways of
+Using Vue ​ We believe there is no "one size fits all" story for the web. This
+is why Vue is designed to be flexible and incrementally adoptable. Depending on
+your use case, Vue can be used in different ways to strike the optimal balance
+between stack complexity, developer experience and end performance. Standalone
+Script ​ Vue can be used as a standalone script file - no build step required!
+If you have a backend framework already rendering most of the HTML, or your
+frontend logic isn't complex enough to justify a build step, this is the easiest
+way to integrate Vue into your stack. You can think of Vue as a more declarative
+replacement of jQuery in such cases. We previously provided an alternative
+distribution called petite-vue that was specifically optimized for progressively
+enhancing existing HTML. However, petite-vue is no longer actively maintained,
+with the last version published at Vue 3.2.27. Embedded Web Components ​ You can
+use Vue to build standard Web Components that can be embedded in any HTML page,
+regardless of how they are rendered. This option allows you to leverage Vue in a
+completely consumer-agnostic fashion: the resulting web components can be
+embedded
+----------------------------------------------------------------------------------------------------
+Index: 1130 <<"chunk_id": 3, "docno": 169>>
+
+can import an SFC like a module: js import MyComponent from './MyComponent.vue'
+export default { components: { MyComponent } } <style> tags inside SFCs are
+typically injected as native <style> tags during development to support hot
+updates. For production they can be extracted and merged into a single CSS file.
+You can play with SFCs and explore how they are compiled in the Vue SFC
+Playground . In actual projects, we typically integrate the SFC compiler with a
+build tool such as Vite or Vue CLI (which is based on webpack ), and Vue
+provides official scaffolding tools to get you started with SFCs as fast as
+possible. Check out more details in the SFC Tooling section. What About
+Separation of Concerns? ​ Some users coming from a traditional web development
+background may have the concern that SFCs are mixing different concerns in the
+same place - which HTML/CSS/JS were supposed to separate! To answer this
+question, it is important for us to agree that separation of concerns is not
+equal to the separation of file types . The ultimate goal of engineering
+principles is to improve the maintainability of codebases. Separation of
+concerns, when applied dogmatically as separation of file types, does not help
+us reach that goal in the context of increasingly complex frontend applications.
+In modern UI development, we have found that instead of dividing the codebase
+into three huge layers that interweave with one another, it makes much more
+sense to divide them into loosely-coupled components and compose them. Inside a
+component,
+----------------------------------------------------------------------------------------------------
+Index: 730 <<"chunk_id": 0, "docno": 116>>
+
+Community Guide | Vue.js Skip to content Vue.js Search Main Navigation Docs
+Quick Start Guide Tutorial Examples API Glossary Error Reference Vue 2 Docs
+Migration from Vue 2 Playground Ecosystem Resources Themes UI Components Plugins
+Collection Certification Jobs T-Shirt Shop Official Libraries Vue Router Pinia
+Tooling Guide Video Courses Vue Mastery Vue School Help Discord Chat GitHub
+Discussions DEV Community News Blog Twitter Events Newsletters About FAQ Team
+Releases Community Guide Code of Conduct Privacy Policy The Documentary Support
+Sponsor Partners 简体中文 日本語 Українська Français Deutsch 한국어 Português বাংলা
+Italiano فارسی Русский Čeština 繁體中文 Polski Help Us Translate! github twitter
+discord Appearance github twitter discord On this page Table of Contents for
+current page Resources Code of Conduct Stay in the Know Get Support Explore the
+Ecosystem What You Can Do Help Fellow Users Help Triage Issues Contribute Code
+Share (and Build) Your Experience Translate Docs Become a Community Leader
+Sponsors Become a Sponsor Are you an LLM? You can read better optimized
+documentation at /about/community-guide.md for this page in Markdown format
+Community Guide ​ Vue's community is growing incredibly fast and if you're
+reading this, there's a good chance you're ready to join it. So... welcome! Now
+we'll answer both what the community can do for you and what you can do for the
+community. Resources ​ Code of Conduct ​ Our Code of Conduct is a guide to make
+it easier to enrich all of us and the technical communities in which we
+participate. Stay in the Know ​ Follow our official Twitter account
+----------------------------------------------------------------------------------------------------
+Index: 2459 <<"chunk_id": 2, "docno": 355>>
+
+and Vue 2.7 . For older Vue 2 versions, use the officially maintained
+@vue/composition-api plugin. In Vue 3, it is also primarily used together with
+the <script setup> syntax in Single-File Components. Here's a basic example of a
+component using Composition API: vue < script setup > import { ref, onMounted }
+from 'vue' // reactive state const count = ref ( 0 ) // functions that mutate
+state and trigger updates function increment () { count.value ++ } // lifecycle
+hooks onMounted (() => { console. log ( `The initial count is ${ count . value
+}.` ) }) </ script > < template > < button @click = "increment" >Count is: {{
+count }}</ button > </ template > Despite an API style based on function
+composition, Composition API is NOT functional programming . Composition API is
+based on Vue's mutable, fine-grained reactivity paradigm, whereas functional
+programming emphasizes immutability. If you are interested in learning how to
+use Vue with Composition API, you can set the site-wide API preference to
+Composition API using the toggle at the top of the left sidebar, and then go
+through the guide from the beginning. Why Composition API? ​ Better Logic Reuse
+​ The primary advantage of Composition API is that it enables clean, efficient
+logic reuse in the form of Composable functions . It solves all the drawbacks of
+mixins , the primary logic reuse mechanism for Options API. Composition API's
+logic reuse capability has given rise to impressive community projects such as
+VueUse , an ever-growing
+----------------------------------------------------------------------------------------------------
+Index: 43 <<"chunk_id": 3, "docno": 9>>
+
+Embedding as Web Components on any page Single-Page Application (SPA) Fullstack
+/ Server-Side Rendering (SSR) Jamstack / Static Site Generation (SSG) Targeting
+desktop, mobile, WebGL, and even the terminal If you find these concepts
+intimidating, don't worry! The tutorial and guide only require basic HTML and
+JavaScript knowledge, and you should be able to follow along without being an
+expert in any of these. If you are an experienced developer interested in how to
+best integrate Vue into your stack, or you are curious about what these terms
+mean, we discuss them in more detail in Ways of Using Vue . Despite the
+flexibility, the core knowledge about how Vue works is shared across all these
+use cases. Even if you are just a beginner now, the knowledge gained along the
+way will stay useful as you grow to tackle more ambitious goals in the future.
+If you are a veteran, you can pick the optimal way to leverage Vue based on the
+problems you are trying to solve, while retaining the same productivity. This is
+why we call Vue "The Progressive Framework": it's a framework that can grow with
+you and adapt to your needs. Single-File Components ​ In most build-tool-enabled
+Vue projects, we author Vue components using an HTML-like file format called
+Single-File Component (also known as *.vue files, abbreviated as SFC ). A Vue
+SFC, as the name suggests, encapsulates the component's logic (JavaScript),
+template (HTML), and styles (CSS) in a single file. Here's the previous example,
+written in SFC format: vue <
+----------------------------------------------------------------------------------------------------
+Index: 688 <<"chunk_id": 4, "docno": 108>>
+
+pre-rendering, full page hydration and SPA client-side navigation. It scores 100
+in performance on an emulated Moto G4 with 4x CPU throttling over slow 4G
+networks. You can learn more about how Vue automatically optimizes runtime
+performance in the Rendering Mechanism section, and how to optimize a Vue app in
+particularly demanding cases in the Performance Optimization Guide . Is Vue
+lightweight? ​ When you use a build tool, many of Vue's APIs are "tree-shakable"
+. For example, if you don't use the built-in <Transition> component, it won't be
+included in the final production bundle. A hello world Vue app that only uses
+the absolutely minimal APIs has a baseline size of only around 16kb , with
+minification and brotli compression. The actual size of the application will
+depend on how many optional features you use from the framework. In the unlikely
+case where an app uses every single feature that Vue provides, the total runtime
+size is around 27kb . When using Vue without a build tool, we not only lose
+tree-shaking, but also have to ship the template compiler to the browser. This
+bloats up the size to around 41kb . Therefore, if you are using Vue primarily
+for progressive enhancement without a build step, consider using petite-vue
+(only 6kb ) instead. Some frameworks, such as Svelte, use a compilation strategy
+that produces extremely lightweight output in single-component scenarios.
+However, our research shows that the size difference heavily depends on the
+number of components in the application. While Vue has a heavier baseline size,
+----------------------------------------------------------------------------------------------------
+Index: 1668 <<"chunk_id": 2, "docno": 246>>
+
+regardless of how they are rendered. This option allows you to leverage Vue in a
+completely consumer-agnostic fashion: the resulting web components can be
+embedded in legacy applications, static HTML, or even applications built with
+other frameworks. Single-Page Application (SPA) ​ Some applications require rich
+interactivity, deep session depth, and non-trivial stateful logic on the
+frontend. The best way to build such applications is to use an architecture
+where Vue not only controls the entire page, but also handles data updates and
+navigation without having to reload the page. This type of application is
+typically referred to as a Single-Page Application (SPA). Vue provides core
+libraries and comprehensive tooling support with amazing developer experience
+for building modern SPAs, including: Client-side router Blazing fast build tool
+chain IDE support Browser devtools TypeScript integrations Testing utilities
+SPAs typically require the backend to expose API endpoints - but you can also
+pair Vue with solutions like Inertia.js to get the SPA benefits while retaining
+a server-centric development model. Fullstack / SSR ​ Pure client-side SPAs are
+problematic when the app is sensitive to SEO and time-to-content. This is
+because the browser will receive a largely empty HTML page, and has to wait
+until the JavaScript is loaded before rendering anything. Vue provides
+first-class APIs to "render" a Vue app into HTML strings on the server. This
+allows the server to send back already-rendered HTML, allowing end users to see
+the content immediately while the JavaScript is being downloaded. Vue will then
+"hydrate" the application on the client side to
+----------------------------------------------------------------------------------------------------
+Index: 3155 <<"chunk_id": 1, "docno": 452>>
+
+Get Security Updates for Vue 2 On this page Table of Contents for current page
+Introduction When to use custom directives Directive Hooks Function Shorthand
+Object Literals Usage on Components Sponsors Become a Sponsor Are you an LLM?
+You can read better optimized documentation at
+/guide/reusability/custom-directives.md for this page in Markdown format Custom
+Directives ​ Introduction ​ In addition to the default set of directives shipped
+in core (like v-model or v-show ), Vue also allows you to register your own
+custom directives. We have introduced two forms of code reuse in Vue: components
+and composables . Components are the main building blocks, while composables are
+focused on reusing stateful logic. Custom directives, on the other hand, are
+mainly intended for reusing logic that involves low-level DOM access on plain
+elements. A custom directive is defined as an object containing lifecycle hooks
+similar to those of a component. The hooks receive the element the directive is
+bound to. Here is an example of a directive that adds a class to an element when
+it is inserted into the DOM by Vue: vue < script setup > // enables v-highlight
+in templates const vHighlight = { mounted : ( el ) => { el.classList. add (
+'is-highlight' ) } } </ script > < template > < p v-highlight >This sentence is
+important!</ p > </ template > js const highlight = { mounted : ( el ) =>
+el.classList. add ( 'is-highlight' ) } export default { directives: { // enables
+v-highlight in template highlight }
+----------------------------------------------------------------------------------------------------
+Index: 690 <<"chunk_id": 6, "docno": 108>>
+
+as a user. TypeScript support is an important consideration when new features
+are added to Vue. APIs that are designed with TypeScript in mind are typically
+easier for IDEs and linters to understand, even if you aren't using TypeScript
+yourself. Everybody wins. Vue APIs are also designed to work the same way in
+both JavaScript and TypeScript as much as possible. Adopting TypeScript involves
+a trade-off between onboarding complexity and long-term maintainability gains.
+Whether such a trade-off can be justified can vary depending on your team's
+background and project scale, but Vue isn't really an influencing factor in
+making that decision. How does Vue compare to Web Components? ​ Vue was created
+before Web Components were natively available, and some aspects of Vue's design
+(e.g. slots) were inspired by the Web Components model. The Web Components specs
+are relatively low-level, as they are centered around defining custom elements.
+As a framework, Vue addresses additional higher-level concerns such as efficient
+DOM rendering, reactive state management, tooling, client-side routing, and
+server-side rendering. Vue also fully supports consuming or exporting to native
+custom elements - check out the Vue and Web Components Guide for more details.
+Edit this page on GitHub Frequently Asked Questions has loaded
+----------------------------------------------------------------------------------------------------

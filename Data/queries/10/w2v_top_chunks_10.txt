@@ -1,0 +1,514 @@
+Index: 40761 <<"chunk_id": 21, "docno": 6218>>
+
+example of how to subclass FileField to support a particular type of file, as it
+incorporates all of the techniques described above. Cache file attributes
+wherever possible. Since files may be stored in remote storage systems,
+retrieving them may cost extra time, or even money, that isn’t always necessary.
+Once a file is retrieved to obtain some data about its content, cache as much of
+that data as possible to reduce the number of times the file must be retrieved
+on subsequent calls for that information. Previous page and next page How to
+integrate Django with a legacy database How to create database migrations Back
+to Top Additional Information Support Django! Nowack & Olson, PLLC donated to
+the Django Software Foundation to support Django development. Donate today!
+Contents How to create custom model fields Introduction Our example object
+Background theory Database storage What does a field class do? Writing a field
+subclass Field deconstruction Field attributes not affecting database column
+definition Changing a custom field’s base class Documenting your custom field
+Useful methods Custom database types Converting values to Python objects
+Converting Python objects to query values Converting query values to database
+values Preprocessing values before saving Specifying the form field for a model
+field Emulating built-in field types Converting field data for serialization
+Some general advice Writing a FileField subclass A few suggestions Browse Prev:
+How to integrate Django with a legacy database Next: How to create database
+migrations Table of contents General Index Python Module Index You are here:
+Django dev documentation How-to guides
+----------------------------------------------------------------------------------------------------
+Index: 6346 <<"chunk_id": 4, "docno": 828>>
+
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version How to install Django on Windows How to
+deploy Django How to deploy static files Other guides How to authenticate using
+REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
+protection How to write a custom storage class How to create custom django-admin
+commands How to customize the shell command Django FAQ FAQ: General Why does
+this project exist? What does “Django” mean, and how do you pronounce it? Is
+Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
+does Django
+----------------------------------------------------------------------------------------------------
+Index: 15851 <<"chunk_id": 20, "docno": 2110>>
+
+these objects in more than one database. Common setups include primary/replica
+and connecting to external databases. Therefore, it’s recommended to write a
+database router that allows synchronizing these three models to only one
+database. Use the same approach for contrib and third-party apps that don’t need
+their tables in multiple databases. Warning If you’re synchronizing content
+types to more than one database, be aware that their primary keys may not match
+across databases. This may result in data corruption or data loss. Previous page
+and next page Database transactions Tablespaces Back to Top Additional
+Information Support Django! Cagil Ulusahin Sonmez donated to the Django Software
+Foundation to support Django development. Donate today! Contents Multiple
+databases Defining your databases Synchronizing your databases Using other
+management commands Automatic database routing Database routers Hints Using
+routers An example Manually selecting a database Manually selecting a database
+for a QuerySet Selecting a database for save() Moving an object from one
+database to another Selecting a database to delete from Using managers with
+multiple databases Using get_queryset() with multiple databases Exposing
+multiple databases in Django’s admin interface Using raw cursors with multiple
+databases Limitations of multiple databases Cross-database relations Behavior of
+contrib apps Browse Prev: Database transactions Next: Tablespaces Table of
+contents General Index Python Module Index You are here: Django 6.0
+documentation Using Django Models and databases Multiple databases Getting help
+FAQ Try the FAQ — it's got answers to many common questions. Index , Module
+Index , or Table of Contents Handy when looking for specific information. Django
+Discord
+----------------------------------------------------------------------------------------------------
+Index: 48479 <<"chunk_id": 4, "docno": 7649>>
+
+performance Using different versions of available software Serializing Django
+objects Serializing data Deserializing data Serialization formats Natural keys
+Django settings The basics Designating the settings Default settings Using
+settings in Python code Altering settings at runtime Security Available settings
+Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
+Signals Listening to signals Defining and sending signals Disconnecting signals
+System check framework Writing your own checks External packages Localflavor
+Comments Formtools Asynchronous support Async views Async safety Async adapter
+functions Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version Πώς να εγκαταστήσετε το Django στα
+Windows How to deploy Django How to deploy static files Other guides How to
+authenticate using REMOTE_USER How to use Django’s Content Security Policy How
+to use Django’s CSRF protection How to write a custom storage class How to
+create custom django-admin commands How
+----------------------------------------------------------------------------------------------------
+Index: 32008 <<"chunk_id": 24, "docno": 4249>>
+
+multiple Django versions ¶ If you are the maintainer of a third-party app with
+models, you may need to ship migrations that support multiple Django versions.
+In this case, you should always run makemigrations with the lowest Django
+version you wish to support . The migrations system will maintain
+backwards-compatibility according to the same policy as the rest of Django, so
+migration files generated on Django X.Y should run unchanged on Django X.Y+1.
+The migrations system does not promise forwards-compatibility, however. New
+features may be added, and migration files generated with newer versions of
+Django may not work on older versions. See also The Migrations Operations
+Reference Covers the schema operations API, special operations, and writing your
+own operations. The Writing Migrations “how-to” Explains how to structure and
+write database migrations for different scenarios you might encounter. Previous
+page and next page Using mixins with class-based views Managing files Back to
+Top Additional Information Support Django! Agency Cybersecurity donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Migrations The Commands Backend Support PostgreSQL MySQL SQLite Workflow Version
+control Transactions Dependencies Swappable dependencies Migration files Custom
+fields Model managers Initial migrations History consistency Adding migrations
+to apps Reversing migrations Historical models Considerations when removing
+model fields Data Migrations Accessing models from other apps More advanced
+migrations Squashing migrations Serializing values Custom serializers Adding a
+deconstruct() method Supporting multiple Django versions Browse Prev: Using
+mixins with class-based views Next: Managing files Table of contents General
+Index Python Module Index You are here: Django 6.0
+----------------------------------------------------------------------------------------------------
+Index: 51073 <<"chunk_id": 4, "docno": 8146>>
+
+Cross-origin opener policy Session security User-uploaded content Form
+Submissions Content Security Policy Additional security topics Rendimiento y
+optimización Introducción General approaches Caché Understanding laziness Bases
+de datos HTTP performance Template performance Using different versions of
+available software Serializing Django objects Serializing data Deserializing
+data Serialization formats Natural keys Django settings The basics Designating
+the settings Default settings Using settings in Python code Altering settings at
+runtime Seguridad Available settings Creating your own settings Using settings
+without setting DJANGO_SETTINGS_MODULE Señales Listening to signals Defining and
+sending signals Disconnecting signals Framework de comprobación de sistema
+Writing your own checks External packages Localflavor Comentarios Formtools
+Soporte asíncrono Vistas asincrónicas Seguridad asíncrona Funciones adaptadoras
+asíncronas Django’s Tasks framework Background Task fundamentals Configuring a
+Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
+data and databases How to provide initial data for models How to integrate
+Django with a legacy database How to create custom model fields How to create
+database migrations How to write custom lookups Templates and output How to
+create CSV output How to create PDF files How to override templates How to
+implement a custom template backend How to create custom template tags and
+filters Project configuration and management How to manage static files (e.g.
+images, JavaScript, CSS) How to configure and use logging How to manage error
+reporting How to delete a Django application Installing, deploying and upgrading
+How to upgrade Django to a newer version How to install Django on Windows How to
+deploy Django How to deploy static files Other guides Cómo
+----------------------------------------------------------------------------------------------------
+Index: 16077 <<"chunk_id": 6, "docno": 2149>>
+
+between GET and POST data. Cache Framework ¶ The core goals of Django’s cache
+framework are: Less code ¶ A cache should be as fast as possible. Hence, all
+framework code surrounding the cache backend should be kept to the absolute
+minimum, especially for get() operations. Consistency ¶ The cache API should
+provide a consistent interface across the different cache backends.
+Extensibility ¶ The cache API should be extensible at the application level
+based on the developer’s needs (for example, see Cache key transformation ).
+Previous page and next page API stability Third-party distributions of Django
+Back to Top Additional Information Support Django! Kai Diefenbach donated to the
+Django Software Foundation to support Django development. Donate today! Contents
+Design philosophies Overall Loose coupling Less code Quick development Don’t
+repeat yourself (DRY) Explicit is better than implicit Consistency Models
+Explicit is better than implicit Include all relevant domain logic Database API
+SQL efficiency Terse, powerful syntax Option to drop into raw SQL easily, when
+needed URL design Loose coupling Infinite flexibility Encourage best practices
+Definitive URLs Template system Separate logic from presentation Discourage
+redundancy Be decoupled from HTML XML should not be used for template languages
+Assume designer competence Treat whitespace obviously Don’t invent a programming
+language Safety and security Extensibility Views Simplicity Use request objects
+Loose coupling Differentiate between GET and POST Cache Framework Less code
+Consistency Extensibility Browse Prev: API stability Next: Third-party
+distributions of Django Table of contents General Index Python Module Index You
+are here: Django 6.0 documentation Meta-documentation and miscellany Design
+philosophies
+----------------------------------------------------------------------------------------------------
+Index: 41318 <<"chunk_id": 12, "docno": 6313>>
+
+Django development. Donate today! Contents Database access optimization Profile
+first Use standard DB optimization techniques Understand QuerySet s Understand
+QuerySet evaluation Understand cached attributes Use the with template tag Use
+iterator() Use explain() Do database work in the database rather than in Python
+Use RawSQL Use raw SQL Retrieve individual objects using a unique, indexed
+column Retrieve related objects efficiently Use the FETCH_PEERS fetch mode Use
+QuerySet.select_related() and prefetch_related() Use prefetch_related_objects()
+Don’t retrieve things you don’t need Use QuerySet.values() and values_list() Use
+QuerySet.defer() and only() Use QuerySet.contains(obj) Use QuerySet.count() Use
+QuerySet.exists() Don’t overuse contains() , count() , and exists() Use
+QuerySet.update() and delete() Use foreign key values directly Don’t order
+results if you don’t care Use bulk methods Create in bulk Update in bulk Insert
+in bulk Remove in bulk Browse Prev: Tablespaces Next: Database instrumentation
+Table of contents General Index Python Module Index You are here: Django dev
+documentation Using Django Models and databases Database access optimization
+Getting help FAQ Try the FAQ — it's got answers to many common questions. Index
+, Module Index , or Table of Contents Handy when looking for specific
+information. Django Discord Server Join the Django Discord Community. Official
+Django Forum Join the community on the Django Forum. Ticket tracker Report bugs
+with Django or Django documentation in our ticket tracker. Download: Offline
+(development version): HTML | PDF | ePub Provided by Read the Docs . Diamond and
+Platinum Members Sentry Monitor your Django Code Resolve performance bottlenecks
+and errors using monitoring, replays, logs and Seer an AI agent
+----------------------------------------------------------------------------------------------------
+Index: 14731 <<"chunk_id": 26, "docno": 1934>>
+
+Site Request Forgery protection django-admin and manage.py Back to Top
+Additional Information Support Django! Garage Door Nation donated to the Django
+Software Foundation to support Django development. Donate today! Contents
+Databases General notes Persistent connections Connection management Caveats
+Encoding PostgreSQL notes PostgreSQL connection settings Optimizing PostgreSQL’s
+configuration Isolation level Role Connection pool Server-side parameters
+binding Indexes for varchar and text columns Migration operation for adding
+extensions Server-side cursors Transaction pooling and server-side cursors
+Manually-specifying values of auto-incrementing primary keys Test database
+templates Speeding up test execution with non-durable settings MariaDB notes
+MySQL notes Version support Storage engines MySQL DB API Drivers mysqlclient
+MySQL Connector/Python Time zone definitions Creating your database Collation
+settings Connecting to the database Setting sql_mode Isolation level Creating
+your tables Table names Savepoints Notes on specific fields Character fields
+TextField limitations Fractional seconds support for Time and DateTime fields
+TIMESTAMP columns Row locking with QuerySet.select_for_update() Automatic
+typecasting can cause unexpected results SQLite notes Substring matching and
+case sensitivity Decimal handling “Database is locked” errors Transactions
+behavior QuerySet.select_for_update() not supported Isolation when using
+QuerySet.iterator() Enabling JSON1 extension on SQLite Setting pragma options
+Oracle notes Connecting to the database Full DSN and Easy Connect Connection
+pool INSERT … RETURNING INTO Naming issues NULL and empty strings TextField
+limitations Subclassing the built-in database backends Using a 3rd-party
+database backend Browse Prev: Cross Site Request Forgery protection Next:
+django-admin and manage.py Table of contents General Index Python Module Index
+You are here: Django 6.0 documentation API Reference Databases Getting help FAQ
+Try the FAQ — it's got
+----------------------------------------------------------------------------------------------------
+Index: 41719 <<"chunk_id": 11, "docno": 6384>>
+
+heavyweight applications. A key aim of the PyPy project is compatibility with
+existing Python APIs and libraries. Django is compatible with versions of PyPy
+corresponding to the supported Python versions, but you will need to check the
+compatibility of other libraries you rely on. That said, a lot of a web
+framework’s work is done by concatenating strings, and PyPy has an issue with
+that (see this PyPy blog ). This may cause performance issues, depending on your
+use. C implementations of Python libraries ¶ Some Python libraries are also
+implemented in C, and can be much faster. They aim to offer the same APIs. Note
+that compatibility issues and behavior differences are not unknown (and not
+always immediately evident). Previous page and next page Security in Django
+Serializing Django objects Back to Top Additional Information Support Django!
+Mike Urbanski donated to the Django Software Foundation to support Django
+development. Donate today! Contents Performance and optimization Introduction
+General approaches What are you optimizing for ? Performance benchmarking Django
+tools Third-party services Get things right from the start Work at the
+appropriate level Caching The caching framework cached_property Understanding
+laziness Laziness in Django Databases Database optimization Other
+database-related tips HTTP performance Middleware ConditionalGetMiddleware
+GZipMiddleware Sessions Using cached sessions Static files
+ManifestStaticFilesStorage “Minification” Template performance The cached
+template loader Using different versions of available software Newer is often -
+but not always - better Alternatives to Django’s template language Alternative
+software implementations PyPy C implementations of Python libraries Browse Prev:
+Security in Django Next: Serializing Django objects Table
+----------------------------------------------------------------------------------------------------
+Index: 41309 <<"chunk_id": 3, "docno": 6313>>
+
+when reading template code - the template system does not allow use of
+parentheses, but will call callables automatically, hiding the above
+distinction. Be careful with your own custom properties - it is up to you to
+implement caching when required, for example using the cached_property
+decorator. Use the with template tag ¶ To make use of the caching behavior of
+QuerySet , you may need to use the with template tag. Use iterator() ¶ When you
+have a lot of objects, the caching behavior of the QuerySet can cause a large
+amount of memory to be used. In this case, iterator() may help. Use explain() ¶
+QuerySet.explain() gives you detailed information about how the database
+executes a query, including indexes and joins that are used. These details may
+help you find queries that could be rewritten more efficiently, or identify
+indexes that could be added to improve performance. Do database work in the
+database rather than in Python ¶ For instance: At the most basic level, use
+filter and exclude to do filtering in the database. Use F() expressions to
+filter based on other fields within the same model. Use annotate to do
+aggregation in the database . If these aren’t enough to generate the SQL you
+need: Use RawSQL ¶ A less portable but more powerful method is the RawSQL
+expression, which allows some SQL to be explicitly added to the query. If that
+still isn’t powerful enough: Use raw SQL ¶ Write your own custom SQL to retrieve
+data or populate models .
+----------------------------------------------------------------------------------------------------
+Index: 41616 <<"chunk_id": 1, "docno": 6367>>
+
+is not suitable for production. Django currently supports two interfaces: WSGI
+and ASGI. WSGI is the main Python standard for communicating between web servers
+and applications, but it only supports synchronous code. ASGI is the new,
+asynchronous-friendly standard that will allow your Django site to use
+asynchronous Python features, and asynchronous Django features as they are
+developed. You should also consider how you will handle static files for your
+application, and how to handle error reporting . Finally, before you deploy your
+application to production, you should run through our deployment checklist to
+ensure that your configurations are suitable. How to deploy with WSGI How to use
+Django with Granian How to use Django with Gunicorn How to use Django with uWSGI
+How to use Django with Apache and mod_wsgi How to authenticate against Django’s
+user database from Apache The application object Configuring the settings module
+Applying WSGI middleware How to deploy with ASGI How to use Django with Daphne
+How to use Django with Granian How to use Django with Hypercorn How to use
+Django with Uvicorn The application object Configuring the settings module
+Applying ASGI middleware Deployment checklist Run manage.py check --deploy
+Switch away from manage.py runserver Critical settings Environment-specific
+settings HTTPS Performance optimizations Error reporting Previous page and next
+page How to install Django on Windows How to deploy with WSGI Back to Top
+Additional Information Support Django! Kay Beudeker donated to the Django
+Software Foundation to support Django development. Donate today! Contents How to
+deploy Django Browse Prev: How to install Django
+----------------------------------------------------------------------------------------------------
+Index: 51627 <<"chunk_id": 1, "docno": 8244>>
+
+import connections >>> connections [ "my_db_alias" ] . queries If you need to
+clear the query list manually at any point in your functions, call
+reset_queries() , like this: from django.db import reset_queries reset_queries
+() Can I use Django with a preexisting database? ¶ Yes. See Integrating with a
+legacy database . If I make changes to a model, how do I update the database? ¶
+Take a look at Django’s support for schema migrations . If you don’t mind
+clearing data, your project’s manage.py utility has a flush option to reset the
+database to the state it was in immediately after migrate was executed. Do
+Django models support multiple-column primary keys? ¶ No. Only single-column
+primary keys are supported. But this isn’t an issue in practice, because there’s
+nothing stopping you from adding other constraints (using the unique_together
+model option or creating the constraint directly in your database), and
+enforcing the uniqueness at that level. Single-column primary keys are needed
+for things such as the admin interface to work; e.g., you need a single value to
+specify an object to edit or delete. Does Django support NoSQL databases? ¶
+NoSQL databases are not officially supported by Django itself. There are,
+however, a number of side projects and forks which allow NoSQL functionality in
+Django. You can take a look on the wiki page which discusses some projects. How
+do I add database-specific options to my CREATE TABLE statements, such as
+specifying MyISAM as the table type? ¶ We try to avoid adding special cases in
+----------------------------------------------------------------------------------------------------
+Index: 22447 <<"chunk_id": 7, "docno": 2797>>
+
+made explicit by a FOREIGN KEY constraint. Don’t worry about the DEFERRABLE
+parts; it’s telling PostgreSQL to not enforce the foreign key until the end of
+the transaction. It’s tailored to the database you’re using, so
+database-specific field types such as auto_increment (MySQL), bigint PRIMARY KEY
+GENERATED BY DEFAULT AS IDENTITY (PostgreSQL), or integer primary key
+autoincrement (SQLite) are handled for you automatically. Same goes for the
+quoting of field names – e.g., using double quotes or single quotes. The
+sqlmigrate command doesn’t actually run the migration on your database -
+instead, it prints it to the screen so that you can see what SQL Django thinks
+is required. It’s useful for checking what Django is going to do or if you have
+database administrators who require SQL scripts for changes. If you’re
+interested, you can also run python manage.py check ; this checks for any
+problems in your project without making migrations or touching the database.
+Now, run migrate again to create those model tables in your database: /  $
+python manage.py migrate Operations to perform: Apply all migrations: admin,
+auth, contenttypes, polls, sessions Running migrations: Applying
+polls.0001_initial... OK ...\> py manage.py migrate Operations to perform: Apply
+all migrations: admin, auth, contenttypes, polls, sessions Running migrations:
+Applying polls.0001_initial... OK The migrate command takes all the migrations
+that haven’t been applied (Django tracks which ones are applied using a special
+table in your database called django_migrations ) and runs them against your
+database - essentially, synchronizing the changes you made to your models with
+the
+----------------------------------------------------------------------------------------------------
+Index: 6348 <<"chunk_id": 6, "docno": 828>>
+
+a bug! What should I do? I think I’ve found a security problem! What should I
+do? FAQ: Databases and models How can I see the raw SQL queries Django is
+running? Can I use Django with a preexisting database? If I make changes to a
+model, how do I update the database? Do Django models support multiple-column
+primary keys? Does Django support NoSQL databases? How do I add
+database-specific options to my CREATE TABLE statements, such as specifying
+MyISAM as the table type? FAQ: The admin I can’t log in. When I enter a valid
+username and password, it just brings up the login page again, with no error
+messages. I can’t log in. When I enter a valid username and password, it brings
+up the login page again, with a “Please enter a correct username and password”
+error. How do I automatically set a field’s value to the user who last edited
+the object in the admin? How do I limit admin access so that objects can only be
+edited by the users who created them? My admin-site CSS and images showed up
+fine using the development server, but they’re not displaying when using
+mod_wsgi. My “list_filter” contains a ManyToManyField, but the filter doesn’t
+display. Some objects aren’t appearing in the admin. How can I customize the
+functionality of the admin interface? The dynamically-generated admin site is
+ugly! How can I change it? What browsers are supported for using the admin? What
+assistive technologies are supported for using the admin? FAQ: Contributing code
+How
+----------------------------------------------------------------------------------------------------
+Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+
+that would cause the required CSRF cookie to be sent. Solution: use
+ensure_csrf_cookie() on the view that sends the page. CSRF protection in
+reusable applications ¶ Because it is possible for the developer to turn off the
+CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
+decorator to ensure the security of these applications against CSRF. It is
+recommended that the developers of other reusable apps that want the same
+guarantees also use the csrf_protect decorator on their views. Previous page and
+next page How to use Django’s Content Security Policy How to write a custom
+storage class Back to Top Additional Information Support Django! Abu Ashraf
+Masnun donated to the Django Software Foundation to support Django development.
+Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
+with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
+False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
+Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
+Using the decorator method Handling rejected requests Using CSRF protection with
+caching Testing and CSRF protection Edge cases Disabling CSRF protection for
+just a few views Setting the token when CsrfViewMiddleware.process_view() is not
+used Including the CSRF token in an unprotected view Protecting a view for only
+one path Protecting a page that uses AJAX without an HTML form CSRF protection
+in reusable applications Browse Prev: How to use Django’s Content Security
+Policy Next: How to write a custom storage class Table of contents General Index
+Python Module Index You are
+----------------------------------------------------------------------------------------------------
+Index: 14497 <<"chunk_id": 50, "docno": 1896>>
+
+support Django development. Donate today! Contents Making queries Creating
+objects Saving changes to objects Saving ForeignKey and ManyToManyField fields
+Retrieving objects Retrieving all objects Retrieving specific objects with
+filters Chaining filters Filtered QuerySet s are unique QuerySet s are lazy
+Retrieving a single object with get() Other QuerySet methods Limiting QuerySet s
+Field lookups Lookups that span relationships Spanning multi-valued
+relationships Filters can reference fields on the model Expressions can
+reference transforms The pk lookup shortcut Escaping percent signs and
+underscores in LIKE statements Caching and QuerySet s When QuerySet s are not
+cached Asynchronous queries Query iteration QuerySet and manager methods
+Transactions Querying JSONField Storing and querying for None Key, index, and
+path transforms KT() expressions Containment and key lookups contains
+contained_by has_key has_keys has_any_keys Complex lookups with Q objects
+Comparing objects Deleting objects Copying model instances Updating multiple
+objects at once Related objects One-to-many relationships Forward Following
+relationships “backward” Using a custom reverse manager Additional methods to
+handle related objects Many-to-many relationships Filtering on many-to-many
+relationships One-to-one relationships How are the backward relationships
+possible? Queries over related objects Falling back to raw SQL Browse Prev:
+Models Next: Aggregation Table of contents General Index Python Module Index You
+are here: Django 6.0 documentation Using Django Models and databases Making
+queries Getting help FAQ Try the FAQ — it's got answers to many common
+questions. Index , Module Index , or Table of Contents Handy when looking for
+specific information. Django Discord Server Join the Django Discord Community.
+Official Django Forum Join the community on the
+----------------------------------------------------------------------------------------------------
+Index: 27802 <<"chunk_id": 6, "docno": 4038>>
+
+wish to return them in other cases, set them in your view. See RFC 9110 Section
+9.3.4 to learn about the distinction between setting a validator header in
+response to requests made with PUT versus POST . Comparison with middleware
+conditional processing ¶ Django provides conditional GET handling via
+django.middleware.http.ConditionalGetMiddleware . While being suitable for many
+situations, the middleware has limitations for advanced usage: It’s applied
+globally to all views in your project. It doesn’t save you from generating the
+response, which may be expensive. It’s only appropriate for HTTP GET requests.
+You should choose the most appropriate tool for your particular problem here. If
+you have a way to compute ETags and modification times quickly and if some view
+takes a while to generate the content, you should consider using the condition
+decorator described in this document. If everything already runs fairly quickly,
+stick to using the middleware and the amount of network traffic sent back to the
+clients will still be reduced if the view hasn’t changed. Previous page and next
+page Django’s cache framework Composite primary keys Back to Top Additional
+Information Support Django! Ken Whitesell donated to the Django Software
+Foundation to support Django development. Donate today! Contents Conditional
+View Processing The condition decorator Shortcuts for only computing one value
+Use condition when testing both conditions Using the decorators with other HTTP
+methods Comparison with middleware conditional processing Browse Prev: Django’s
+cache framework Next: Composite primary keys Table of contents General Index
+Python Module Index You are here: Django 6.0 documentation Using
+----------------------------------------------------------------------------------------------------
+Index: 41311 <<"chunk_id": 5, "docno": 6313>>
+
+efficient. Retrieve related objects efficiently ¶ Generally, accessing the
+database multiple times to retrieve different parts of a single “set” of data is
+less efficient than retrieving it all in one query. This is particularly
+important if you have a query that is executed in a loop, and could therefore
+end up doing many database queries, when only one is needed. Below are some
+techniques to combine queries for efficiency. Use the FETCH_PEERS fetch mode ¶
+Use the FETCH_PEERS fetch mode to make on-demand field access more efficient
+with bulk-fetching. Enable it for all usage of your models with a custom manager
+. Using this fetch mode is easier than declaring fields to fetch with
+select_related() or prefetch_related() , especially when it’s hard to predict
+which fields will be accessed. Use QuerySet.select_related() and
+prefetch_related() ¶ When the FETCH_PEERS fetch mode is not appropriate or
+efficient enough, use select_related() and prefetch_related() . Understand their
+documentation thoroughly and apply them where needed. It may be useful to apply
+these methods in managers and default managers . Be aware when your manager is
+and is not used; for example, related object access uses the base manager rather
+than the default manager. Use prefetch_related_objects() ¶ Where
+prefetch_related would be useful after the queryset has been evaluated, use
+prefetch_related_objects() to execute an extra prefetch. Don’t retrieve things
+you don’t need ¶ Use QuerySet.values() and values_list() ¶ When you only want a
+dict or list of values, and don’t need ORM model objects, make appropriate usage
+of values() . These can be
+----------------------------------------------------------------------------------------------------
+Index: 3293 <<"chunk_id": 2, "docno": 459>>
+
+the login page again, with a “Please enter a correct username and password”
+error. How do I automatically set a field’s value to the user who last edited
+the object in the admin? How do I limit admin access so that objects can only be
+edited by the users who created them? My admin-site CSS and images showed up
+fine using the development server, but they’re not displaying when using
+mod_wsgi. My “list_filter” contains a ManyToManyField, but the filter doesn’t
+display. Some objects aren’t appearing in the admin. How can I customize the
+functionality of the admin interface? The dynamically-generated admin site is
+ugly! How can I change it? What browsers are supported for using the admin? What
+assistive technologies are supported for using the admin? FAQ: Contributing code
+How can I get started contributing code to Django? I submitted a bug fix several
+weeks ago. Why are you ignoring my contribution? When and how might I remind the
+team of a change I care about? But I’ve reminded you several times and you keep
+ignoring my contribution! I’m sure my ticket is absolutely 100% perfect, can I
+mark it as “Ready For Checkin” myself? Troubleshooting Problems running
+django-admin Miscellaneous Previous page and next page How to customize the
+shell command FAQ: General Back to Top Additional Information Support Django!
+Sunny Vercett donated to the Django Software Foundation to support Django
+development. Donate today! Contents Django FAQ Browse Prev: How to customize the
+shell command Next: FAQ: General Table of contents General Index Python Module
+Index
+----------------------------------------------------------------------------------------------------

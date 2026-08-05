@@ -1,0 +1,523 @@
+Index: 50438 <<"chunk_id": 0, "docno": 8029>>
+
+Node.js — Node.js 9.10.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 9.10.0 (Current)
+MB Myles Borins Node.js 9.10.0 (Current) Notable Changes Upgrade to OpenSSL
+1.0.2o : Does not contain any security fixes that are known to impact Node.js.
+Fix for inspector DNS rebinding vulnerability (CVE-2018-7160) : A malicious
+website could use a DNS rebinding attack to trick a web browser to bypass
+same-origin-policy checks and allow HTTP connections to localhost or to hosts on
+the local network, potentially to an open inspector port as a debugger,
+therefore gaining full code execution access. The inspector now only allows
+connections that have a browser Host value that is either not subject to DNS
+resolution or matches localhost or localhost6 . Fix for 'path' module regular
+expression denial of service (CVE-2018-7158) : A regular expression used for
+parsing POSIX paths could be used to cause a denial of service if an attacker
+were able to have a specially crafted path string passed through one of the
+impacted 'path' module functions. Reject spaces in HTTP Content-Length header
+values (CVE-2018-7159) : The Node.js HTTP parser allowed for spaces inside
+Content-Length header values. Such values now lead to rejected connections in
+the same way as non-numeric values. Update root certificates : 5 additional root
+certificates have been added to the Node.js binary and 30 have been removed.
+cluster : Add support for NODE_OPTIONS="--inspect" (Sameer Srivastava) #19165
+crypto : Expose the public key of a certificate (Hannes Magnusson) #17690 n-api
+: Add
+----------------------------------------------------------------------------------------------------
+Index: 46537 <<"chunk_id": 0, "docno": 7274>>
+
+Node.js — Node.js 6.14.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 6.14.0 (LTS) MB Myles
+Borins Node.js 6.14.0 (LTS) Notable Changes Upgrade to OpenSSL 1.0.2o : Does not
+contain any security fixes that are known to impact Node.js. Fix for inspector
+DNS rebinding vulnerability (CVE-2018-7160) : A malicious website could use a
+DNS rebinding attack to trick a web browser to bypass same-origin-policy checks
+and allow HTTP connections to localhost or to hosts on the local network,
+potentially to an open inspector port as a debugger, therefore gaining full code
+execution access. The inspector now only allows connections that have a browser
+Host value that is either not subject to DNS resolution or matches localhost or
+localhost6 . Fix for 'path' module regular expression denial of service
+(CVE-2018-7158) : A regular expression used for parsing POSIX paths could be
+used to cause a denial of service if an attacker were able to have a specially
+crafted path string passed through one of the impacted 'path' module functions.
+Reject spaces in HTTP Content-Length header values (CVE-2018-7159) : The Node.js
+HTTP parser allowed for spaces inside Content-Length header values. Such values
+now lead to rejected connections in the same way as non-numeric values. Update
+root certificates : 5 additional root certificates have been added to the
+Node.js binary and 30 have been removed. Commits [ ac21bdc149 ] - crypto :
+update root certificates (Ben Noordhuis) #19322 [ 3c99e41427 ] - deps : add
+-no_rand_screen to openssl s_client
+----------------------------------------------------------------------------------------------------
+Index: 46900 <<"chunk_id": 0, "docno": 7343>>
+
+Node.js — Node.js 8.11.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 8.11.0 (LTS) MB Myles
+Borins Node.js 8.11.0 (LTS) Notable Changes Upgrade to OpenSSL 1.0.2o : Does not
+contain any security fixes that are known to impact Node.js. Fix for inspector
+DNS rebinding vulnerability (CVE-2018-7160) : A malicious website could use a
+DNS rebinding attack to trick a web browser to bypass same-origin-policy checks
+and allow HTTP connections to localhost or to hosts on the local network,
+potentially to an open inspector port as a debugger, therefore gaining full code
+execution access. The inspector now only allows connections that have a browser
+Host value that is either not subject to DNS resolution or matches localhost or
+localhost6 . Fix for 'path' module regular expression denial of service
+(CVE-2018-7158) : A regular expression used for parsing POSIX paths could be
+used to cause a denial of service if an attacker were able to have a specially
+crafted path string passed through one of the impacted 'path' module functions.
+Reject spaces in HTTP Content-Length header values (CVE-2018-7159) : The Node.js
+HTTP parser allowed for spaces inside Content-Length header values. Such values
+now lead to rejected connections in the same way as non-numeric values. Update
+root certificates : 5 additional root certificates have been added to the
+Node.js binary and 30 have been removed. Commits [ dc290562e9 ] - crypto :
+update root certificates (Ben Noordhuis) #19322 [ df92da3f3c ] - deps : add
+-no_rand_screen to openssl s_client
+----------------------------------------------------------------------------------------------------
+Index: 42165 <<"chunk_id": 1, "docno": 6463>>
+
+future. - [C++ embedder API](https://nodejs.org/docs/latest/api/embedding.md):
+Node.js provides a number of C++ APIs that can be used to execute JavaScript in
+a Node.js environment from other C++ software. - [Environment
+Variables](https://nodejs.org/docs/latest/api/environment_variables.md):
+Environment variables are variables associated to the environment the Node.js
+process runs in. - [Errors](https://nodejs.org/docs/latest/api/errors.md):
+Applications running in Node.js will generally experience the following
+categories of errors: - [C++
+addons](https://nodejs.org/docs/latest/api/addons.md): _Addons_ are
+dynamically-linked shared objects that can be loaded via the `require()`
+function as ordinary Node.js modules. Addons provide a foreign function
+interface between JavaScript and native code. -
+[Assert](https://nodejs.org/docs/latest/api/assert.md): The `node:assert` module
+provides a set of assertion functions for verifying invariants. - [Asynchronous
+context tracking](https://nodejs.org/docs/latest/api/async_context.md): - [Async
+hooks](https://nodejs.org/docs/latest/api/async_hooks.md): We strongly
+discourage the use of the `async_hooks` API. Other APIs that can cover most of
+its use cases include: - [Buffer](https://nodejs.org/docs/latest/api/buffer.md):
+`Buffer` objects are used to represent a fixed-length sequence of bytes. Many
+Node.js APIs support `Buffer`s. - [Child
+process](https://nodejs.org/docs/latest/api/child_process.md): The
+`node:child_process` module provides the ability to spawn subprocesses in a
+manner that is similar, but not identical, to `popen(3)`. This capability is
+primarily provided by the `child_process.spawn()` function: - [Command-line
+API](https://nodejs.org/docs/latest/api/cli.md): Node.js comes with a variety of
+CLI options. These options expose built-in debugging, multiple ways to execute
+scripts, and other helpful runtime options. -
+[Cluster](https://nodejs.org/docs/latest/api/cluster.md): Clusters of Node.js
+processes can be used to run multiple instances of Node.js that can distribute
+workloads among their application threads. When process isolation is not needed,
+use the `worker_threads` module instead, which allows running multiple
+application threads within a single Node.js instance. -
+[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
+module provides
+----------------------------------------------------------------------------------------------------
+Index: 46731 <<"chunk_id": 2, "docno": 7311>>
+
+in the Node.js LTS plan, located at https://github.com/nodejs/LTS . If you would
+like help with Node.js, please open an issue at https://github.com/nodejs/help
+If you would like to report a bug with Node.js, please open an issue at
+https://github.com/nodejs/node Node.js 6.9.0 LTS "Boron" Notable changes crypto
+: Don't automatically attempt to load an OpenSSL configuration file, from the
+OPENSSL_CONF environment variable or from the default location for the current
+platform. Always triggering a configuration file load attempt may allow an
+attacker to load compromised OpenSSL configuration into a Node.js process if
+they are able to place a file in a default location. (Fedor Indutny, Rod Vagg)
+node : Introduce the process.release.lts property, set to "Boron" . This value
+is "Argon" for v4 LTS releases and undefined for all other releases. (Rod Vagg)
+V8 : Backport fix for CVE-2016-5172, an arbitrary memory read. The parser in V8
+mishandled scopes, potentially allowing an attacker to obtain sensitive
+information from arbitrary memory locations via crafted JavaScript code. This
+vulnerability would require an attacker to be able to execute arbitrary
+JavaScript code in a Node.js process. (Rod Vagg) v8_inspector : Generate a UUID
+for each execution of the inspector. This provides additional security to
+prevent unauthorized clients from connecting to the Node.js process via the
+v8_inspector port when running with --inspect . Since the debugging protocol
+allows extensive access to the internals of a running process, and the execution
+of arbitrary code, it is important to limit connections to authorized tools
+only. Vulnerability originally reported by Jann Horn. (Eugene Ostroukhov)
+Commits
+----------------------------------------------------------------------------------------------------
+Index: 43941 <<"chunk_id": 0, "docno": 6803>>
+
+Node.js — Node.js 19.0.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 19.0.0 (Current)
+RG RA Rafael Gonzaga, Ruy Adorno Node.js 19.0.0 (Current) Notable Changes
+Deprecations and Removals [ 7dd2f41c73 ] - (SEMVER-MAJOR) module : runtime
+deprecate exports double slash maps (Guy Bedford) #44495 [ ada2d053ae ] -
+(SEMVER-MAJOR) process : runtime deprecate coercion to integer in process.exit()
+(Daeyeon Jeong) #44711 HTTP(S)/1.1 KeepAlive by default Starting with this
+release, Node.js sets keepAlive to true by default. This means that any outgoing
+HTTP(s) connection will automatically use HTTP 1.1 Keep-Alive. The default
+waiting window is 5 seconds. Enable keep-alive will deliver better throughput as
+connections are reused by default. Additionally the agent is now able to parse
+the response Keep-Alive which the servers might send. This header instructs the
+client on how much to stay connected. On the other side, the Node.js HTTP server
+will now automatically disconnect idle clients (which are using HTTP Keep-Alive
+to reuse the connection) when close() is invoked). Node.js HTTP(S)/1.1 requests
+may experience a better throughput/performance by default. Contributed by Paolo
+Insogna in #43522 DTrace/SystemTap/ETW Support were removed The main reason is
+the lack of resources from Node.js team. The complexity to keep the support
+up-to-date has been proved not worth it without a clear plan to support those
+tools. Hence, an issue was raised in the Node.js repository to assess a better
+support, for DTrace in specific. Contributed by Ben Noordhuis in #43651 and
+#43652 V8 10.7 The V8 engine is
+----------------------------------------------------------------------------------------------------
+Index: 44348 <<"chunk_id": 0, "docno": 6882>>
+
+Node.js — Node.js 22.8.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.8.0 (Current)
+RG Rafael Gonzaga Node.js 22.8.0 (Current) 2024-09-03, Version 22.8.0 (Current),
+@RafaelGSS New JS API for compile cache This release adds a new API
+module.enableCompileCache() that can be used to enable on-disk code caching of
+all modules loaded after this API is called. Previously this could only be
+enabled by the NODE_COMPILE_CACHE environment variable, so it could only set by
+end-users. This API allows tooling and library authors to enable caching of
+their own code. This is a built-in alternative to the v8-compile-cache /
+v8-compile-cache-lib packages, but have better performance and supports ESM.
+Thanks to Joyee Cheung for working on this. New option for vm.createContext() to
+create a context with a freezable globalThis Node.js implements a flavor of
+vm.createContext() and friends that creates a context without contextifying its
+global object when vm.constants.DONT_CONTEXTIFY is used. This is suitable when
+users want to freeze the context (impossible when the global is contextified
+i.e. has interceptors installed) or speed up the global access if they don't
+need the interceptor behavior. Thanks to Joyee Cheung for working on this.
+Support for coverage thresholds Node.js now supports requiring code coverage to
+meet a specific threshold before the process exits successfully. To use this
+feature, you need to enable the --experimental-test-coverage flag. You can set
+thresholds for the following types of coverage: Branch coverage : Use
+--test-coverage-branches=<threshold> Function coverage : Use
+--test-coverage-functions=<threshold> Line coverage : Use
+--test-coverage-lines=<threshold> <threshold> should
+----------------------------------------------------------------------------------------------------
+Index: 44265 <<"chunk_id": 0, "docno": 6863>>
+
+Node.js — Node.js 22.6.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.6.0 (Current)
+RG Rafael Gonzaga Node.js 22.6.0 (Current) 2024-08-06, Version 22.6.0 (Current),
+@RafaelGSS Experimental TypeScript support via strip types Node.js introduces
+the --experimental-strip-types flag for initial TypeScript support. This feature
+strips type annotations from .ts files, allowing them to run without
+transforming TypeScript-specific syntax. Current limitations include: Supports
+only inline type annotations, not features like enums or namespaces . Requires
+explicit file extensions in import and require statements. Enforces the use of
+the type keyword for type imports to avoid runtime errors. Disabled for
+TypeScript in node_modules by default. Thanks Marco Ippolito for working on
+this. Experimental Network Inspection Support in Node.js This update introduces
+the initial support for network inspection in Node.js. Currently, this is an
+experimental feature, so you need to enable it using the
+--experimental-network-inspection flag. With this feature enabled, you can
+inspect network activities occurring within a JavaScript application. To use
+network inspection, start your Node.js application with the following command: $
+node --inspect-wait --experimental-network-inspection index.js Please note that
+the network inspection capabilities are in active development. We are actively
+working on enhancing this feature and will continue to expand its functionality
+in future updates. Network inspection is limited to the http and https modules
+only. The Network tab in Chrome DevTools will not be available until the feature
+request on the Chrome DevTools side is addressed. Thanks Kohei Ueno for working
+on this. Other Notable Changes [ 15a94e67b1 ]
+----------------------------------------------------------------------------------------------------
+Index: 47401 <<"chunk_id": 0, "docno": 7449>>
+
+Node.js — Node.js 12.2.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.2.0 (Current)
+MLZ Michaël Zasso Node.js 12.2.0 (Current) Notable changes deps : Updated llhttp
+to 1.1.3. This fixes a bug that made Node.js' HTTP parser refuse any request URL
+that contained the "|" (vertical bar) character (Fedor Indutny) #27595 . tls :
+Added an enableTrace() method to TLSSocket and an enableTrace option to
+tls.createServer() . When enabled, TSL packet trace information is written to
+stderr . This can be used to debug TLS connection problems (cjihrig) #27497 ,
+(Sam Roberts) #27376 . cli : Added a --trace-tls command-line flag that enables
+tracing of TLS connections without the need to modify existing application code
+(cjihrig) #27497 . Added a --cpu-prof-interval command-line flag. It can be used
+to specify the sampling interval for the CPU profiles generated by --cpu-prof
+(Joyee Cheung) #27535 . module : Added the createRequire() method. It allows to
+create a require function from a file URL object, a file URL string or an
+absolute path string. The existing createRequireFromPath() method is now
+deprecated (Myles Borins) #27405 . Throw on require('./path.mjs') . This is
+technically a breaking change that should have landed with Node.js 12.0.0. It is
+necessary to have this to keep the possibility for a future minor version to
+load ES Modules with the require function (Myles Borins) #27417 . repl : The
+REPL now supports multi-line statements using BigInt literals as well as public
+and private class fields and methods
+----------------------------------------------------------------------------------------------------
+Index: 4178 <<"chunk_id": 2, "docno": 574>>
+
+It's a poor fit for two other situations, though: CPU-bound work (image
+resizing, hashing, parsing huge payloads) ties up the single thread and makes
+your whole application unresponsive while it runs. Scaling across CPU cores — a
+single Node.js process only ever uses one core for its JavaScript, no matter how
+many cores the machine has. Node.js ships three built-in modules to address
+this: node:child_process , node:worker_threads , and node:cluster . They solve
+overlapping problems in different ways, which is why it's easy to reach for the
+wrong one. This guide compares them side by side and walks through when to use
+each. The three options at a glance Runs Memory Talks via Best for child_process
+Separate process Isolated stdio, or IPC ( fork() ) Running external programs
+worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
+Multiple processes Isolated IPC Scaling a server across cores A useful way to
+tell them apart: cluster is built on top of child_process specifically to solve
+the "scale a server across cores" problem, while worker_threads exists to solve
+the "run CPU-heavy code without blocking" problem without paying the cost of a
+whole new process. Child Process Use child_process when you need to run another
+program — a shell command, a binary, a script in another language — from
+Node.js, or when you want a fully isolated Node.js process that you drive over
+stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
+spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
+output via a shell Short
+----------------------------------------------------------------------------------------------------
+Index: 47957 <<"chunk_id": 0, "docno": 7563>>
+
+Node.js — Node.js 12.7.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.7.0 (Current)
+MLZ Michaël Zasso Node.js 12.7.0 (Current) Notable changes deps : Updated
+nghttp2 to 1.39.1 (gengjiawen) #28448 . Updated npm to 6.10.0 (isaacs) #28525 .
+esm : Implemented experimental "pkg-exports" proposal. A new "exports" field can
+be added to a module's package.json file to provide custom subpath aliasing. See
+proposal-pkg-exports for more information (Guy Bedford) #28568 . http : Added
+response.writableFinished (Robert Nagy) #28681 . Exposed headers , rawHeaders
+and other fields on an http.ClientRequest "information" event (Austin Wright)
+#28459 . inspector : Added inspector.waitForDebugger() (Aleksei Koziatinskii)
+#28453 . policy : Added --policy-integrity=sri CLI option to mitigate policy
+tampering. If a policy integrity is specified and the policy does not have that
+integrity, Node.js will error prior to running any code (Bradley Farias) #28734
+. readline,tty : Exposed stream API from various methods which write characters
+(cjihrig) #28674 , #28721 . report : Modify process.report.getReport() to return
+an Object instead of a JSON string (Christopher Hiller) #28630 . src : Use
+cgroups to get memory limits. This improves the way we set the memory ceiling
+for a Node.js process. Previously we would use the physical memory size to
+estimate the necessary V8 heap sizes. The physical memory size is not
+necessarily the correct limit, e.g. if the process is running inside a docker
+container or is otherwise constrained. This change adds the ability to get a
+memory limit set by linux cgroups, which
+----------------------------------------------------------------------------------------------------
+Index: 42166 <<"chunk_id": 2, "docno": 6463>>
+
+is not needed, use the `worker_threads` module instead, which allows running
+multiple application threads within a single Node.js instance. -
+[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
+module provides a simple debugging console that is similar to the JavaScript
+console mechanism provided by web browsers. -
+[Crypto](https://nodejs.org/docs/latest/api/crypto.md): The `node:crypto` module
+provides cryptographic functionality that includes a set of wrappers for
+OpenSSL's hash, HMAC, cipher, decipher, sign, and verify functions. -
+[V8](https://nodejs.org/docs/latest/api/v8.md): The `node:v8` module exposes
+APIs that are specific to the version of V8 built into the Node.js binary. It
+can be accessed using: - [Virtual File
+System](https://nodejs.org/docs/latest/api/vfs.md): The `node:vfs` module
+provides a virtual file system with a `node:fs`-like API. It is useful for
+tests, fixtures, embedded assets, and other scenarios where you need a
+self-contained file system without touching the actual file-system. - [VM
+(executing JavaScript)](https://nodejs.org/docs/latest/api/vm.md): The `node:vm`
+module enables compiling and running code within V8 Virtual Machine contexts. -
+[WebAssembly System Interface
+(WASI)](https://nodejs.org/docs/latest/api/wasi.md): <strong
+class="critical">The `node:wasi` module does not currently provide the
+comprehensive file system security properties provided by some WASI runtimes.
+Full support for secure file system sandboxing may or may not be implemented in
+future. In the mean time, do not rely on it to run untrusted code. </strong> -
+[Web Crypto API](https://nodejs.org/docs/latest/api/webcrypto.md): Node.js
+provides an implementation of the Web Crypto API standard. - [Web Streams
+API](https://nodejs.org/docs/latest/api/webstreams.md): An implementation of the
+WHATWG Streams Standard. - [Worker
+threads](https://nodejs.org/docs/latest/api/worker_threads.md): The
+`node:worker_threads` module enables the use of threads that execute JavaScript
+in parallel. To access it: - [Zlib](https://nodejs.org/docs/latest/api/zlib.md):
+The `node:zlib` module provides compression functionality implemented using
+Gzip, Deflate/Inflate, Brotli,
+----------------------------------------------------------------------------------------------------
+Index: 54181 <<"chunk_id": 0, "docno": 8743>>
+
+Node.js — Node.js 21.1.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 21.1.0 (Current)
+MLZ Michaël Zasso Node.js 21.1.0 (Current) 2023-10-24, Version 21.1.0 (Current),
+@targos Notable Changes Automatically detect and run ESM syntax The new flag
+--experimental-detect-module can be used to automatically run ES modules when
+their syntax can be detected. For “ambiguous” files, which are .js or
+extensionless files with no package.json with a type field, Node.js will parse
+the file to detect ES module syntax; if found, it will run the file as an ES
+module, otherwise it will run the file as a CommonJS module. The same applies to
+string input via --eval or STDIN . We hope to make detection enabled by default
+in a future version of Node.js. Detection increases startup time, so we
+encourage everyone — especially package authors — to add a type field to
+package.json , even for the default "type": "commonjs" . The presence of a type
+field, or explicit extensions such as .mjs or .cjs , will opt out of detection.
+Contributed by Geoffrey Booth in #50096 . vm: fix V8 compilation cache support
+for vm.Script Previously repeated compilation of the same source code using
+vm.Script stopped hitting the V8 compilation cache after v16.x when support for
+importModuleDynamically was added to vm.Script , resulting in a performance
+regression that blocked users (in particular Jest users) from upgrading from
+v16.x. The recent fixes landed in v21.1.0 allow the compilation cache to be hit
+again for vm.Script when
+----------------------------------------------------------------------------------------------------
+Index: 53338 <<"chunk_id": 0, "docno": 8553>>
+
+Node.js — Node.js 15.10.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 15.10.0 (Current)
+BNG Bethany Nicolle Griggs Node.js 15.10.0 (Current) Notable changes
+Vulnerabilities fixed: CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of
+Service by resource exhaustion Affected Node.js ersions are vulnerable to denial
+of service attacks when too many connection attempts with an 'unknownProtocol'
+are established. This leads to a leak of file descriptors. If a file descriptor
+limit is configured on the system, then the server is unable to accept new
+connections and prevent the process also from opening, e.g. a file. If no file
+descriptor limit is configured, then this lead to an excessive memory usage and
+cause the system to run out of memory. CVE-2021-22884 : DNS rebinding in
+--inspect Affected Node.js ersions are vulnerable to denial of service attacks
+when the whitelist includes “localhost6”. When “localhost6” is not present in
+/etc/hosts, it is just an ordinary domain that is resolved via DNS, i.e., over
+network. If the attacker controls the victim's DNS server or can spoof its
+responses, the DNS rebinding protection can be bypassed by using the
+“localhost6” domain. As long as the attacker uses the “localhost6” domain, they
+can still apply the attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL
+- Integer overflow in CipherUpdate This is a vulnerability in OpenSSL which may
+be exploited through Node.js. You can read more about it in
+https://www.openssl.org/news/secadv/20210216.txt Commits [ 2a3ce5974b ] - deps :
+update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37412 [
+----------------------------------------------------------------------------------------------------
+Index: 50542 <<"chunk_id": 0, "docno": 8047>>
+
+Node.js — Node.js 4.1.1 (Current) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 4.1.1 (Current) RV Rod
+Vagg Node.js 4.1.1 (Current) This release contains some minor security-related
+updates. You are advised to upgrade to 4.1.1 if you are currently running
+v4.1.0. Notable changes buffer : Fixed a bug introduced in v4.1.0 where
+allocating a new zero-length buffer can result in the next allocation of a
+TypedArray in JavaScript not being zero-filled. In certain circumstances this
+could result in data leakage via reuse of memory space in TypedArrays, breaking
+the normally safe assumption that TypedArrays should be always zero-filled.
+(Trevor Norris) #2931 . http : Guard against response-splitting of HTTP trailing
+headers added via response.addTrailers() by removing new-line ( [\r\n] )
+characters from values. Note that standard header values are already stripped of
+new-line characters. The expected security impact is low because trailing
+headers are rarely used. (Ben Noordhuis) #2945 . npm : Upgrade to npm 2.14.4
+from 2.14.3, see release notes for full details (Kat Marchán) #2958 Upgrades
+graceful-fs on multiple dependencies to no longer rely on monkey-patching fs Fix
+npm link for pre-release / RC builds of Node v8 : Update post-mortem metadata to
+allow post-mortem debugging tools to find and inspect: JavaScript objects that
+use dictionary properties (Julien Gilli) #2959 ScopeInfo and thus closures
+(Julien Gilli) #2974 Known issues See
+https://github.com/nodejs/node/labels/confirmed-bug for complete and current
+list of known issues. Some problems with unreferenced timers running during
+beforeExit are still to be resolved. See #1264 .
+----------------------------------------------------------------------------------------------------
+Index: 47761 <<"chunk_id": 0, "docno": 7536>>
+
+Node.js — Node.js 12.21.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.21.0 (LTS) RL
+Richard Lau Node.js 12.21.0 (LTS) Notable changes Vulnerabilities fixed:
+CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by resource
+exhaustion Affected Node.js ersions are vulnerable to denial of service attacks
+when too many connection attempts with an 'unknownProtocol' are established.
+This leads to a leak of file descriptors. If a file descriptor limit is
+configured on the system, then the server is unable to accept new connections
+and prevent the process also from opening, e.g. a file. If no file descriptor
+limit is configured, then this lead to an excessive memory usage and cause the
+system to run out of memory. CVE-2021-22884 : DNS rebinding in --inspect
+Affected Node.js ersions are vulnerable to denial of service attacks when the
+whitelist includes “localhost6”. When “localhost6” is not present in /etc/hosts,
+it is just an ordinary domain that is resolved via DNS, i.e., over network. If
+the attacker controls the victim's DNS server or can spoof its responses, the
+DNS rebinding protection can be bypassed by using the “localhost6” domain. As
+long as the attacker uses the “localhost6” domain, they can still apply the
+attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL - Integer overflow
+in CipherUpdate This is a vulnerability in OpenSSL which may be exploited
+through Node.js. You can read more about it in
+https://www.openssl.org/news/secadv/20210216.txt Commits [ e69177a088 ] - deps :
+update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37413 [ 0633ae77e6
+----------------------------------------------------------------------------------------------------
+Index: 49988 <<"chunk_id": 0, "docno": 7936>>
+
+Node.js — Node.js 5.7.0 (Current) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 5.7.0 (Current) RV Rod
+Vagg Node.js 5.7.0 (Current) Notable changes buffer : You can now supply an
+encoding argument when filling a Buffer Buffer#fill(string[, start[, end]][,
+encoding]) , supplying an existing Buffer will also work with
+Buffer#fill(buffer[, start[, end]]) . See the API documentation for details on
+how this works. (Trevor Norris) #4935 Buffer#indexOf() no longer requires a
+byteOffset argument if you also wish to specify an encoding :
+Buffer#indexOf(val[, byteOffset][, encoding]) . (Trevor Norris) #4803
+child_process : spawn() and spawnSync() now support a 'shell' option to allow
+for optional execution of the given command inside a shell. If set to true ,
+cmd.exe will be used on Windows and /bin/sh elsewhere. A path to a custom shell
+can also be passed to override these defaults. On Windows, this option allows
+.bat. and .cmd files to be executed with spawn() and spawnSync() . (Colin Ihrig)
+#4598 http_parser : Update to http-parser 2.6.2 to fix an unintentionally strict
+limitation of allowable header characters (James M Snell) #5237 dgram :
+socket.send() now supports accepts an array of Buffers or Strings as the first
+argument. See the API docs for details on how this works. (Matteo Collina) #4374
+http : Fix a bug where handling headers will mistakenly trigger an 'upgrade'
+event where the server is just advertising its protocols. This bug can prevent
+HTTP clients from communicating with HTTP/2 enabled servers. (Fedor Indutny)
+#4337 net :
+----------------------------------------------------------------------------------------------------
+Index: 49209 <<"chunk_id": 0, "docno": 7786>>
+
+Node.js — Node.js 10.24.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 10.24.0 (LTS) RL
+Richard Lau Node.js 10.24.0 (LTS) Notable changes Vulnerabilities fixed:
+CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by resource
+exhaustion Affected Node.js ersions are vulnerable to denial of service attacks
+when too many connection attempts with an 'unknownProtocol' are established.
+This leads to a leak of file descriptors. If a file descriptor limit is
+configured on the system, then the server is unable to accept new connections
+and prevent the process also from opening, e.g. a file. If no file descriptor
+limit is configured, then this lead to an excessive memory usage and cause the
+system to run out of memory. CVE-2021-22884 : DNS rebinding in --inspect
+Affected Node.js ersions are vulnerable to denial of service attacks when the
+whitelist includes “localhost6”. When “localhost6” is not present in /etc/hosts,
+it is just an ordinary domain that is resolved via DNS, i.e., over network. If
+the attacker controls the victim's DNS server or can spoof its responses, the
+DNS rebinding protection can be bypassed by using the “localhost6” domain. As
+long as the attacker uses the “localhost6” domain, they can still apply the
+attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL - Integer overflow
+in CipherUpdate This is a vulnerability in OpenSSL which may be exploited
+through Node.js. You can read more about it in
+https://www.openssl.org/news/secadv/20210216.txt Commits [ 0afcb4f6bb ] - deps :
+update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37415 [ 447be941cd
+----------------------------------------------------------------------------------------------------
+Index: 53876 <<"chunk_id": 0, "docno": 8686>>
+
+Node.js — Node.js 14.16.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 14.16.0 (LTS) BNG
+Bethany Nicolle Griggs Node.js 14.16.0 (LTS) Notable changes Vulnerabilities
+fixed: CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by
+resource exhaustion Affected Node.js ersions are vulnerable to denial of service
+attacks when too many connection attempts with an 'unknownProtocol' are
+established. This leads to a leak of file descriptors. If a file descriptor
+limit is configured on the system, then the server is unable to accept new
+connections and prevent the process also from opening, e.g. a file. If no file
+descriptor limit is configured, then this lead to an excessive memory usage and
+cause the system to run out of memory. CVE-2021-22884 : DNS rebinding in
+--inspect Affected Node.js ersions are vulnerable to denial of service attacks
+when the whitelist includes “localhost6”. When “localhost6” is not present in
+/etc/hosts, it is just an ordinary domain that is resolved via DNS, i.e., over
+network. If the attacker controls the victim's DNS server or can spoof its
+responses, the DNS rebinding protection can be bypassed by using the
+“localhost6” domain. As long as the attacker uses the “localhost6” domain, they
+can still apply the attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL
+- Integer overflow in CipherUpdate This is a vulnerability in OpenSSL which may
+be exploited through Node.js. You can read more about it in
+https://www.openssl.org/news/secadv/20210216.txt Commits [ 313d26800c ] - deps :
+update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37412 [
+----------------------------------------------------------------------------------------------------
+Index: 44481 <<"chunk_id": 0, "docno": 6901>>
+
+Node.js — Node.js 22.1.0 (Current) Skip to content Learn About Download Blog
+Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.1.0 (Current)
+MLZ Michaël Zasso Node.js 22.1.0 (Current) 2024-05-02, Version 22.1.0 (Current),
+@targos prepared by @aduh95 module: implement NODE_COMPILE_CACHE for automatic
+on-disk code caching This patch implements automatic on-disk code caching that
+can be enabled via an environment variable NODE_COMPILE_CACHE=/path/to/cache/dir
+. When set, whenever Node.js compiles a CommonJS or a ECMAScript Module, it will
+use on-disk V8 code cache persisted in the specified directory to speed up the
+compilation. This may slow down the first load of a module graph, but subsequent
+loads of the same module graph may get a significant speedup if the contents of
+the modules do not change. Locally, this speeds up loading of
+test/fixtures/snapshot/typescript.js from ~130ms to ~80ms. To clean up the
+generated code cache, simply remove the directory. It will be recreated the next
+time the same directory is used for NODE_COMPILE_CACHE . Compilation cache
+generated by one version of Node.js may not be used by a different version of
+Node.js. Cache generated by different versions of Node.js will be stored
+separately if the same directory is used to persist the cache, so they can
+co-exist. Caveat: currently when using this with V8 JavaScript code coverage,
+the coverage being collected by V8 may be less precise in functions that are
+deserialized from the code cache. It's recommended to turn this off when running
+tests to generate precise coverage. Contributed by Joyee Cheung in #52535 .
+Other Notable Changes
+----------------------------------------------------------------------------------------------------
