@@ -1,7 +1,9 @@
 __pycache__/
 Data/
-Document_processor/
-Models/_pycache_/
+
+Document_processor/__pycache__/
+
+Models/__pycache__/
 Models/index/
 rag-env/
 
