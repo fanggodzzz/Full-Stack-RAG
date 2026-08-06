@@ -1,61 +1,3 @@
-Index: 1415 <<"chunk_id": 21, "docno": 174>>
-
-onClick = { ( ) => { setShowHint ( false ) ; } } > Hide hint </ button > </ div
-> ) ; } return ( < div > < Form /> < button onClick = { ( ) => { setShowHint (
-true ) ; } } > Show hint </ button > </ div > ) ; } function Form ( ) { const [
-text , setText ] = useState ( '' ) ; return ( < textarea value = { text }
-onChange = { e => setText ( e . target . value ) } /> ) ; } Show more Show
-solution Next Challenge Previous Sharing State Between Components Next
-Extracting State Logic into a Reducer Copyright © Meta Platforms, Inc no uwu plz
-uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
-the UI Adding Interactivity Managing State Escape Hatches API Reference React
-APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
-Acknowledgements More Blog React Native Privacy Terms On this page Overview
-State is tied to a position in the render tree Same component at the same
-position preserves state Different components at the same position reset state
-Resetting state at the same position Option 1: Rendering a component in
-different positions Option 2: Resetting state with a key Resetting a form with a
-key Recap Challenges
-----------------------------------------------------------------------------------------------------
-Index: 1395 <<"chunk_id": 1, "docno": 174>>
-
-in the UI tree. You can control when to preserve state and when to reset it
-between re-renders. You will learn When React chooses to preserve or reset the
-state How to force React to reset component’s state How keys and types affect
-whether the state is preserved State is tied to a position in the render tree
-React builds render trees for the component structure in your UI. When you give
-a component state, you might think the state “lives” inside the component. But
-the state is actually held inside React. React associates each piece of state
-it’s holding with the correct component by where that component sits in the
-render tree. Here, there is only one <Counter /> JSX tag, but it’s rendered at
-two different positions: App.js App.js Reload Clear Fork import { useState }
-from 'react' ; export default function App ( ) { const counter = < Counter /> ;
-return ( < div > { counter } { counter } </ div > ) ; } function Counter ( ) {
-const [ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] =
-useState ( false ) ; let className = 'counter' ; if ( hover ) { className += '
-hover' ; } return ( < div className = { className } onPointerEnter = { ( ) =>
-setHover ( true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > {
-score } </
-----------------------------------------------------------------------------------------------------
-Index: 1414 <<"chunk_id": 20, "docno": 174>>
-
-conceptually distinct from a chat with Bob , so it makes sense to give a key to
-the <Chat> tree based on the current recipient. Recap React keeps state for as
-long as the same component is rendered at the same position. State is not kept
-in JSX tags. It’s associated with the tree position in which you put that JSX.
-You can force a subtree to reset its state by giving it a different key. Don’t
-nest component definitions, or you’ll reset state by accident. Try out some
-challenges 1 . Fix disappearing input text 2 . Swap two form fields 3 . Reset a
-detail form 4 . Clear an image while it’s loading 5 . Fix misplaced state in the
-list Challenge 1 of 5 : Fix disappearing input text This example shows a message
-when you press the button. However, pressing the button also accidentally resets
-the input. Why does this happen? Fix it so that pressing the button does not
-reset the input text. App.js App.js Reload Clear Fork import { useState } from
-'react' ; export default function App ( ) { const [ showHint , setShowHint ] =
-useState ( false ) ; if ( showHint ) { return ( < div > < p > < i > Hint: Your
-favorite city? </ i > </ p > < Form /> < button onClick = { ( ) => { setShowHint
-( false ) ; } } > Hide hint </ button > </ div > ) ;
-----------------------------------------------------------------------------------------------------
 Index: 905 <<"chunk_id": 2, "docno": 129>>
 
 there is a special behavior for functions. This argument is ignored after the
@@ -79,26 +21,68 @@ the state to a different value and trigger a re-render. You can pass the next
 state directly, or a function that calculates it from the previous state: const
 [ name , setName ] =
 ----------------------------------------------------------------------------------------------------
-Index: 1405 <<"chunk_id": 11, "docno": 174>>
+Index: 1415 <<"chunk_id": 21, "docno": 174>>
 
-structure of your tree needs to “match up” from one render to another. If the
-structure is different, the state gets destroyed because React destroys state
-when it removes a component from the tree. Pitfall This is why you should not
-nest component function definitions. Here, the MyTextField component function is
-defined inside MyComponent : App.js App.js Reload Clear Fork import { useState }
-from 'react' ; export default function MyComponent ( ) { const [ counter ,
-setCounter ] = useState ( 0 ) ; function MyTextField ( ) { const [ text ,
-setText ] = useState ( '' ) ; return ( < input value = { text } onChange = { e
-=> setText ( e . target . value ) } /> ) ; } return ( < > < MyTextField /> <
-button onClick = { ( ) => { setCounter ( counter + 1 ) } } > Clicked { counter }
-times </ button > </ > ) ; } Show more Every time you click the button, the
-input state disappears! This is because a different MyTextField function is
-created for every render of MyComponent . You’re rendering a different component
-in the same position, so React resets all state below. This leads to bugs and
-performance problems. To avoid this problem, always declare component functions
-at the top level, and don’t nest their definitions. Resetting state at the same
-position By default, React preserves state of a component while it stays at the
-same position. Usually,
+onClick = { ( ) => { setShowHint ( false ) ; } } > Hide hint </ button > </ div
+> ) ; } return ( < div > < Form /> < button onClick = { ( ) => { setShowHint (
+true ) ; } } > Show hint </ button > </ div > ) ; } function Form ( ) { const [
+text , setText ] = useState ( '' ) ; return ( < textarea value = { text }
+onChange = { e => setText ( e . target . value ) } /> ) ; } Show more Show
+solution Next Challenge Previous Sharing State Between Components Next
+Extracting State Logic into a Reducer Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+State is tied to a position in the render tree Same component at the same
+position preserves state Different components at the same position reset state
+Resetting state at the same position Option 1: Rendering a component in
+different positions Option 2: Resetting state with a key Resetting a form with a
+key Recap Challenges
+----------------------------------------------------------------------------------------------------
+Index: 1591 <<"chunk_id": 1, "docno": 197>>
+
+React state, set up a server connection, or send an analytics log when a
+component appears on the screen. Effects let you run some code after rendering
+so that you can synchronize your component with some system outside of React.
+You will learn What Effects are How Effects are different from events How to
+declare an Effect in your component How to skip re-running an Effect
+unnecessarily Why Effects run twice in development and how to fix them What are
+Effects and how are they different from events? Before getting to Effects, you
+need to be familiar with two types of logic inside React components: Rendering
+code (introduced in Describing the UI ) lives at the top level of your
+component. This is where you take the props and state, transform them, and
+return the JSX you want to see on the screen. Rendering code must be pure. Like
+a math formula, it should only calculate the result, but not do anything else.
+Event handlers (introduced in Adding Interactivity ) are nested functions inside
+your components that do things rather than just calculate them. An event handler
+might update an input field, submit an HTTP POST request to buy a product, or
+navigate the user to another screen. Event handlers contain “side effects” (they
+change the program’s state) caused by a specific user action (for example, a
+button click or typing). Sometimes this isn’t enough. Consider a ChatRoom
+component that must connect to the chat server whenever it’s visible on the
+screen. Connecting to a server
+----------------------------------------------------------------------------------------------------
+Index: 852 <<"chunk_id": 9, "docno": 123>>
+
+its children. Now the comment field will clear out automatically when navigating
+between profiles. Note that in this example, only the outer ProfilePage
+component is exported and visible to other files in the project. Components
+rendering ProfilePage don’t need to pass the key to it: they pass userId as a
+regular prop. The fact ProfilePage passes it as a key to the inner Profile
+component is an implementation detail. Adjusting some state when a prop changes
+Sometimes, you might want to reset or adjust a part of the state on a prop
+change, but not all of it. This List component receives a list of items as a
+prop, and maintains the selected item in the selection state variable. You want
+to reset the selection to null whenever the items prop receives a different
+array: function List ( { items } ) { const [ isReverse , setIsReverse ] =
+useState ( false ) ; const [ selection , setSelection ] = useState ( null ) ; //
+🔴 Avoid: Adjusting state on prop change in an Effect useEffect ( ( ) => {
+setSelection ( null ) ; } , [ items ] ) ; // ... } This, too, is not ideal.
+Every time the items change, the List and its child components will render with
+a stale selection value at first. Then React will update the DOM and run the
+Effects. Finally, the setSelection(null) call will cause another re-render of
+the List and its child components, restarting this whole process again. Start by
 ----------------------------------------------------------------------------------------------------
 Index: 4855 <<"chunk_id": 16, "docno": 703>>
 
@@ -124,241 +108,6 @@ Optimizing re-rendering on every keystroke Troubleshooting My text input doesn�
 update when I type into it My checkbox doesn’t update when I click on it My
 input caret
 ----------------------------------------------------------------------------------------------------
-Index: 1591 <<"chunk_id": 1, "docno": 197>>
-
-React state, set up a server connection, or send an analytics log when a
-component appears on the screen. Effects let you run some code after rendering
-so that you can synchronize your component with some system outside of React.
-You will learn What Effects are How Effects are different from events How to
-declare an Effect in your component How to skip re-running an Effect
-unnecessarily Why Effects run twice in development and how to fix them What are
-Effects and how are they different from events? Before getting to Effects, you
-need to be familiar with two types of logic inside React components: Rendering
-code (introduced in Describing the UI ) lives at the top level of your
-component. This is where you take the props and state, transform them, and
-return the JSX you want to see on the screen. Rendering code must be pure. Like
-a math formula, it should only calculate the result, but not do anything else.
-Event handlers (introduced in Adding Interactivity ) are nested functions inside
-your components that do things rather than just calculate them. An event handler
-might update an input field, submit an HTTP POST request to buy a product, or
-navigate the user to another screen. Event handlers contain “side effects” (they
-change the program’s state) caused by a specific user action (for example, a
-button click or typing). Sometimes this isn’t enough. Consider a ChatRoom
-component that must connect to the chat server whenever it’s visible on the
-screen. Connecting to a server
-----------------------------------------------------------------------------------------------------
-Index: 1411 <<"chunk_id": 17, "docno": 174>>
-
-Toggling between them resets their state over and over. Note Remember that keys
-are not globally unique. They only specify the position within the parent .
-Resetting a form with a key Resetting state with a key is particularly useful
-when dealing with forms. In this chat app, the <Chat> component contains the
-text input state: App.js ContactList.js Chat.js App.js Reload Clear Fork import
-{ useState } from 'react' ; import Chat from './Chat.js' ; import ContactList
-from './ContactList.js' ; export default function Messenger ( ) { const [ to ,
-setTo ] = useState ( contacts [ 0 ] ) ; return ( < div > < ContactList contacts
-= { contacts } selectedContact = { to } onSelect = { contact => setTo ( contact
-) } /> < Chat contact = { to } /> </ div > ) } const contacts = [ { id : 0 ,
-name : 'Taylor' , email : 'taylor@mail.com' } , { id : 1 , name : 'Alice' ,
-email : 'alice@mail.com' } , { id : 2 , name : 'Bob' , email : 'bob@mail.com' }
-] ; Show more Try entering something into the input, and then press “Alice” or
-“Bob” to choose a different recipient. You will notice that the input state is
-preserved because the <Chat> is rendered at the same position in the tree. In
-many apps, this may be the desired behavior, but not in a chat app! You don’t
-want to let the user send a message they
-----------------------------------------------------------------------------------------------------
-Index: 1407 <<"chunk_id": 13, "docno": 174>>
-
-h1 > { person } 's score: { score } </ h1 > < button onClick = { ( ) => setScore
-( score + 1 ) } > Add one </ button > </ div > ) ; } Show more Currently, when
-you change the player, the score is preserved. The two Counter s appear in the
-same position, so React sees them as the same Counter whose person prop has
-changed. But conceptually, in this app they should be two separate counters.
-They might appear in the same place in the UI, but one is a counter for Taylor,
-and another is a counter for Sarah. There are two ways to reset state when
-switching between them: Render components in different positions Give each
-component an explicit identity with key Option 1: Rendering a component in
-different positions If you want these two Counter s to be independent, you can
-render them in two different positions: App.js App.js Reload Clear Fork import {
-useState } from 'react' ; export default function Scoreboard ( ) { const [
-isPlayerA , setIsPlayerA ] = useState ( true ) ; return ( < div > { isPlayerA &&
-< Counter person = "Taylor" /> } { ! isPlayerA && < Counter person = "Sarah" />
-} < button onClick = { ( ) => { setIsPlayerA ( ! isPlayerA ) ; } } > Next
-player! </ button > </ div > ) ; } function Counter ( { person } ) { const [
-score
-----------------------------------------------------------------------------------------------------
-Index: 1398 <<"chunk_id": 4, "docno": 174>>
-
-[ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] = useState (
-false ) ; let className = 'counter' ; if ( hover ) { className += ' hover' ; }
-return ( < div className = { className } onPointerEnter = { ( ) => setHover (
-true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > { score } </ h1
-> < button onClick = { ( ) => setScore ( score + 1 ) } > Add one </ button > </
-div > ) ; } Show more Notice how the moment you stop rendering the second
-counter, its state disappears completely. That’s because when React removes a
-component, it destroys its state. Deleting a component When you tick “Render the
-second counter”, a second Counter and its state are initialized from scratch (
-score = 0 ) and added to the DOM. Adding a component React preserves a
-component’s state for as long as it’s being rendered at its position in the UI
-tree. If it gets removed, or a different component gets rendered at the same
-position, React discards its state. Same component at the same position
-preserves state In this example, there are two different <Counter /> tags:
-App.js App.js Reload Clear Fork import { useState } from 'react' ; export
-default function App ( ) { const [ isFancy , setIsFancy ] = useState ( false ) ;
-return ( <
-----------------------------------------------------------------------------------------------------
-Index: 6028 <<"chunk_id": 3, "docno": 874>>
-
-insights into how it works under the hood, and live renders the compiler’s
-outputs as you type. This will be shipped together with the compiler when it’s
-released. Offscreen Today, if you want to hide and show a component, you have
-two options. One is to add or remove it from the tree completely. The problem
-with this approach is that the state of your UI is lost each time you unmount,
-including state stored in the DOM, like scroll position. The other option is to
-keep the component mounted and toggle the appearance visually using CSS. This
-preserves the state of your UI, but it comes at a performance cost, because
-React must keep rendering the hidden component and all of its children whenever
-it receives new updates. Offscreen introduces a third option: hide the UI
-visually, but deprioritize its content. The idea is similar in spirit to the
-content-visibility CSS property: when content is hidden, it doesn’t need to stay
-in sync with the rest of the UI. React can defer the rendering work until the
-rest of the app is idle, or until the content becomes visible again. Offscreen
-is a low level capability that unlocks high level features. Similar to React’s
-other concurrent features like startTransition , in most cases you won’t
-interact with the Offscreen API directly, but instead via an opinionated
-framework to implement patterns like: Instant transitions. Some routing
-frameworks already prefetch data to speed up subsequent navigations, like when
-hovering over a link. With Offscreen, they’ll also be
-----------------------------------------------------------------------------------------------------
-Index: 852 <<"chunk_id": 9, "docno": 123>>
-
-its children. Now the comment field will clear out automatically when navigating
-between profiles. Note that in this example, only the outer ProfilePage
-component is exported and visible to other files in the project. Components
-rendering ProfilePage don’t need to pass the key to it: they pass userId as a
-regular prop. The fact ProfilePage passes it as a key to the inner Profile
-component is an implementation detail. Adjusting some state when a prop changes
-Sometimes, you might want to reset or adjust a part of the state on a prop
-change, but not all of it. This List component receives a list of items as a
-prop, and maintains the selected item in the selection state variable. You want
-to reset the selection to null whenever the items prop receives a different
-array: function List ( { items } ) { const [ isReverse , setIsReverse ] =
-useState ( false ) ; const [ selection , setSelection ] = useState ( null ) ; //
-🔴 Avoid: Adjusting state on prop change in an Effect useEffect ( ( ) => {
-setSelection ( null ) ; } , [ items ] ) ; // ... } This, too, is not ideal.
-Every time the items change, the List and its child components will render with
-a stale selection value at first. Then React will update the DOM and run the
-Effects. Finally, the setSelection(null) call will cause another re-render of
-the List and its child components, restarting this whole process again. Start by
-----------------------------------------------------------------------------------------------------
-Index: 917 <<"chunk_id": 14, "docno": 129>>
-
-a state variable when a prop changes. In most cases, you don’t need this: If the
-value you need can be computed entirely from the current props or other state,
-remove that redundant state altogether. If you’re worried about recomputing too
-often, the useMemo Hook can help. If you want to reset the entire component
-tree’s state, pass a different key to your component. If you can, update all the
-relevant state in the event handlers. In the rare case that none of these apply,
-there is a pattern you can use to update state based on the values that have
-been rendered so far, by calling a set function while your component is
-rendering. Here’s an example. This CountLabel component displays the count prop
-passed to it: export default function CountLabel ( { count } ) { return < h1 > {
-count } </ h1 > } Say you want to show whether the counter has increased or
-decreased since the last change. The count prop doesn’t tell you this — you need
-to keep track of its previous value. Add the prevCount state variable to track
-it. Add another state variable called trend to hold whether the count has
-increased or decreased. Compare prevCount with count , and if they’re not equal,
-update both prevCount and trend . Now you can show both the current count prop
-and how it has changed since the last render . App.js CountLabel.js
-CountLabel.js Reload Clear Fork import { useState } from 'react' ; export
-default function
-----------------------------------------------------------------------------------------------------
-Index: 5077 <<"chunk_id": 2, "docno": 740>>
-
-<div /> or <SomeComponent /> ), a Fragment ( <>...</> ), a string or a number,
-or an array of these. domNode : Some DOM node, such as those returned by
-document.getElementById() . The node must already exist. Passing a different DOM
-node during an update will cause the portal content to be recreated. optional
-key : A unique string or number to be used as the portal’s key. Returns
-createPortal returns a React node that can be included into JSX or returned from
-a React component. If React encounters it in the render output, it will place
-the provided children inside the provided domNode . Caveats Events from portals
-propagate according to the React tree rather than the DOM tree. For example, if
-you click inside a portal, and the portal is wrapped in <div onClick> , that
-onClick handler will fire. If this causes issues, either stop the event
-propagation from inside the portal, or move the portal itself up in the React
-tree. Usage Rendering to a different part of the DOM Portals let your components
-render some of their children into a different place in the DOM. This lets a
-part of your component “escape” from whatever containers it may be in. For
-example, a component can display a modal dialog or a tooltip that appears above
-and outside of the rest of the page. To create a portal, render the result of
-createPortal with some JSX and the DOM node where it should go : import {
-createPortal } from 'react-dom'
-----------------------------------------------------------------------------------------------------
-Index: 916 <<"chunk_id": 13, "docno": 129>>
-
-reset a component’s state by passing a different key to a component. In this
-example, the Reset button changes the version state variable, which we pass as a
-key to the Form . When the key changes, React re-creates the Form component (and
-all of its children) from scratch, so its state gets reset. Read preserving and
-resetting state to learn more. App.js App.js Reload Clear Fork import { useState
-} from 'react' ; export default function App ( ) { const [ version , setVersion
-] = useState ( 0 ) ; function handleReset ( ) { setVersion ( version + 1 ) ; }
-return ( < > < button onClick = { handleReset } > Reset </ button > < Form key =
-{ version } /> </ > ) ; } function Form ( ) { const [ name , setName ] =
-useState ( 'Taylor' ) ; return ( < > < input value = { name } onChange = { e =>
-setName ( e . target . value ) } /> < p > Hello, { name } . </ p > </ > ) ; }
-Show more Storing information from previous renders Usually, you will update
-state in event handlers. However, in rare cases you might want to adjust state
-in response to rendering — for example, you might want to change a state
-variable when a prop changes. In most cases, you don’t need this: If the value
-you need can be computed entirely from the
-----------------------------------------------------------------------------------------------------
-Index: 1819 <<"chunk_id": 14, "docno": 229>>
-
-single component as much as you like. Immer is a great way to keep the update
-handlers concise, especially if there’s nesting in your state, and copying
-objects leads to repetitive code. Deep Dive Why is mutating state not
-recommended in React? Show Details There are a few reasons: Debugging: If you
-use console.log and don’t mutate state, your past logs won’t get clobbered by
-the more recent state changes. So you can clearly see how state has changed
-between renders. Optimizations: Common React optimization strategies rely on
-skipping work if previous props or state are the same as the next ones. If you
-never mutate state, it is very fast to check whether there were any changes. If
-prevObj === obj , you can be sure that nothing could have changed inside of it.
-New Features: The new React features we’re building rely on state being treated
-like a snapshot. If you’re mutating past versions of state, that may prevent you
-from using the new features. Requirement Changes: Some application features,
-like implementing Undo/Redo, showing a history of changes, or letting the user
-reset a form to earlier values, are easier to do when nothing is mutated. This
-is because you can keep past copies of state in memory, and reuse them when
-appropriate. If you start with a mutative approach, features like this can be
-difficult to add later on. Simpler Implementation: Because React does not rely
-on mutation, it does not need to do anything special with your objects. It does
-not need
-----------------------------------------------------------------------------------------------------
-Index: 131 <<"chunk_id": 1, "docno": 16>>
-
-Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
-learn how to structure your state well, how to keep your state update logic
-maintainable, and how to share state between distant components. In this chapter
-How to think about UI changes as state changes How to structure state well How
-to “lift state up” to share it between components How to control whether the
-state gets preserved or reset How to consolidate complex state logic in a
-function How to pass information without “prop drilling” How to scale state
-management as your app grows Reacting to input with state With React, you won’t
-modify the UI from code directly. For example, you won’t write commands like
-“disable the button”, “enable the button”, “show the success message”, etc.
-Instead, you will describe the UI you want to see for the different visual
-states of your component (“initial state”, “typing state”, “success state”), and
-then trigger the state changes in response to user input. This is similar to how
-designers think about UI. Here is a quiz form built using React. Note how it
-uses the status state variable to determine whether to enable or disable the
-submit button, and whether to show the success message instead. App.js App.js
-Reload Clear Fork import { useState } from 'react' ; export default function
-Form ( ) { const [ answer , setAnswer ] = useState ( '' ) ; const [ error ,
-setError ] = useState ( null ) ; const [ status
-----------------------------------------------------------------------------------------------------
 Index: 18946 <<"chunk_id": 2, "docno": 2701>>
 
 while a navigation is executing. After a navigation completes, the router writes
@@ -383,101 +132,47 @@ Transitions feature and the onViewTransitionCreated callback. The information
 might be used in the callback to set classes on the document in order to control
 the transition animations and remove the
 ----------------------------------------------------------------------------------------------------
-Index: 854 <<"chunk_id": 11, "docno": 123>>
+Index: 1414 <<"chunk_id": 20, "docno": 174>>
 
-prevItems is necessary to avoid loops. You may adjust state like this, but any
-other side effects (like changing the DOM or setting timeouts) should stay in
-event handlers or Effects to keep components pure. Although this pattern is more
-efficient than an Effect, most components shouldn’t need it either. No matter
-how you do it, adjusting state based on props or other state makes your data
-flow more difficult to understand and debug. Always check whether you can reset
-all state with a key or calculate everything during rendering instead. For
-example, instead of storing (and resetting) the selected item , you can store
-the selected item ID: function List ( { items } ) { const [ isReverse ,
-setIsReverse ] = useState ( false ) ; const [ selectedId , setSelectedId ] =
-useState ( null ) ; // ✅ Best: Calculate everything during rendering const
-selection = items . find ( item => item . id === selectedId ) ?? null ; // ... }
-Now there is no need to “adjust” the state at all. If the item with the selected
-ID is in the list, it remains selected. If it’s not, the selection calculated
-during rendering will be null because no matching item was found. This behavior
-is different, but arguably better because most changes to items preserve the
-selection. Sharing logic between event handlers Let’s say you have a product
-page with two buttons (Buy and Checkout) that both let you buy that product. You
-want to show a
+conceptually distinct from a chat with Bob , so it makes sense to give a key to
+the <Chat> tree based on the current recipient. Recap React keeps state for as
+long as the same component is rendered at the same position. State is not kept
+in JSX tags. It’s associated with the tree position in which you put that JSX.
+You can force a subtree to reset its state by giving it a different key. Don’t
+nest component definitions, or you’ll reset state by accident. Try out some
+challenges 1 . Fix disappearing input text 2 . Swap two form fields 3 . Reset a
+detail form 4 . Clear an image while it’s loading 5 . Fix misplaced state in the
+list Challenge 1 of 5 : Fix disappearing input text This example shows a message
+when you press the button. However, pressing the button also accidentally resets
+the input. Why does this happen? Fix it so that pressing the button does not
+reset the input text. App.js App.js Reload Clear Fork import { useState } from
+'react' ; export default function App ( ) { const [ showHint , setShowHint ] =
+useState ( false ) ; if ( showHint ) { return ( < div > < p > < i > Hint: Your
+favorite city? </ i > </ p > < Form /> < button onClick = { ( ) => { setShowHint
+( false ) ; } } > Hide hint </ button > </ div > ) ;
 ----------------------------------------------------------------------------------------------------
-Index: 4263 <<"chunk_id": 21, "docno": 628>>
+Index: 6028 <<"chunk_id": 3, "docno": 874>>
 
-call it when the component receives new props. It only exists for historical
-reasons and should not be used in any new code. Instead, use one of the
-alternatives: If you need to run a side effect (for example, fetch data, run an
-animation, or reinitialize a subscription) in response to prop changes, move
-that logic to componentDidUpdate instead. If you need to avoid re-computing some
-data only when a prop changes, use a memoization helper instead. If you need to
-“reset” some state when a prop changes, consider either making a component fully
-controlled or fully uncontrolled with a key instead. If you need to “adjust”
-some state when a prop changes, check whether you can compute all the necessary
-information from props alone during rendering. If you can’t, use static
-getDerivedStateFromProps instead. See examples of migrating away from unsafe
-lifecycles. Parameters nextProps : The next props that the component is about to
-receive from its parent component. Compare nextProps to this.props to determine
-what changed. nextContext : The next context that the component is about to
-receive from the closest provider. Compare nextContext to this.context to
-determine what changed. Only available if you specify static contextType .
-Returns UNSAFE_componentWillReceiveProps should not return anything. Caveats
-UNSAFE_componentWillReceiveProps will not get called if the component implements
-static getDerivedStateFromProps or getSnapshotBeforeUpdate . Despite its naming,
-UNSAFE_componentWillReceiveProps does not guarantee that the component will
-receive those props if your app uses modern React features like Suspense . If a
-render attempt is suspended (for example, because the code for
-----------------------------------------------------------------------------------------------------
-Index: 4264 <<"chunk_id": 22, "docno": 628>>
-
-receive those props if your app uses modern React features like Suspense . If a
-render attempt is suspended (for example, because the code for some child
-component has not loaded yet), React will throw the in-progress tree away and
-attempt to construct the component from scratch during the next attempt. By the
-time of the next render attempt, the props might be different. This is why this
-method is “unsafe”. Code that should run only for committed updates (like
-resetting a subscription) should go into componentDidUpdate .
-UNSAFE_componentWillReceiveProps does not mean that the component has received
-different props than the last time. You need to compare nextProps and this.props
-yourself to check if something changed. React doesn’t call
-UNSAFE_componentWillReceiveProps with initial props during mounting. It only
-calls this method if some of component’s props are going to be updated. For
-example, calling setState doesn’t generally trigger
-UNSAFE_componentWillReceiveProps inside the same component. Note Calling
-setState inside UNSAFE_componentWillReceiveProps in a class component to
-“adjust” state is equivalent to calling the set function from useState during
-rendering in a function component. UNSAFE_componentWillUpdate(nextProps,
-nextState) If you define UNSAFE_componentWillUpdate , React will call it before
-rendering with the new props or state. It only exists for historical reasons and
-should not be used in any new code. Instead, use one of the alternatives: If you
-need to run a side effect (for example, fetch data, run an animation, or
-reinitialize a subscription) in response to prop or state changes, move that
-logic to componentDidUpdate instead. If you need to read
-----------------------------------------------------------------------------------------------------
-Index: 872 <<"chunk_id": 29, "docno": 123>>
-
-like useData above. The fewer raw useEffect calls you have in your components,
-the easier you will find to maintain your application. Recap If you can
-calculate something during render, you don’t need an Effect. To cache expensive
-calculations, add useMemo instead of useEffect . To reset the state of an entire
-component tree, pass a different key to it. To reset a particular bit of state
-in response to a prop change, set it during rendering. Code that runs because a
-component was displayed should be in Effects, the rest should be in events. If
-you need to update the state of several components, it’s better to do it during
-a single event. Whenever you try to synchronize state variables in different
-components, consider lifting state up. You can fetch data with Effects, but you
-need to implement cleanup to avoid race conditions. Try out some challenges 1 .
-Transform data without Effects 2 . Cache a calculation without Effects 3 . Reset
-state without Effects 4 . Submit a form without Effects Challenge 1 of 4 :
-Transform data without Effects The TodoList below displays a list of todos. When
-the “Show only active todos” checkbox is ticked, completed todos are not
-displayed in the list. Regardless of which todos are visible, the footer
-displays the count of todos that are not yet completed. Simplify this component
-by removing all the unnecessary state and Effects. App.js todos.js App.js Reload
-Clear Fork import { useState , useEffect } from 'react' ; import { initialTodos
-,
+insights into how it works under the hood, and live renders the compiler’s
+outputs as you type. This will be shipped together with the compiler when it’s
+released. Offscreen Today, if you want to hide and show a component, you have
+two options. One is to add or remove it from the tree completely. The problem
+with this approach is that the state of your UI is lost each time you unmount,
+including state stored in the DOM, like scroll position. The other option is to
+keep the component mounted and toggle the appearance visually using CSS. This
+preserves the state of your UI, but it comes at a performance cost, because
+React must keep rendering the hidden component and all of its children whenever
+it receives new updates. Offscreen introduces a third option: hide the UI
+visually, but deprioritize its content. The idea is similar in spirit to the
+content-visibility CSS property: when content is hidden, it doesn’t need to stay
+in sync with the rest of the UI. React can defer the rendering work until the
+rest of the app is idle, or until the content becomes visible again. Offscreen
+is a low level capability that unlocks high level features. Similar to React’s
+other concurrent features like startTransition , in most cases you won’t
+interact with the Offscreen API directly, but instead via an opinionated
+framework to implement patterns like: Instant transitions. Some routing
+frameworks already prefetch data to speed up subsequent navigations, like when
+hovering over a link. With Offscreen, they’ll also be
 ----------------------------------------------------------------------------------------------------
 Index: 1727 <<"chunk_id": 13, "docno": 214>>
 
@@ -501,75 +196,73 @@ the components reading it below! This is why context is often used in
 combination with state. In general, if some information is needed by distant
 components in
 ----------------------------------------------------------------------------------------------------
-Index: 4265 <<"chunk_id": 23, "docno": 628>>
+Index: 1819 <<"chunk_id": 14, "docno": 229>>
 
-run an animation, or reinitialize a subscription) in response to prop or state
-changes, move that logic to componentDidUpdate instead. If you need to read some
-information from the DOM (for example, to save the current scroll position) so
-that you can use it in componentDidUpdate later, read it inside
-getSnapshotBeforeUpdate instead. See examples of migrating away from unsafe
-lifecycles. Parameters nextProps : The next props that the component is about to
-render with. Compare nextProps to this.props to determine what changed.
-nextState : The next state that the component is about to render with. Compare
-nextState to this.state to determine what changed. Returns
-UNSAFE_componentWillUpdate should not return anything. Caveats
-UNSAFE_componentWillUpdate will not get called if shouldComponentUpdate is
-defined and returns false . UNSAFE_componentWillUpdate will not get called if
-the component implements static getDerivedStateFromProps or
-getSnapshotBeforeUpdate . It’s not supported to call setState (or any method
-that leads to setState being called, like dispatching a Redux action) during
-componentWillUpdate . Despite its naming, UNSAFE_componentWillUpdate does not
-guarantee that the component will update if your app uses modern React features
-like Suspense . If a render attempt is suspended (for example, because the code
-for some child component has not loaded yet), React will throw the in-progress
-tree away and attempt to construct the component from scratch during the next
-attempt. By the time of the next render attempt, the props and state might be
-different. This is why this method is “unsafe”. Code that should run only for
-committed updates (like resetting a subscription) should go
+single component as much as you like. Immer is a great way to keep the update
+handlers concise, especially if there’s nesting in your state, and copying
+objects leads to repetitive code. Deep Dive Why is mutating state not
+recommended in React? Show Details There are a few reasons: Debugging: If you
+use console.log and don’t mutate state, your past logs won’t get clobbered by
+the more recent state changes. So you can clearly see how state has changed
+between renders. Optimizations: Common React optimization strategies rely on
+skipping work if previous props or state are the same as the next ones. If you
+never mutate state, it is very fast to check whether there were any changes. If
+prevObj === obj , you can be sure that nothing could have changed inside of it.
+New Features: The new React features we’re building rely on state being treated
+like a snapshot. If you’re mutating past versions of state, that may prevent you
+from using the new features. Requirement Changes: Some application features,
+like implementing Undo/Redo, showing a history of changes, or letting the user
+reset a form to earlier values, are easier to do when nothing is mutated. This
+is because you can keep past copies of state in memory, and reuse them when
+appropriate. If you start with a mutative approach, features like this can be
+difficult to add later on. Simpler Implementation: Because React does not rely
+on mutation, it does not need to do anything special with your objects. It does
+not need
 ----------------------------------------------------------------------------------------------------
-Index: 6461 <<"chunk_id": 3, "docno": 946>>
+Index: 1413 <<"chunk_id": 19, "docno": 174>>
 
-clear all the existing HTML content inside the domNode before rendering the
-React component into it. If your domNode contains HTML generated by React on the
-server or during the build, use hydrate() instead, which attaches the event
-handlers to the existing HTML. If you call render on the same domNode more than
-once, React will update the DOM as necessary to reflect the latest JSX you
-passed. React will decide which parts of the DOM can be reused and which need to
-be recreated by “matching it up” with the previously rendered tree. Calling
-render on the same domNode again is similar to calling the set function on the
-root component: React avoids unnecessary DOM updates. If your app is fully built
-with React, you’ll likely have only one render call in your app. (If you use a
-framework, it might do this call for you.) When you want to render a piece of
-JSX in a different part of the DOM tree that isn’t a child of your component
-(for example, a modal or a tooltip), use createPortal instead of render . Usage
-Call render to display a React component inside a browser DOM node . import {
-render } from 'react-dom' ; import App from './App.js' ; render ( <App /> ,
-document.getElementById('root') ) ; Rendering the root component In apps fully
-built with React, you will usually only do this once at startup —to render the
-“root” component. index.js App.js index.js Reset Fork import './styles.css' ;
-import { render } from 'react-dom'
+: 2 , name : 'Bob' , email : 'bob@mail.com' } ] ; Show more Deep Dive Preserving
+state for removed components Show Details In a real chat app, you’d probably
+want to recover the input state when the user selects the previous recipient
+again. There are a few ways to keep the state “alive” for a component that’s no
+longer visible: You could render all chats instead of just the current one, but
+hide all the others with CSS. The chats would not get removed from the tree, so
+their local state would be preserved. This solution works great for simple UIs.
+But it can get very slow if the hidden trees are large and contain a lot of DOM
+nodes. You could lift the state up and hold the pending message for each
+recipient in the parent component. This way, when the child components get
+removed, it doesn’t matter, because it’s the parent that keeps the important
+information. This is the most common solution. You might also use a different
+source in addition to React state. For example, you probably want a message
+draft to persist even if the user accidentally closes the page. To implement
+this, you could have the Chat component initialize its state by reading from the
+localStorage , and save the drafts there too. No matter which strategy you pick,
+a chat with Alice is conceptually distinct from a chat with Bob , so it makes
+sense to give a key to the <Chat> tree based on the current recipient.
 ----------------------------------------------------------------------------------------------------
-Index: 851 <<"chunk_id": 8, "docno": 123>>
+Index: 2453 <<"chunk_id": 9, "docno": 331>>
 
-This is inefficient because ProfilePage and its children will first render with
-the stale value, and then render again. It is also complicated because you’d
-need to do this in every component that has some state inside ProfilePage . For
-example, if the comment UI is nested, you’d want to clear out nested comment
-state too. Instead, you can tell React that each user’s profile is conceptually
-a different profile by giving it an explicit key. Split your component in two
-and pass a key attribute from the outer component to the inner one: export
-default function ProfilePage ( { userId } ) { return ( < Profile userId = {
-userId } key = { userId } /> ) ; } function Profile ( { userId } ) { // ✅ This
-and any other state below will reset on key change automatically const [ comment
-, setComment ] = useState ( '' ) ; // ... } Normally, React preserves the state
-when the same component is rendered in the same spot. By passing userId as a key
-to the Profile component, you’re asking React to treat two Profile components
-with different userId as two different components that should not share any
-state. Whenever the key (which you’ve set to userId ) changes, React will
-recreate the DOM and reset the state of the Profile component and all of its
-children. Now the comment field will clear out automatically when navigating
-between profiles. Note that in this example, only the outer ProfilePage
-component is
+only if dependencies changed. The function you’re passing is later used as a
+dependency of some Hook. For example, another function wrapped in useCallback
+depends on it, or you depend on this function from useEffect. There is no
+benefit to wrapping a function in useCallback in other cases. There is no
+significant harm to doing that either, so some teams choose to not think about
+individual cases, and memoize as much as possible. The downside is that code
+becomes less readable. Also, not all memoization is effective: a single value
+that’s “always new” is enough to break memoization for an entire component. Note
+that useCallback does not prevent creating the function. You’re always creating
+a function (and that’s fine!), but React ignores it and gives you back a cached
+function if nothing changed. In practice, you can make a lot of memoization
+unnecessary by following a few principles: When a component visually wraps other
+components, let it accept JSX as children. Then, if the wrapper component
+updates its own state, React knows that its children don’t need to re-render.
+Prefer local state and don’t lift state up any further than necessary. Don’t
+keep transient state like forms and whether an item is hovered at the top of
+your tree or in a global state library. Keep your rendering logic pure. If
+re-rendering a component causes a problem or produces some noticeable visual
+artifact, it’s a bug in your component! Fix the bug instead of adding
+memoization. Avoid unnecessary Effects that update state. Most performance
+problems in
 ----------------------------------------------------------------------------------------------------
 Index: 3653 <<"chunk_id": 2, "docno": 525>>
 
@@ -593,99 +286,6 @@ behavior and does not affect production. If your reducer and initializer are
 pure (as they should be), this should not affect your logic. The result from one
 of the calls is ignored. dispatch function The dispatch function returned by
 ----------------------------------------------------------------------------------------------------
-Index: 4269 <<"chunk_id": 27, "docno": 628>>
-
-props . userID !== state . prevUserID ) { return { prevUserID : props . userID ,
-email : props . defaultEmail } ; } return null ; } // ... } Note that this
-pattern requires you to keep a previous value of the prop (like userID ) in
-state (like prevUserID ). Pitfall Deriving state leads to verbose code and makes
-your components difficult to think about. Make sure you’re familiar with simpler
-alternatives: If you need to perform a side effect (for example, data fetching
-or an animation) in response to a change in props, use componentDidUpdate method
-instead. If you want to re-compute some data only when a prop changes, use a
-memoization helper instead. If you want to “reset” some state when a prop
-changes, consider either making a component fully controlled or fully
-uncontrolled with a key instead. Parameters props : The next props that the
-component is about to render with. state : The next state that the component is
-about to render with. Returns static getDerivedStateFromProps return an object
-to update the state, or null to update nothing. Caveats This method is fired on
-every render, regardless of the cause. This is different from
-UNSAFE_componentWillReceiveProps , which only fires when the parent causes a
-re-render and not as a result of a local setState . This method doesn’t have
-access to the component instance. If you’d like, you can reuse some code between
-static getDerivedStateFromProps and the other class methods by extracting pure
-functions of the component props
-----------------------------------------------------------------------------------------------------
-Index: 2039 <<"chunk_id": 0, "docno": 264>>
-
-Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
-Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
-in React Installation Creating a React App Build a React App from Scratch Add
-React to an Existing Project Setup Editor Setup Using TypeScript React Developer
-Tools React Compiler Introduction Installation Incremental Adoption Debugging
-and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
-and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
-Braces Passing Props to a Component Conditional Rendering Rendering Lists
-Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
-Events State: A Component's Memory Render and Commit State as a Snapshot
-Queueing a Series of State Updates Updating Objects in State Updating Arrays in
-State Managing State Reacting to Input with State Choosing the State Structure
-Sharing State Between Components Preserving and Resetting State Extracting State
-Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
-and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
-with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
-Separating Events from Effects Event handlers only re-run when you perform the
-same interaction again. Unlike event handlers, Effects re-synchronize if some
-value they read, like a prop or a state variable, is different from what it was
-during the last render. Sometimes, you also want a mix
-----------------------------------------------------------------------------------------------------
-Index: 5066 <<"chunk_id": 10, "docno": 737>>
-
-is not allowed in React and causes the “inner” component to remount on every
-render). I’m getting an error: “A component is changing an uncontrolled input to
-be controlled” If you provide a value to the component, it must remain a string
-throughout its lifetime. You cannot pass value={undefined} first and later pass
-value="some string" because React won’t know whether you want the component to
-be uncontrolled or controlled. A controlled component should always receive a
-string value , not null or undefined . If your value is coming from an API or a
-state variable, it might be initialized to null or undefined . In that case,
-either set it to an empty string ( '' ) initially, or pass value={someValue ??
-''} to ensure value is a string. Previous <select> Next <link> Copyright © Meta
-Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start
-Installation Describing the UI Adding Interactivity Managing State Escape
-Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
-the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
-On this page Overview Reference <textarea> Usage Displaying a text area
-Providing a label for a text area Providing an initial value for a text area
-Reading the text area value when submitting a form Controlling a text area with
-a state variable Troubleshooting My text area doesn’t update when I type into it
-My text area caret jumps to the beginning on every keystroke I’m getting an
-error: “A component is changing
-----------------------------------------------------------------------------------------------------
-Index: 2446 <<"chunk_id": 2, "docno": 331>>
-
-if the dependencies have not changed since the last render. Otherwise, it will
-give you the function that you have passed during the current render, and store
-it in case it can be reused later. React will not call your function. The
-function is returned to you so you can decide when and whether to call it.
-dependencies : The list of all reactive values referenced inside of the fn code.
-Reactive values include props, state, and all the variables and functions
-declared directly inside your component body. If your linter is configured for
-React , it will verify that every reactive value is correctly specified as a
-dependency. The list of dependencies must have a constant number of items and be
-written inline like [dep1, dep2, dep3] . React will compare each dependency with
-its previous value using the Object.is comparison algorithm. Returns On the
-initial render, useCallback returns the fn function you have passed. During
-subsequent renders, it will either return an already stored fn function from the
-last render (if the dependencies haven’t changed), or return the fn function you
-have passed during this render. Caveats useCallback is a Hook, so you can only
-call it at the top level of your component or your own Hooks. You can’t call it
-inside loops or conditions. If you need that, extract a new component and move
-the state into it. React will not throw away the cached function unless there is
-a specific reason to do that. For example, in development, React throws away
-----------------------------------------------------------------------------------------------------
 Index: 3711 <<"chunk_id": 1, "docno": 535>>
 
 forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
@@ -708,99 +308,6 @@ Unlike with state, updating a ref does not re-render your component. Refs are an
 “escape hatch” from the React paradigm. They are useful when you need to work
 with non-React systems, such as the built-in browser APIs. useRef declares a
 ref. You
-----------------------------------------------------------------------------------------------------
-Index: 2044 <<"chunk_id": 5, "docno": 264>>
-
-a button. Effects, on the other hand, are “automatic”: they run and re-run as
-often as it’s needed to stay synchronized. There is a more precise way to think
-about this. Props, state, and variables declared inside your component’s body
-are called reactive values . In this example, serverUrl is not a reactive value,
-but roomId and message are. They participate in the rendering data flow: const
-serverUrl = 'https://localhost:1234' ; function ChatRoom ( { roomId } ) { const
-[ message , setMessage ] = useState ( '' ) ; // ... } Reactive values like these
-can change due to a re-render. For example, the user may edit the message or
-choose a different roomId in a dropdown. Event handlers and Effects respond to
-changes differently: Logic inside event handlers is not reactive. It will not
-run again unless the user performs the same interaction (e.g. a click) again.
-Event handlers can read reactive values without “reacting” to their changes.
-Logic inside Effects is reactive. If your Effect reads a reactive value, you
-have to specify it as a dependency. Then, if a re-render causes that value to
-change, React will re-run your Effect’s logic with the new value. Let’s revisit
-the previous example to illustrate this difference. Logic inside event handlers
-is not reactive Take a look at this line of code. Should this logic be reactive
-or not? // ... sendMessage ( message ) ; // ... From the user’s perspective, a
-change to the message does not mean that they want
-----------------------------------------------------------------------------------------------------
-Index: 4259 <<"chunk_id": 17, "docno": 628>>
-
-updater function in a queue and re-render your component. During the next
-render, React will calculate the next state by applying all of the queued
-updaters to the previous state. optional callback : If specified, React will
-call the callback you’ve provided after the update is committed. Returns
-setState does not return anything. Caveats Think of setState as a request rather
-than an immediate command to update the component. When multiple components
-update their state in response to an event, React will batch their updates and
-re-render them together in a single pass at the end of the event. In the rare
-case that you need to force a particular state update to be applied
-synchronously, you may wrap it in flushSync , but this may hurt performance.
-setState does not update this.state immediately. This makes reading this.state
-right after calling setState a potential pitfall. Instead, use
-componentDidUpdate or the setState callback argument, either of which are
-guaranteed to fire after the update has been applied. If you need to set the
-state based on the previous state, you can pass a function to nextState as
-described above. Note Calling setState in class components is similar to calling
-a set function in function components. See how to migrate.
-shouldComponentUpdate(nextProps, nextState, nextContext) If you define
-shouldComponentUpdate , React will call it to determine whether a re-render can
-be skipped. If you are confident you want to write it by hand, you may compare
-this.props with nextProps and this.state with nextState and return false to tell
-React the
-----------------------------------------------------------------------------------------------------
-Index: 1063 <<"chunk_id": 0, "docno": 150>>
-
-Conditional Rendering – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
-Conditional Rendering Your components will often need to display different
-things depending on different conditions. In React, you can conditionally render
-JSX using JavaScript syntax like if statements, && , and ? : operators. You will
-learn How to return different JSX depending on a condition How to conditionally
-----------------------------------------------------------------------------------------------------
-Index: 1413 <<"chunk_id": 19, "docno": 174>>
-
-: 2 , name : 'Bob' , email : 'bob@mail.com' } ] ; Show more Deep Dive Preserving
-state for removed components Show Details In a real chat app, you’d probably
-want to recover the input state when the user selects the previous recipient
-again. There are a few ways to keep the state “alive” for a component that’s no
-longer visible: You could render all chats instead of just the current one, but
-hide all the others with CSS. The chats would not get removed from the tree, so
-their local state would be preserved. This solution works great for simple UIs.
-But it can get very slow if the hidden trees are large and contain a lot of DOM
-nodes. You could lift the state up and hold the pending message for each
-recipient in the parent component. This way, when the child components get
-removed, it doesn’t matter, because it’s the parent that keeps the important
-information. This is the most common solution. You might also use a different
-source in addition to React state. For example, you probably want a message
-draft to persist even if the user accidentally closes the page. To implement
-this, you could have the Chat component initialize its state by reading from the
-localStorage , and save the drafts there too. No matter which strategy you pick,
-a chat with Alice is conceptually distinct from a chat with Bob , so it makes
-sense to give a key to the <Chat> tree based on the current recipient.
 ----------------------------------------------------------------------------------------------------
 Index: 4566 <<"chunk_id": 3, "docno": 665>>
 
@@ -826,119 +333,72 @@ Additional events may be displayed during the render and effects phases: Mount -
 A corresponding subtree of component renders or effects was mounted. Unmount - A
 corresponding subtree of component renders or effects
 ----------------------------------------------------------------------------------------------------
-Index: 130 <<"chunk_id": 0, "docno": 16>>
+Index: 1031 <<"chunk_id": 8, "docno": 146>>
 
-Managing State – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
-Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Copy page Copy Managing State
-Intermediate As your application grows, it helps to be more intentional about
-how your state is organized and how the data flows between your components.
-Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
-learn how to structure your state well, how to keep your
+computed by taking the original list of products and filtering it according to
+the search text and value of the checkbox. This means only the search text and
+the value of the checkbox are state! Nicely done! Deep Dive Props vs State Show
+Details There are two types of “model” data in React: props and state. The two
+are very different: Props are like arguments you pass to a function. They let a
+parent component pass data to a child component and customize its appearance.
+For example, a Form can pass a color prop to a Button . State is like a
+component’s memory. It lets a component keep track of some information and
+change it in response to interactions. For example, a Button might keep track of
+isHovered state. Props and state are different, but they work together. A parent
+component will often keep some information in state (so that it can change it),
+and pass it down to child components as their props. It’s okay if the difference
+still feels fuzzy on the first read. It takes a bit of practice for it to really
+stick! Step 4: Identify where your state should live After identifying your
+app’s minimal state data, you need to identify which component is responsible
+for changing this state, or owns the state. Remember: React uses one-way data
+flow, passing data down the component hierarchy from parent to child component.
+It may not be immediately clear which component should own what state. This can
+be challenging if you’re new to
 ----------------------------------------------------------------------------------------------------
-Index: 1806 <<"chunk_id": 1, "docno": 229>>
+Index: 5066 <<"chunk_id": 10, "docno": 737>>
 
-the React state directly. Instead, when you want to update an object, you need
-to create a new one (or make a copy of an existing one), and then set the state
-to use that copy. You will learn How to correctly update an object in React
-state How to update a nested object without mutating it What immutability is,
-and how not to break it How to make object copying less repetitive with Immer
-What’s a mutation? You can store any kind of JavaScript value in state. const [
-x , setX ] = useState ( 0 ) ; So far you’ve been working with numbers, strings,
-and booleans. These kinds of JavaScript values are “immutable”, meaning
-unchangeable or “read-only”. You can trigger a re-render to replace a value:
-setX ( 5 ) ; The x state changed from 0 to 5 , but the number 0 itself did not
-change. It’s not possible to make any changes to the built-in primitive values
-like numbers, strings, and booleans in JavaScript. Now consider an object in
-state: const [ position , setPosition ] = useState ( { x : 0 , y : 0 } ) ;
-Technically, it is possible to change the contents of the object itself . This
-is called a mutation: position . x = 5 ; However, although objects in React
-state are technically mutable, you should treat them as if they were
-immutable—like numbers, booleans, and strings. Instead of mutating them, you
-should always replace them. Treat state as read-only
+is not allowed in React and causes the “inner” component to remount on every
+render). I’m getting an error: “A component is changing an uncontrolled input to
+be controlled” If you provide a value to the component, it must remain a string
+throughout its lifetime. You cannot pass value={undefined} first and later pass
+value="some string" because React won’t know whether you want the component to
+be uncontrolled or controlled. A controlled component should always receive a
+string value , not null or undefined . If your value is coming from an API or a
+state variable, it might be initialized to null or undefined . In that case,
+either set it to an empty string ( '' ) initially, or pass value={someValue ??
+''} to ensure value is a string. Previous <select> Next <link> Copyright © Meta
+Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start
+Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
+On this page Overview Reference <textarea> Usage Displaying a text area
+Providing a label for a text area Providing an initial value for a text area
+Reading the text area value when submitting a form Controlling a text area with
+a state variable Troubleshooting My text area doesn’t update when I type into it
+My text area caret jumps to the beginning on every keystroke I’m getting an
+error: “A component is changing
 ----------------------------------------------------------------------------------------------------
-Index: 4699 <<"chunk_id": 4, "docno": 685>>
+Index: 2044 <<"chunk_id": 5, "docno": 264>>
 
-to the element, for example data-fruit="banana" . In React, they are not
-commonly used because you would usually read data from props or state instead.
-dir : Either 'ltr' or 'rtl' . Specifies the text direction of the element.
-draggable : A boolean. Specifies whether the element is draggable. Part of HTML
-Drag and Drop API. enterKeyHint : A string. Specifies which action to present
-for the enter key on virtual keyboards. htmlFor : A string. For <label> and
-<output> , lets you associate the label with some control. Same as for HTML
-attribute. React uses the standard DOM property names ( htmlFor ) instead of
-HTML attribute names. hidden : A boolean or a string. Specifies whether the
-element should be hidden. id : A string. Specifies a unique identifier for this
-element, which can be used to find it later or connect it with other elements.
-Generate it with useId to avoid clashes between multiple instances of the same
-component. is : A string. If specified, the component will behave like a custom
-element. inputMode : A string. Specifies what kind of keyboard to display (for
-example, text, number or telephone). itemProp : A string. Specifies which
-property the element represents for structured data crawlers. lang : A string.
-Specifies the language of the element. onAnimationEnd : An AnimationEvent
-handler function. Fires when a CSS animation completes. onAnimationEndCapture :
-A version of onAnimationEnd that fires in the capture phase.
-onAnimationIteration : An AnimationEvent handler function. Fires when an
-iteration of a CSS animation ends,
-----------------------------------------------------------------------------------------------------
-Index: 5076 <<"chunk_id": 1, "docno": 740>>
-
-PureComponent API Reference APIs Copy page Copy createPortal createPortal lets
-you render some children into a different part of the DOM. < div > <
-SomeComponent /> { createPortal ( children , domNode , key ? ) } </ div >
-Reference createPortal(children, domNode, key?) Usage Rendering to a different
-part of the DOM Rendering a modal dialog with a portal Rendering React
-components into non-React server markup Rendering React components into
-non-React DOM nodes Reference createPortal(children, domNode, key?) To create a
-portal, call createPortal , passing some JSX, and the DOM node where it should
-be rendered: import { createPortal } from 'react-dom' ; // ... < div > < p >
-This child is placed in the parent div. </ p > { createPortal ( < p > This child
-is placed in the document body. </ p > , document . body ) } </ div > See more
-examples below. A portal only changes the physical placement of the DOM node. In
-every other way, the JSX you render into a portal acts as a child node of the
-React component that renders it. For example, the child can access the context
-provided by the parent tree, and events bubble up from children to parents
-according to the React tree. Parameters children : Anything that can be rendered
-with React, such as a piece of JSX (e.g. <div /> or <SomeComponent /> ), a
-Fragment ( <>...</> ), a string or a number, or an array of these. domNode :
-Some DOM
-----------------------------------------------------------------------------------------------------
-Index: 947 <<"chunk_id": 12, "docno": 132>>
-
-is a good indication that they synchronize different things, and so it made
-sense to split them up. On the other hand, if you split up a cohesive piece of
-logic into separate Effects, the code may look “cleaner” but will be more
-difficult to maintain. This is why you should think whether the processes are
-same or separate, not whether the code looks cleaner. Effects “react” to
-reactive values Your Effect reads two variables ( serverUrl and roomId ), but
-you only specified roomId as a dependency: const serverUrl =
-'https://localhost:1234' ; function ChatRoom ( { roomId } ) { useEffect ( ( ) =>
-{ const connection = createConnection ( serverUrl , roomId ) ; connection .
-connect ( ) ; return ( ) => { connection . disconnect ( ) ; } ; } , [ roomId ] )
-; // ... } Why doesn’t serverUrl need to be a dependency? This is because the
-serverUrl never changes due to a re-render. It’s always the same no matter how
-many times the component re-renders and why. Since serverUrl never changes, it
-wouldn’t make sense to specify it as a dependency. After all, dependencies only
-do something when they change over time! On the other hand, roomId may be
-different on a re-render. Props, state, and other values declared inside the
-component are reactive because they’re calculated during rendering and
-participate in the React data flow. If serverUrl was a state variable, it would
-be reactive. Reactive values must be included in dependencies: function
+a button. Effects, on the other hand, are “automatic”: they run and re-run as
+often as it’s needed to stay synchronized. There is a more precise way to think
+about this. Props, state, and variables declared inside your component’s body
+are called reactive values . In this example, serverUrl is not a reactive value,
+but roomId and message are. They participate in the rendering data flow: const
+serverUrl = 'https://localhost:1234' ; function ChatRoom ( { roomId } ) { const
+[ message , setMessage ] = useState ( '' ) ; // ... } Reactive values like these
+can change due to a re-render. For example, the user may edit the message or
+choose a different roomId in a dropdown. Event handlers and Effects respond to
+changes differently: Logic inside event handlers is not reactive. It will not
+run again unless the user performs the same interaction (e.g. a click) again.
+Event handlers can read reactive values without “reacting” to their changes.
+Logic inside Effects is reactive. If your Effect reads a reactive value, you
+have to specify it as a dependency. Then, if a re-render causes that value to
+change, React will re-run your Effect’s logic with the new value. Let’s revisit
+the previous example to illustrate this difference. Logic inside event handlers
+is not reactive Take a look at this line of code. Should this logic be reactive
+or not? // ... sendMessage ( message ) ; // ... From the user’s perspective, a
+change to the message does not mean that they want
 ----------------------------------------------------------------------------------------------------
 Index: 767 <<"chunk_id": 8, "docno": 112>>
 
@@ -961,168 +421,27 @@ by React itself. If your component needs an ID, you have to pass it as a
 separate prop: <Profile key={id} userId={id} /> . Recap On this page you
 learned: How to move data out of components and into
 ----------------------------------------------------------------------------------------------------
-Index: 5405 <<"chunk_id": 2, "docno": 791>>
+Index: 3481 <<"chunk_id": 5, "docno": 494>>
 
-or "nested-update" . This lets you know whether the tree has just been mounted
-for the first time or re-rendered due to a change in props, state, or Hooks.
-actualDuration : The number of milliseconds spent rendering the <Profiler> and
-its descendants for the current update. This indicates how well the subtree
-makes use of memoization (e.g. memo and useMemo ). Ideally this value should
-decrease significantly after the initial mount as many of the descendants will
-only need to re-render if their specific props change. baseDuration : The number
-of milliseconds estimating how much time it would take to re-render the entire
-<Profiler> subtree without any optimizations. It is calculated by summing up the
-most recent render durations of each component in the tree. This value estimates
-a worst-case cost of rendering (e.g. the initial mount or a tree with no
-memoization). Compare actualDuration against it to see if memoization is
-working. startTime : A numeric timestamp for when React began rendering the
-current update. commitTime : A numeric timestamp for when React committed the
-current update. This value is shared between all profilers in a commit, enabling
-them to be grouped if desirable. Usage Measuring rendering performance
-programmatically Wrap the <Profiler> component around a React tree to measure
-its rendering performance. < App > < Profiler id = "Sidebar" onRender = {
-onRender } > < Sidebar /> </ Profiler > < PageContent /> </ App > It requires
-two props: an id (string) and an onRender callback (function) which React calls
-any time
-----------------------------------------------------------------------------------------------------
-Index: 6079 <<"chunk_id": 8, "docno": 878>>
-
-preserve the state of hidden tabs, so the user can switch between them without
-losing their progress. A virtualized list component can prerender additional
-rows above and below the visible window. When opening a modal or popup, the rest
-of the app can be put into “background” mode so that events and updates are
-disabled for everything except the modal. Most React developers will not
-interact with React’s offscreen APIs directly. Instead, offscreen rendering will
-be integrated into things like routers and UI libraries, and then developers who
-use those libraries will automatically benefit without additional work. The idea
-is that you should be able to render any React tree offscreen without changing
-the way you write your components. When a component is rendered offscreen, it
-does not actually mount until the component becomes visible — its effects are
-not fired. For example, if a component uses useEffect to log analytics when it
-appears for the first time, prerendering won’t mess up the accuracy of those
-analytics. Similarly, when a component goes offscreen, its effects are
-unmounted, too. A key feature of offscreen rendering is that you can toggle the
-visibility of a component without losing its state. Since our last update, we’ve
-tested an experimental version of prerendering internally at Meta in our React
-Native apps on Android and iOS, with positive performance results. We’ve also
-improved how offscreen rendering works with Suspense — suspending inside an
-offscreen tree will not trigger Suspense fallbacks. Our remaining work involves
-finalizing the primitives that are exposed to
-----------------------------------------------------------------------------------------------------
-Index: 2643 <<"chunk_id": 3, "docno": 358>>
-
-a piece of JSX in a different part of the DOM tree that isn’t a child of your
-component (for example, a modal or a tooltip), use createPortal instead of
-createRoot . root.render(reactNode) Call root.render to display a piece of JSX
-(“React node”) into the React root’s browser DOM node. root . render ( < App />
-) ; React will display <App /> in the root , and take over managing the DOM
-inside it. See more examples below. Parameters reactNode : A React node that you
-want to display. This will usually be a piece of JSX like <App /> , but you can
-also pass a React element constructed with createElement() , a string, a number,
-null , or undefined . Returns root.render returns undefined . Caveats The first
-time you call root.render , React will clear all the existing HTML content
-inside the React root before rendering the React component into it. If your
-root’s DOM node contains HTML generated by React on the server or during the
-build, use hydrateRoot() instead, which attaches the event handlers to the
-existing HTML. If you call render on the same root more than once, React will
-update the DOM as necessary to reflect the latest JSX you passed. React will
-decide which parts of the DOM can be reused and which need to be recreated by
-“matching it up” with the previously rendered tree. Calling render on the same
-root again is similar to calling the set function on the root component: React
-avoids
-----------------------------------------------------------------------------------------------------
-Index: 636 <<"chunk_id": 5, "docno": 97>>
-
-modules, not components. Non-component modules, like inspirations.js , are also
-represented in this tree. The render tree only encapsulates components.
-Copyright.js appears under App.js but in the render tree, Copyright , the
-component, appears as a child of InspirationGenerator . This is because
-InspirationGenerator accepts JSX as children props , so it renders Copyright as
-a child component but does not import the module. Dependency trees are useful to
-determine what modules are necessary to run your React app. When building a
-React app for production, there is typically a build step that will bundle all
-the necessary JavaScript to ship to the client. The tool responsible for this is
-called a bundler , and bundlers will use the dependency tree to determine what
-modules should be included. As your app grows, often the bundle size does too.
-Large bundle sizes are expensive for a client to download and run. Large bundle
-sizes can delay the time for your UI to get drawn. Getting a sense of your app’s
-dependency tree may help with debugging these issues. Recap Trees are a common
-way to represent the relationship between entities. They are often used to model
-UI. Render trees represent the nested relationship between React components
-across a single render. With conditional rendering, the render tree may change
-across different renders. With different prop values, components may render
-different children components. Render trees help identify what the top-level and
-leaf components are. Top-level components affect the rendering performance of
-all components beneath them and leaf components are
-----------------------------------------------------------------------------------------------------
-Index: 3145 <<"chunk_id": 2, "docno": 440>>
-
-of a file, above any imports or other code (comments are OK). They must be
-written with single or double quotes, but not backticks. When a 'use client'
-module is imported from another client-rendered module, the directive has no
-effect. When a component module contains a 'use client' directive, any usage of
-that component is guaranteed to be a Client Component. However, a component can
-still be evaluated on the client even if it does not have a 'use client'
-directive. A component usage is considered a Client Component if it is defined
-in module with 'use client' directive or when it is a transitive dependency of a
-module that contains a 'use client' directive. Otherwise, it is a Server
-Component. Code that is marked for client evaluation is not limited to
-components. All code that is a part of the Client module sub-tree is sent to and
-run by the client. When a server evaluated module imports values from a 'use
-client' module, the values must either be a React component or supported
-serializable prop values to be passed to a Client Component. Any other use case
-will throw an exception. How 'use client' marks client code In a React app,
-components are often split into separate files, or modules . For apps that use
-React Server Components, the app is server-rendered by default. 'use client'
-introduces a server-client boundary in the module dependency tree , effectively
-creating a subtree of Client modules. To better illustrate this, consider the
-following React Server Components app. App.js
-----------------------------------------------------------------------------------------------------
-Index: 4261 <<"chunk_id": 19, "docno": 628>>
-
-what changed. Only available if you specify static contextType . Returns Return
-true if you want the component to re-render. That’s the default behavior. Return
-false to tell React that re-rendering can be skipped. Caveats This method only
-exists as a performance optimization. If your component breaks without it, fix
-that first. Consider using PureComponent instead of writing
-shouldComponentUpdate by hand. PureComponent shallowly compares props and state,
-and reduces the chance that you’ll skip a necessary update. We do not recommend
-doing deep equality checks or using JSON.stringify in shouldComponentUpdate . It
-makes performance unpredictable and dependent on the data structure of every
-prop and state. In the best case, you risk introducing multi-second stalls to
-your application, and in the worst case you risk crashing it. Returning false
-does not prevent child components from re-rendering when their state changes.
-Returning false does not guarantee that the component will not re-render. React
-will use the return value as a hint but it may still choose to re-render your
-component if it makes sense to do for other reasons. Note Optimizing class
-components with shouldComponentUpdate is similar to optimizing function
-components with memo . Function components also offer more granular optimization
-with useMemo . UNSAFE_componentWillMount() If you define
-UNSAFE_componentWillMount , React will call it immediately after the constructor
-. It only exists for historical reasons and should not be used in any new code.
-Instead, use one of the alternatives: To initialize state, declare state as a
-class field or set this.state inside the constructor . If
-----------------------------------------------------------------------------------------------------
-Index: 5010 <<"chunk_id": 1, "docno": 727>>
-
-Component createElement createRef forwardRef isValidElement PureComponent API
-Reference Overview Copy page Copy Components and Hooks must be pure Pure
-functions only perform a calculation and nothing more. It makes your code easier
-to understand, debug, and allows React to automatically optimize your components
-and Hooks correctly. Note This reference page covers advanced topics and
-requires familiarity with the concepts covered in the Keeping Components Pure
-page. Why does purity matter? Components and Hooks must be idempotent Side
-effects must run outside of render When is it okay to have mutation? Props and
-state are immutable Don’t mutate Props Don’t mutate State Return values and
-arguments to Hooks are immutable Values are immutable after being passed to JSX
-Why does purity matter? One of the key concepts that makes React, React is
-purity . A pure component or hook is one that is: Idempotent – You always get
-the same result every time you run it with the same inputs – props, state,
-context for component inputs; and arguments for hook inputs. Has no side effects
-in render – Code with side effects should run separately from rendering . For
-example as an event handler – where the user interacts with the UI and causes it
-to update; or as an Effect – which runs after render. Does not mutate non-local
-values : Components and Hooks should never modify values that aren’t created
-locally in render. When render is kept pure, React can understand how to
-prioritize which updates are most important for the user to see
+wrapping a component in memo in other cases. There is no significant harm to
+doing that either, so some teams choose to not think about individual cases, and
+memoize as much as possible. The downside of this approach is that code becomes
+less readable. Also, not all memoization is effective: a single value that’s
+“always new” is enough to break memoization for an entire component. In
+practice, you can make a lot of memoization unnecessary by following a few
+principles: When a component visually wraps other components, let it accept JSX
+as children. This way, when the wrapper component updates its own state, React
+knows that its children don’t need to re-render. Prefer local state and don’t
+lift state up any further than necessary. For example, don’t keep transient
+state like forms and whether an item is hovered at the top of your tree or in a
+global state library. Keep your rendering logic pure. If re-rendering a
+component causes a problem or produces some noticeable visual artifact, it’s a
+bug in your component! Fix the bug instead of adding memoization. Avoid
+unnecessary Effects that update state. Most performance problems in React apps
+are caused by chains of updates originating from Effects that cause your
+components to render over and over. Try to remove unnecessary dependencies from
+your Effects. For example, instead of memoization, it’s often simpler to move
+some object or a function inside an Effect or outside the component. If a
+specific interaction still feels laggy, use the React Developer Tools profiler
+to see
 ----------------------------------------------------------------------------------------------------

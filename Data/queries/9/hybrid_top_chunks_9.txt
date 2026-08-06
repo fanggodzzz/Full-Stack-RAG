@@ -1,3 +1,20 @@
+Index: 788 <<"chunk_id": 5, "docno": 115>>
+
+browser will repaint the screen. Although this process is known as “browser
+rendering”, we’ll refer to it as “painting” to avoid confusion throughout the
+docs. Illustrated by Rachel Lee Nabors Recap Any screen update in a React app
+happens in three steps: Trigger Render Commit You can use Strict Mode to find
+mistakes in your components React does not touch the DOM if the rendering result
+is the same as last time Previous State: A Component's Memory Next State as a
+Snapshot Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by
+@sawaratsuki1004 Learn React Quick Start Installation Describing the UI Adding
+Interactivity Managing State Escape Hatches API Reference React APIs React DOM
+APIs Community Code of Conduct Meet the Team Docs Contributors Acknowledgements
+More Blog React Native Privacy Terms On this page Overview Step 1: Trigger a
+render Initial render Re-renders when state updates Step 2: React renders your
+components Step 3: React commits changes to the DOM Epilogue: Browser paint
+Recap
+----------------------------------------------------------------------------------------------------
 Index: 5913 <<"chunk_id": 2, "docno": 857>>
 
 developers to know how concurrency works under the hood. However, Concurrent
@@ -20,115 +37,6 @@ input even if it’s in the middle of a large rendering task, creating a fluid
 user experience. Another example is reusable state. Concurrent React can remove
 sections of the UI from the screen, then add them back later while reusing the
 previous state. For example, when a user tabs away from a
-----------------------------------------------------------------------------------------------------
-Index: 788 <<"chunk_id": 5, "docno": 115>>
-
-browser will repaint the screen. Although this process is known as “browser
-rendering”, we’ll refer to it as “painting” to avoid confusion throughout the
-docs. Illustrated by Rachel Lee Nabors Recap Any screen update in a React app
-happens in three steps: Trigger Render Commit You can use Strict Mode to find
-mistakes in your components React does not touch the DOM if the rendering result
-is the same as last time Previous State: A Component's Memory Next State as a
-Snapshot Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by
-@sawaratsuki1004 Learn React Quick Start Installation Describing the UI Adding
-Interactivity Managing State Escape Hatches API Reference React APIs React DOM
-APIs Community Code of Conduct Meet the Team Docs Contributors Acknowledgements
-More Blog React Native Privacy Terms On this page Overview Step 1: Trigger a
-render Initial render Re-renders when state updates Step 2: React renders your
-components Step 3: React commits changes to the DOM Epilogue: Browser paint
-Recap
-----------------------------------------------------------------------------------------------------
-Index: 784 <<"chunk_id": 1, "docno": 115>>
-
-you think about how your code executes and explain its behavior. You will learn
-What rendering means in React When and why React renders a component The steps
-involved in displaying a component on screen Why rendering does not always
-produce a DOM update Imagine that your components are cooks in the kitchen,
-assembling tasty dishes from ingredients. In this scenario, React is the waiter
-who puts in requests from customers and brings them their orders. This process
-of requesting and serving UI has three steps: Triggering a render (delivering
-the guest’s order to the kitchen) Rendering the component (preparing the order
-in the kitchen) Committing to the DOM (placing the order on the table) Trigger
-Render Commit Illustrated by Rachel Lee Nabors Step 1: Trigger a render There
-are two reasons for a component to render: It’s the component’s initial render.
-The component’s (or one of its ancestors’) state has been updated. Initial
-render When your app starts, you need to trigger the initial render. Frameworks
-and sandboxes sometimes hide this code, but it’s done by calling createRoot with
-the target DOM node, and then calling its render method with your component:
-index.js Image.js index.js Reload Clear Fork import Image from './Image.js' ;
-import { createRoot } from 'react-dom/client' ; const root = createRoot (
-document . getElementById ( 'root' ) ) root . render ( < Image /> ) ; Try
-commenting out the root.render() call and see the component disappear!
-Re-renders when state updates Once the component has been initially rendered,
-you can
-----------------------------------------------------------------------------------------------------
-Index: 785 <<"chunk_id": 2, "docno": 115>>
-
-; Try commenting out the root.render() call and see the component disappear!
-Re-renders when state updates Once the component has been initially rendered,
-you can trigger further renders by updating its state with the set function.
-Updating your component’s state automatically queues a render. (You can imagine
-these as a restaurant guest ordering tea, dessert, and all sorts of things after
-putting in their first order, depending on the state of their thirst or hunger.)
-State update... ...triggers... ...render! Illustrated by Rachel Lee Nabors Step
-2: React renders your components After you trigger a render, React calls your
-components to figure out what to display on screen. “Rendering” is React calling
-your components. On initial render, React will call the root component. For
-subsequent renders, React will call the function component whose state update
-triggered the render. This process is recursive: if the updated component
-returns some other component, React will render that component next, and if that
-component also returns something, it will render that component next, and so on.
-The process will continue until there are no more nested components and React
-knows exactly what should be displayed on screen. In the following example,
-React will call Gallery() and Image() several times: index.js Gallery.js
-Gallery.js Reload Clear Fork export default function Gallery ( ) { return ( <
-section > < h1 > Inspiring Sculptures </ h1 > < Image /> < Image /> < Image />
-</ section > ) ; } function Image ( ) { return ( < img src =
-----------------------------------------------------------------------------------------------------
-Index: 432 <<"chunk_id": 4, "docno": 67>>
-
-Show more Ready to learn this topic? Read State: A Component’s Memory to learn
-how to remember a value and update it on interaction. Read More Render and
-commit Before your components are displayed on the screen, they must be rendered
-by React. Understanding the steps in this process will help you think about how
-your code executes and explain its behavior. Imagine that your components are
-cooks in the kitchen, assembling tasty dishes from ingredients. In this
-scenario, React is the waiter who puts in requests from customers and brings
-them their orders. This process of requesting and serving UI has three steps:
-Triggering a render (delivering the diner’s order to the kitchen) Rendering the
-component (preparing the order in the kitchen) Committing to the DOM (placing
-the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
-Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
-update. Read More State as a snapshot Unlike regular JavaScript variables, React
-state behaves more like a snapshot. Setting it does not change the state
-variable you already have, but instead triggers a re-render. This can be
-surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
-Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
-helps you avoid subtle bugs. Here is a little chat app. Try to guess what
-happens if you press “Send” first and then change the
-----------------------------------------------------------------------------------------------------
-Index: 1591 <<"chunk_id": 1, "docno": 197>>
-
-React state, set up a server connection, or send an analytics log when a
-component appears on the screen. Effects let you run some code after rendering
-so that you can synchronize your component with some system outside of React.
-You will learn What Effects are How Effects are different from events How to
-declare an Effect in your component How to skip re-running an Effect
-unnecessarily Why Effects run twice in development and how to fix them What are
-Effects and how are they different from events? Before getting to Effects, you
-need to be familiar with two types of logic inside React components: Rendering
-code (introduced in Describing the UI ) lives at the top level of your
-component. This is where you take the props and state, transform them, and
-return the JSX you want to see on the screen. Rendering code must be pure. Like
-a math formula, it should only calculate the result, but not do anything else.
-Event handlers (introduced in Adding Interactivity ) are nested functions inside
-your components that do things rather than just calculate them. An event handler
-might update an input field, submit an HTTP POST request to buy a product, or
-navigate the user to another screen. Event handlers contain “side effects” (they
-change the program’s state) caused by a specific user action (for example, a
-button click or typing). Sometimes this isn’t enough. Consider a ChatRoom
-component that must connect to the chat server whenever it’s visible on the
-screen. Connecting to a server
 ----------------------------------------------------------------------------------------------------
 Index: 783 <<"chunk_id": 0, "docno": 115>>
 
@@ -155,118 +63,101 @@ rendered by React. Understanding the steps in this process will help you think
 about how your code executes and explain its behavior. You will learn What
 rendering means in React When and why React renders a
 ----------------------------------------------------------------------------------------------------
-Index: 3873 <<"chunk_id": 3, "docno": 564>>
+Index: 432 <<"chunk_id": 4, "docno": 67>>
 
-needed. To fix this, remove unnecessary object and function dependencies. You
-can also extract state updates and non-reactive logic outside of your Effect.
-Effects only run on the client. They don’t run during server rendering. The code
-inside useLayoutEffect and all state updates scheduled from it block the browser
-from repainting the screen. When used excessively, this makes your app slow.
-When possible, prefer useEffect . If you trigger a state update inside
-useLayoutEffect , React will execute all remaining Effects immediately including
-useEffect . Usage Measuring layout before the browser repaints the screen Most
-components don’t need to know their position and size on the screen to decide
-what to render. They only return some JSX. Then the browser calculates their
-layout (position and size) and repaints the screen. Sometimes, that’s not
-enough. Imagine a tooltip that appears next to some element on hover. If there’s
-enough space, the tooltip should appear above the element, but if it doesn’t
-fit, it should appear below. In order to render the tooltip at the right final
-position, you need to know its height (i.e. whether it fits at the top). To do
-this, you need to render in two passes: Render the tooltip anywhere (even with a
-wrong position). Measure its height and decide where to place the tooltip.
-Render the tooltip again in the correct place. All of this needs to happen
-before the browser repaints the screen. You don’t want the user to see the
-tooltip moving. Call useLayoutEffect to perform the layout measurements before
+Show more Ready to learn this topic? Read State: A Component’s Memory to learn
+how to remember a value and update it on interaction. Read More Render and
+commit Before your components are displayed on the screen, they must be rendered
+by React. Understanding the steps in this process will help you think about how
+your code executes and explain its behavior. Imagine that your components are
+cooks in the kitchen, assembling tasty dishes from ingredients. In this
+scenario, React is the waiter who puts in requests from customers and brings
+them their orders. This process of requesting and serving UI has three steps:
+Triggering a render (delivering the diner’s order to the kitchen) Rendering the
+component (preparing the order in the kitchen) Committing to the DOM (placing
+the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
+Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
+update. Read More State as a snapshot Unlike regular JavaScript variables, React
+state behaves more like a snapshot. Setting it does not change the state
+variable you already have, but instead triggers a re-render. This can be
+surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
+Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
+helps you avoid subtle bugs. Here is a little chat app. Try to guess what
+happens if you press “Send” first and then change the
 ----------------------------------------------------------------------------------------------------
-Index: 980 <<"chunk_id": 2, "docno": 137>>
+Index: 784 <<"chunk_id": 1, "docno": 115>>
 
-{ message } onChange = { e => setMessage ( e . target . value ) } /> < button
-type = "submit" > Send </ button > </ form > ) ; } function sendMessage (
-message ) { // ... } Show more Here’s what happens when you click the button:
-The onSubmit event handler executes. setIsSent(true) sets isSent to true and
-queues a new render. React re-renders the component according to the new isSent
-value. Let’s take a closer look at the relationship between state and rendering.
-Rendering takes a snapshot in time “Rendering” means that React is calling your
-component, which is a function. The JSX you return from that function is like a
-snapshot of the UI in time. Its props, event handlers, and local variables were
-all calculated using its state at the time of the render. Unlike a photograph or
-a movie frame, the UI “snapshot” you return is interactive. It includes logic
-like event handlers that specify what happens in response to inputs. React
-updates the screen to match this snapshot and connects the event handlers. As a
-result, pressing a button will trigger the click handler from your JSX. When
-React re-renders a component: React calls your function again. Your function
-returns a new JSX snapshot. React then updates the screen to match the snapshot
-your function returned. React executing the function Calculating the snapshot
-Updating the DOM tree Illustrated by Rachel Lee Nabors As a component’s memory,
-state is not like a regular variable that disappears
+you think about how your code executes and explain its behavior. You will learn
+What rendering means in React When and why React renders a component The steps
+involved in displaying a component on screen Why rendering does not always
+produce a DOM update Imagine that your components are cooks in the kitchen,
+assembling tasty dishes from ingredients. In this scenario, React is the waiter
+who puts in requests from customers and brings them their orders. This process
+of requesting and serving UI has three steps: Triggering a render (delivering
+the guest’s order to the kitchen) Rendering the component (preparing the order
+in the kitchen) Committing to the DOM (placing the order on the table) Trigger
+Render Commit Illustrated by Rachel Lee Nabors Step 1: Trigger a render There
+are two reasons for a component to render: It’s the component’s initial render.
+The component’s (or one of its ancestors’) state has been updated. Initial
+render When your app starts, you need to trigger the initial render. Frameworks
+and sandboxes sometimes hide this code, but it’s done by calling createRoot with
+the target DOM node, and then calling its render method with your component:
+index.js Image.js index.js Reload Clear Fork import Image from './Image.js' ;
+import { createRoot } from 'react-dom/client' ; const root = createRoot (
+document . getElementById ( 'root' ) ) root . render ( < Image /> ) ; Try
+commenting out the root.render() call and see the component disappear!
+Re-renders when state updates Once the component has been initially rendered,
+you can
 ----------------------------------------------------------------------------------------------------
-Index: 4181 <<"chunk_id": 3, "docno": 616>>
+Index: 326 <<"chunk_id": 0, "docno": 45>>
 
-performing that update as blocking. Specifically, for every Transition update,
-React will call getSnapshot a second time just before applying changes to the
-DOM. If it returns a different value than when it was called originally, React
-will restart the update from scratch, this time applying it as a blocking
-update, to ensure that every component on screen is reflecting the same version
-of the store. It’s not recommended to suspend a render based on a store value
-returned by useSyncExternalStore . The reason is that mutations to the external
-store cannot be marked as non-blocking Transition updates , so they will trigger
-the nearest Suspense fallback , replacing already-rendered content on screen
-with a loading spinner, which typically makes a poor UX. For example, the
-following are discouraged: const LazyProductDetailPage = lazy ( ( ) => import (
-'./ProductDetailPage.js' ) ) ; function ShoppingApp ( ) { const
-selectedProductId = useSyncExternalStore ( ... ) ; // ❌ Calling `use` with a
-Promise dependent on `selectedProductId` const data = use ( fetchItem (
-selectedProductId ) ) // ❌ Conditionally rendering a lazy component based on
-`selectedProductId` return selectedProductId != null ? < LazyProductDetailPage
-/> : < FeaturedProducts /> ; } Usage Subscribing to an external store Most of
-your React components will only read data from their props, state, and context.
-However, sometimes a component needs to read some data from some store outside
-of React that changes over time. This includes: Third-party state management
-libraries that hold state outside of React. Browser APIs that expose
+Describing the UI – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Describing the UI
+React is a JavaScript library for rendering user interfaces (UI). UI is built
+from small units like buttons, text, and images. React lets you combine them
+into reusable, nestable components. From web sites to phone apps, everything on
+the screen can be broken down into components. In this
 ----------------------------------------------------------------------------------------------------
-Index: 5914 <<"chunk_id": 3, "docno": 857>>
+Index: 1557 <<"chunk_id": 0, "docno": 192>>
 
-of the UI from the screen, then add them back later while reusing the previous
-state. For example, when a user tabs away from a screen and back, React should
-be able to restore the previous screen in the same state it was in before. In an
-upcoming minor, we’re planning to add a new component called <Offscreen> that
-implements this pattern. Similarly, you’ll be able to use Offscreen to prepare
-new UI in the background so that it’s ready before the user reveals it.
-Concurrent rendering is a powerful new tool in React and most of our new
-features are built to take advantage of it, including Suspense, transitions, and
-streaming server rendering. But React 18 is just the beginning of what we aim to
-build on this new foundation. Gradually Adopting Concurrent Features
-Technically, concurrent rendering is a breaking change. Because concurrent
-rendering is interruptible, components behave slightly differently when it is
-enabled. In our testing, we’ve upgraded thousands of components to React 18.
-What we’ve found is that nearly all existing components “just work” with
-concurrent rendering, without any changes. However, some of them may require
-some additional migration effort. Although the changes are usually small, you’ll
-still have the ability to make them at your own pace. The new rendering behavior
-in React 18 is only enabled in the parts of your app that use new features. The
-overall upgrade strategy is to get your application running on React 18 without
-breaking existing code. Then you can gradually start adding concurrent features
-----------------------------------------------------------------------------------------------------
-Index: 3655 <<"chunk_id": 4, "docno": 525>>
-
-is an optimization. React may still need to call your component before ignoring
-the result, but it shouldn’t affect your code. React batches state updates. It
-updates the screen after all the event handlers have run and have called their
-set functions. This prevents multiple re-renders during a single event. In the
-rare case that you need to force React to update the screen earlier, for example
-to access the DOM, you can use flushSync . Usage Adding a reducer to a component
-Call useReducer at the top level of your component to manage state with a
-reducer. import { useReducer } from 'react' ; function reducer ( state , action
-) { // ... } function MyComponent ( ) { const [ state , dispatch ] = useReducer
-( reducer , { age: 42 } ) ; // ... useReducer returns an array with exactly two
-items: The current state of this state variable, initially set to the initial
-state you provided. The dispatch function that lets you change it in response to
-interaction. To update what’s on the screen, call dispatch with an object
-representing what the user did, called an action : function handleClick ( ) {
-dispatch ( { type : 'incremented_age' } ) ; } React will pass the current state
-and the action to your reducer function . Your reducer will calculate and return
-the next state. React will store that next state, render your component with it,
-and update the UI. App.js App.js Reload Clear Fork import { useReducer
+Your First Component – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Your First Component Components are one of the core concepts of React. They are
+the foundation upon which you build user interfaces (UI), which makes them the
+perfect place to start your React journey! You will learn What a component is
+What role components play in a React
 ----------------------------------------------------------------------------------------------------
 Index: 1590 <<"chunk_id": 0, "docno": 197>>
 
@@ -292,6 +183,51 @@ Synchronizing with Effects Some components need to synchronize with external
 systems. For example, you might want to control a non-React component based on
 the React state, set up a server connection, or send an analytics log when a
 component appears on the screen. Effects let you run some code
+----------------------------------------------------------------------------------------------------
+Index: 1591 <<"chunk_id": 1, "docno": 197>>
+
+React state, set up a server connection, or send an analytics log when a
+component appears on the screen. Effects let you run some code after rendering
+so that you can synchronize your component with some system outside of React.
+You will learn What Effects are How Effects are different from events How to
+declare an Effect in your component How to skip re-running an Effect
+unnecessarily Why Effects run twice in development and how to fix them What are
+Effects and how are they different from events? Before getting to Effects, you
+need to be familiar with two types of logic inside React components: Rendering
+code (introduced in Describing the UI ) lives at the top level of your
+component. This is where you take the props and state, transform them, and
+return the JSX you want to see on the screen. Rendering code must be pure. Like
+a math formula, it should only calculate the result, but not do anything else.
+Event handlers (introduced in Adding Interactivity ) are nested functions inside
+your components that do things rather than just calculate them. An event handler
+might update an input field, submit an HTTP POST request to buy a product, or
+navigate the user to another screen. Event handlers contain “side effects” (they
+change the program’s state) caused by a specific user action (for example, a
+button click or typing). Sometimes this isn’t enough. Consider a ChatRoom
+component that must connect to the chat server whenever it’s visible on the
+screen. Connecting to a server
+----------------------------------------------------------------------------------------------------
+Index: 980 <<"chunk_id": 2, "docno": 137>>
+
+{ message } onChange = { e => setMessage ( e . target . value ) } /> < button
+type = "submit" > Send </ button > </ form > ) ; } function sendMessage (
+message ) { // ... } Show more Here’s what happens when you click the button:
+The onSubmit event handler executes. setIsSent(true) sets isSent to true and
+queues a new render. React re-renders the component according to the new isSent
+value. Let’s take a closer look at the relationship between state and rendering.
+Rendering takes a snapshot in time “Rendering” means that React is calling your
+component, which is a function. The JSX you return from that function is like a
+snapshot of the UI in time. Its props, event handlers, and local variables were
+all calculated using its state at the time of the render. Unlike a photograph or
+a movie frame, the UI “snapshot” you return is interactive. It includes logic
+like event handlers that specify what happens in response to inputs. React
+updates the screen to match this snapshot and connects the event handlers. As a
+result, pressing a button will trigger the click handler from your JSX. When
+React re-renders a component: React calls your function again. Your function
+returns a new JSX snapshot. React then updates the screen to match the snapshot
+your function returned. React executing the function Calculating the snapshot
+Updating the DOM tree Illustrated by Rachel Lee Nabors As a component’s memory,
+state is not like a regular variable that disappears
 ----------------------------------------------------------------------------------------------------
 Index: 1001 <<"chunk_id": 0, "docno": 141>>
 
@@ -343,78 +279,6 @@ as a result of an interaction. Typing into the form should update the input
 field, clicking “next” on an image carousel should change which image is
 displayed, clicking “buy” should put a product in the
 ----------------------------------------------------------------------------------------------------
-Index: 1557 <<"chunk_id": 0, "docno": 192>>
-
-Your First Component – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
-Your First Component Components are one of the core concepts of React. They are
-the foundation upon which you build user interfaces (UI), which makes them the
-perfect place to start your React journey! You will learn What a component is
-What role components play in a React
-----------------------------------------------------------------------------------------------------
-Index: 326 <<"chunk_id": 0, "docno": 45>>
-
-Describing the UI – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
-Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Copy page Copy Describing the UI
-React is a JavaScript library for rendering user interfaces (UI). UI is built
-from small units like buttons, text, and images. React lets you combine them
-into reusable, nestable components. From web sites to phone apps, everything on
-the screen can be broken down into components. In this
-----------------------------------------------------------------------------------------------------
-Index: 787 <<"chunk_id": 4, "docno": 115>>
-
-If you run into a performance issue, there are several opt-in ways to solve it
-described in the Performance section. Don’t optimize prematurely! Step 3: React
-commits changes to the DOM After rendering (calling) your components, React will
-modify the DOM. For the initial render, React will use the appendChild() DOM API
-to put all the DOM nodes it has created on screen. For re-renders, React will
-apply the minimal necessary operations (calculated while rendering!) to make the
-DOM match the latest rendering output. React only changes the DOM nodes if
-there’s a difference between renders. For example, here is a component that
-re-renders with different props passed from its parent every second. Notice how
-you can add some text into the <input> , updating its value , but the text
-doesn’t disappear when the component re-renders: Clock.js Clock.js Reload Clear
-Fork export default function Clock ( { time } ) { return ( < > < h1 > { time }
-</ h1 > < input /> </ > ) ; } This works because during this last step, React
-only updates the content of <h1> with the new time . It sees that the <input>
-appears in the JSX in the same place as last time, so React doesn’t touch the
-<input> —or its value ! Epilogue: Browser paint After rendering is done and
-React updated the DOM, the browser will repaint the screen. Although this
-process is known as “browser rendering”, we’ll refer to it as “painting” to
-avoid confusion throughout the docs.
-----------------------------------------------------------------------------------------------------
 Index: 428 <<"chunk_id": 0, "docno": 67>>
 
 Adding Interactivity – React React v 19.2 Search ⌘ Ctrl K Learn Reference
@@ -440,104 +304,55 @@ clicking an image gallery switches the active image. In React, data that changes
 over time is called state. You can add state to any component, and update it as
 needed. In this chapter, you’ll learn how to
 ----------------------------------------------------------------------------------------------------
-Index: 4566 <<"chunk_id": 3, "docno": 665>>
+Index: 785 <<"chunk_id": 2, "docno": 115>>
 
-and this is when React runs hooks like useEffect . One known exception is user
-interactions, like clicks, or other discrete events. In this scenario, this
-phase could run before the paint. Learn more about renders and commits .
-Cascading updates Cascading updates is one of the patterns for performance
-regressions. If an update was scheduled during a render pass, React could
-discard completed work and start a new pass. In development builds, React can
-show you which Component scheduled a new update. This includes both general
-updates and cascading ones. You can see the enhanced stack trace by clicking on
-the “Cascading update” entry, which should also display the name of the method
-that scheduled an update. Learn more about Effects . Components The Components
-track visualizes the durations of React components. They are displayed as a
-flamegraph, where each entry represents the duration of the corresponding
-component render and all its descendant children components. Similar to render
-durations, effect durations are also represented as a flamegraph, but with a
-different color scheme that aligns with the corresponding phase on the Scheduler
-track. Note Unlike renders, not all effects are shown on the Components track by
-default. To maintain performance and prevent UI clutter, React will only display
-those effects, which had a duration of 0.05ms or longer, or triggered an update.
-Additional events may be displayed during the render and effects phases: Mount -
-A corresponding subtree of component renders or effects was mounted. Unmount - A
-corresponding subtree of component renders or effects
+; Try commenting out the root.render() call and see the component disappear!
+Re-renders when state updates Once the component has been initially rendered,
+you can trigger further renders by updating its state with the set function.
+Updating your component’s state automatically queues a render. (You can imagine
+these as a restaurant guest ordering tea, dessert, and all sorts of things after
+putting in their first order, depending on the state of their thirst or hunger.)
+State update... ...triggers... ...render! Illustrated by Rachel Lee Nabors Step
+2: React renders your components After you trigger a render, React calls your
+components to figure out what to display on screen. “Rendering” is React calling
+your components. On initial render, React will call the root component. For
+subsequent renders, React will call the function component whose state update
+triggered the render. This process is recursive: if the updated component
+returns some other component, React will render that component next, and if that
+component also returns something, it will render that component next, and so on.
+The process will continue until there are no more nested components and React
+knows exactly what should be displayed on screen. In the following example,
+React will call Gallery() and Image() several times: index.js Gallery.js
+Gallery.js Reload Clear Fork export default function Gallery ( ) { return ( <
+section > < h1 > Inspiring Sculptures </ h1 > < Image /> < Image /> < Image />
+</ section > ) ; } function Image ( ) { return ( < img src =
 ----------------------------------------------------------------------------------------------------
-Index: 1003 <<"chunk_id": 2, "docno": 141>>
+Index: 5914 <<"chunk_id": 3, "docno": 857>>
 
-at play here. React waits until all code in the event handlers has run before
-processing your state updates. This is why the re-render only happens after all
-these setNumber() calls. This might remind you of a waiter taking an order at
-the restaurant. A waiter doesn’t run to the kitchen at the mention of your first
-dish! Instead, they let you finish your order, let you make changes to it, and
-even take orders from other people at the table. Illustrated by Rachel Lee
-Nabors This lets you update multiple state variables—even from multiple
-components—without triggering too many re-renders. But this also means that the
-UI won’t be updated until after your event handler, and any code in it,
-completes. This behavior, also known as batching, makes your React app run much
-faster. It also avoids dealing with confusing “half-finished” renders where only
-some of the variables have been updated. React does not batch across multiple
-intentional events like clicks —each click is handled separately. Rest assured
-that React only does batching when it’s generally safe to do. This ensures that,
-for example, if the first button click disables a form, the second click would
-not submit it again. Updating the same state multiple times before the next
-render It is an uncommon use case, but if you would like to update the same
-state variable multiple times before the next render, instead of passing the
-next state value like setNumber(number + 1) , you can pass a function that
-calculates the next state based
+of the UI from the screen, then add them back later while reusing the previous
+state. For example, when a user tabs away from a screen and back, React should
+be able to restore the previous screen in the same state it was in before. In an
+upcoming minor, we’re planning to add a new component called <Offscreen> that
+implements this pattern. Similarly, you’ll be able to use Offscreen to prepare
+new UI in the background so that it’s ready before the user reveals it.
+Concurrent rendering is a powerful new tool in React and most of our new
+features are built to take advantage of it, including Suspense, transitions, and
+streaming server rendering. But React 18 is just the beginning of what we aim to
+build on this new foundation. Gradually Adopting Concurrent Features
+Technically, concurrent rendering is a breaking change. Because concurrent
+rendering is interruptible, components behave slightly differently when it is
+enabled. In our testing, we’ve upgraded thousands of components to React 18.
+What we’ve found is that nearly all existing components “just work” with
+concurrent rendering, without any changes. However, some of them may require
+some additional migration effort. Although the changes are usually small, you’ll
+still have the ability to make them at your own pace. The new rendering behavior
+in React 18 is only enabled in the parts of your app that use new features. The
+overall upgrade strategy is to get your application running on React 18 without
+breaking existing code. Then you can gradually start adding concurrent features
 ----------------------------------------------------------------------------------------------------
-Index: 5918 <<"chunk_id": 7, "docno": 857>>
+Index: 631 <<"chunk_id": 0, "docno": 97>>
 
-to distinguish between urgent and non-urgent updates. Urgent updates reflect
-direct interaction, like typing, clicking, pressing, and so on. Transition
-updates transition the UI from one view to another. Urgent updates like typing,
-clicking, or pressing, need immediate response to match our intuitions about how
-physical objects behave. Otherwise they feel “wrong”. However, transitions are
-different because the user doesn’t expect to see every intermediate value on
-screen. For example, when you select a filter in a dropdown, you expect the
-filter button itself to respond immediately when you click. However, the actual
-results may transition separately. A small delay would be imperceptible and
-often expected. And if you change the filter again before the results are done
-rendering, you only care to see the latest results. Typically, for the best user
-experience, a single user input should result in both an urgent update and a
-non-urgent one. You can use startTransition API inside an input event to inform
-React which updates are urgent and which are “transitions”: import {
-startTransition } from 'react' ; // Urgent: Show what was typed setInputValue (
-input ) ; // Mark any state updates inside as transitions startTransition ( ( )
-=> { // Transition: Show the results setSearchQuery ( input ) ; } ) ; Updates
-wrapped in startTransition are handled as non-urgent and will be interrupted if
-more urgent updates like clicks or key presses come in. If a transition gets
-interrupted by the user (for example, by typing multiple characters in a row),
-React will throw
-----------------------------------------------------------------------------------------------------
-Index: 636 <<"chunk_id": 5, "docno": 97>>
-
-modules, not components. Non-component modules, like inspirations.js , are also
-represented in this tree. The render tree only encapsulates components.
-Copyright.js appears under App.js but in the render tree, Copyright , the
-component, appears as a child of InspirationGenerator . This is because
-InspirationGenerator accepts JSX as children props , so it renders Copyright as
-a child component but does not import the module. Dependency trees are useful to
-determine what modules are necessary to run your React app. When building a
-React app for production, there is typically a build step that will bundle all
-the necessary JavaScript to ship to the client. The tool responsible for this is
-called a bundler , and bundlers will use the dependency tree to determine what
-modules should be included. As your app grows, often the bundle size does too.
-Large bundle sizes are expensive for a client to download and run. Large bundle
-sizes can delay the time for your UI to get drawn. Getting a sense of your app’s
-dependency tree may help with debugging these issues. Recap Trees are a common
-way to represent the relationship between entities. They are often used to model
-UI. Render trees represent the nested relationship between React components
-across a single render. With conditional rendering, the render tree may change
-across different renders. With different prop values, components may render
-different children components. Render trees help identify what the top-level and
-leaf components are. Top-level components affect the rendering performance of
-all components beneath them and leaf components are
-----------------------------------------------------------------------------------------------------
-Index: 2039 <<"chunk_id": 0, "docno": 264>>
-
-Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
+Understanding Your UI as a Tree – React React v 19.2 Search ⌘ Ctrl K Learn
 Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
 in React Installation Creating a React App Build a React App from Scratch Add
 React to an Existing Project Setup Editor Setup Using TypeScript React Developer
@@ -554,80 +369,36 @@ Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
 and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
 with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
 Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
-Separating Events from Effects Event handlers only re-run when you perform the
-same interaction again. Unlike event handlers, Effects re-synchronize if some
-value they read, like a prop or a state variable, is different from what it was
-during the last render. Sometimes, you also want a mix
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Understanding Your UI as a Tree Your React app is taking shape with many
+components being nested within each other. How does React keep track of your
+app’s component structure? React, and many other UI libraries, model UI as a
+tree. Thinking of your app
 ----------------------------------------------------------------------------------------------------
-Index: 1593 <<"chunk_id": 3, "docno": 197>>
+Index: 1743 <<"chunk_id": 0, "docno": 218>>
 
-adjusts some state based on other state, you might not need an Effect. How to
-write an Effect To write an Effect, follow these three steps: Declare an Effect.
-By default, your Effect will run after every commit . Specify the Effect
-dependencies. Most Effects should only re-run when needed rather than after
-every render. For example, a fade-in animation should only trigger when a
-component appears. Connecting and disconnecting to a chat room should only
-happen when the component appears and disappears, or when the chat room changes.
-You will learn how to control this by specifying dependencies. Add cleanup if
-needed. Some Effects need to specify how to stop, undo, or clean up whatever
-they were doing. For example, “connect” needs “disconnect”, “subscribe” needs
-“unsubscribe”, and “fetch” needs either “cancel” or “ignore”. You will learn how
-to do this by returning a cleanup function . Let’s look at each of these steps
-in detail. Step 1: Declare an Effect To declare an Effect in your component,
-import the useEffect Hook from React: import { useEffect } from 'react' ; Then,
-call it at the top level of your component and put some code inside your Effect:
-function MyComponent ( ) { useEffect ( ( ) => { // Code here will run after
-*every* render } ) ; return < div /> ; } Every time your component renders,
-React will update the screen and then run the code inside useEffect . In other
-words, useEffect “delays” a piece of code from running until
-----------------------------------------------------------------------------------------------------
-Index: 844 <<"chunk_id": 1, "docno": 123>>
-
-React and synchronize your components with some external system like a non-React
-widget, network, or the browser DOM. If there is no external system involved
-(for example, if you want to update a component’s state when some props or state
-change), you shouldn’t need an Effect. Removing unnecessary Effects will make
-your code easier to follow, faster to run, and less error-prone. You will learn
-Why and how to remove unnecessary Effects from your components How to cache
-expensive computations without Effects How to reset and adjust component state
-without Effects How to share logic between event handlers Which logic should be
-moved to event handlers How to notify parent components about changes How to
-remove unnecessary Effects There are two common cases in which you don’t need
-Effects: You don’t need Effects to transform data for rendering. For example,
-let’s say you want to filter a list before displaying it. You might feel tempted
-to write an Effect that updates a state variable when the list changes. However,
-this is inefficient. When you update the state, React will first call your
-component functions to calculate what should be on the screen. Then React will
-“commit” these changes to the DOM, updating the screen. Then React will run your
-Effects. If your Effect also immediately updates the state, this restarts the
-whole process from scratch! To avoid the unnecessary render passes, transform
-all the data at the top level of your components. That code will automatically
-re-run whenever your props or state change. You don’t need
-----------------------------------------------------------------------------------------------------
-Index: 6079 <<"chunk_id": 8, "docno": 878>>
-
-preserve the state of hidden tabs, so the user can switch between them without
-losing their progress. A virtualized list component can prerender additional
-rows above and below the visible window. When opening a modal or popup, the rest
-of the app can be put into “background” mode so that events and updates are
-disabled for everything except the modal. Most React developers will not
-interact with React’s offscreen APIs directly. Instead, offscreen rendering will
-be integrated into things like routers and UI libraries, and then developers who
-use those libraries will automatically benefit without additional work. The idea
-is that you should be able to render any React tree offscreen without changing
-the way you write your components. When a component is rendered offscreen, it
-does not actually mount until the component becomes visible — its effects are
-not fired. For example, if a component uses useEffect to log analytics when it
-appears for the first time, prerendering won’t mess up the accuracy of those
-analytics. Similarly, when a component goes offscreen, its effects are
-unmounted, too. A key feature of offscreen rendering is that you can toggle the
-visibility of a component without losing its state. Since our last update, we’ve
-tested an experimental version of prerendering internally at Meta in our React
-Native apps on Android and iOS, with positive performance results. We’ve also
-improved how offscreen rendering works with Suspense — suspending inside an
-offscreen tree will not trigger Suspense fallbacks. Our remaining work involves
-finalizing the primitives that are exposed to
+Responding to Events – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Responding to Events React lets you add event handlers to your JSX. Event
+handlers are your own functions that will be triggered in response to
+interactions like clicking, hovering, focusing form inputs, and so on. You will
+learn Different ways to write an event handler How to pass event
 ----------------------------------------------------------------------------------------------------
 Index: 843 <<"chunk_id": 0, "docno": 123>>
 
@@ -653,32 +424,6 @@ Might Not Need an Effect Effects are an escape hatch from the React paradigm.
 They let you “step outside” of React and synchronize your components with some
 external system like a non-React widget, network, or the browser DOM. If there
 is no external system involved
-----------------------------------------------------------------------------------------------------
-Index: 1891 <<"chunk_id": 0, "docno": 239>>
-
-Keeping Components Pure – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
-Keeping Components Pure Some JavaScript functions are pure. Pure functions only
-perform a calculation and nothing more. By strictly only writing your components
-as pure functions, you can avoid an entire class of baffling bugs and
-unpredictable behavior as your codebase grows. To get these benefits, though,
-there
 ----------------------------------------------------------------------------------------------------
 Index: 1780 <<"chunk_id": 0, "docno": 224>>
 
@@ -706,34 +451,9 @@ issues. You will learn The difference between compiler errors and runtime issues
 Common patterns that break compilation Step-by-step debugging workflow
 Understanding Compiler Behavior React Compiler
 ----------------------------------------------------------------------------------------------------
-Index: 1743 <<"chunk_id": 0, "docno": 218>>
+Index: 2039 <<"chunk_id": 0, "docno": 264>>
 
-Responding to Events – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
-Responding to Events React lets you add event handlers to your JSX. Event
-handlers are your own functions that will be triggered in response to
-interactions like clicking, hovering, focusing form inputs, and so on. You will
-learn Different ways to write an event handler How to pass event
-----------------------------------------------------------------------------------------------------
-Index: 1975 <<"chunk_id": 0, "docno": 252>>
-
-Referencing Values with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
 Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
 in React Installation Creating a React App Build a React App from Scratch Add
 React to an Existing Project Setup Editor Setup Using TypeScript React Developer
@@ -751,416 +471,8 @@ and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
 with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
 Reactive Effects Separating Events from Effects Removing Effect Dependencies
 Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
-Referencing Values with Refs When you want a component to “remember” some
-information, but you don’t want that information to trigger new renders , you
-can use a ref . You will learn How to add a ref to your component How to update
-a ref’s value How
-----------------------------------------------------------------------------------------------------
-Index: 5011 <<"chunk_id": 2, "docno": 727>>
-
-created locally in render. When render is kept pure, React can understand how to
-prioritize which updates are most important for the user to see first. This is
-made possible because of render purity: since components don’t have side effects
-in render , React can pause rendering components that aren’t as important to
-update, and only come back to them later when it’s needed. Concretely, this
-means that rendering logic can be run multiple times in a way that allows React
-to give your user a pleasant user experience. However, if your component has an
-untracked side effect – like modifying the value of a global variable during
-render – when React runs your rendering code again, your side effects will be
-triggered in a way that won’t match what you want. This often leads to
-unexpected bugs that can degrade how your users experience your app. You can see
-an example of this in the Keeping Components Pure page . How does React run your
-code? React is declarative: you tell React what to render, and React will figure
-out how best to display it to your user. To do this, React has a few phases
-where it runs your code. You don’t need to know about all of these phases to use
-React well. But at a high level, you should know about what code runs in render
-, and what runs outside of it. Rendering refers to calculating what the next
-version of your UI should look like. After rendering, React takes this
-----------------------------------------------------------------------------------------------------
-Index: 5999 <<"chunk_id": 6, "docno": 870>>
-
-to learn React for free on their own. This is why the Learn section is organized
-like a self-paced course split into chapters. The first two chapters describe
-the fundamentals of React. If you’re new to React, or want to refresh it in your
-memory, start here: Describing the UI teaches how to display information with
-components. Adding Interactivity teaches how to update the screen in response to
-user input. The next two chapters are more advanced, and will give you a deeper
-insight into the trickier parts: Managing State teaches how to organize your
-logic as your app grows in complexity. Escape Hatches teaches how you can “step
-outside” React, and when it makes most sense to do so. Every chapter consists of
-several related pages. Most of these pages teach a specific skill or a
-technique—for example, Writing Markup with JSX , Updating Objects in State , or
-Sharing State Between Components . Some of the pages focus on explaining an
-idea—like Render and Commit , or State as a Snapshot . And there are a few, like
-You Might Not Need an Effect , that share our suggestions based on what we’ve
-learned over these years. You don’t have to read these chapters as a sequence.
-Who has the time for this?! But you could. Pages in the Learn section only rely
-on concepts introduced by the earlier pages. If you want to read it like a book,
-go for it! Check your understanding with challenges Most pages in the Learn
-section end
-----------------------------------------------------------------------------------------------------
-Index: 712 <<"chunk_id": 0, "docno": 107>>
-
-Updating Arrays in State – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
-Updating Arrays in State Arrays are mutable in JavaScript, but you should treat
-them as immutable when you store them in state. Just like with objects, when you
-want to update an array stored in state, you need to create a new one (or make a
-copy of
-----------------------------------------------------------------------------------------------------
-Index: 919 <<"chunk_id": 16, "docno": 129>>
-
-call the set function during render, React will re-render that component
-immediately after your component exits with a return statement, and before
-rendering the children. This way, children don’t need to render twice. The rest
-of your component function will still execute (and the result will be thrown
-away). If your condition is below all the Hook calls, you may add an early
-return; to restart rendering earlier. Troubleshooting I’ve updated the state,
-but logging gives me the old value Calling the set function does not change
-state in the running code : function handleClick ( ) { console . log ( count ) ;
-// 0 setCount ( count + 1 ) ; // Request a re-render with 1 console . log (
-count ) ; // Still 0! setTimeout ( ( ) => { console . log ( count ) ; // Also 0!
-} , 5000 ) ; } This is because states behaves like a snapshot. Updating state
-requests another render with the new state value, but does not affect the count
-JavaScript variable in your already-running event handler. If you need to use
-the next state, you can save it in a variable before passing it to the set
-function: const nextCount = count + 1 ; setCount ( nextCount ) ; console . log (
-count ) ; // 0 console . log ( nextCount ) ; // 1 I’ve updated the state, but
-the screen doesn’t update React will ignore your update if the next state is
-equal to
-----------------------------------------------------------------------------------------------------
-Index: 3654 <<"chunk_id": 3, "docno": 525>>
-
-they should be), this should not affect your logic. The result from one of the
-calls is ignored. dispatch function The dispatch function returned by useReducer
-lets you update the state to a different value and trigger a re-render. You need
-to pass the action as the only argument to the dispatch function: const [ state
-, dispatch ] = useReducer ( reducer , { age : 42 } ) ; function handleClick ( )
-{ dispatch ( { type : 'incremented_age' } ) ; // ... React will set the next
-state to the result of calling the reducer function you’ve provided with the
-current state and the action you’ve passed to dispatch . Parameters action : The
-action performed by the user. It can be a value of any type. By convention, an
-action is usually an object with a type property identifying it and, optionally,
-other properties with additional information. Returns dispatch functions do not
-have a return value. Caveats The dispatch function only updates the state
-variable for the next render . If you read the state variable after calling the
-dispatch function, you will still get the old value that was on the screen
-before your call. If the new value you provide is identical to the current state
-, as determined by an Object.is comparison, React will skip re-rendering the
-component and its children. This is an optimization. React may still need to
-call your component before ignoring the result, but it shouldn’t affect your
-code. React batches state updates.
-----------------------------------------------------------------------------------------------------
-Index: 979 <<"chunk_id": 1, "docno": 137>>
-
-like a snapshot. Setting it does not change the state variable you already have,
-but instead triggers a re-render. You will learn How setting state triggers
-re-renders When and how state updates Why state does not update immediately
-after you set it How event handlers access a “snapshot” of the state Setting
-state triggers renders You might think of your user interface as changing
-directly in response to the user event like a click. In React, it works a little
-differently from this mental model. On the previous page, you saw that setting
-state requests a re-render from React. This means that for an interface to react
-to the event, you need to update the state . In this example, when you press
-“send”, setIsSent(true) tells React to re-render the UI: App.js App.js Reload
-Clear Fork import { useState } from 'react' ; export default function Form ( ) {
-const [ isSent , setIsSent ] = useState ( false ) ; const [ message , setMessage
-] = useState ( 'Hi!' ) ; if ( isSent ) { return < h1 > Your message is on its
-way! </ h1 > } return ( < form onSubmit = { ( e ) => { e . preventDefault ( ) ;
-setIsSent ( true ) ; sendMessage ( message ) ; } } > < textarea placeholder =
-"Message" value = { message } onChange = { e => setMessage ( e . target . value
-) } /> < button type = "submit" > Send
-----------------------------------------------------------------------------------------------------
-Index: 923 <<"chunk_id": 20, "docno": 129>>
-
-an initializer function , and that someOtherFunction is an updater function , so
-it tries to call them and store the result. To actually store a function, you
-have to put () => before them in both cases. Then React will store the functions
-you pass. const [ fn , setFn ] = useState ( ( ) => someFunction ) ; function
-handleClick ( ) { setFn ( ( ) => someOtherFunction ) ; } Previous useRef Next
-useSyncExternalStore Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by
-@sawaratsuki1004 Learn React Quick Start Installation Describing the UI Adding
-Interactivity Managing State Escape Hatches API Reference React APIs React DOM
-APIs Community Code of Conduct Meet the Team Docs Contributors Acknowledgements
-More Blog React Native Privacy Terms On this page Overview Reference
-useState(initialState) set functions, like setSomething(nextState) Usage Adding
-state to a component Updating state based on the previous state Updating objects
-and arrays in state Avoiding recreating the initial state Resetting state with a
-key Storing information from previous renders Troubleshooting I’ve updated the
-state, but logging gives me the old value I’ve updated the state, but the screen
-doesn’t update I’m getting an error: “Too many re-renders” My initializer or
-updater function runs twice I’m trying to set state to a function, but it gets
-called instead
-----------------------------------------------------------------------------------------------------
-Index: 1159 <<"chunk_id": 0, "docno": 156>>
-
-Scaling Up with Reducer and Context – React React v 19.2 Search ⌘ Ctrl K Learn
-Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
-in React Installation Creating a React App Build a React App from Scratch Add
-React to an Existing Project Setup Editor Setup Using TypeScript React Developer
-Tools React Compiler Introduction Installation Incremental Adoption Debugging
-and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
-and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
-Braces Passing Props to a Component Conditional Rendering Rendering Lists
-Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
-Events State: A Component's Memory Render and Commit State as a Snapshot
-Queueing a Series of State Updates Updating Objects in State Updating Arrays in
-State Managing State Reacting to Input with State Choosing the State Structure
-Sharing State Between Components Preserving and Resetting State Extracting State
-Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
-and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
-with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
-Scaling Up with Reducer and Context Reducers let you consolidate a component’s
-state update logic. Context lets you pass information deep down to other
-components. You can combine reducers and context together to manage state of a
-complex screen. You will learn How to combine a
-----------------------------------------------------------------------------------------------------
-Index: 6214 <<"chunk_id": 0, "docno": 906>>
-
-React v19 – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
-Blog Copy page Copy React v19 December 05, 2024 by The React Team Note React 19
-is now stable! Additions since this post was originally shared with the React 19
-RC in April: Pre-warming for suspended trees : see Improvements to Suspense .
-React DOM static APIs : see New React DOM Static APIs . The date for this post
-has been updated to reflect the stable release date. React v19 is now available
-on npm! In our React 19 Upgrade Guide , we shared step-by-step instructions for
-upgrading your app to React 19. In this post, we’ll give an overview of the new
-features in React 19, and how you can adopt them. What’s new in React 19
-Improvements in React 19 How to upgrade For a list of breaking changes, see the
-Upgrade Guide . What’s new in React 19 Actions A common use case in React apps
-is to perform a data mutation and then update state in response. For example,
-when a user submits a form to change their name, you will make an API request,
-and then handle the response. In the past, you would need to handle pending
-states, errors, optimistic updates, and sequential requests manually. For
-example, you could handle the pending and error state in useState : // Before
-Actions function UpdateName ( { } ) { const [ name , setName ] = useState ( "" )
-; const [ error ,
-----------------------------------------------------------------------------------------------------
-Index: 5921 <<"chunk_id": 10, "docno": 857>>
-
-. React DOM Server These new APIs are now exported from react-dom/server and
-have full support for streaming Suspense on the server: renderToPipeableStream :
-for streaming in Node environments. renderToReadableStream : for modern edge
-runtime environments, such as Deno and Cloudflare workers. The existing
-renderToString method keeps working but is discouraged. See docs for React DOM
-Server here . New Strict Mode Behaviors In the future, we’d like to add a
-feature that allows React to add and remove sections of the UI while preserving
-state. For example, when a user tabs away from a screen and back, React should
-be able to immediately show the previous screen. To do this, React would unmount
-and remount trees using the same component state as before. This feature will
-give React apps better performance out-of-the-box, but requires components to be
-resilient to effects being mounted and destroyed multiple times. Most effects
-will work without any changes, but some effects assume they are only mounted or
-destroyed once. To help surface these issues, React 18 introduces a new
-development-only check to Strict Mode. This new check will automatically unmount
-and remount every component, whenever a component mounts for the first time,
-restoring the previous state on the second mount. Before this change, React
-would mount the component and create the effects: * React mounts the component .
-* Layout effects are created . * Effects are created . With Strict Mode in React
-18, React will simulate unmounting and remounting the component in development
-mode: * React mounts the
-----------------------------------------------------------------------------------------------------
-Index: 6096 <<"chunk_id": 6, "docno": 882>>
-
-support concurrent rendering for use cases specific to their use case in areas
-like styles, and external stores. To support React 18, some libraries may need
-to switch to one of the following APIs: useSyncExternalStore is a new Hook that
-allows external stores to support concurrent reads by forcing updates to the
-store to be synchronous. This new API is recommended for any library that
-integrates with state external to React. For more information, see the
-useSyncExternalStore overview post and useSyncExternalStore API details .
-useInsertionEffect is a new Hook that allows CSS-in-JS libraries to address
-performance issues of injecting styles in render. Unless you’ve already built a
-CSS-in-JS library we don’t expect you to ever use this. This Hook will run after
-the DOM is mutated, but before layout effects read the new layout. This solves
-an issue that already exists in React 17 and below, but is even more important
-in React 18 because React yields to the browser during concurrent rendering,
-giving it a chance to recalculate layout. For more information, see the Library
-Upgrade Guide for <style> . React 18 also introduces new APIs for concurrent
-rendering such as startTransition , useDeferredValue and useId , which we share
-more about in the release post . Updates to Strict Mode In the future, we’d like
-to add a feature that allows React to add and remove sections of the UI while
-preserving state. For example, when a user tabs away from a screen and back,
-React should be able to immediately show the previous
-----------------------------------------------------------------------------------------------------
-Index: 5846 <<"chunk_id": 4, "docno": 847>>
-
-The React Performance Tracks docs explain everything included in the tracks, but
-here is a high-level overview. Scheduler ⚛ The Scheduler track shows what React
-is working on for different priorities such as “blocking” for user interactions,
-or “transition” for updates inside startTransition. Inside each track, you will
-see the type of work being performed such as the event that scheduled an update,
-and when the render for that update happened. We also show information such as
-when an update is blocked waiting for a different priority, or when React is
-waiting for paint before continuing. The Scheduler track helps you understand
-how React splits your code into different priorities, and the order it completed
-the work. See the Scheduler track docs to see everything included. Components ⚛
-The Components track shows the tree of components that React is working on
-either to render or run effects. Inside you’ll see labels such as “Mount” for
-when children mount or effects are mounted, or “Blocked” for when rendering is
-blocked due to yielding to work outside React. The Components track helps you
-understand when components are rendered or run effects, and the time it takes to
-complete that work to help identify performance problems. See the Components
-track docs for see everything included. New React DOM Features Partial
-Pre-rendering In 19.2 we’re adding a new capability to pre-render part of the
-app ahead of time, and resume rendering it later. This feature is called
-“Partial Pre-rendering”, and allows you to pre-render the static parts of your
-app
-----------------------------------------------------------------------------------------------------
-Index: 4256 <<"chunk_id": 14, "docno": 628>>
-
-function components. This use case is very uncommon, but if you have the need
-for it, for now you’ll have to write a class component. render() The render
-method is the only required method in a class component. The render method
-should specify what you want to appear on the screen, for example: import {
-Component } from 'react' ; class Greeting extends Component { render ( ) {
-return < h1 > Hello, { this . props . name } ! </ h1 > ; } } React may call
-render at any moment, so you shouldn’t assume that it runs at a particular time.
-Usually, the render method should return a piece of JSX , but a few other return
-types (like strings) are supported. To calculate the returned JSX, the render
-method can read this.props , this.state , and this.context . You should write
-the render method as a pure function, meaning that it should return the same
-result if props, state, and context are the same. It also shouldn’t contain side
-effects (like setting up subscriptions) or interact with the browser APIs. Side
-effects should happen either in event handlers or methods like componentDidMount
-. Parameters render does not take any parameters. Returns render can return any
-valid React node. This includes React elements such as <div /> , strings,
-numbers, portals , empty nodes ( null , undefined , true , and false ), and
-arrays of React nodes. Caveats render should be written as a pure function of
-props, state,
-----------------------------------------------------------------------------------------------------
-Index: 907 <<"chunk_id": 4, "docno": 129>>
-
-is an optimization. Although in some cases React may still need to call your
-component before skipping the children, it shouldn’t affect your code. React
-batches state updates. It updates the screen after all the event handlers have
-run and have called their set functions. This prevents multiple re-renders
-during a single event. In the rare case that you need to force React to update
-the screen earlier, for example to access the DOM, you can use flushSync . The
-set function has a stable identity, so you will often see it omitted from Effect
-dependencies, but including it will not cause the Effect to fire. If the linter
-lets you omit a dependency without errors, it is safe to do. Learn more about
-removing Effect dependencies. Calling the set function during rendering is only
-allowed from within the currently rendering component. React will discard its
-output and immediately attempt to render it again with the new state. This
-pattern is rarely needed, but you can use it to store information from the
-previous renders . See an example below. In Strict Mode, React will call your
-updater function twice in order to help you find accidental impurities. This is
-development-only behavior and does not affect production. If your updater
-function is pure (as it should be), this should not affect the behavior. The
-result from one of the calls will be ignored. Usage Adding state to a component
-Call useState at the top level of your component to declare one or more state
-variables. import
-----------------------------------------------------------------------------------------------------
-Index: 632 <<"chunk_id": 1, "docno": 97>>
-
-How does React keep track of your app’s component structure? React, and many
-other UI libraries, model UI as a tree. Thinking of your app as a tree is useful
-for understanding the relationship between components. This understanding will
-help you debug future concepts like performance and state management. You will
-learn How React “sees” component structures What a render tree is and what it is
-useful for What a module dependency tree is and what it is useful for Your UI as
-a tree Trees are a relationship model between items. The UI is often represented
-using tree structures. For example, browsers use tree structures to model HTML (
-DOM ) and CSS ( CSSOM ). Mobile platforms also use trees to represent their view
-hierarchy. React creates a UI tree from your components. In this example, the UI
-tree is then used to render to the DOM. Like browsers and mobile platforms,
-React also uses tree structures to manage and model the relationship between
-components in a React app. These trees are useful tools to understand how data
-flows through a React app and how to optimize rendering and app size. The Render
-Tree A major feature of components is the ability to compose components of other
-components. As we nest components , we have the concept of parent and child
-components, where each parent component may itself be a child of another
-component. When we render a React app, we can model this relationship in a tree,
-known as the render tree. Here
-----------------------------------------------------------------------------------------------------
-Index: 887 <<"chunk_id": 0, "docno": 126>>
-
-Writing Markup with JSX – React React v 19.2 Search ⌘ Ctrl K Learn Reference
-Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
-Installation Creating a React App Build a React App from Scratch Add React to an
-Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
-Compiler Introduction Installation Incremental Adoption Debugging and
-Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
-Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
-Passing Props to a Component Conditional Rendering Rendering Lists Keeping
-Components Pure Your UI as a Tree Adding Interactivity Responding to Events
-State: A Component's Memory Render and Commit State as a Snapshot Queueing a
-Series of State Updates Updating Objects in State Updating Arrays in State
-Managing State Reacting to Input with State Choosing the State Structure Sharing
-State Between Components Preserving and Resetting State Extracting State Logic
-into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
-Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
-Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
-Writing Markup with JSX JSX is a syntax extension for JavaScript that lets you
-write HTML-like markup inside a JavaScript file. Although there are other ways
-to write components, most React developers prefer the conciseness of JSX, and
-most codebases use it. You will learn Why React
-----------------------------------------------------------------------------------------------------
-Index: 853 <<"chunk_id": 10, "docno": 123>>
-
-run the Effects. Finally, the setSelection(null) call will cause another
-re-render of the List and its child components, restarting this whole process
-again. Start by deleting the Effect. Instead, adjust the state directly during
-rendering: function List ( { items } ) { const [ isReverse , setIsReverse ] =
-useState ( false ) ; const [ selection , setSelection ] = useState ( null ) ; //
-Better: Adjust the state while rendering const [ prevItems , setPrevItems ] =
-useState ( items ) ; if ( items !== prevItems ) { setPrevItems ( items ) ;
-setSelection ( null ) ; } // ... } Storing information from previous renders
-like this can be hard to understand, but it’s better than updating the same
-state in an Effect. In the above example, setSelection is called directly during
-a render. React will re-render the List immediately after it exits with a return
-statement. React has not rendered the List children or updated the DOM yet, so
-this lets the List children skip rendering the stale selection value. When you
-update a component during rendering, React throws away the returned JSX and
-immediately retries rendering. To avoid very slow cascading retries, React only
-lets you update the same component’s state during a render. If you update
-another component’s state during a render, you’ll see an error. A condition like
-items !== prevItems is necessary to avoid loops. You may adjust state like this,
-but any other side effects (like changing the DOM or setting timeouts) should
-----------------------------------------------------------------------------------------------------
-Index: 631 <<"chunk_id": 0, "docno": 97>>
-
-Understanding Your UI as a Tree – React React v 19.2 Search ⌘ Ctrl K Learn
-Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
-in React Installation Creating a React App Build a React App from Scratch Add
-React to an Existing Project Setup Editor Setup Using TypeScript React Developer
-Tools React Compiler Introduction Installation Incremental Adoption Debugging
-and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
-and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
-Braces Passing Props to a Component Conditional Rendering Rendering Lists
-Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
-Events State: A Component's Memory Render and Commit State as a Snapshot
-Queueing a Series of State Updates Updating Objects in State Updating Arrays in
-State Managing State Reacting to Input with State Choosing the State Structure
-Sharing State Between Components Preserving and Resetting State Extracting State
-Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
-and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
-with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
-Reactive Effects Separating Events from Effects Removing Effect Dependencies
-Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
-Understanding Your UI as a Tree Your React app is taking shape with many
-components being nested within each other. How does React keep track of your
-app’s component structure? React, and many other UI libraries, model UI as a
-tree. Thinking of your app
+Separating Events from Effects Event handlers only re-run when you perform the
+same interaction again. Unlike event handlers, Effects re-synchronize if some
+value they read, like a prop or a state variable, is different from what it was
+during the last render. Sometimes, you also want a mix
 ----------------------------------------------------------------------------------------------------

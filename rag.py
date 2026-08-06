@@ -7,12 +7,9 @@ import Models.vector_model as vec
 import Models.hybrid as hybrid
 from ollama import chat
 from query_retrieval import normalize_text_tokens, load_models
-import dotenv
 
-dotenv.load_dotenv()
-
-TOP_N = int(getenv("TOP_N", 20))  # Default to top 20 results if not set in .env
-BM25_WEIGHT = float(getenv("BM25_WEIGHT", 0.25))  # Default weight for BM25 in hybrid retrieval
+TOP_N = 20  # Default to top 20 results if not set in .env
+BM25_WEIGHT = 0.25  # Default weight for BM25 in hybrid retrieval
 SYSTEM_PROMPT = """
 You are a closed-book question answering system.
 

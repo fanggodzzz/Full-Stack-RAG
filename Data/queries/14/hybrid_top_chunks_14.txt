@@ -22,81 +22,6 @@ stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
 spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
 output via a shell Short
 ----------------------------------------------------------------------------------------------------
-Index: 11873 <<"chunk_id": 19, "docno": 1862>>
-
-12.8.1 This is a security release. Node.js, as well as many other
-implementations of HTTP/2, have been found vulnerable to Denial of Service
-attacks. See
-https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
-for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
-attacker requests a large amount of data from a specified resource over multiple
-streams. They manipulate window size and stream priority to force the server to
-queue the data in 1-byte chunks. Depending on how efficiently this data is
-queued, this can consume excess CPU, memory, or both, potentially leading to a
-denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
-pings to an HTTP/2 peer, causing the peer to build an internal queue of
-responses. Depending on how efficiently this data is queued, this can consume
-excess CPU, memory, or both, potentially leading to a denial of service.
-CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
-and continually shuffles the priority of the streams in a way that causes
-substantial churn to the priority tree. This can consume excess CPU, potentially
-leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
-a number of streams and sends an invalid request over each stream that should
-solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
-queues the RST_STREAM frames, this can consume excess memory, CPU, or both,
-potentially leading to a denial of service. CVE-2019-9515 “Settings Flood” : The
-attacker sends a stream of SETTINGS frames to the peer. Since the RFC requires
-that the peer reply with
-----------------------------------------------------------------------------------------------------
-Index: 2354 <<"chunk_id": 9, "docno": 313>>
-
-like an image-upload service is to combine all three: cluster to spread incoming
-requests across cores, and worker_threads (or child_process ) within each worker
-to do the actual image processing without blocking that worker's event loop.
-Further reading child_process API reference worker_threads API reference cluster
-API reference The Node.js Event Loop Don't Block the Event Loop Reading Time 7
-min read Contribute Edit this page Table of Contents The three options at a
-glance Child Process spawn, exec, execFile, and fork streaming a long-running
-command with spawn() talking to another Node.js process with fork() Things to
-watch for Worker Threads offloading CPU-bound work Sharing memory Things to
-watch for Cluster scaling an HTTP server across cores How the workers share one
-port isPrimary / isWorker Things to watch for Choosing between them Further
-reading Copyright OpenJS Foundation and Node.js contributors. All rights
-reserved. The OpenJS Foundation has registered trademarks and uses trademarks.
-For a list of trademarks of the OpenJS Foundation , please see our Trademark
-Policy and Trademark List . Trademarks and logos not indicated on the list of
-OpenJS Foundation trademarks are trademarks™ or registered® trademarks of their
-respective holders. Use of them does not imply any affiliation with or
-endorsement by them. OpenJS Foundation AI Coding Assistants Policy Bylaws Code
-of Conduct Cookie Policy Privacy Policy Security Policy Terms of Use Trademark
-List Trademark Policy
-----------------------------------------------------------------------------------------------------
-Index: 238 <<"chunk_id": 2, "docno": 31>>
-
-start the event-loop. Typically, behavior is defined through callbacks at the
-beginning of a script, and at the end a server is started through a blocking
-call like EventMachine::run() . In Node.js, there is no such
-start-the-event-loop call. Node.js simply enters the event loop after executing
-the input script. Node.js exits the event loop when there are no more callbacks
-to perform. This behavior is like browser JavaScript — the event loop is hidden
-from the user. HTTP is a first-class citizen in Node.js, designed with streaming
-and low latency in mind. This makes Node.js well suited for the foundation of a
-web library or framework. Node.js being designed without threads doesn't mean
-you can't take advantage of multiple cores in your environment. Child processes
-can be spawned by using our child_process.fork() API, and are designed to be
-easy to communicate with. Built upon that same interface is the cluster module,
-which allows you to share sockets between processes to enable load balancing
-over your cores. Official Node.js Resources To ensure authenticity and security
-when working with Node.js, always use official sources. Avoid trusting emails,
-binaries, or downloads from unofficial sources. Official Node.js Domains For
-downloading Node.js binaries and accessing official documentation, use only
-these domains: nodejs.org nodejs.dev (Redirects to https://nodejs.org ) iojs.org
-(Redirects to https://nodejs.org ) Official npm Packages The Node.js team
-maintains the following official npm package scopes: @node-core @pkgjs
-Additionally, the Node.js team maintains packages published by the
-nodejs-foundation npm account, though other Node.js-related packages (like
-undici ) may also be maintained by
-----------------------------------------------------------------------------------------------------
 Index: 2998 <<"chunk_id": 3, "docno": 418>>
 
 signals for received data ( data event) and the stream's completion ( end
@@ -123,51 +48,31 @@ Stream history This section is a reference of the history of streams in Node.js.
 Unless you’re working with a codebase written for a Node.js version prior to
 0.11.5 (2013), you will rarely encounter older
 ----------------------------------------------------------------------------------------------------
-Index: 2353 <<"chunk_id": 8, "docno": 313>>
+Index: 11873 <<"chunk_id": 19, "docno": 1862>>
 
-does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
-process that forks workers; cluster.isWorker is true in the forked workers
-themselves. (You may also see cluster.isMaster in older code — it still works,
-but it's a deprecated alias for isPrimary .) Things to watch for Workers are
-separate processes, so they don't share memory . In-memory sessions, caches, or
-rate limiters won't be visible across workers — use an external store like Redis
-for anything that needs to be shared. Always handle a worker's 'exit' event and
-decide whether to restart it; an unhandled crash silently reduces your server's
-capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
-treated as a crash and endlessly respawn workers. In production, most teams use
-a process manager (PM2, systemd, or a container orchestrator) instead of
-hand-rolling restart/reload logic with cluster directly. Choosing between them A
-quick decision guide: Running an external program, or a script in another
-language? → child_process ( spawn / execFile ). Running another Node.js script
-as an isolated process, with structured messaging? → child_process.fork() . Have
-CPU-bound JavaScript blocking your event loop (hashing, image processing, big
-computations)? → worker_threads . Want to use all the CPU cores to handle more
-traffic to your server? → cluster (or a process manager/orchestrator that does
-the equivalent at the infrastructure level). These aren't mutually exclusive. A
-common pattern for something like an image-upload service is to combine all
-three: cluster to spread incoming requests across cores, and worker_threads (or
-child_process ) within each worker to
-----------------------------------------------------------------------------------------------------
-Index: 2351 <<"chunk_id": 6, "docno": 313>>
-
-to the same race-condition class of bugs found in traditional multi-threaded
-programming. Things to watch for Worker threads are for CPU-bound work, not I/O
-— a worker still has to wait on I/O just like the main thread would, so spinning
-one up for a database call or a network request adds overhead for no benefit.
-Spinning up a worker has a real cost. For small, frequent tasks, that setup
-overhead can outweigh the benefit — consider a pool of long-lived workers (see
-the workerpool package) instead of creating one per task. Cluster cluster solves
-a different problem: a single Node.js process only uses one CPU core. To take
-advantage of a multi-core machine for a network server, cluster forks multiple
-full copies of your process (each one a child_process under the hood) that all
-listen on the same port. Example: scaling an HTTP server across cores const
-cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
-; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
-isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
-numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
-code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
-(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
-console . log ( `
+12.8.1 This is a security release. Node.js, as well as many other
+implementations of HTTP/2, have been found vulnerable to Denial of Service
+attacks. See
+https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
+for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
+attacker requests a large amount of data from a specified resource over multiple
+streams. They manipulate window size and stream priority to force the server to
+queue the data in 1-byte chunks. Depending on how efficiently this data is
+queued, this can consume excess CPU, memory, or both, potentially leading to a
+denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
+pings to an HTTP/2 peer, causing the peer to build an internal queue of
+responses. Depending on how efficiently this data is queued, this can consume
+excess CPU, memory, or both, potentially leading to a denial of service.
+CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
+and continually shuffles the priority of the streams in a way that causes
+substantial churn to the priority tree. This can consume excess CPU, potentially
+leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
+a number of streams and sends an invalid request over each stream that should
+solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
+queues the RST_STREAM frames, this can consume excess memory, CPU, or both,
+potentially leading to a denial of service. CVE-2019-9515 “Settings Flood” : The
+attacker sends a stream of SETTINGS frames to the peer. Since the RFC requires
+that the peer reply with
 ----------------------------------------------------------------------------------------------------
 Index: 2346 <<"chunk_id": 1, "docno": 313>>
 
@@ -194,6 +99,99 @@ for I/O-bound work — reading files, querying a database, handling HTTP request
 thread free. It's a poor fit for two other situations, though: CPU-bound work
 (image resizing, hashing, parsing huge payloads) ties up the single thread and
 makes your
+----------------------------------------------------------------------------------------------------
+Index: 2353 <<"chunk_id": 8, "docno": 313>>
+
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
+----------------------------------------------------------------------------------------------------
+Index: 27038 <<"chunk_id": 1, "docno": 4352>>
+
+requesting data from a remote server, more efficiently. They allow you to
+provide a better quality of service and a predictable capacity planning by
+dealing natively with time and latency without consuming more resources. Unlike
+traditional processing that blocks the current thread while waiting a result, a
+Reactive API that waits costs nothing, requests only the amount of data it is
+able to process and bring new capabilities since it deals with stream of data,
+not only with individual elements one by one. Before Java 8 Before Java 8,
+asynchronous non-blocking behavior was not obvious to implement for at least two
+reasons. The first reason is that callback based API required verbose anonymous
+classes and are not easy to chain. The second reason is that Future type is
+asynchronous but blocks the current thread until the computation completes when
+you try to get the result with the get() method. That's why Spring Framework 4.0
+introduced ListenableFuture , a Future implementation that adds non-blocking
+callback-based capabilities. Lambdas, CompletableFuture and Stream Then Java 8
+introduced lambdas and CompletableFuture . Lambdas allow to write concise
+callbacks, while CompletionStage interface and CompletableFuture class finally
+allows to deal with future in a non-blocking way and push-based fashion, while
+providing capabilities to chain such deferred result processing. Java 8 also
+introduced Stream , which has been designed to deal efficiently with stream of
+data (including primitive types) that can be accessed with no or very little
+latency. It is pull-based, can only be used once, lacks time-related operations
+and can perform parallel
+----------------------------------------------------------------------------------------------------
+Index: 27602 <<"chunk_id": 4, "docno": 4464>>
+
+the other in a single thread takes 1000ms, we might see a processing time of
+250ms for a single incoming request at our HTTP service. We should emphasise the
+"might" though: it’s only going to go that fast if there is no contention for
+the processing threads (in both stages, the Tomcat workers, and the application
+scheduler). If you have a server with a large number of cores, very low
+concurrency, i.e. a small number of clients connecting to your application, and
+hardly any chance that two will make a request at the same time, then you will
+probably see close to the theoretical improvement. As soon as there are multiple
+clients trying to connect, they will all be competing for the same 4 threads,
+and the latency will drift up, and could even be worse than that experienced by
+a single client with no background processing. We can improve the latency for
+concurrent clients by creating the scheduler with a larger thread pool, e.g.
+private Scheduler scheduler = Schedulers.newParallel("sub", 16); (16 threads.)
+Now we are using more memory for the threads and their stacks, and we can expect
+to see lower latency for low concurrency, but not necessarily for high
+concurrency if our hardware has fewer than 16 cores. We also do not expect
+higher throughput under load: if there is contention for the threads, there is a
+high cost for managing those resources and that has to be reflected somwehere in
+a metric that matters. If you are interested in more detailed analysis of
+----------------------------------------------------------------------------------------------------
+Index: 2351 <<"chunk_id": 6, "docno": 313>>
+
+to the same race-condition class of bugs found in traditional multi-threaded
+programming. Things to watch for Worker threads are for CPU-bound work, not I/O
+— a worker still has to wait on I/O just like the main thread would, so spinning
+one up for a database call or a network request adds overhead for no benefit.
+Spinning up a worker has a real cost. For small, frequent tasks, that setup
+overhead can outweigh the benefit — consider a pool of long-lived workers (see
+the workerpool package) instead of creating one per task. Cluster cluster solves
+a different problem: a single Node.js process only uses one CPU core. To take
+advantage of a multi-core machine for a network server, cluster forks multiple
+full copies of your process (each one a child_process under the hood) that all
+listen on the same port. Example: scaling an HTTP server across cores const
+cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
+; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
+isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
+numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
+code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
+(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( `
 ----------------------------------------------------------------------------------------------------
 Index: 2800 <<"chunk_id": 16, "docno": 378>>
 
@@ -244,273 +242,77 @@ as thread count stream.parallel(substream -> substream.map(greeting -> "Hello "
 Reactive Streams implementation showing itself in your code: when you run this
 you
 ----------------------------------------------------------------------------------------------------
-Index: 14813 <<"chunk_id": 372, "docno": 2234>>
+Index: 24449 <<"chunk_id": 2, "docno": 3763>>
 
-triggered the error, while letting the others finish in their normal time, and
-stop listening for new requests in that worker. In this way, domain usage goes
-hand-in-hand with the cluster module, since the primary process can fork a new
-worker when a worker encounters an error. For Node.js programs that scale to
-multiple machines, the terminating proxy or service registry can take note of
-the failure, and react accordingly. For example, this is not a good idea: // XXX
-WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
-'error' , ( er ) => { // The error won't crash the process, but what it does is
-worse! // Though we've prevented abrupt process restarting, we are leaking // a
-lot of resources if this ever happens. // This is no better than
-process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
-message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
-( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
-copy By using the context of a domain, and the resilience of separating our
-program into multiple worker processes, we can react more appropriately, and
-handle errors with much greater safety. // Much better! const cluster = require
-( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
+than ones in typical clustered databases. For one, disk storage is shared
+nothing - each cache process owns its disk store eliminating process level
+contentions. Second, the design is tilted to favor memory i.e. there are no
+complex B-Tree data structures on disk; instead we assume complex query
+navigations will always be done through in-memory indexes. Third, the design
+uses rolling append-only log files to avoid disk seeks completely. Finally, the
+design preserves the rebalancing model in GemFire when capacity is increased or
+decreased - the disk data also relocates itself. Improved scale-out capabilities
+: Application deployments using the tiered model (client process embedding a
+local cache talking to a server farm) could see a 2X or more performance gain
+when accessing partitioned data. With 6.5, client processes gain knowledge about
+server side partitions and use it on the fly to direct traffic directly to the
+server with the required data set. Application clients subscribing to events
+using key based register interest or "continuous queries" now have their
+subscriptions registered on all the partitioned nodes. This allows each
+partition to process the subcription filters on the nodes where the data changes
+are applied dramatically reducing messaging traffic between peers unlike in the
+previous releases. The net effect is that more subscriptions can be processed
+and the event delivery latency to clients is also reduced. Colocated
+transactions : If each logical partition were to own the entire transactional
+working set then highly applications can scale linearly if the concurrent
+transaction load is uniformly spread across the data
 ----------------------------------------------------------------------------------------------------
-Index: 2801 <<"chunk_id": 17, "docno": 378>>
+Index: 27913 <<"chunk_id": 1, "docno": 4515>>
 
-system, etc.) and waiting for its response. While a Worker with an I/O-intensive
-task is waiting for its response, it has nothing else to do and can be
-de-scheduled by the operating system, giving another Worker a chance to submit
-their request. Thus, I/O-intensive tasks will be making progress even while the
-associated thread is not running . External service providers like databases and
-file systems have been highly optimized to handle many pending requests
-concurrently. For example, a file system will examine a large set of pending
-write and read requests to merge conflicting updates and to retrieve files in an
-optimal order. If you rely on only one Worker Pool, e.g. the Node.js Worker
-Pool, then the differing characteristics of CPU-bound and I/O-bound work may
-harm your application's performance. For this reason, you might wish to maintain
-a separate Computation Worker Pool. Offloading: conclusions For simple tasks,
-like iterating over the elements of an arbitrarily long array, partitioning
-might be a good option. If your computation is more complex, offloading is a
-better approach: the communication costs, i.e. the overhead of passing
-serialized objects between the Event Loop and the Worker Pool, are offset by the
-benefit of using multiple cores. However, if your server relies heavily on
-complex calculations, you should think about whether Node.js is really a good
-fit. Node.js excels for I/O-bound work, but for expensive computation it might
-not be the best option. If you take the offloading approach, see the section on
-not blocking the Worker Pool. Don't block
+Boot and Kubernetes can tremendously simplify this task. Challenges of Designing
+and Running Batch Workloads in the Cloud Designing cloud-native batch
+applications might seem easy compared to web applications, but this is not true.
+Batch developers face many challenges. 1. Fault Tolerance Batch processes
+typically interact with other services (such as databases, messages brokers, web
+services, and others) which are, by nature, flaky in cloud environments.
+Moreover, even the nodes on which those processes are run can die at any time
+and be replaced with healthy nodes. Cloud native batch applications should be
+designed in a fault-tolerant way. 2. Robustness It is not uncommon that the
+human error of running a batch job twice has some big financial consequences
+(such as what happened to Walgreens , ANZ Bank , and NatWest , to name a few).
+Moreover, some platforms, such as Kubernetes, have some known limitations about
+the eventuality of running the same job twice . A cloud native batch application
+should be ready to deal with this kind of issues by design. 3. Cost Efficiency
+Cloud infrastructures are billed by cpu/memory/bandwidth usage. In case of
+failure, It would be inefficient to not be able to restart a job from where it
+left off and "lose" the cpu/memory/bandwidth usage of the previous run (and
+hence be billed twice or more!). 4. Observability Any modern batch architecture
+should be able to know at any point in time some key metrics, including: What
+jobs are currently running? Which jobs have failed, if any? Other questions
+about how things
 ----------------------------------------------------------------------------------------------------
-Index: 11874 <<"chunk_id": 20, "docno": 1862>>
+Index: 2469 <<"chunk_id": 2, "docno": 333>>
 
-service. CVE-2019-9515 “Settings Flood” : The attacker sends a stream of
-SETTINGS frames to the peer. Since the RFC requires that the peer reply with one
-acknowledgement per SETTINGS frame, an empty SETTINGS frame is almost equivalent
-in behavior to a ping. Depending on how efficiently this data is queued, this
-can consume excess CPU, memory, or both, potentially leading to a denial of
-service. CVE-2019-9516 “0-Length Headers Leak” : The attacker sends a stream of
-headers with a 0-length header name and 0-length header value, optionally
-Huffman encoded into 1-byte or greater headers. Some implementations allocate
-memory for these headers and keep the allocation alive until the session dies.
-This can consume excess memory, potentially leading to a denial of service.
-CVE-2019-9517 “Internal Data Buffering” : The attacker opens the HTTP/2 window
-so the peer can send without constraint; however, they leave the TCP window
-closed so the peer cannot actually write (many of) the bytes on the wire. The
-attacker then sends a stream of requests for a large response object. Depending
-on how the servers queue the responses, this can consume excess memory, CPU, or
-both, potentially leading to a denial of service. CVE-2019-9518 “Empty Frames
-Flood” : The attacker sends a stream of frames with an empty payload and without
-the end-of-stream flag. These frames can be DATA, HEADERS, CONTINUATION and/or
-PUSH_PROMISE. The peer spends time processing each frame disproportionate to
-attack bandwidth. This can consume excess CPU, potentially leading to a denial
-of service. (Discovered by Piotr Sikora of Google) Notable
-----------------------------------------------------------------------------------------------------
-Index: 27602 <<"chunk_id": 4, "docno": 4464>>
-
-the other in a single thread takes 1000ms, we might see a processing time of
-250ms for a single incoming request at our HTTP service. We should emphasise the
-"might" though: it’s only going to go that fast if there is no contention for
-the processing threads (in both stages, the Tomcat workers, and the application
-scheduler). If you have a server with a large number of cores, very low
-concurrency, i.e. a small number of clients connecting to your application, and
-hardly any chance that two will make a request at the same time, then you will
-probably see close to the theoretical improvement. As soon as there are multiple
-clients trying to connect, they will all be competing for the same 4 threads,
-and the latency will drift up, and could even be worse than that experienced by
-a single client with no background processing. We can improve the latency for
-concurrent clients by creating the scheduler with a larger thread pool, e.g.
-private Scheduler scheduler = Schedulers.newParallel("sub", 16); (16 threads.)
-Now we are using more memory for the threads and their stacks, and we can expect
-to see lower latency for low concurrency, but not necessarily for high
-concurrency if our hardware has fewer than 16 cores. We also do not expect
-higher throughput under load: if there is contention for the threads, there is a
-high cost for managing those resources and that has to be reflected somwehere in
-a metric that matters. If you are interested in more detailed analysis of
-----------------------------------------------------------------------------------------------------
-Index: 15912 <<"chunk_id": 1471, "docno": 2234>>
-
-on, and the handle passed to the worker, rather than listening to the worker's
-idea of what the number 7 file descriptor references. server.listen(handle)
-Listening on handles explicitly will cause the worker to use the supplied
-handle, rather than talk to the primary process. server.listen(0) Normally, this
-will cause servers to listen on a random port. However, in a cluster, each
-worker will receive the same "random" port each time they do listen(0) . In
-essence, the port is random the first time, but predictable thereafter. To
-listen on a unique port, generate a port number based on the cluster worker ID.
-Node.js does not provide routing logic. It is therefore important to design an
-application such that it does not rely too heavily on in-memory data objects for
-things like sessions and login. Because workers are all separate processes, they
-can be killed or re-spawned depending on a program's needs, without affecting
-other workers. As long as there are some workers still alive, the server will
-continue to accept connections. If no workers are alive, existing connections
-will be dropped and new connections will be refused. Node.js does not
-automatically manage the number of workers, however. It is the application's
-responsibility to manage the worker pool based on its own needs. Although a
-primary use case for the node:cluster module is networking, it can also be used
-for other use cases requiring worker processes. Class: Worker # Added in: v0.7.0
-Extends: <EventEmitter> A Worker object contains all public information and
-method about a worker. In
-----------------------------------------------------------------------------------------------------
-Index: 2996 <<"chunk_id": 1, "docno": 418>>
-
-Publishing a TypeScript package Modules How to use streams Backpressuring in
-Streams Publishing a package How to publish a Node-API package ABI Stability
-Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
-Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
-Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
-Test Runner Discovering Node.js's test runner Using Node.js's test runner
-Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
-Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
-First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
-CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
-Function References AsyncWorker Thread-Safe Functions On this page What are
-Node.js Streams? Event-Driven Architecture Why use Streams? Note on performance
-Stream history Streams 0 Streams 1 (Classic) Streams 2 Streams 3 Stream types
-Readable Writable Duplex Transform How to operate with streams .pipe() pipeline
-Async Iterators Object mode Backpressure Streams vs Web streams Interoperability
-of streams and Web Streams How To Use Streams Working with large amounts of data
-in Node.js applications can be a double-edged sword. The ability to handle
-massive amounts of data is extremely handy but can also lead to performance
-bottlenecks and memory exhaustion. Traditionally, developers tackled this
-challenge by reading the entire dataset into memory at once. This approach,
-while intuitive for smaller datasets, becomes inefficient and resource-intensive
-for large data (e.g., files, network requests…). This is where Node.js streams
-come in. Streams offer a fundamentally different approach, allowing you to
-process data incrementally
-----------------------------------------------------------------------------------------------------
-Index: 4825 <<"chunk_id": 4, "docno": 700>>
-
-exacerbated by the use of AI, the ethical concerns about AI, whether a ban is
-feasible or desirable, whether a disclosure on the use of AI may help or draw
-further legal and ethical concerns, how AI may help maintenance and lower
-barrier of entry, and ideas on reducing the amount of noise caused by the use of
-AI. We also brainstormed how to adapt open-source governance for the modern era.
-Strategies discussed include enforcing a process that requires lightweight
-design documents, RFCs, explicit maintainer buy-in before a large PR, and pledge
-from the human contributor submitting the code who should take full
-responsibility for its quality, security, and integration. We'll continue the
-discussions and iteration of the policy documents on GitHub. Userland migrations
-Jacob Smith and Bruno Rodrigues presented increased usage of userland
-migrations. Migrations for Node.js 22.x to 24.x deprecations are almost
-complete. For Node.js 25.9.0, a codemod was published along side the deprecation
-introduced. Stabilization of module customization hooks and vm.Modules Joyee
-Cheung facilitated a session to discuss the stabilization of module loader hooks
-and the vm Module API . As module.register() is set to be doc-deprecated for 25
-and below and runtime-deprecated for 26 and above due to maintenance issues , we
-are looking into helping the ecosystem migrate to the module.registerHooks()
-API. Ideas include providing a userland ponyfill that re-implements most of the
-module.register() functionality using module.registerHooks() , and having some
-userland-migration automation tools to help facilitate migration. Joyee also
-presented a new design for the vm Module APIs that have
-----------------------------------------------------------------------------------------------------
-Index: 27914 <<"chunk_id": 2, "docno": 4515>>
-
-at any point in time some key metrics, including: What jobs are currently
-running? Which jobs have failed, if any? Other questions about how things are
-going. Being able to have these KPIs at a glance on a dashboard is vital for
-efficient operations. 5. Scalability We are dealing with an unprecedented
-amounts of data, which is impossible to handle on a single machine any more.
-Correctly processing large volumes of distributed data is probably the most
-challenging point. Cloud-native batch applications should be scalable by design.
-All these aspects should be taken into consideration when designing and
-developing cloud-native batch applications. This is a considerable amount of
-work on the developer's side. Spring Batch takes care of most of these issues. I
-explain the details in the next section. How does Spring Batch Make a Batch
-Developer's Life easier? Spring Batch is the de facto batch processing framework
-on the JVM. Entire books have been written on the rich feature set provided by
-Spring Batch, but I would like to highlight the most relevant features that
-address the previously mentioned challenges in the context of cloud-native
-development: 1. Fault Tolerance Spring Batch provides fault-tolerance features,
-such as transaction management and skip and retry mechanisms, which are useful
-when batch jobs interact with flaky services in a cloud environment. 2.
-Robustness Spring Batch uses a centralized transactional job repository, which
-prevents duplicate job executions. By design, human errors and platform
-limitations that may lead to running the same job twice are impossible. 3. Cost
-Efficiency Spring
-----------------------------------------------------------------------------------------------------
-Index: 27038 <<"chunk_id": 1, "docno": 4352>>
-
-requesting data from a remote server, more efficiently. They allow you to
-provide a better quality of service and a predictable capacity planning by
-dealing natively with time and latency without consuming more resources. Unlike
-traditional processing that blocks the current thread while waiting a result, a
-Reactive API that waits costs nothing, requests only the amount of data it is
-able to process and bring new capabilities since it deals with stream of data,
-not only with individual elements one by one. Before Java 8 Before Java 8,
-asynchronous non-blocking behavior was not obvious to implement for at least two
-reasons. The first reason is that callback based API required verbose anonymous
-classes and are not easy to chain. The second reason is that Future type is
-asynchronous but blocks the current thread until the computation completes when
-you try to get the result with the get() method. That's why Spring Framework 4.0
-introduced ListenableFuture , a Future implementation that adds non-blocking
-callback-based capabilities. Lambdas, CompletableFuture and Stream Then Java 8
-introduced lambdas and CompletableFuture . Lambdas allow to write concise
-callbacks, while CompletionStage interface and CompletableFuture class finally
-allows to deal with future in a non-blocking way and push-based fashion, while
-providing capabilities to chain such deferred result processing. Java 8 also
-introduced Stream , which has been designed to deal efficiently with stream of
-data (including primitive types) that can be accessed with no or very little
-latency. It is pull-based, can only be used once, lacks time-related operations
-and can perform parallel
-----------------------------------------------------------------------------------------------------
-Index: 27665 <<"chunk_id": 2, "docno": 4470>>
-
-output response = chatClient.prompt(input).call().content(); } return response;
-} } This implementation demonstrates several key principles: Each step has a
-focused responsibility Output from one step becomes input for the next The chain
-is easily extensible and maintainable 2. Parallelization Workflow LLMs can work
-simultaneously on tasks and have their outputs aggregated programmatically. The
-parallelization workflow manifests in two key variations: Sectioning : Breaking
-tasks into independent subtasks for parallel processing Voting : Running
-multiple instances of the same task for consensus When to Use: Processing large
-volumes of similar but independent items Tasks requiring multiple independent
-perspectives When processing time is critical and tasks are parallelizable The
-Parallelization Workflow pattern demonstrates efficient concurrent processing of
-multiple Large Language Model (LLM) operations. This pattern is particularly
-useful for scenarios requiring parallel execution of LLM calls with automated
-output aggregation. Here's a basic example of using the Parallelization
-Workflow: List<String> parallelResponse = new
-ParallelizationWorkflow(chatClient) .parallel( "Analyze how market changes will
-impact this stakeholder group.", List.of( "Customers: ...", "Employees: ...",
-"Investors: ...", "Suppliers: ..." ), 4 ); This example demonstrates parallel
-processing of stakeholder analysis, where each stakeholder group is analyzed
-concurrently. 3. Routing Workflow The Routing pattern implements intelligent
-task distribution, enabling specialized handling for different types of input.
-This pattern is designed for complex tasks where different types of inputs are
-better handled by specialized processes. It uses an LLM to analyze input content
-and route it to the most appropriate specialized prompt or handler. When to Use:
-Complex tasks with distinct categories of input When different
-----------------------------------------------------------------------------------------------------
-Index: 10941 <<"chunk_id": 2, "docno": 1631>>
-
-complex solutions. The introduction of various Runner classes allows the
-execution of Hive , Pig scripts, vanilla Map/Reduce or Streaming jobs ,
-Cascading flows but also invocation of pre and post generic JVM-based scripting
-all through the familiar JDK Callable contract. You can mix and match the
-runners as needed but as complexity grows, one can easily upgrade to Spring
-Batch , such that multiple steps can be coordinated in a stateful manner and
-administered using a REST API. Spring Batch’s rich functionality for handling
-the ETL processing of large file translates directly into Hadoop use cases for
-the ingestion and export of files form HDFS. The use of Spring Hadoop in
-combination with Spring Integration allows for rich processing of event streams
-that can be transformed, enriched, filtered, before being read and written from
-HDFS or other storages such as NOSQL stores, for which Spring Data provides
-plenty of support. We have covered a variety of scenarios through the sample
-applications (no need to compile them, they are already compiled and ready to be
-downloaded) that complement the comprehensive user documentation (it includes
-even a section on how to get stared with Spring for Apache Hadoop using Amazon’s
-Elastic MapReduce service). Additionally, as a companion to the samples, one can
-use the recent Spring Data book [1] for the full feature set that can be
-achieved using Spring technologies, Hadoop and NOSQL. Portability Spring for
-Apache Hadoop is being tested daily against the various Hadoop 1.x distributions
-(such as vanilla Apache Hadoop, Cloudera CDH3 and
+ensure a smooth flow of data from one source to another. Different communities
+have resolved this issue uniquely to their programs, Unix pipes and TCP sockets
+are good examples of this, and are often referred to as flow control . In
+Node.js, streams have been the adopted solution. The purpose of this guide is to
+further detail what backpressure is, and how exactly streams address this in
+Node.js' source code. The second part of the guide will introduce suggested best
+practices to ensure your application's code is safe and optimized when
+implementing streams. We assume a little familiarity with the general definition
+of backpressure , Buffer , and EventEmitters in Node.js, as well as some
+experience with Stream . If you haven't read through those docs, it's not a bad
+idea to take a look at the API documentation first, as it will help expand your
+understanding while reading this guide. The Problem with Data Handling In a
+computer system, data is transferred from one process to another through pipes,
+sockets, and signals. In Node.js, we find a similar mechanism called Stream .
+Streams are great! They do so much for Node.js and almost every part of the
+internal codebase utilizes that module. As a developer, you are more than
+encouraged to use them too! CJS ESM const readline = require ( ' node:readline '
+) ; // process.stdin and process.stdout are both instances of Streams. const rl
+= readline . createInterface ( { input : process . stdin , output : process .
+stdout ,
 ----------------------------------------------------------------------------------------------------
 Index: 10073 <<"chunk_id": 1, "docno": 1449>>
 
@@ -539,189 +341,6 @@ resource utilization and higher throughput than a traditional imperative,
 blocking application can usually provide. That’s why the Spring XD project (as
 well as several other Spring
 ----------------------------------------------------------------------------------------------------
-Index: 1473 <<"chunk_id": 4, "docno": 184>>
-
-connections and distributes them across the workers in a round-robin fashion,
-with some built-in smarts to avoid overloading a worker process. The second
-approach is where the primary process creates the listen socket and sends it to
-interested workers. The workers then accept incoming connections directly. The
-second approach should, in theory, give the best performance. In practice
-however, distribution tends to be very unbalanced due to operating system
-scheduler vagaries. Loads have been observed where over 70% of all connections
-ended up in just two processes, out of a total of eight. Because server.listen()
-hands off most of the work to the primary process, there are three cases where
-the behavior between a normal Node.js process and a cluster worker differs:
-server.listen({fd: 7}) Because the message is passed to the primary, file
-descriptor 7 in the parent will be listened on, and the handle passed to the
-worker, rather than listening to the worker's idea of what the number 7 file
-descriptor references. server.listen(handle) Listening on handles explicitly
-will cause the worker to use the supplied handle, rather than talk to the
-primary process. server.listen(0) Normally, this will cause servers to listen on
-a random port. However, in a cluster, each worker will receive the same "random"
-port each time they do listen(0) . In essence, the port is random the first
-time, but predictable thereafter. To listen on a unique port, generate a port
-number based on the cluster worker ID. Node.js does not provide routing logic.
-It is therefore important to design an
-----------------------------------------------------------------------------------------------------
-Index: 21026 <<"chunk_id": 1, "docno": 3084>>
-
-and some of the dm Server features. You should be able to do this yourself, if
-you have downloaded and installed the latest SpringSource Tool Suite and dm
-Server. You don't need the sample code to follow the story, but it will be
-available in the Spring Integration sandbox if you're interested. The
-synchronous breakdown Synchronous calls in applications perform fine, but they
-don't scale. It has been documented quite a bit before, so I'll give you a quick
-refresher and then move on. When you make a synchronous call, the calling thread
-has to block until the call is done. If you happen to do I/O in that method, the
-blocking thread is wasting cpu cycles. If you have a massively parallel web
-application this isn't too big a problem, because you can just increase the max
-size of the threadpool you're using. However, if you need to make use of the
-full potential of your servers cpu power from a single call, you're out of luck.
-Since one thread runs on one core, the more cores you have the more inefficient
-a single threaded program will be. Messaging to the rescue Getting into
-concurrent programming yourself is a lot of fun, but it isn't the easiest thing
-to do, and you might want to finish work early today. That's where Spring
-Integration can help you. It gives you all the control over the concurrent
-processing that you need without you having to take responsibility for the low
-level details of concurrent programming. How does
-----------------------------------------------------------------------------------------------------
-Index: 2469 <<"chunk_id": 2, "docno": 333>>
-
-ensure a smooth flow of data from one source to another. Different communities
-have resolved this issue uniquely to their programs, Unix pipes and TCP sockets
-are good examples of this, and are often referred to as flow control . In
-Node.js, streams have been the adopted solution. The purpose of this guide is to
-further detail what backpressure is, and how exactly streams address this in
-Node.js' source code. The second part of the guide will introduce suggested best
-practices to ensure your application's code is safe and optimized when
-implementing streams. We assume a little familiarity with the general definition
-of backpressure , Buffer , and EventEmitters in Node.js, as well as some
-experience with Stream . If you haven't read through those docs, it's not a bad
-idea to take a look at the API documentation first, as it will help expand your
-understanding while reading this guide. The Problem with Data Handling In a
-computer system, data is transferred from one process to another through pipes,
-sockets, and signals. In Node.js, we find a similar mechanism called Stream .
-Streams are great! They do so much for Node.js and almost every part of the
-internal codebase utilizes that module. As a developer, you are more than
-encouraged to use them too! CJS ESM const readline = require ( ' node:readline '
-) ; // process.stdin and process.stdout are both instances of Streams. const rl
-= readline . createInterface ( { input : process . stdin , output : process .
-stdout ,
-----------------------------------------------------------------------------------------------------
-Index: 21027 <<"chunk_id": 2, "docno": 3084>>
-
-the control over the concurrent processing that you need without you having to
-take responsibility for the low level details of concurrent programming. How
-does OSGi help? You can fully prevent the synchronous breakdown without OSGi. It
-just makes life so much better that you shouldn't miss out on it. Doing a full
-redeploy and restart of the jvm every time you make a little change wouldn't be
-much fun. And there is another thing that makes the combination of OSGi and
-Messaging very interesting. If an enterprise application grows big you have to
-modularize at some point. Running multiple modules in the same traditional
-server is a recipe for disaster (also called jar hell). In traditional
-architectures people have therefore scaled out prematurely in many cases. This
-makes for a very poor setup. The different nodes have to talk to each other over
-the network, and they can't share resources like cpu and memory. This renders
-the architecture inefficient and severely impacts performance. Not only are you
-wasting cycles on some cores in one server, you are now repeating the same
-inefficiency over multiple nodes. To add insult to injury there is network
-latency adding I/O waits where a normal local method call would have sufficed.
-With OSGi you don't have to take that hit, you can run different bundles in the
-same jvm, so that calls between them are fast as normal method calls, without
-the dreaded jar hell associated with deploying jars of different teams on the
-same classpath. Having an application that
-----------------------------------------------------------------------------------------------------
-Index: 1124 <<"chunk_id": 29, "docno": 154>>
-
-is not supported. 'ignore' : Instructs Node.js to ignore the fd in the child.
-While Node.js will always open fds 0, 1, and 2 for the processes it spawns,
-setting the fd to 'ignore' will cause Node.js to open /dev/null and attach it to
-the child's fd. 'inherit' : Pass through the corresponding stdio stream to/from
-the parent process. In the first three positions, this is equivalent to
-process.stdin , process.stdout , and process.stderr , respectively. In any other
-position, equivalent to 'ignore' . <Stream> object: Share a readable or writable
-stream that refers to a tty, file, socket, or a pipe with the child process. The
-stream's underlying file descriptor is duplicated in the child process to the fd
-that corresponds to the index in the stdio array. The stream must have an
-underlying descriptor (file streams do not start until the 'open' event has
-occurred). NOTE: While it is technically possible to pass stdin as a writable or
-stdout / stderr as readable, it is not recommended. Readable and writable
-streams are designed with distinct behaviors, and using them incorrectly (e.g.,
-passing a readable stream where a writable stream is expected) can lead to
-unexpected results or errors. This practice is discouraged as it may result in
-undefined behavior or dropped callbacks if the stream encounters errors. Always
-ensure that stdin is used as readable and stdout / stderr as writable to
-maintain the intended flow of data between the parent and child processes.
-Positive integer: The integer value is interpreted as a file
-----------------------------------------------------------------------------------------------------
-Index: 27913 <<"chunk_id": 1, "docno": 4515>>
-
-Boot and Kubernetes can tremendously simplify this task. Challenges of Designing
-and Running Batch Workloads in the Cloud Designing cloud-native batch
-applications might seem easy compared to web applications, but this is not true.
-Batch developers face many challenges. 1. Fault Tolerance Batch processes
-typically interact with other services (such as databases, messages brokers, web
-services, and others) which are, by nature, flaky in cloud environments.
-Moreover, even the nodes on which those processes are run can die at any time
-and be replaced with healthy nodes. Cloud native batch applications should be
-designed in a fault-tolerant way. 2. Robustness It is not uncommon that the
-human error of running a batch job twice has some big financial consequences
-(such as what happened to Walgreens , ANZ Bank , and NatWest , to name a few).
-Moreover, some platforms, such as Kubernetes, have some known limitations about
-the eventuality of running the same job twice . A cloud native batch application
-should be ready to deal with this kind of issues by design. 3. Cost Efficiency
-Cloud infrastructures are billed by cpu/memory/bandwidth usage. In case of
-failure, It would be inefficient to not be able to restart a job from where it
-left off and "lose" the cpu/memory/bandwidth usage of the previous run (and
-hence be billed twice or more!). 4. Observability Any modern batch architecture
-should be able to know at any point in time some key metrics, including: What
-jobs are currently running? Which jobs have failed, if any? Other questions
-about how things
-----------------------------------------------------------------------------------------------------
-Index: 16240 <<"chunk_id": 1799, "docno": 2234>>
-
-enforce stricter limits but doing so is optional. Because Duplex and Transform
-streams are both Readable and Writable , each maintains two separate internal
-buffers used for reading and writing, allowing each side to operate
-independently of the other while maintaining an appropriate and efficient flow
-of data. For example, net.Socket instances are Duplex streams whose Readable
-side allows consumption of data received from the socket and whose Writable side
-allows writing data to the socket. Because data may be written to the socket at
-a faster or slower rate than data is received, each side should operate (and
-buffer) independently of the other. The mechanics of the internal buffering are
-an internal implementation detail and may be changed at any time. However, for
-certain advanced implementations, the internal buffers can be retrieved using
-writable.writableBuffer or readable.readableBuffer . Use of these undocumented
-properties is discouraged. API for stream consumers # Almost all Node.js
-applications, no matter how simple, use streams in some manner. The following is
-an example of using streams in a Node.js application that implements an HTTP
-server: const http = require ( 'node:http' ) ; const server = http .
-createServer ( ( req , res ) => { // `req` is an http.IncomingMessage, which is
-a readable stream. // `res` is an http.ServerResponse, which is a writable
-stream. let body = '' ; // Get the data as utf8 strings. // If an encoding is
-not set, Buffer objects will be received. req . setEncoding ( 'utf8' ) ; //
-Readable streams
-----------------------------------------------------------------------------------------------------
-Index: 13865 <<"chunk_id": 3, "docno": 2159>>
-
-process can fork a new worker when a worker encounters an error. For Node.js
-programs that scale to multiple machines, the terminating proxy or service
-registry can take note of the failure, and react accordingly. For example, this
-is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
-) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
-process, but what it does is worse! // Though we've prevented abrupt process
-restarting, we are leaking // a lot of resources if this ever happens. // This
-is no better than process.on('uncaughtException')! console . log ( `error, but
-oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
-. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
-(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
-separating our program into multiple worker processes, we can react more
-appropriately, and handle errors with much greater safety. // Much better! const
-cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
-1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
-than 2 workers, // and perhaps not put the primary and worker in the same file.
-// // It is also possible to get a
-----------------------------------------------------------------------------------------------------
 Index: 27098 <<"chunk_id": 7, "docno": 4360>>
 
 based on a more feature rich consumer library - were within 8% of the Kafka
@@ -747,54 +366,98 @@ rights reserved. Apache and Apache Kafka, are either registered trademarks or
 trademarks of the Apache Software Foundation in the United States and/or other
 countries.
 ----------------------------------------------------------------------------------------------------
-Index: 13187 <<"chunk_id": 3, "docno": 2084>>
+Index: 11874 <<"chunk_id": 20, "docno": 1862>>
 
-updated. Security vs. Developer Experience Over 300 volunteers maintain the
-Node.js project. Our processes aim to streamline CI initiation and verification
-of contributions across approximately 100 Jenkins runners spanning multiple
-operating systems and CPU architectures. The existing CI system design
-anticipates potential compromises, recognizing the need to balance security with
-developer convenience. Volunteer Organization As a volunteer-driven
-organization, we rely on people dedicating their time to work on unglamorous
-tasks, such as hardening CI, handling security reports, and assembling releases.
-Even good-faith research against our live systems could significantly disrupt
-our operations. As always, we welcome all sorts of contributions, including
-penetration testing. We ask researchers to give us a heads up on what they are
-attempting to do on live systems and to keep an auditable record of their
-actions through our HackerOne program or by contacting the Node.js Technical
-Steering Committee directly ( [email protected] ). More on that in our
-SECURITY.md file. Node.js Test CI Security Incident – Notice On March 21st, the
-Node.js project received a security report regarding our development
-infrastructure via our bug bounty program . We immediately restricted access
-while implementing corrective actions. The reported issue did not impact the
-Node.js runtime and there is no risk to users of Node.js. No action by Node.js
-users is required. The development infrastructure is expected to be available to
-the community by April 15 or sooner. A full report of this incident will be
-available forthcoming. We appreciate the time investment from our amazing
-volunteers who assisted in this response. Contact
+service. CVE-2019-9515 “Settings Flood” : The attacker sends a stream of
+SETTINGS frames to the peer. Since the RFC requires that the peer reply with one
+acknowledgement per SETTINGS frame, an empty SETTINGS frame is almost equivalent
+in behavior to a ping. Depending on how efficiently this data is queued, this
+can consume excess CPU, memory, or both, potentially leading to a denial of
+service. CVE-2019-9516 “0-Length Headers Leak” : The attacker sends a stream of
+headers with a 0-length header name and 0-length header value, optionally
+Huffman encoded into 1-byte or greater headers. Some implementations allocate
+memory for these headers and keep the allocation alive until the session dies.
+This can consume excess memory, potentially leading to a denial of service.
+CVE-2019-9517 “Internal Data Buffering” : The attacker opens the HTTP/2 window
+so the peer can send without constraint; however, they leave the TCP window
+closed so the peer cannot actually write (many of) the bytes on the wire. The
+attacker then sends a stream of requests for a large response object. Depending
+on how the servers queue the responses, this can consume excess memory, CPU, or
+both, potentially leading to a denial of service. CVE-2019-9518 “Empty Frames
+Flood” : The attacker sends a stream of frames with an empty payload and without
+the end-of-stream flag. These frames can be DATA, HEADERS, CONTINUATION and/or
+PUSH_PROMISE. The peer spends time processing each frame disproportionate to
+attack bandwidth. This can consume excess CPU, potentially leading to a denial
+of service. (Discovered by Piotr Sikora of Google) Notable
 ----------------------------------------------------------------------------------------------------
-Index: 2790 <<"chunk_id": 6, "docno": 378>>
+Index: 20933 <<"chunk_id": 10, "docno": 3070>>
 
-mean for application design? In a one-thread-per-client system like Apache, each
-pending client is assigned its own thread. If a thread handling one client
-blocks, the operating system will interrupt it and give another client a turn.
-The operating system thus ensures that clients that require a small amount of
-work are not penalized by clients that require more work. Because Node.js
-handles many clients with few threads, if a thread blocks handling one client's
-request, then pending client requests may not get a turn until the thread
-finishes its callback or task. The fair treatment of clients is thus the
-responsibility of your application . This means that you shouldn't do too much
-work for any client in any single callback or task. This is part of why Node.js
-can scale well, but it also means that you are responsible for ensuring fair
-scheduling. The next sections talk about how to ensure fair scheduling for the
-Event Loop and for the Worker Pool. Don't block the Event Loop The Event Loop
-notices each new client connection and orchestrates the generation of a
-response. All incoming requests and outgoing responses pass through the Event
-Loop. This means that if the Event Loop spends too long at any point, all
-current and new clients will not get a turn. You should make sure you never
-block the Event Loop. In other words, each of your JavaScript callbacks should
-complete quickly. This of course also applies to your await 's, your
-Promise.then 's, and so on. A good
+to force the VM to hand back memory to the OS. If you run a test that steadily
+increases the memory footprint of Rabbit you could observe the effect of
+hibernation on idle processes as it reduces the rate of increase of memory use.
+Erlang is a multi-threaded VM which takes advantage of multiple cores. It
+presents green threads to the developer which are called 'processes' because
+unlike threads, they conceptually do not share an address space. Here is an
+interesting confession on the Erlang VM and Processes . Transactions
+Transactions on 10,000 messages can take as along as four minutes to publish. A
+new RabbitMQ feature called Publisher Confirms is more than 100 times faster
+than the same, but transactional, code. If you are not explicitly required to
+implement transactions but do need the verification you might consider this
+option. The Take-Away Here are some final takeaways to help you squeeze the
+greatest performance gains out of your implementation: The new topic routing
+algorithm optimization is 60 times faster at peak Topic binding patterns using
+wildcards '*', which matches a single word, is much faster than '#', which
+matches zero or more words. Wildcard '#' takes longer to process in the routing
+table than '*' Exchange-to-exchange bindings improve decoupling, increase
+topology flexibility, reduce binding churn, and help increase performance
+Exchanges and bindings are very light weight RabbitMQ Publisher Confirms are
+more than 100 times faster than AMQP transactions After a queue is idle for >=10
+seconds it will "hibernate", inducing GC on the queue, resulting
+----------------------------------------------------------------------------------------------------
+Index: 27914 <<"chunk_id": 2, "docno": 4515>>
+
+at any point in time some key metrics, including: What jobs are currently
+running? Which jobs have failed, if any? Other questions about how things are
+going. Being able to have these KPIs at a glance on a dashboard is vital for
+efficient operations. 5. Scalability We are dealing with an unprecedented
+amounts of data, which is impossible to handle on a single machine any more.
+Correctly processing large volumes of distributed data is probably the most
+challenging point. Cloud-native batch applications should be scalable by design.
+All these aspects should be taken into consideration when designing and
+developing cloud-native batch applications. This is a considerable amount of
+work on the developer's side. Spring Batch takes care of most of these issues. I
+explain the details in the next section. How does Spring Batch Make a Batch
+Developer's Life easier? Spring Batch is the de facto batch processing framework
+on the JVM. Entire books have been written on the rich feature set provided by
+Spring Batch, but I would like to highlight the most relevant features that
+address the previously mentioned challenges in the context of cloud-native
+development: 1. Fault Tolerance Spring Batch provides fault-tolerance features,
+such as transaction management and skip and retry mechanisms, which are useful
+when batch jobs interact with flaky services in a cloud environment. 2.
+Robustness Spring Batch uses a centralized transactional job repository, which
+prevents duplicate job executions. By design, human errors and platform
+limitations that may lead to running the same job twice are impossible. 3. Cost
+Efficiency Spring
+----------------------------------------------------------------------------------------------------
+Index: 14813 <<"chunk_id": 372, "docno": 2234>>
+
+triggered the error, while letting the others finish in their normal time, and
+stop listening for new requests in that worker. In this way, domain usage goes
+hand-in-hand with the cluster module, since the primary process can fork a new
+worker when a worker encounters an error. For Node.js programs that scale to
+multiple machines, the terminating proxy or service registry can take note of
+the failure, and react accordingly. For example, this is not a good idea: // XXX
+WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
+'error' , ( er ) => { // The error won't crash the process, but what it does is
+worse! // Though we've prevented abrupt process restarting, we are leaking // a
+lot of resources if this ever happens. // This is no better than
+process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
+message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
+( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
+copy By using the context of a domain, and the resilience of separating our
+program into multiple worker processes, we can react more appropriately, and
+handle errors with much greater safety. // Much better! const cluster = require
+( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
 ----------------------------------------------------------------------------------------------------
 Index: 28071 <<"chunk_id": 1, "docno": 4549>>
 
@@ -820,400 +483,4 @@ the different stages of a batch job and process them asynchronously using
 message channels. By leveraging Spring Integration, you can easily configure and
 manage the messaging channels, as well as take advantage of features like
 message transformation, filtering, and routing. Jackson 3 support Spring Batch
-----------------------------------------------------------------------------------------------------
-Index: 2202 <<"chunk_id": 1, "docno": 292>>
-
-Modules How to use streams Backpressuring in Streams Publishing a package How to
-publish a Node-API package ABI Stability Diagnostics User Journey Memory
-Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
-Tracing garbage collection Live Debugging Overview Using Inspector Poor
-Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
-Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
-code coverage in Node.js Node-API What is Node-API? Getting Started Overview
-Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
-Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
-Special Topics Overview Context Awareness Object and Function References
-AsyncWorker Thread-Safe Functions On this page Multiple loading and unloading
-Instance data Resources Example Cleanup hooks Resources Example Context
-Awareness Node.js has historically run as a single-threaded process. This all
-changed with the introduction of Worker Threads in Node 10. Worker Threads add a
-JavaScript-friendly concurrency abstraction that native add-on developers need
-to be aware of. What this means practically is that your native add-on may be
-loaded and unloaded more than once and its code may be executed concurrently in
-multiple threads. There are specific steps you must take to ensure your native
-add-on code runs correctly. The Worker Thread model specifies that each Worker
-runs completely independently of each other and communicate to the parent Worker
-using a MessagePort object supplied by the parent. This makes the Worker Threads
-essentially isolated from one another. The same is true for your native add-on.
-Each Worker Thread operates within its own
-----------------------------------------------------------------------------------------------------
-Index: 2997 <<"chunk_id": 2, "docno": 418>>
-
-large data (e.g., files, network requests…). This is where Node.js streams come
-in. Streams offer a fundamentally different approach, allowing you to process
-data incrementally and optimize memory usage. By handling data in manageable
-chunks, streams empower you to build scalable applications that can efficiently
-tackle even the most daunting datasets. As popularly quoted, “streams are arrays
-over time.” In this guide, we give an overview of the Stream concept, history,
-and API as well as some recommendations on how to use and operate them. What are
-Node.js Streams? Node.js streams offer a powerful abstraction for managing data
-flow in your applications. They excel at processing large datasets, such as
-reading or writing from files and network requests, without compromising
-performance. This approach differs from loading the entire dataset into memory
-at once. Streams process data in chunks, significantly reducing memory usage.
-All streams in Node.js inherit from the EventEmitter class, allowing them to
-emit events at various stages of data processing. These streams can be readable,
-writable, or both, providing flexibility for different data-handling scenarios.
-Event-Driven Architecture Node.js thrives on an event-driven architecture,
-making it ideal for real-time I/O. This means consuming input as soon as it's
-available and sending output as soon as the application generates it. Streams
-seamlessly integrate with this approach, enabling continuous data processing.
-They achieve this by emitting events at key stages. These events include signals
-for received data ( data event) and the stream's completion ( end event).
-Developers can listen to these events and execute custom logic accordingly.
-----------------------------------------------------------------------------------------------------
-Index: 24449 <<"chunk_id": 2, "docno": 3763>>
-
-than ones in typical clustered databases. For one, disk storage is shared
-nothing - each cache process owns its disk store eliminating process level
-contentions. Second, the design is tilted to favor memory i.e. there are no
-complex B-Tree data structures on disk; instead we assume complex query
-navigations will always be done through in-memory indexes. Third, the design
-uses rolling append-only log files to avoid disk seeks completely. Finally, the
-design preserves the rebalancing model in GemFire when capacity is increased or
-decreased - the disk data also relocates itself. Improved scale-out capabilities
-: Application deployments using the tiered model (client process embedding a
-local cache talking to a server farm) could see a 2X or more performance gain
-when accessing partitioned data. With 6.5, client processes gain knowledge about
-server side partitions and use it on the fly to direct traffic directly to the
-server with the required data set. Application clients subscribing to events
-using key based register interest or "continuous queries" now have their
-subscriptions registered on all the partitioned nodes. This allows each
-partition to process the subcription filters on the nodes where the data changes
-are applied dramatically reducing messaging traffic between peers unlike in the
-previous releases. The net effect is that more subscriptions can be processed
-and the event delivery latency to clients is also reduced. Colocated
-transactions : If each logical partition were to own the entire transactional
-working set then highly applications can scale linearly if the concurrent
-transaction load is uniformly spread across the data
-----------------------------------------------------------------------------------------------------
-Index: 15911 <<"chunk_id": 1470, "docno": 2234>>
-
-6056 started Worker 5644 started console copy On Windows, it is not yet possible
-to set up a named pipe server in a worker. How it works # The worker processes
-are spawned using the child_process.fork() method, so that they can communicate
-with the parent via IPC and pass server handles back and forth. The cluster
-module supports two methods of distributing incoming connections. The first one
-(and the default one on all platforms except Windows) is the round-robin
-approach, where the primary process listens on a port, accepts new connections
-and distributes them across the workers in a round-robin fashion, with some
-built-in smarts to avoid overloading a worker process. The second approach is
-where the primary process creates the listen socket and sends it to interested
-workers. The workers then accept incoming connections directly. The second
-approach should, in theory, give the best performance. In practice however,
-distribution tends to be very unbalanced due to operating system scheduler
-vagaries. Loads have been observed where over 70% of all connections ended up in
-just two processes, out of a total of eight. Because server.listen() hands off
-most of the work to the primary process, there are three cases where the
-behavior between a normal Node.js process and a cluster worker differs:
-server.listen({fd: 7}) Because the message is passed to the primary, file
-descriptor 7 in the parent will be listened on, and the handle passed to the
-worker, rather than listening to the worker's idea of what the number 7 file
-descriptor references. server.listen(handle) Listening
-----------------------------------------------------------------------------------------------------
-Index: 21394 <<"chunk_id": 2, "docno": 3172>>
-
-Integration Kafka 2.0.x, and currently supports Apache Kafka 0.9. The use of the
-new client library adds a few benefits: Applications using the Apache Kafka
-Binder do not have to have spring.cloud.stream.instanceIndex set. The new
-consumer library will take care of assigning partitions to all the instances
-which are part of a given consumer group, and rebalancing when new instances
-join or leave - useful especially for scaling consumer applications at runtime.
-For users that wish to still use a static partition allocation scheme, we will
-support it by the final release ( spring.cloud.stream.instanceIndex will still
-be required in that case). Support for secured clients with SSL and Kerberos .
-The abstractions of Spring Kafka and Spring Integration Kafka will also make
-adding support for Apache Kafka 0.10 easier too, and it is expected that the
-final release will support Kafka 0.10 as well. Reactive programming support
-(with Java 8) In addition to the Spring Integration application model and the
-@StreamListener present in version 1.0, this release introduces support for
-reactive APIs , based on Project Reactor . This feature requires the use of Java
-8. Applications can add the spring-cloud-stream-reactive module as a dependency,
-enabling the use of reactive types directly as the programming abstraction. In
-the context of data processing, a functional and reactive programming model is
-extremely attractive because of the declarative and expressive nature of a
-reactive composition API, which lets the developer focus on what to do, not how.
-On the other hand, while processing messages individually is a classic paradigm
-----------------------------------------------------------------------------------------------------
-Index: 3424 <<"chunk_id": 13, "docno": 483>>
-
-Objects without prototype by using Object.create(null) . Freezing the prototype:
-Object.freeze(MyObject.prototype) . Disable the Object.prototype.__proto__
-property using --disable-proto flag. Check that the property exists directly on
-the object, not from the prototype using Object.hasOwn(obj, keyFromObj) . Avoid
-using methods from Object.prototype . Uncontrolled Search Path Element (CWE-427)
-The Node.js threat model considers the file system in the environment accessible
-to Node.js as trusted. As a result, issues that rely solely on controlling files
-in those locations are not considered vulnerabilities in Node.js core. They are,
-however, relevant to the security of your overall deployment and supply chain,
-so you should harden your environment and use the mechanisms below to reduce
-risk. Node.js loads modules following the Module Resolution Algorithm .
-Therefore, it assumes the directory in which a module is requested (require) is
-trusted. By that, it means the following application behavior is expected.
-Assuming the following directory structure: app/ server.js auth.js auth If
-server.js uses require('./auth') it will follow the module resolution algorithm
-and load auth instead of auth.js . Node.js Permission Model Node.js provides a
-permission model that can be used to restrict what a given process is allowed to
-do at runtime. This model complements the Node.js threat model . When enabled
-(for example, using the --permission flag), the permission model lets you
-selectively allow or deny access to sensitive capabilities such as: File system
-reads and writes. Network access (inbound and outbound). Child process creation.
-Use of native addons and other powerful APIs. This can help contain the impact
-of malicious or
-----------------------------------------------------------------------------------------------------
-Index: 4516 <<"chunk_id": 1, "docno": 662>>
-
-internally that lead to these constraints, the implementation techniques, and
-the performance analysis. What is HashDoS and why does it matter for Node.js?
-Hash tables are one of the most important data structures in software, and
-Node.js/V8 are no exceptions. With hash tables, there comes the problem of
-collisions - while hash tables are designed to have O(1) average time complexity
-for, e.g., single lookup and insertion, when there are so many keys whose hashed
-values can be mapped to the same slot that the table has to walk through many
-locations to insert a new key, it's theoretically possible to degrade to O(n 2 )
-in total for inserting n keys. In many applications, the worst-case performance
-of hash tables is usually just a theoretical concern and maybe an occasional
-nuisance, but for servers that need to process untrusted input, this can be an
-attack vector. If an attacker manages to find a path that allows them to cause a
-large number of collisions in the server's internal hash table with a small
-number of inputs, they can effectively "freeze" the thread without much effort.
-And, with enough threads frozen, they could render the service unavailable for a
-sustained period of time. This is commonly called a hash flooding or Hash-DoS
-(Denial of Service) attack . HashDoS vulnerabilities can show up in a wide range
-of platforms. In the case of V8, when it's used in a browser, DoS issues are not
-considered vulnerabilities because they typically only affect the tab that
-processes the malicious
-----------------------------------------------------------------------------------------------------
-Index: 9248 <<"chunk_id": 30, "docno": 1407>>
-
-Notable differences inside a Worker environment are: The process.stdin ,
-process.stdout , and process.stderr streams may be redirected by the parent
-thread. The require('node:worker_threads').isMainThread property is set to false
-. The require('node:worker_threads').parentPort message port is available.
-process.exit() does not stop the whole program, just the single thread, and
-process.abort() is not available. process.chdir() and process methods that set
-group or user ids are not available. process.env is a copy of the parent
-thread's environment variables, unless otherwise specified. Changes to one copy
-are not visible in other threads, and are not visible to native add-ons (unless
-worker.SHARE_ENV is passed as the env option to the Worker constructor). On
-Windows, unlike the main thread, a copy of the environment variables operates in
-a case-sensitive manner. process.title cannot be modified. Signals are not
-delivered through process.on('...') . Execution may stop at any point as a
-result of worker.terminate() being invoked. IPC channels from parent processes
-are not accessible. The trace_events module is not supported. Native add-ons can
-only be loaded from multiple threads if they fulfill certain conditions .
-Creating Worker instances inside of other Worker s is possible. Like Web Workers
-and the node:cluster module , two-way communication can be achieved through
-inter-thread message passing. Internally, a Worker has a built-in pair of
-MessagePort s that are already associated with each other when the Worker is
-created. While the MessagePort object on the parent side is not directly
-exposed, its functionalities are exposed through worker.postMessage() and the
-worker.on('message') event on the Worker object for the parent thread.
-----------------------------------------------------------------------------------------------------
-Index: 3418 <<"chunk_id": 7, "docno": 483>>
-
-run for an acceptable amount unwillingly increases the response time of the
-request. By comparing the request response times, an attacker can guess the
-length and the value of the password in a large quantity of requests.
-Mitigations The crypto API exposes a function timingSafeEqual to compare actual
-and expected sensitive values using a constant-time algorithm. For password
-comparison, you can use the scrypt available also on the native crypto module.
-More generally, avoid using secrets in variable-time operations. This includes
-branching on secrets and, when the attacker could be co-located on the same
-infrastructure (e.g., same cloud machine), using a secret as an index into
-memory. Writing constant-time code in JavaScript is hard (partly because of the
-JIT). For crypto applications, use the built-in crypto APIs or WebAssembly (for
-algorithms not implemented in natively). Malicious Third-Party Modules
-(CWE-1357) According to the Node.js threat model , scenarios that require a
-malicious third-party module are not considered vulnerabilities in Node.js core,
-because Node.js treats the code it is asked to run (including dependencies) as
-trusted. However, malicious or compromised dependencies remain one of the most
-critical application-level risks for Node.js users and should be treated as
-such. Currently, in Node.js, any package can access powerful resources such as
-network access. Furthermore, because they also have access to the file system,
-they can send any data anywhere. All code running into a node process has the
-ability to load and run additional arbitrary code by using eval() (or its
-equivalents). All code with file system write access may
-----------------------------------------------------------------------------------------------------
-Index: 9675 <<"chunk_id": 2, "docno": 1431>>
-
-of a proper reference manual, more samples, and more javadoc. Community
-contributions from more than just core project committers. Reactive Streams is
-totally Boss If we had to limit ourselves to talking about just one change, then
-the native and foundational support for Reactive Streams would be it. It’s hard
-to overstate just how fundamental Reactive Streams has become to Reactor. Stream
-processing is the new black and Reactor has embraced that from the beginning of
-the project. The addition of Reactive Streams and its propagation of
-backpressure support, however, makes processing large volumes of data in real or
-near-real time much more accessible to your cloud applications. Now patterns
-such as stop-read under load, batch flush or adaptive batch are available out of
-the box. Each step in a Reactor Stream is a Reactive Streams component that
-correctly propagates demand and backpressure based on the rate of processing
-under the current resource constraints. Using Reactive Streams, Reactor 2.0
-makes it possible to create a stream of processing that adjusts its resource
-usage automatically. You can influence the rate at which new items are pulled
-into the system because of the way Reactive Streams backpressure is communicated
-upstream. That means a slow downstream component can push back all the way to
-the source to slow down the ingest rate if current processing is using all
-available resources. Pool<Connection> pool; Stream<Message> input;
-input.capacity(1) .batchConsume(msg -> { pool.getConnection().merge(msg); },
-requestMore -> Math.max(pool.getSize() - pool.getActive(), 1)); In the snippet
-above we’re adapting the number of items to process based
-----------------------------------------------------------------------------------------------------
-Index: 15909 <<"chunk_id": 1468, "docno": 2234>>
-
-the structure of the passed data. Therefore, this feature requires opting in by
-setting the serialization option to 'advanced' when calling
-child_process.spawn() or child_process.fork() . Cluster # Source Code:
-lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be used
-to run multiple instances of Node.js that can distribute workloads among their
-application threads. When process isolation is not needed, use the
-worker_threads module instead, which allows running multiple application threads
-within a single Node.js instance. The cluster module allows easy creation of
-child processes that all share server ports. import cluster from 'node:cluster'
-; import http from 'node:http' ; import { availableParallelism } from 'node:os'
-; import process from 'node:process' ; const numCPUs = availableParallelism () ;
-if (cluster . isPrimary) { console . log ( `Primary ${ process . pid } is
-running` ) ; // Fork workers. for ( let i = 0 ; i < numCPUs ; i ++ ) { cluster .
-fork () ; } cluster . on ( 'exit' , ( worker , code , signal ) => { console .
-log ( `worker ${ worker . process . pid } died` ) ; } ) ; } else { // Workers
-can share any TCP connection // In this case it is an HTTP server http .
-createServer ( ( req , res ) => { res . writeHead ( 200 ) ; res . end ( 'hello
-world \n ' ) ; } ) . listen ( 8000 ) ; console . log ( `Worker ${
-----------------------------------------------------------------------------------------------------
-Index: 1546 <<"chunk_id": 1, "docno": 189>>
-
-a runner Publishing a TypeScript package Modules How to use streams
-Backpressuring in Streams Publishing a package How to publish a Node-API package
-ABI Stability Diagnostics User Journey Memory Overview Understanding and Tuning
-Memory Using Heap Profiler Using Heap Snapshot Tracing garbage collection Live
-Debugging Overview Using Inspector Poor Performance Overview Using Linux Perf
-Flame Graphs Test Runner Discovering Node.js's test runner Using Node.js's test
-runner Mocking in tests Collecting code coverage in Node.js Node-API What is
-Node-API? Getting Started Overview Pre-requisites Tools Anatomy of a Node-API
-project Your First Project Object Wrap Migrating to Node-API Build Tools
-Overview node-gyp CMake.js node-pre-gyp Special Topics Overview Context
-Awareness Object and Function References AsyncWorker Thread-Safe Functions On
-this page Blocking Comparing Code Concurrency and Throughput Dangers of Mixing
-Blocking and Non-Blocking Code Additional Resources Overview of Blocking vs
-Non-Blocking This overview covers the difference between blocking and
-non-blocking calls in Node.js. This overview will refer to the event loop and
-libuv but no prior knowledge of those topics is required. Readers are assumed to
-have a basic understanding of the JavaScript language and Node.js callback
-pattern . "I/O" refers primarily to interaction with the system's disk and
-network supported by libuv . Blocking Blocking is when the execution of
-additional JavaScript in the Node.js process must wait until a non-JavaScript
-operation completes. This happens because the event loop is unable to continue
-running JavaScript while a blocking operation is occurring. In Node.js,
-JavaScript that exhibits poor performance due to being CPU intensive rather than
-waiting on a non-JavaScript
-----------------------------------------------------------------------------------------------------
-Index: 29341 <<"chunk_id": 8, "docno": 4906>>
-
-ability to upgrade these libraries dynamically. By understanding the different
-types of beans that an application contains, the Admin Console will provide for
-detailed insight into application internals and allow for dynamic
-reconfiguration of certain application components. To support typical enterprise
-deployment scenarios, the 2.0 version of the Platform will provide explicit
-support for common enterprise middleware components such as Oracle, TIBCO EMS
-and IBM MQSeries. Integration with the Admin Console will allow for connections
-to these middleware providers to be established in minutes rather than hours or
-days. Applications will be able to access these connections using the OSGi
-service registry and Spring DM’s <osgi:reference> . The 2.0 release will
-introduce additional personalities to cover batch, web services and SOA
-applications. Clustering is an important feature for the 2.0 release, with
-cluster-wide Single System Image (SSI) being the critical piece, and
-load-balancing and clustered caching being on the roadmap as well. Using the SSI
-support, administration and deployment operations will be propagated across the
-cluster. Ultimately, we want to support per-module updates across the cluster,
-with full cluster-rollback if the upgrade breaks a deployed application. DMK 2.0
-will include improvements to the concurrency subsystem to support large numbers
-of bundles that change frequently and to support larger numbers of modules with
-more complex interdependencies. Also included will be updates to the
-provisioning subsystem and integrated resource management and monitoring for
-memory, threads, IO and CPU. What next? Please download the Platform and try it
-out. We are keen to hear about your experiences building new
-----------------------------------------------------------------------------------------------------
-Index: 2799 <<"chunk_id": 15, "docno": 378>>
-
-i + 1 , cb )) ; } // Start the helper, with CB to call avgCB. help ( 1 ,
-function ( sum ) { const avg = sum / n ; avgCB ( avg ) ; } ) ; } asyncAvg ( n ,
-function ( avg ) { console . log ( ' avg of 1-n: ' + avg ) ; } ) ; JavaScript
-Copy to clipboard You can apply this principle to array iterations and so forth.
-Offloading If you need to do something more complex, partitioning is not a good
-option. This is because partitioning uses only the Event Loop, and you won't
-benefit from multiple cores almost certainly available on your machine.
-Remember, the Event Loop should orchestrate client requests, not fulfill them
-itself. For a complicated task, move the work off of the Event Loop onto a
-Worker Pool. How to offload You have two options for a destination Worker Pool
-to which to offload work. You can use the built-in Node.js Worker Pool by
-developing a C++ addon . On older versions of Node, build your C++ addon using
-NAN , and on newer versions use N-API . node-webworker-threads offers a
-JavaScript-only way to access the Node.js Worker Pool. You can create and manage
-your own Worker Pool dedicated to computation rather than the Node.js I/O-themed
-Worker Pool. The most straightforward ways to do this is using Child Process or
-Cluster . You should not simply create a Child Process for every client. You can
-receive client
-----------------------------------------------------------------------------------------------------
-Index: 16528 <<"chunk_id": 2087, "docno": 2234>>
-
-Worker environment are: The process.stdin , process.stdout , and process.stderr
-streams may be redirected by the parent thread. The
-require('node:worker_threads').isMainThread property is set to false . The
-require('node:worker_threads').parentPort message port is available.
-process.exit() does not stop the whole program, just the single thread, and
-process.abort() is not available. process.chdir() and process methods that set
-group or user ids are not available. process.env is a copy of the parent
-thread's environment variables, unless otherwise specified. Changes to one copy
-are not visible in other threads, and are not visible to native add-ons (unless
-worker.SHARE_ENV is passed as the env option to the Worker constructor). On
-Windows, unlike the main thread, a copy of the environment variables operates in
-a case-sensitive manner. process.title cannot be modified. Signals are not
-delivered through process.on('...') . Execution may stop at any point as a
-result of worker.terminate() being invoked. IPC channels from parent processes
-are not accessible. The trace_events module is not supported. Native add-ons can
-only be loaded from multiple threads if they fulfill certain conditions .
-Creating Worker instances inside of other Worker s is possible. Like Web Workers
-and the node:cluster module , two-way communication can be achieved through
-inter-thread message passing. Internally, a Worker has a built-in pair of
-MessagePort s that are already associated with each other when the Worker is
-created. While the MessagePort object on the parent side is not directly
-exposed, its functionalities are exposed through worker.postMessage() and the
-worker.on('message') event on the Worker object for the parent thread. To create
-custom messaging
-----------------------------------------------------------------------------------------------------
-Index: 1630 <<"chunk_id": 1, "docno": 199>>
-
-TypeScript package Modules How to use streams Backpressuring in Streams
-Publishing a package How to publish a Node-API package ABI Stability Diagnostics
-User Journey Memory Overview Understanding and Tuning Memory Using Heap Profiler
-Using Heap Snapshot Tracing garbage collection Live Debugging Overview Using
-Inspector Poor Performance Overview Using Linux Perf Flame Graphs Test Runner
-Discovering Node.js's test runner Using Node.js's test runner Mocking in tests
-Collecting code coverage in Node.js Node-API What is Node-API? Getting Started
-Overview Pre-requisites Tools Anatomy of a Node-API project Your First Project
-Object Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js
-node-pre-gyp Special Topics Overview Context Awareness Object and Function
-References AsyncWorker Thread-Safe Functions On this page State management
-Control flow Asynchronous flow control The material in this post is heavily
-inspired by Mixu's Node.js Book . At its core, JavaScript is designed to be
-non-blocking on the "main" thread, this is where views are rendered. You can
-imagine the importance of this in the browser. When the main thread becomes
-blocked it results in the infamous "freezing" that end users dread, and no other
-events can be dispatched resulting in the loss of data acquisition, for example.
-This creates some unique constraints that only a functional style of programming
-can cure. This is where callbacks come in to the picture. However, callbacks can
-become challenging to handle in more complicated procedures. This often results
-in "callback hell" where multiple nested functions with callbacks make the code
-more challenging to read, debug, organize, etc. async1 ( function ( input ,
 ----------------------------------------------------------------------------------------------------

@@ -209,8 +209,8 @@ def rag_evaluate():
 
             eval_file.write("\n" + "-"*50 + "\n\n")
 
-            if (i == 1):
-                break
+            # if (i == 1):
+            #     break
 
     print(f"Evaluation completed. Results are saved in {EVALUATION_FOLDER}rag_evaluation_results.txt.")
 

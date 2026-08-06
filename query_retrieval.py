@@ -5,14 +5,11 @@ from shared import import_chunks, load_corpus, normalize_text_tokens
 import Models.bm25_model as bm
 import Models.vector_model as vec
 import Models.hybrid as hybrid
-import dotenv
-
-dotenv.load_dotenv()
 
 QUERY_RESULTS = "./Data/queries/"
 QUERIES = "queries.jsonl"
-BM25_WEIGHT = float(os.getenv("BM25_WEIGHT", 0.25))  # Default weight for BM25 in hybrid retrieval
-TOP_N = int(os.getenv("TOP_N", 20))  # Default to top 20 results if not set in .env
+BM25_WEIGHT = 0.25  # Default weight for BM25 in hybrid retrieval
+TOP_N = 20  # Default to top 20 results if not set in .env
 
 # Format [{"query_id": "id", "tokens": ["token1", "token2", ...]}, ...]
 queries = []

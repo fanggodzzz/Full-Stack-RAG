@@ -62,43 +62,150 @@ JAR Support The last example showed how Spring Boot lets you wire beans that you
 may not be aware you need. It also showed how to turn on convenient management
 services. However, Spring Boot does more than that.
 ----------------------------------------------------------------------------------------------------
-Index: 5370 <<"chunk_id": 3, "docno": 790>>
+Index: 27509 <<"chunk_id": 2, "docno": 4443>>
 
-spring-boot-micrometer-metrics spring-boot-micrometer-observation
-spring-boot-micrometer-tracing spring-boot-micrometer-tracing-brave
-spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
-spring-boot-mustache spring-boot-neo4j spring-boot-netty
-spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
-spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
-spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
-spring-boot-rsocket spring-boot-security
-spring-boot-security-oauth2-authorization-server
-spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
-spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
-spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
-spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
-spring-boot-transaction spring-boot-validation spring-boot-webclient
-spring-boot-webflux spring-boot-webmvc spring-boot-webservices
-spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
-Test Slices Dependency Versions Managed Dependency Coordinates Version
-Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
-Reference Production-ready Features Endpoints Endpoints Actuator endpoints let
-you monitor and interact with your application. Spring Boot includes a number of
-built-in endpoints and lets you add your own. For example, the health endpoint
-provides basic application health information. You can control access to each
-individual endpoint and expose them (make them remotely accessible) over HTTP or
-JMX . An endpoint is considered to be available when access to it is permitted
-and it is exposed. The built-in endpoints are auto-configured only when they are
-available. Most applications choose exposure over HTTP, where the ID of the
-endpoint and a prefix of /actuator is mapped to a URL. For example, by default,
-the health endpoint is mapped to /actuator/health . To learn more about the
-Actuator’s endpoints and their request and response formats, see the API
-documentation . The following technology-agnostic endpoints are available: ID
-Description auditevents Exposes audit events information for the current
-application. Requires an AuditEventRepository bean. beans Displays a complete
-list of all the Spring beans in your application. caches Exposes available
-caches. conditions Shows the conditions that were evaluated on configuration and
-auto-configuration classes and the reasons why they did
+PollableMessageSource inputSource(); Start using it in your application:
+@Autowire PollableMessageSource inputSource; . . .
+inputSource.poll(System.out::println); More information can be found in the
+Using Polled Consumers section of the reference guide. Actuator and Web Are Now
+Optional To simplify the footprint and to provide greater flexibility with
+regard to the choice of web frameworks (imperative versus webflux), we've made
+both Spring Boot Actuator and Web optional dependencies and do not include them
+by default. However, you can add them as application dependencies if you need
+to, by including the following dependency elements: <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-web</artifactId> </dependency> <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-actuator</artifactId> </dependency> New Binding
+Actuator Endpoints You can now both visualize as well as control bindings by
+using new actuator endpoints. Set the
+management.endpoints.web.exposure.include=bindings Boot property and enable one
+of the web frameworks and actuator by including their respective starters as
+dependencies in your project (as described in Actuator and Web Are Now Optional
+) Start your application and access the following URL to visualize the current
+bindings: http://localhost:8080/actuator/bindings From that URL, you can receive
+output similar to the following: [ { name: "myDestination", group: "myGroup",
+pausable: false, state: "running", extendedInfo: { bindingDestination:
+"RabbitConsumerDestination{queue=Queue [name=myDestination.myGroup,
+durable=true, . . .}", ExtendedConsumerProperties: { concurrency: 1,
+instanceCount: 1, maxAttempts: 3, backOffInitialInterval: 1000,
+backOffMaxInterval: 10000, backOffMultiplier: 2, extension: { exchangeType:
+"topic", declareExchange: true, . . . You can also visualize individual bindings
+as well as control their lifecycle (such as stop, start, pause, and resume).
+More details can be found in the Binding Visualization and Control section of
+the user guide. Micrometer support
+----------------------------------------------------------------------------------------------------
+Index: 7395 <<"chunk_id": 6, "docno": 1123>>
+
+} @RefreshScope @RestController class MessageRestController {
+@Value("${message:Hello default}") private String message;
+@RequestMapping("/message") String getMessage() { return this.message; } } Test
+the Application You can test the end-to-end result by starting the Config
+Service first and then, once it is running, starting the client. Visit the
+client app in the browser at http://localhost:8080/message . There, you should
+see Hello world in the response. Change the message key in the
+a-bootiful-client.properties file in the Git repository to something different (
+Hello Spring! , perhaps?). You can confirm that the Config Server sees the
+change by visiting http://localhost:8888/a-bootiful-client/default . You need to
+invoke the refresh Spring Boot Actuator endpoint in order to force the client to
+refresh itself and draw in the new value. Spring Boot’s Actuator exposes
+operational endpoints (such as health checks and environment information) about
+an application. To use it, you must add
+org.springframework.boot:spring-boot-starter-actuator to the client
+application’s classpath. You can invoke the refresh Actuator endpoint by sending
+an empty HTTP POST to the client’s refresh endpoint:
+http://localhost:8080/actuator/refresh . Then you can confirm it worked by
+visting the http://localhost:8080/message endpoint. The following command
+invokes the Actuator’s refresh command: $ curl -X POST
+localhost:8080/actuator/refresh -d {} -H "Content-Type: application/json" We set
+management.endpoints.web.exposure.include=* in the client application to make
+this is easy to test (since Spring Boot 2.0, the Actuator endpoints are not
+exposed by default). By default, you can still access them over JMX if you do
+not set the flag. Summary Congratulations! You have just used Spring to
+centralize configuration for all of your services by
+----------------------------------------------------------------------------------------------------
+Index: 5392 <<"chunk_id": 25, "docno": 790>>
+
+Probes . Depending on your Kubernetes configuration , the kubelet calls those
+probes and reacts to the result. By default, Spring Boot manages your
+Application Availability state. If deployed in a Kubernetes environment,
+actuator gathers the “Liveness” and “Readiness” information from the
+ApplicationAvailability interface and uses that information in dedicated health
+indicators : LivenessStateHealthIndicator and ReadinessStateHealthIndicator .
+These indicators are shown on the global health endpoint ( "/actuator/health" ).
+They are also exposed as separate HTTP Probes by using health groups :
+"/actuator/health/liveness" and "/actuator/health/readiness" . You can then
+configure your Kubernetes infrastructure with the following endpoint
+information: livenessProbe: httpGet: path: "/actuator/health/liveness" port:
+<actuator-port> failureThreshold: ... periodSeconds: ... readinessProbe:
+httpGet: path: "/actuator/health/readiness" port: <actuator-port>
+failureThreshold: ... periodSeconds: ... <actuator-port> should be set to the
+port that the actuator endpoints are available on. It could be the main web
+server port or a separate management port if the "management.server.port"
+property has been set. These health groups are automatically enabled. You can
+disable them by using the management.endpoint.health.probes.enabled
+configuration property. If an application takes longer to start than the
+configured liveness period, Kubernetes mentions the "startupProbe" as a possible
+solution . Generally speaking, the "startupProbe" is not necessarily needed here
+as the "readinessProbe" fails until all startup tasks are done. This means your
+application will not receive traffic until it is ready. However, if your
+application takes a long time to start, consider configuring a "startupProbe"
+that uses the liveness HTTP probe to make sure that Kubernetes won’t kill your
+application while it is in the process of
+----------------------------------------------------------------------------------------------------
+Index: 216 <<"chunk_id": 4, "docno": 27>>
+
+Spring Boot auto-configuration tries its best to “do the right thing”, but
+sometimes things fail, and it can be hard to tell why. There is a really useful
+ConditionEvaluationReport available in any Spring Boot ApplicationContext . You
+can see it if you enable DEBUG logging output. If you use the
+spring-boot-actuator (see the Actuator section), there is also a conditions
+endpoint that renders the report in JSON. Use that endpoint to debug the
+application and see what features have been added (and which have not been
+added) by Spring Boot at runtime. Many more questions can be answered by looking
+at the source code and the API documentation. When reading the code, remember
+the following rules of thumb: Look for classes called *AutoConfiguration and
+read their sources. Pay special attention to the @Conditional* annotations to
+find out what features they enable and when. Add --debug to the command line or
+the System property -Ddebug to get a log on the console of all the
+auto-configuration decisions that were made in your app. In a running
+application with actuator enabled, look at the conditions endpoint (
+/actuator/conditions or the JMX equivalent) for the same information. Look for
+classes that are @ConfigurationProperties (such as ServerProperties ) and read
+from there the available external configuration options. The
+@ConfigurationProperties annotation has a name attribute that acts as a prefix
+to external properties. Thus, ServerProperties has prefix="server" and its
+configuration properties are server.port , server.address , and others. In a
+running application with actuator enabled, look at the configprops endpoint.
+Look
+----------------------------------------------------------------------------------------------------
+Index: 5378 <<"chunk_id": 11, "docno": 790>>
+
+beans have been defined. Hypermedia for Actuator Web Endpoints A “discovery
+page” is added with links to all the endpoints. The “discovery page” is
+available on /actuator by default. To disable the “discovery page”, add the
+following property to your application properties: Properties YAML
+management.endpoints.web.discovery.enabled=false management: endpoints: web:
+discovery: enabled: false When a custom management context path is configured,
+the “discovery page” automatically moves from /actuator to the root of the
+management context. For example, if the management context path is /management ,
+the discovery page is available from /management . When the management context
+path is set to / , the discovery page is disabled to prevent the possibility of
+a clash with other mappings. CORS Support Cross-origin resource sharing (CORS)
+is a W3C specification that lets you specify in a flexible way what kind of
+cross-domain requests are authorized. If you use Spring MVC or Spring WebFlux,
+you can configure Actuator’s web endpoints to support such scenarios. CORS
+support is disabled by default and is only enabled once you have set the
+management.endpoints.web.cors.allowed-origins property. The following
+configuration permits GET and POST calls from the example.com domain: Properties
+YAML management.endpoints.web.cors.allowed-origins=https://example.com
+management.endpoints.web.cors.allowed-methods=GET,POST management: endpoints:
+web: cors: allowed-origins: "https://example.com" allowed-methods: "GET,POST"
+See CorsEndpointProperties for a complete list of options. JSON When working
+with JSON, Jackson is used for serialization and deserialization. By default, an
+isolated JsonMapper is used. This isolation means that it does not share the
+same configuration as the application’s JsonMapper and it is not affected by
+spring.jackson.* properties. To disable this behavior and configure
 ----------------------------------------------------------------------------------------------------
 Index: 8003 <<"chunk_id": 0, "docno": 1252>>
 
@@ -166,182 +273,6 @@ actuator endpoints. org.springframework.boot.actuate.endpoint.jackson Jackson
 support classes for actuator endpoints.
 org.springframework.boot.actuate.endpoint.jmx JMX support for actuator
 ----------------------------------------------------------------------------------------------------
-Index: 27509 <<"chunk_id": 2, "docno": 4443>>
-
-PollableMessageSource inputSource(); Start using it in your application:
-@Autowire PollableMessageSource inputSource; . . .
-inputSource.poll(System.out::println); More information can be found in the
-Using Polled Consumers section of the reference guide. Actuator and Web Are Now
-Optional To simplify the footprint and to provide greater flexibility with
-regard to the choice of web frameworks (imperative versus webflux), we've made
-both Spring Boot Actuator and Web optional dependencies and do not include them
-by default. However, you can add them as application dependencies if you need
-to, by including the following dependency elements: <dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-web</artifactId> </dependency> <dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-actuator</artifactId> </dependency> New Binding
-Actuator Endpoints You can now both visualize as well as control bindings by
-using new actuator endpoints. Set the
-management.endpoints.web.exposure.include=bindings Boot property and enable one
-of the web frameworks and actuator by including their respective starters as
-dependencies in your project (as described in Actuator and Web Are Now Optional
-) Start your application and access the following URL to visualize the current
-bindings: http://localhost:8080/actuator/bindings From that URL, you can receive
-output similar to the following: [ { name: "myDestination", group: "myGroup",
-pausable: false, state: "running", extendedInfo: { bindingDestination:
-"RabbitConsumerDestination{queue=Queue [name=myDestination.myGroup,
-durable=true, . . .}", ExtendedConsumerProperties: { concurrency: 1,
-instanceCount: 1, maxAttempts: 3, backOffInitialInterval: 1000,
-backOffMaxInterval: 10000, backOffMultiplier: 2, extension: { exchangeType:
-"topic", declareExchange: true, . . . You can also visualize individual bindings
-as well as control their lifecycle (such as stop, start, pause, and resume).
-More details can be found in the Binding Visualization and Control section of
-the user guide. Micrometer support
-----------------------------------------------------------------------------------------------------
-Index: 8004 <<"chunk_id": 1, "docno": 1252>>
-
-for actuator endpoints. org.springframework.boot.actuate.endpoint.invoke.reflect
-Endpoint reflection support.
-org.springframework.boot.actuate.endpoint.invoker.cache Caching support for
-actuator endpoints. org.springframework.boot.actuate.endpoint.jackson Jackson
-support classes for actuator endpoints.
-org.springframework.boot.actuate.endpoint.jmx JMX support for actuator
-endpoints. org.springframework.boot.actuate.endpoint.jmx.annotation Annotation
-support for actuator JMX endpoints.
-org.springframework.boot.actuate.endpoint.web Web support for actuator
-endpoints. org.springframework.boot.actuate.endpoint.web.annotation Annotation
-support for actuator web endpoints. org.springframework.boot.actuate.env
-Actuator support for Spring Framework's Environment .
-org.springframework.boot.actuate.info Classes for application info.
-org.springframework.boot.actuate.logging Actuator support for logging.
-org.springframework.boot.actuate.management Actuator support for JVM management.
-org.springframework.boot.actuate.sbom Actuator support for SBOMs.
-org.springframework.boot.actuate.scheduling Actuator scheduling support.
-org.springframework.boot.actuate.security Actuator support for security.
-org.springframework.boot.actuate.startup Actuator support for ApplicationStartup
-. org.springframework.boot.actuate.web.exchanges Actuator HTTP exchanges
-support. org.springframework.boot.actuate.web.mappings Actuator web request
-mappings support. org.springframework.boot.admin Administration support for
-Spring Boot applications. org.springframework.boot.amqp.autoconfigure
-Auto-configuration for RabbitMQ.
-org.springframework.boot.amqp.autoconfigure.health Auto-configuration for
-RabbitMQ health. org.springframework.boot.amqp.autoconfigure.metrics
-Auto-configuration for RabbitMQ metrics. org.springframework.boot.amqp.health
-Health integration for AMQP and RabbitMQ. org.springframework.boot.amqp.metrics
-Metrics for AMQP and RabbitMQ. org.springframework.boot.ansi Support classes to
-provide ANSI color output. org.springframework.boot.artemis.autoconfigure
-Auto-configuration for Artemis. org.springframework.boot.autoconfigure Spring
-Boot's auto-configuration capabilities.
-org.springframework.boot.autoconfigure.admin Auto-configuration for
-admin-related features. org.springframework.boot.autoconfigure.aop
-Auto-configuration for Spring AOP.
-org.springframework.boot.autoconfigure.availability Auto-configuration for
-application availability features. org.springframework.boot.autoconfigure.cache
-Auto-configuration base classes for Caching support.
-org.springframework.boot.autoconfigure.condition @Condition annotations and
-supporting classes. org.springframework.boot.autoconfigure.container Support
-classes related to auto-configuration involving containers.
-org.springframework.boot.autoconfigure.context Auto-configuration for the Spring
-context. org.springframework.boot.autoconfigure.data Auto-configuration base
-classes for Spring Data. org.springframework.boot.autoconfigure.info
-Auto-configuration for project information.
-org.springframework.boot.autoconfigure.jmx Auto-configuration for JMX.
-org.springframework.boot.autoconfigure.logging Auto-configuration for logging.
-org.springframework.boot.autoconfigure.preinitialize Capabilities to
-preinitialize code in the background to improve startup performance.
-org.springframework.boot.autoconfigure.service.connection Support for service
-connections that affect auto-configuration.
-org.springframework.boot.autoconfigure.ssl Auto-configuration for SSL bundles.
-org.springframework.boot.autoconfigure.task Auto-configuration for task
-execution and scheduling. org.springframework.boot.autoconfigure.template Base
-classes for template Auto-configuration.
-org.springframework.boot.autoconfigure.web Auto-configuration for
-----------------------------------------------------------------------------------------------------
-Index: 7395 <<"chunk_id": 6, "docno": 1123>>
-
-} @RefreshScope @RestController class MessageRestController {
-@Value("${message:Hello default}") private String message;
-@RequestMapping("/message") String getMessage() { return this.message; } } Test
-the Application You can test the end-to-end result by starting the Config
-Service first and then, once it is running, starting the client. Visit the
-client app in the browser at http://localhost:8080/message . There, you should
-see Hello world in the response. Change the message key in the
-a-bootiful-client.properties file in the Git repository to something different (
-Hello Spring! , perhaps?). You can confirm that the Config Server sees the
-change by visiting http://localhost:8888/a-bootiful-client/default . You need to
-invoke the refresh Spring Boot Actuator endpoint in order to force the client to
-refresh itself and draw in the new value. Spring Boot’s Actuator exposes
-operational endpoints (such as health checks and environment information) about
-an application. To use it, you must add
-org.springframework.boot:spring-boot-starter-actuator to the client
-application’s classpath. You can invoke the refresh Actuator endpoint by sending
-an empty HTTP POST to the client’s refresh endpoint:
-http://localhost:8080/actuator/refresh . Then you can confirm it worked by
-visting the http://localhost:8080/message endpoint. The following command
-invokes the Actuator’s refresh command: $ curl -X POST
-localhost:8080/actuator/refresh -d {} -H "Content-Type: application/json" We set
-management.endpoints.web.exposure.include=* in the client application to make
-this is easy to test (since Spring Boot 2.0, the Actuator endpoints are not
-exposed by default). By default, you can still access them over JMX if you do
-not set the flag. Summary Congratulations! You have just used Spring to
-centralize configuration for all of your services by
-----------------------------------------------------------------------------------------------------
-Index: 216 <<"chunk_id": 4, "docno": 27>>
-
-Spring Boot auto-configuration tries its best to “do the right thing”, but
-sometimes things fail, and it can be hard to tell why. There is a really useful
-ConditionEvaluationReport available in any Spring Boot ApplicationContext . You
-can see it if you enable DEBUG logging output. If you use the
-spring-boot-actuator (see the Actuator section), there is also a conditions
-endpoint that renders the report in JSON. Use that endpoint to debug the
-application and see what features have been added (and which have not been
-added) by Spring Boot at runtime. Many more questions can be answered by looking
-at the source code and the API documentation. When reading the code, remember
-the following rules of thumb: Look for classes called *AutoConfiguration and
-read their sources. Pay special attention to the @Conditional* annotations to
-find out what features they enable and when. Add --debug to the command line or
-the System property -Ddebug to get a log on the console of all the
-auto-configuration decisions that were made in your app. In a running
-application with actuator enabled, look at the conditions endpoint (
-/actuator/conditions or the JMX equivalent) for the same information. Look for
-classes that are @ConfigurationProperties (such as ServerProperties ) and read
-from there the available external configuration options. The
-@ConfigurationProperties annotation has a name attribute that acts as a prefix
-to external properties. Thus, ServerProperties has prefix="server" and its
-configuration properties are server.port , server.address , and others. In a
-running application with actuator enabled, look at the configprops endpoint.
-Look
-----------------------------------------------------------------------------------------------------
-Index: 5392 <<"chunk_id": 25, "docno": 790>>
-
-Probes . Depending on your Kubernetes configuration , the kubelet calls those
-probes and reacts to the result. By default, Spring Boot manages your
-Application Availability state. If deployed in a Kubernetes environment,
-actuator gathers the “Liveness” and “Readiness” information from the
-ApplicationAvailability interface and uses that information in dedicated health
-indicators : LivenessStateHealthIndicator and ReadinessStateHealthIndicator .
-These indicators are shown on the global health endpoint ( "/actuator/health" ).
-They are also exposed as separate HTTP Probes by using health groups :
-"/actuator/health/liveness" and "/actuator/health/readiness" . You can then
-configure your Kubernetes infrastructure with the following endpoint
-information: livenessProbe: httpGet: path: "/actuator/health/liveness" port:
-<actuator-port> failureThreshold: ... periodSeconds: ... readinessProbe:
-httpGet: path: "/actuator/health/readiness" port: <actuator-port>
-failureThreshold: ... periodSeconds: ... <actuator-port> should be set to the
-port that the actuator endpoints are available on. It could be the main web
-server port or a separate management port if the "management.server.port"
-property has been set. These health groups are automatically enabled. You can
-disable them by using the management.endpoint.health.probes.enabled
-configuration property. If an application takes longer to start than the
-configured liveness period, Kubernetes mentions the "startupProbe" as a possible
-solution . Generally speaking, the "startupProbe" is not necessarily needed here
-as the "readinessProbe" fails until all startup tasks are done. This means your
-application will not receive traffic until it is ready. However, if your
-application takes a long time to start, consider configuring a "startupProbe"
-that uses the liveness HTTP probe to make sure that Kubernetes won’t kill your
-application while it is in the process of
-----------------------------------------------------------------------------------------------------
 Index: 1092 <<"chunk_id": 5, "docno": 153>>
 
 can be used to override access rules for actuator endpoints and static
@@ -372,6 +303,310 @@ static resources. EndpointRequest can be used to create a
 ServerWebExchangeMatcher that is based on the management.endpoints.web.base-path
 property. PathRequest can be used to create a ServerWebExchangeMatcher for
 resources in commonly used locations. For example, you can customize
+----------------------------------------------------------------------------------------------------
+Index: 5379 <<"chunk_id": 12, "docno": 790>>
+
+it does not share the same configuration as the application’s JsonMapper and it
+is not affected by spring.jackson.* properties. To disable this behavior and
+configure Actuator to use the application’s JsonMapper , set
+management.endpoints.jackson.isolated-json-mapper to false . Alternatively, you
+can define your own EndpointJsonMapper bean that produces a JsonMapper that
+meets your needs. Actuator will then use it for JSON processing. Implementing
+Custom Endpoints If you add a @Bean annotated with @Endpoint , any methods
+annotated with @ReadOperation , @WriteOperation , or @DeleteOperation are
+automatically exposed over JMX and, in a web application, over HTTP as well.
+Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring
+WebFlux. If both Jersey and Spring MVC are available, Spring MVC is used. The
+following example exposes a read operation that returns a custom object: Java
+Kotlin @ReadOperation public CustomData getData() { return new
+CustomData("test", 5); } @ReadOperation fun getData(): CustomData { return
+CustomData("test", 5) } You can also write technology-specific endpoints by
+using @JmxEndpoint or @WebEndpoint . These endpoints are restricted to their
+respective technologies. For example, @WebEndpoint is exposed only over HTTP and
+not over JMX. You can write technology-specific extensions by using
+@EndpointWebExtension and @EndpointJmxExtension . These annotations let you
+provide technology-specific operations to augment an existing endpoint. An
+endpoint may have at most one extension of each type. Finally, if you need
+access to web-framework-specific functionality, you can implement servlet or
+Spring @Controller and @RestController endpoints at the cost of them not being
+available over JMX or when using a different web
+----------------------------------------------------------------------------------------------------
+Index: 23967 <<"chunk_id": 2, "docno": 3648>>
+
+users decide that they want to add custom security, the default security
+configuration provided by Spring Boot will back off completely. At this point,
+users need to explicitly define all the bits they want to secure. This means
+security configuration is now in one place and avoids any kind of ordering
+issues with existing WebSecurityConfigurerAdapter s. We provide dedicated
+helpers to make your configuration more readable and explicit. For management
+endpoints and static resources, Spring Boot provides convenience factories that
+will supply the right RequestMatcher . For management endpoints, the
+RequestMatcher will be created based on the management.context-path . Using
+RequestMatcher s gives users the flexibility to secure the application using
+existing Spring Security expressions such as permitAll , hasRole etc. Here is an
+example of a custom security: http .authorizeRequests() // 1
+.requestMatchers(EndpointRequest.to("status", "info")) .permitAll() // 2
+.requestMatchers(EndpointRequest.toAnyEndpoint()) .hasRole("ACTUATOR") // 3
+.requestMatchers(StaticResourceRequest.toCommonLocations()) .permitAll() // 4
+.antMatchers("/**") .hasRole("USER") .and() ... // additional configuration
+/status and /info endpoints do not require authentication. All other actuator
+endpoints are protected by the ACTUATOR role. Common static resource locations
+are open to all. All other application endpoints are protected by the USER role.
+We have reduced SecurityProperties to a minimum so that there is no confusion
+about which properties are used only by the auto-configuration and which ones
+get used even if the default security is turned off. As mentioned before, Spring
+Boot provides a default user with a generated password. If you want to configure
+your own user, you can define a bean of type UserDetailsService as follows:
+@Bean
+----------------------------------------------------------------------------------------------------
+Index: 5370 <<"chunk_id": 3, "docno": 790>>
+
+spring-boot-micrometer-metrics spring-boot-micrometer-observation
+spring-boot-micrometer-tracing spring-boot-micrometer-tracing-brave
+spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
+spring-boot-mustache spring-boot-neo4j spring-boot-netty
+spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
+spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
+spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
+spring-boot-rsocket spring-boot-security
+spring-boot-security-oauth2-authorization-server
+spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
+spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
+spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
+spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
+spring-boot-transaction spring-boot-validation spring-boot-webclient
+spring-boot-webflux spring-boot-webmvc spring-boot-webservices
+spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
+Test Slices Dependency Versions Managed Dependency Coordinates Version
+Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
+Reference Production-ready Features Endpoints Endpoints Actuator endpoints let
+you monitor and interact with your application. Spring Boot includes a number of
+built-in endpoints and lets you add your own. For example, the health endpoint
+provides basic application health information. You can control access to each
+individual endpoint and expose them (make them remotely accessible) over HTTP or
+JMX . An endpoint is considered to be available when access to it is permitted
+and it is exposed. The built-in endpoints are auto-configured only when they are
+available. Most applications choose exposure over HTTP, where the ID of the
+endpoint and a prefix of /actuator is mapped to a URL. For example, by default,
+the health endpoint is mapped to /actuator/health . To learn more about the
+Actuator’s endpoints and their request and response formats, see the API
+documentation . The following technology-agnostic endpoints are available: ID
+Description auditevents Exposes audit events information for the current
+application. Requires an AuditEventRepository bean. beans Displays a complete
+list of all the Spring beans in your application. caches Exposes available
+caches. conditions Shows the conditions that were evaluated on configuration and
+auto-configuration classes and the reasons why they did
+----------------------------------------------------------------------------------------------------
+Index: 23966 <<"chunk_id": 1, "docno": 3648>>
+
+the effects of the management.security.enabled flag based on whether Spring
+Security was on the classpath or not was quite confusing. There were a number of
+properties under security.* and management.security.* that were applicable only
+to the auto-configuration provided by Spring Boot. For example, if
+security.basic.enabled was set to false , setting security.sessions would have
+absolutely no effect and this turned out to be quite misleading. Improvements in
+2.0 In Spring Boot 2.0, our main goal was to greatly simplify the default
+security configuration and and make adding custom security easy. Simplified
+default configuration Providing sensible defaults for security is challenging.
+We've decided to opt for the most secure default, which is, secure everything,
+even public and static resources. By default, if Spring Security is on the
+classpath, Spring Boot will add @EnableWebSecurity , and rely on Spring
+Security's content-negotiation to decide which authentication mechanism to use.
+A default user with a generated password will be provided. If actuator is on the
+classpath, the same default security configuration will also apply to actuator
+endpoints. In order to prevent actuators from exposing sensitive data
+accidentally, most web endpoints will be disabled by default ( status and info
+are enabled by default however). Users need to take an explicit step to enable
+those web endpoints. This behavior is consistent, regardless of whether Spring
+Security is present on the classpath or not. Consistent customization Once users
+decide that they want to add custom security, the default security configuration
+provided by Spring Boot will back off completely. At this point, users
+----------------------------------------------------------------------------------------------------
+Index: 5373 <<"chunk_id": 6, "docno": 790>>
+
+only the technologies over which an endpoint is exposed, use the include and
+exclude properties instead. Limiting Access Application-wide endpoint access can
+be limited using the management.endpoints.access.max-permitted property. This
+property takes precedence over the default access or an individual endpoint’s
+access level. Set it to none to make all endpoints inaccessible. Set it to
+read-only to only allow read access to endpoints. For @Endpoint , @JmxEndpoint ,
+and @WebEndpoint , read access equates to the endpoint methods annotated with
+@ReadOperation . For @ControllerEndpoint and @RestControllerEndpoint , read
+access equates to request mappings that can handle GET and HEAD requests. For
+@ServletEndpoint , read access equates to GET and HEAD requests. Exposing
+Endpoints By default, only the health endpoint is exposed over HTTP and JMX.
+Since Endpoints may contain sensitive information, you should carefully consider
+when to expose them. To change which endpoints are exposed, use the following
+technology-specific include and exclude properties: Property Default
+management.endpoints.jmx.exposure.exclude
+management.endpoints.jmx.exposure.include health
+management.endpoints.web.exposure.exclude
+management.endpoints.web.exposure.include health The include property lists the
+IDs of the endpoints that are exposed. The exclude property lists the IDs of the
+endpoints that should not be exposed. The exclude property takes precedence over
+the include property. You can configure both the include and the exclude
+properties with a list of endpoint IDs. For example, to only expose the health
+and info endpoints over JMX, use the following property: Properties YAML
+management.endpoints.jmx.exposure.include=health,info management: endpoints:
+jmx: exposure: include: "health,info" * can be used to select all endpoints. For
+example, to expose everything over HTTP except the env and beans
+----------------------------------------------------------------------------------------------------
+Index: 5381 <<"chunk_id": 14, "docno": 790>>
+
+be compiled with -parameters . For Kotlin code, please review the recommendation
+of the Spring Framework reference. This will happen automatically if you use
+Spring Boot’s Gradle plugin or if you use Maven and spring-boot-starter-parent .
+Input Type Conversion The parameters passed to endpoint operation methods are,
+if necessary, automatically converted to the required type. Before calling an
+operation method, the input received over JMX or HTTP is converted to the
+required types by using an instance of ApplicationConversionService as well as
+any Converter or GenericConverter beans qualified with @EndpointConverter .
+Custom Web Endpoints Operations on an @Endpoint , @WebEndpoint , or
+@EndpointWebExtension are automatically exposed over HTTP using Jersey, Spring
+MVC, or Spring WebFlux. If both Jersey and Spring MVC are available, Spring MVC
+is used. Web Endpoint Request Predicates A request predicate is automatically
+generated for each operation on a web-exposed endpoint. Path The path of the
+predicate is determined by the ID of the endpoint and the base path of the
+web-exposed endpoints. The default base path is /actuator . For example, an
+endpoint with an ID of sessions uses /actuator/sessions as its path in the
+predicate. You can further customize the path by annotating one or more
+parameters of the operation method with @Selector . Such a parameter is added to
+the path predicate as a path variable. The variable’s value is passed into the
+operation method when the endpoint operation is invoked. If you want to capture
+all remaining path elements, you can add @Selector(Match=ALL_REMAINING) to the
+last parameter and make
+----------------------------------------------------------------------------------------------------
+Index: 12826 <<"chunk_id": 0, "docno": 1995>>
+
+Endpoint (Spring Boot 4.1.0 API) Skip navigation links Overview Class Use Tree
+Deprecated Index Search Help
+org.springframework.boot.actuate.endpoint.annotation Endpoint Contents
+Description Optional Element Summary Element Details id defaultAccess Hide
+sidebar Show sidebar Annotation Interface Endpoint @Target ( TYPE ) @Retention (
+RUNTIME ) @Documented @Reflective public @interface Endpoint Identifies a type
+as being an actuator endpoint that provides information about the running
+application. Endpoints can be exposed over a variety of technologies including
+JMX and HTTP. Most @Endpoint classes will declare one or more @ReadOperation ,
+@WriteOperation , @DeleteOperation annotated methods which will be automatically
+adapted to the exposing technology (JMX, Spring MVC, Spring WebFlux, Jersey
+etc.). @Endpoint represents the lowest common denominator for endpoints and
+intentionally limits the sorts of operation methods that may be defined in order
+to support the broadest possible range of exposure technologies. If you need
+deeper support for a specific technology you can either write an endpoint that
+is filtered to a certain technology, or provide extension for the broader
+endpoint. Since: 2.0.0 Author: Andy Wilkinson, Phillip Webb See Also:
+EndpointExtension FilteredEndpoint EndpointDiscoverer Optional Element Summary
+Optional Elements Modifier and Type Optional Element Description Access
+defaultAccess Level of access to the endpoint that is permitted by default.
+String id The id of the endpoint (must follow EndpointId rules). Element Details
+id String id The id of the endpoint (must follow EndpointId rules). Returns: the
+id See Also: EndpointId Default: "" defaultAccess Access defaultAccess Level of
+access to the endpoint that is permitted by default. Returns: the default level
+of access Since:
+----------------------------------------------------------------------------------------------------
+Index: 5737 <<"chunk_id": 11, "docno": 843>>
+
+endpoint access that is permitted. Caps an endpoint's individual access level
+(management.endpoint.<id>.access) and the default access
+(management.endpoints.access.default).' unrestricted
+management.endpoints.jackson.isolated-json-mapper Whether to use an isolated
+JsonMapper to serialize endpoint JSON. true management.endpoints.jmx.domain
+Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+org.springframework.boot management.endpoints.jmx.exposure.exclude Endpoint IDs
+that should be excluded or '*' for all.
+management.endpoints.jmx.exposure.include Endpoint IDs that should be included
+or '*' for all. health management.endpoints.jmx.static-names Additional static
+properties to append to all ObjectNames of MBeans representing Endpoints.
+management.endpoints.migrate-legacy-ids Whether to transparently migrate legacy
+endpoint IDs. false management.endpoints.web.base-path Base path for Web
+endpoints. Relative to the servlet context path (server.servlet.context-path) or
+WebFlux base path (spring.webflux.base-path) when the management server is
+sharing the main server port. Relative to the management server base path
+(management.server.base-path) when a separate management server port
+(management.server.port) is configured. /actuator
+management.endpoints.web.cors.allow-credentials Whether credentials are
+supported. When not set, credentials are not supported.
+management.endpoints.web.cors.allowed-headers List of headers to allow in a
+request. '*' allows all headers. management.endpoints.web.cors.allowed-methods
+List of methods to allow. '*' allows all methods. When not set, defaults to GET.
+management.endpoints.web.cors.allowed-origin-patterns List of origin patterns to
+allow. Unlike allowed origins which only supports '*', origin patterns are more
+flexible (for example 'https://*.example.com') and can be used when credentials
+are allowed. When no allowed origin patterns or allowed origins are set, CORS
+support is disabled. management.endpoints.web.cors.allowed-origins List of
+origins to allow. '*' allows all origins. When credentials are allowed, '*'
+cannot be used and origin patterns should be configured instead. When no allowed
+origins or allowed origin patterns are set, CORS support is disabled.
+----------------------------------------------------------------------------------------------------
+Index: 5376 <<"chunk_id": 9, "docno": 790>>
+
+import org.springframework.context.annotation.Bean; import
+org.springframework.context.annotation.Configuration; import
+org.springframework.security.config.annotation.web.builders.HttpSecurity; import
+org.springframework.security.web.SecurityFilterChain;
+@Configuration(proxyBeanMethods = false) public class MySecurityConfiguration {
+@Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+http.securityMatcher(EndpointRequest.toAnyEndpoint());
+http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
+return http.build(); } } import
+org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest
+import org.springframework.context.annotation.Bean import
+org.springframework.context.annotation.Configuration import
+org.springframework.security.config.annotation.web.builders.HttpSecurity import
+org.springframework.security.web.SecurityFilterChain
+@Configuration(proxyBeanMethods = false) class MySecurityConfiguration { @Bean
+fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+http.securityMatcher(EndpointRequest.toAnyEndpoint()).authorizeHttpRequests {
+requests -> requests.anyRequest().permitAll() } return http.build() } } In both
+of the preceding examples, the configuration applies only to the actuator
+endpoints. Since Spring Boot’s security configuration backs off completely in
+the presence of any SecurityFilterChain bean, you need to configure an
+additional SecurityFilterChain bean with rules that apply to the rest of the
+application. Cross Site Request Forgery Protection Since Spring Boot relies on
+Spring Security’s defaults, CSRF protection is turned on by default. This means
+that the actuator endpoints that require a POST (shutdown and loggers
+endpoints), a PUT , or a DELETE get a 403 (forbidden) error when the default
+security configuration is in use. We recommend disabling CSRF protection
+completely only if you are creating a service that is used by non-browser
+clients. You can find additional information about CSRF protection in the Spring
+Security Reference Guide . Configuring Endpoints Endpoints automatically cache
+responses to read operations that do not take any parameters. To configure the
+amount of time for which an endpoint caches a response, use its
+cache.time-to-live property. The following example sets the time-to-live of the
+beans endpoint’s cache to 10 seconds: Properties YAML
+management.endpoint.beans.cache.time-to-live=10s management: endpoint: beans:
+cache: time-to-live: "10s" The management.endpoint.<name> prefix uniquely
+identifies the
+----------------------------------------------------------------------------------------------------
+Index: 1091 <<"chunk_id": 4, "docno": 153>>
+
+and spring.security.user.password . The basic features you get by default in a
+web application are: A UserDetailsService (or ReactiveUserDetailsService in case
+of a WebFlux application) bean with in-memory store and a single user with a
+generated password (see SecurityProperties.User for the properties of the user).
+Form-based login or HTTP Basic security (depending on the Accept header in the
+request) for the entire application (including actuator endpoints if actuator is
+on the classpath). A DefaultAuthenticationEventPublisher for publishing
+authentication events. You can provide a different AuthenticationEventPublisher
+by adding a bean for it. MVC Security The default security configuration is
+implemented in SecurityAutoConfiguration and UserDetailsServiceAutoConfiguration
+. SecurityAutoConfiguration imports SpringBootWebSecurityConfiguration for web
+security and UserDetailsServiceAutoConfiguration for authentication. To
+completely switch off the default web application security configuration,
+including Actuator security, or to combine multiple Spring Security components
+such as OAuth2 Client and Resource Server, add a bean of type
+SecurityFilterChain (doing so does not disable the UserDetailsService
+configuration). To also switch off the UserDetailsService configuration, add a
+bean of type UserDetailsService , AuthenticationProvider , or
+AuthenticationManager . The auto-configuration of a UserDetailsService will also
+back off when any of the following Spring Security modules is on the classpath:
+spring-security-oauth2-client spring-security-oauth2-resource-server
+spring-security-saml2-service-provider To use UserDetailsService in addition to
+one or more of these dependencies, define your own InMemoryUserDetailsManager
+bean. Access rules can be overridden by adding a custom SecurityFilterChain
+bean. Spring Boot provides convenience methods that can be used to override
+access rules for actuator endpoints and static resources. EndpointRequest can be
+used to create a RequestMatcher that is based on
 ----------------------------------------------------------------------------------------------------
 Index: 5375 <<"chunk_id": 8, "docno": 790>>
 
@@ -424,1307 +659,4 @@ org.springframework.security.web.SecurityFilterChain;
 @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 http.securityMatcher(EndpointRequest.toAnyEndpoint());
 http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
-----------------------------------------------------------------------------------------------------
-Index: 1091 <<"chunk_id": 4, "docno": 153>>
-
-and spring.security.user.password . The basic features you get by default in a
-web application are: A UserDetailsService (or ReactiveUserDetailsService in case
-of a WebFlux application) bean with in-memory store and a single user with a
-generated password (see SecurityProperties.User for the properties of the user).
-Form-based login or HTTP Basic security (depending on the Accept header in the
-request) for the entire application (including actuator endpoints if actuator is
-on the classpath). A DefaultAuthenticationEventPublisher for publishing
-authentication events. You can provide a different AuthenticationEventPublisher
-by adding a bean for it. MVC Security The default security configuration is
-implemented in SecurityAutoConfiguration and UserDetailsServiceAutoConfiguration
-. SecurityAutoConfiguration imports SpringBootWebSecurityConfiguration for web
-security and UserDetailsServiceAutoConfiguration for authentication. To
-completely switch off the default web application security configuration,
-including Actuator security, or to combine multiple Spring Security components
-such as OAuth2 Client and Resource Server, add a bean of type
-SecurityFilterChain (doing so does not disable the UserDetailsService
-configuration). To also switch off the UserDetailsService configuration, add a
-bean of type UserDetailsService , AuthenticationProvider , or
-AuthenticationManager . The auto-configuration of a UserDetailsService will also
-back off when any of the following Spring Security modules is on the classpath:
-spring-security-oauth2-client spring-security-oauth2-resource-server
-spring-security-saml2-service-provider To use UserDetailsService in addition to
-one or more of these dependencies, define your own InMemoryUserDetailsManager
-bean. Access rules can be overridden by adding a custom SecurityFilterChain
-bean. Spring Boot provides convenience methods that can be used to override
-access rules for actuator endpoints and static resources. EndpointRequest can be
-used to create a RequestMatcher that is based on
-----------------------------------------------------------------------------------------------------
-Index: 5378 <<"chunk_id": 11, "docno": 790>>
-
-beans have been defined. Hypermedia for Actuator Web Endpoints A “discovery
-page” is added with links to all the endpoints. The “discovery page” is
-available on /actuator by default. To disable the “discovery page”, add the
-following property to your application properties: Properties YAML
-management.endpoints.web.discovery.enabled=false management: endpoints: web:
-discovery: enabled: false When a custom management context path is configured,
-the “discovery page” automatically moves from /actuator to the root of the
-management context. For example, if the management context path is /management ,
-the discovery page is available from /management . When the management context
-path is set to / , the discovery page is disabled to prevent the possibility of
-a clash with other mappings. CORS Support Cross-origin resource sharing (CORS)
-is a W3C specification that lets you specify in a flexible way what kind of
-cross-domain requests are authorized. If you use Spring MVC or Spring WebFlux,
-you can configure Actuator’s web endpoints to support such scenarios. CORS
-support is disabled by default and is only enabled once you have set the
-management.endpoints.web.cors.allowed-origins property. The following
-configuration permits GET and POST calls from the example.com domain: Properties
-YAML management.endpoints.web.cors.allowed-origins=https://example.com
-management.endpoints.web.cors.allowed-methods=GET,POST management: endpoints:
-web: cors: allowed-origins: "https://example.com" allowed-methods: "GET,POST"
-See CorsEndpointProperties for a complete list of options. JSON When working
-with JSON, Jackson is used for serialization and deserialization. By default, an
-isolated JsonMapper is used. This isolation means that it does not share the
-same configuration as the application’s JsonMapper and it is not affected by
-spring.jackson.* properties. To disable this behavior and configure
-----------------------------------------------------------------------------------------------------
-Index: 23966 <<"chunk_id": 1, "docno": 3648>>
-
-the effects of the management.security.enabled flag based on whether Spring
-Security was on the classpath or not was quite confusing. There were a number of
-properties under security.* and management.security.* that were applicable only
-to the auto-configuration provided by Spring Boot. For example, if
-security.basic.enabled was set to false , setting security.sessions would have
-absolutely no effect and this turned out to be quite misleading. Improvements in
-2.0 In Spring Boot 2.0, our main goal was to greatly simplify the default
-security configuration and and make adding custom security easy. Simplified
-default configuration Providing sensible defaults for security is challenging.
-We've decided to opt for the most secure default, which is, secure everything,
-even public and static resources. By default, if Spring Security is on the
-classpath, Spring Boot will add @EnableWebSecurity , and rely on Spring
-Security's content-negotiation to decide which authentication mechanism to use.
-A default user with a generated password will be provided. If actuator is on the
-classpath, the same default security configuration will also apply to actuator
-endpoints. In order to prevent actuators from exposing sensitive data
-accidentally, most web endpoints will be disabled by default ( status and info
-are enabled by default however). Users need to take an explicit step to enable
-those web endpoints. This behavior is consistent, regardless of whether Spring
-Security is present on the classpath or not. Consistent customization Once users
-decide that they want to add custom security, the default security configuration
-provided by Spring Boot will back off completely. At this point, users
-----------------------------------------------------------------------------------------------------
-Index: 23967 <<"chunk_id": 2, "docno": 3648>>
-
-users decide that they want to add custom security, the default security
-configuration provided by Spring Boot will back off completely. At this point,
-users need to explicitly define all the bits they want to secure. This means
-security configuration is now in one place and avoids any kind of ordering
-issues with existing WebSecurityConfigurerAdapter s. We provide dedicated
-helpers to make your configuration more readable and explicit. For management
-endpoints and static resources, Spring Boot provides convenience factories that
-will supply the right RequestMatcher . For management endpoints, the
-RequestMatcher will be created based on the management.context-path . Using
-RequestMatcher s gives users the flexibility to secure the application using
-existing Spring Security expressions such as permitAll , hasRole etc. Here is an
-example of a custom security: http .authorizeRequests() // 1
-.requestMatchers(EndpointRequest.to("status", "info")) .permitAll() // 2
-.requestMatchers(EndpointRequest.toAnyEndpoint()) .hasRole("ACTUATOR") // 3
-.requestMatchers(StaticResourceRequest.toCommonLocations()) .permitAll() // 4
-.antMatchers("/**") .hasRole("USER") .and() ... // additional configuration
-/status and /info endpoints do not require authentication. All other actuator
-endpoints are protected by the ACTUATOR role. Common static resource locations
-are open to all. All other application endpoints are protected by the USER role.
-We have reduced SecurityProperties to a minimum so that there is no confusion
-about which properties are used only by the auto-configuration and which ones
-get used even if the default security is turned off. As mentioned before, Spring
-Boot provides a default user with a generated password. If you want to configure
-your own user, you can define a bean of type UserDetailsService as follows:
-@Bean
-----------------------------------------------------------------------------------------------------
-Index: 8017 <<"chunk_id": 14, "docno": 1252>>
-
-Auto-configuration for web clients.
-org.springframework.boot.webflux.actuate.endpoint.web Spring WebFlux support for
-actuator endpoints. org.springframework.boot.webflux.actuate.web.exchanges
-Actuator HTTP exchanges support for reactive servers.
-org.springframework.boot.webflux.actuate.web.mappings Actuator reactive request
-mappings support. org.springframework.boot.webflux.autoconfigure
-Auto-configuration for reactive web servers and Spring WebFlux.
-org.springframework.boot.webflux.autoconfigure.actuate.endpoint.web
-Auto-configuration for Spring WebFlux actuator web endpoint support.
-org.springframework.boot.webflux.autoconfigure.actuate.web Auto-configuration
-for WebFlux-based actuator web concerns.
-org.springframework.boot.webflux.autoconfigure.actuate.web.exchanges Actuator
-HTTP exchanges auto-configuration for reactive servers.
-org.springframework.boot.webflux.autoconfigure.actuate.web.mappings Actuator
-reactive request mappings auto-configuration.
-org.springframework.boot.webflux.autoconfigure.error Auto-configuration for
-Spring WebFlux error handling. org.springframework.boot.webflux.error Spring
-WebFlux error handling infrastructure. org.springframework.boot.webflux.filter
-Spring Boot specific WebFilter implementations.
-org.springframework.boot.webflux.test.autoconfigure Auto-configuration for
-Spring WebFlux tests. org.springframework.boot.webmvc.actuate.endpoint.web
-Spring MVC support for actuator endpoints.
-org.springframework.boot.webmvc.actuate.web.mappings Actuator request mappings
-support for Spring MVC. org.springframework.boot.webmvc.autoconfigure
-Auto-configuration for Spring MVC.
-org.springframework.boot.webmvc.autoconfigure.actuate.endpoint.web
-Auto-configuration for Spring MVC actuator web endpoint support.
-org.springframework.boot.webmvc.autoconfigure.actuate.web Auto-configuration for
-Spring MVC-based actuator infrastructure.
-org.springframework.boot.webmvc.autoconfigure.actuate.web.mappings Actuator
-request mappings auto-configuration for Spring MVC.
-org.springframework.boot.webmvc.autoconfigure.error Auto-configuration for
-Spring MVC error handling. org.springframework.boot.webmvc.error Spring MVC
-error handling infrastructure.
-org.springframework.boot.webmvc.test.autoconfigure Auto-configuration for Spring
-MVC tests. org.springframework.boot.webservices.autoconfigure Auto-configuration
-for Spring Web Services.
-org.springframework.boot.webservices.autoconfigure.client Auto-configuration for
-Spring Web Services Clients. org.springframework.boot.webservices.client Web
-Services client utilities.
-org.springframework.boot.webservices.test.autoconfigure.client
-Auto-configuration for web service clients.
-org.springframework.boot.webservices.test.autoconfigure.server
-Auto-configuration for web service server tests.
-org.springframework.boot.websocket.autoconfigure.servlet Auto-configuration for
-WebSocket support in servlet web servers.
-org.springframework.boot.webtestclient.autoconfigure Auto-configuration for
-WebTestClient. org.springframework.boot.zipkin.autoconfigure Auto-configuration
-for Zipkin.
-----------------------------------------------------------------------------------------------------
-Index: 7163 <<"chunk_id": 1, "docno": 1080>>
-
-"CVE-2026-22731: Authentication Bypass under Actuator Health groups paths" and
-"CVE-2026-22733: Authentication Bypass under Actuator CloudFoundry endpoints".
-Spring Boot Commercial releases are also available. How can… Read more Spring
-Boot 4.0.4 available now Releases | March 19, 2026 | ... On behalf of the team
-and everyone who has contributed, I'm happy to announce that Spring Boot 4.0.4
-has been released and is now available from Maven Central. This release includes
-67 bug fixes, documentation improvements, and dependency upgrades. Thanks to all
-those who have contributed with issue reports and pull requests. CVEs fixed in
-this release This release fixes both "CVE-2026-22731: Authentication Bypass
-under Actuator Health groups paths" and "CVE-2026-22733: Authentication Bypass
-under Actuator CloudFoundry endpoints". Spring Boot Commercial releases are also
-available. How can you… Read more Spring Boot 4.0.3 available now Releases |
-February 19, 2026 | ... On behalf of the team and everyone who has contributed,
-I'm happy to announce that Spring Boot 4.0.3 has been released and is now
-available from Maven Central. This release includes 47 bug fixes, documentation
-improvements, and dependency upgrades. Thanks to all those who have contributed
-with issue reports and pull requests. How can you help? If you're interested in
-helping out, check out the "ideal for contribution" tag in the issue repository.
-If you have general questions, please ask on stackoverflow.com using the
-spring-boot tag. Project Page | GitHub | Issues | Documentation | Stack… Read
-more Spring Boot 3.5.11 available now Releases | February 19, 2026 | ... On
-behalf of the team and
-----------------------------------------------------------------------------------------------------
-Index: 5379 <<"chunk_id": 12, "docno": 790>>
-
-it does not share the same configuration as the application’s JsonMapper and it
-is not affected by spring.jackson.* properties. To disable this behavior and
-configure Actuator to use the application’s JsonMapper , set
-management.endpoints.jackson.isolated-json-mapper to false . Alternatively, you
-can define your own EndpointJsonMapper bean that produces a JsonMapper that
-meets your needs. Actuator will then use it for JSON processing. Implementing
-Custom Endpoints If you add a @Bean annotated with @Endpoint , any methods
-annotated with @ReadOperation , @WriteOperation , or @DeleteOperation are
-automatically exposed over JMX and, in a web application, over HTTP as well.
-Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring
-WebFlux. If both Jersey and Spring MVC are available, Spring MVC is used. The
-following example exposes a read operation that returns a custom object: Java
-Kotlin @ReadOperation public CustomData getData() { return new
-CustomData("test", 5); } @ReadOperation fun getData(): CustomData { return
-CustomData("test", 5) } You can also write technology-specific endpoints by
-using @JmxEndpoint or @WebEndpoint . These endpoints are restricted to their
-respective technologies. For example, @WebEndpoint is exposed only over HTTP and
-not over JMX. You can write technology-specific extensions by using
-@EndpointWebExtension and @EndpointJmxExtension . These annotations let you
-provide technology-specific operations to augment an existing endpoint. An
-endpoint may have at most one extension of each type. Finally, if you need
-access to web-framework-specific functionality, you can implement servlet or
-Spring @Controller and @RestController endpoints at the cost of them not being
-available over JMX or when using a different web
-----------------------------------------------------------------------------------------------------
-Index: 23965 <<"chunk_id": 0, "docno": 3648>>
-
-Security changes in Spring Boot 2.0 M4 Skip to main content Learn more about Day
-0 access to security patches via Enterprise support. Why Spring Overview
-Trending Generative AI Cloud Architecture Patterns Microservices Reactive Event
-Driven Application Types Web Applications Serverless Batch Learn Getting Started
-Quickstart Guides Academy Courses Get Certified Projects Overview Projects
-Spring Boot Spring Framework Spring Cloud Spring AI Spring Data Spring
-Integration Spring Batch Spring Security Foundational Projects Micrometer
-Reactor Development Tools Spring Tools Spring Initializr Resources Blog Release
-Calendar Version Mappings Release Highlights Security Advisories GitHub Orgs
-Spring Projects Spring Cloud Community Overview Events Authors Enterprise
-Overview Long-term Support Automated Upgrades Governance and Compliance Modern
-App Development Spring Blog RSS feeds All Posts Engineering Releases News &
-Events Security changes in Spring Boot 2.0 M4 Engineering | Madhura Bhave |
-September 15, 2017 | 3 min read | ... Milestone 4 of Spring Boot 2.0 brings
-important changes to the security auto-configuration provided by Spring Boot.
-Problem Statement Until Spring Boot 1.x, the default auto-configuration secured
-all of the application endpoints using basic authentication. If actuator was on
-the classpath, there was a separate security configuration that applied to the
-actuator endpoints. The way these two auto-configurations would turn on and off
-was completely independent. Because of this, users wanting to provide custom
-security found themselves fighting ordering issues with
-WebSecurityConfigurerAdapter s. Additionally, for actuator endpoints, the
-effects of the management.security.enabled flag based on whether Spring Security
-was on the classpath or not was quite confusing. There were a number of
-----------------------------------------------------------------------------------------------------
-Index: 6899 <<"chunk_id": 3, "docno": 1026>>
-
-spring-boot-kotlinx-serialization-json spring-boot-ldap spring-boot-liquibase
-spring-boot-mail spring-boot-micrometer-metrics
-spring-boot-micrometer-observation spring-boot-micrometer-tracing
-spring-boot-micrometer-tracing-brave
-spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
-spring-boot-mustache spring-boot-neo4j spring-boot-netty
-spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
-spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
-spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
-spring-boot-rsocket spring-boot-security
-spring-boot-security-oauth2-authorization-server
-spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
-spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
-spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
-spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
-spring-boot-transaction spring-boot-validation spring-boot-webclient
-spring-boot-webflux spring-boot-webmvc spring-boot-webservices
-spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
-Test Slices Dependency Versions Managed Dependency Coordinates Version
-Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
-Reference Production-ready Features Monitoring and Management Over HTTP
-Monitoring and Management Over HTTP If you are developing a web application,
-Spring Boot Actuator auto-configures all enabled endpoints to be exposed over
-HTTP. The default convention is to use the id of the endpoint with a prefix of
-/actuator as the URL path. For example, health is exposed as /actuator/health .
-Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey. If
-both Jersey and Spring MVC are available, Spring MVC is used. Jackson is a
-required dependency in order to get the correct JSON responses as documented in
-the API documentation . Jackson 3 should be used for Spring MVC and Spring
-WebFlux. Jersey does not yet have a Jackson 3 module, so you will need to use
-Jackson 2. Customizing the Management Endpoint Paths Sometimes, it is useful to
-customize the prefix for the management endpoints. For example, your application
-might already use /actuator for another purpose. You can use the
-management.endpoints.web.base-path property to change the prefix for your
-management endpoint, as the following example shows: Properties YAML
-management.endpoints.web.base-path=/manage management: endpoints: web:
-base-path: "/manage" The preceding application.properties example
-----------------------------------------------------------------------------------------------------
-Index: 8011 <<"chunk_id": 8, "docno": 1252>>
-
-files. org.springframework.boot.logging Support and abstractions across several
-logging libraries. org.springframework.boot.logging.java Support for 'Java Util
-Logging'. org.springframework.boot.logging.log4j2 Support for the Log4j 2
-logging library. org.springframework.boot.logging.logback Support for the
-Logback logging library. org.springframework.boot.logging.structured Support for
-structured logging. org.springframework.boot.mail.autoconfigure
-Auto-configuration for email support. org.springframework.boot.mail.health
-Health integration for JavaMail. org.springframework.boot.micrometer.metrics
-General metrics-related classes.
-org.springframework.boot.micrometer.metrics.actuate.endpoint Actuator endpoint
-for metrics. org.springframework.boot.micrometer.metrics.autoconfigure
-Auto-configuration for metrics with Micrometer.
-org.springframework.boot.micrometer.metrics.autoconfigure.export
-Auto-configuration for metrics exporter.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.appoptics
-Support for exporting actuator metrics to AppOptics.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.atlas Support
-for exporting actuator metrics to Atlas.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.datadog Support
-for exporting actuator metrics to Datadog.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.dynatrace
-Support for exporting actuator metrics to Dynatrace.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.elastic Support
-for exporting actuator metrics to Elastic.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.ganglia Support
-for exporting actuator metrics to Ganglia.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.graphite
-Support for exporting actuator metrics to Graphite.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.humio Support
-for exporting actuator metrics to Humio.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.influx Support
-for exporting actuator metrics to InfluxDB.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.jmx Support for
-exporting actuator metrics to JMX.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.kairos Support
-for exporting actuator metrics to KairosDB.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.newrelic
-Support for exporting actuator metrics to New Relic.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp Support
-for exporting actuator metrics to OTLP.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus
-Support for exporting actuator metrics to Prometheus.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.properties Base
-properties and adapters used when exporting actuator metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.simple Support
-for exporting actuator metrics to a simple in-memory store.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.stackdriver
-Support for exporting actuator metrics to Stackdriver.
-org.springframework.boot.micrometer.metrics.autoconfigure.export.statsd Support
-for exporting actuator metrics to StatsD.
-org.springframework.boot.micrometer.metrics.autoconfigure.jvm Auto-configuration
-for JVM metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.logging.log4j2
-Auto-configuration for Log4J2 metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.logging.logback
-Auto-configuration for Logback metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.ssl Auto-configuration
-for SSL metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.startup
-Auto-configuration for actuator startup time metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.system
-Auto-configuration for system metrics.
-org.springframework.boot.micrometer.metrics.autoconfigure.task
-Auto-configuration for task execution and scheduling metrics.
-org.springframework.boot.micrometer.metrics.export.prometheus
-----------------------------------------------------------------------------------------------------
-Index: 8014 <<"chunk_id": 11, "docno": 1252>>
-
-Auto-configuration for Spring Security's Reactive OAuth 2 client.
-org.springframework.boot.security.oauth2.client.autoconfigure.servlet
-Auto-configuration for Spring Security's OAuth 2 client.
-org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet
-Auto-configuration for Spring Security's OAuth2 authorization server.
-org.springframework.boot.security.oauth2.server.resource.autoconfigure Support
-for Spring Security's OAuth2 resource server.
-org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive
-Auto-configuration for Spring Security's Reactive OAuth2 resource server.
-org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet
-Support for Spring Security's OAuth2 resource server.
-org.springframework.boot.security.oauth2.server.resource.autoconfigure.web
-Auto-configuration for OAuth2 resource server web security.
-org.springframework.boot.security.oauth2.server.resource.autoconfigure.web.reactive
-Auto-configuration for OAuth2 resource server reactive web security.
-org.springframework.boot.security.saml2.autoconfigure Auto-configuration for
-Spring Security's SAML 2.0.
-org.springframework.boot.security.test.autoconfigure.webflux Auto-configuration
-for tests involving WebFlux and Spring Security.
-org.springframework.boot.security.test.autoconfigure.webmvc Auto-configuration
-for tests involving Spring MVC and Spring Security.
-org.springframework.boot.security.web.reactive Classes and utilities for
-reactive Spring Security. org.springframework.boot.security.web.servlet Classes
-and utilities for Servlet-based Spring Security.
-org.springframework.boot.sendgrid.autoconfigure Auto-configuration for SendGrid.
-org.springframework.boot.servlet Application support for the jakarta.servlet
-specification. org.springframework.boot.servlet.actuate.web.exchanges Actuator
-HTTP exchanges support for Servlet servers.
-org.springframework.boot.servlet.actuate.web.mappings Actuator servlet request
-mappings support. org.springframework.boot.servlet.autoconfigure
-Auto-configuration for application support of the jakarta.servlet specification.
-org.springframework.boot.servlet.autoconfigure.actuate.web Auto-configuration
-for jakarta.servlet actuator web concerns.
-org.springframework.boot.servlet.autoconfigure.actuate.web.exchanges Actuator
-HTTP exchanges auto-configuration for Servlet servers.
-org.springframework.boot.servlet.autoconfigure.actuate.web.mappings Actuator
-servlet request mappings auto-configuration.
-org.springframework.boot.servlet.filter Spring Boot specific Filter
-implementations. org.springframework.boot.session.actuate.endpoint Actuator
-endpoint for Spring Session. org.springframework.boot.session.autoconfigure
-Auto-configuration for Spring Session.
-org.springframework.boot.session.data.redis.autoconfigure Auto-configuration for
-Spring Session Data Redis. org.springframework.boot.session.jdbc.autoconfigure
-Auto-configuration for Spring Session JDBC.
-org.springframework.boot.sql.autoconfigure.init Auto-configuration for basic
-script-based initialization of an SQL database.
-org.springframework.boot.sql.init Support for initialization of an SQL database.
-org.springframework.boot.sql.init.dependency Infrastructure for establishing
-database initialization bean dependencies. org.springframework.boot.ssl
-Management of trust material that can be used to establish an SSL connection.
-org.springframework.boot.ssl.jks SSL trust material provider for Java KeyStores.
-org.springframework.boot.ssl.pem SSL trust material provider for PEM-encoded
-certificates. org.springframework.boot.support Classes supporting application
-concerns and the
-----------------------------------------------------------------------------------------------------
-Index: 8009 <<"chunk_id": 6, "docno": 1252>>
-
-HTTP. org.springframework.boot.http.client.autoconfigure.imperative
-Auto-configuration for client-side imperative HTTP.
-org.springframework.boot.http.client.autoconfigure.metrics Auto-configuration
-for client-side HTTP metrics.
-org.springframework.boot.http.client.autoconfigure.reactive Auto-configuration
-for client-side reactive HTTP.
-org.springframework.boot.http.client.autoconfigure.service Auto-configuration
-support classes for HTTP Service Clients.
-org.springframework.boot.http.client.reactive Client-side reactive HTTP support
-classes. org.springframework.boot.http.codec Support for web-based codecs.
-org.springframework.boot.http.codec.autoconfigure Auto-configuration for HTTP
-codecs. org.springframework.boot.http.converter.autoconfigure Auto-configuration
-for HTTP converters. org.springframework.boot.info Support for providing
-information about an application.
-org.springframework.boot.integration.actuate.endpoint Actuator endpoint for
-Spring Integration. org.springframework.boot.integration.autoconfigure
-Auto-configuration for Spring Integration.
-org.springframework.boot.integration.autoconfigure.metrics Auto-configuration
-for Spring Integration metrics. org.springframework.boot.io Support for loading
-resources. org.springframework.boot.jackson Custom enhancements and support for
-the Jackson project. org.springframework.boot.jackson.autoconfigure
-Auto-configuration for Jackson. org.springframework.boot.jackson2 Custom
-enhancements and support for Jackson 2.
-org.springframework.boot.jackson2.autoconfigure Auto-configuration for Jackson
-2. org.springframework.boot.jdbc Support for Java Database Connectivity (JDBC).
-org.springframework.boot.jdbc.autoconfigure Auto-configuration for JDBC.
-org.springframework.boot.jdbc.autoconfigure.health Auto-configuration for JDBC
-health. org.springframework.boot.jdbc.autoconfigure.metrics Auto-configuration
-for JDBC metrics. org.springframework.boot.jdbc.health Health integration for
-JDBC. org.springframework.boot.jdbc.init Support for initialization of an SQL
-database using a JDBC DataSource . org.springframework.boot.jdbc.metadata
-Support for accessing JDBC DataSource metadata.
-org.springframework.boot.jdbc.metrics Metrics for JDBC.
-org.springframework.boot.jdbc.test.autoconfigure Auto-configuration for JDBC
-tests. org.springframework.boot.jersey.actuate.endpoint.web Jersey support for
-actuator endpoints. org.springframework.boot.jersey.autoconfigure
-Auto-configuration for Jersey.
-org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web
-Auto-configuration for Jersey actuator web endpoint support.
-org.springframework.boot.jersey.autoconfigure.actuate.web Auto-configuration for
-Jersey actuator web concerns.
-org.springframework.boot.jersey.autoconfigure.metrics Auto-configuration for
-Jersey metrics. org.springframework.boot.jetty Reactive and servlet web server
-implementations backed by Jetty. org.springframework.boot.jetty.autoconfigure
-Auto-configuration for Jetty.
-org.springframework.boot.jetty.autoconfigure.actuate.web.server
-Auto-configuration for Jetty actuator web concerns.
-org.springframework.boot.jetty.autoconfigure.metrics Auto-configuration for
-Jetty metrics. org.springframework.boot.jetty.autoconfigure.reactive Classes
-related to the auto-configuration of a reactive web server using Jetty.
-org.springframework.boot.jetty.autoconfigure.servlet Classes related to the
-auto-configuration of a servlet web server using Jetty.
-org.springframework.boot.jetty.metrics Actuator support for Jetty metrics.
-org.springframework.boot.jetty.reactive Reactive web server implementation
-backed by Jetty. org.springframework.boot.jetty.servlet
-----------------------------------------------------------------------------------------------------
-Index: 5737 <<"chunk_id": 11, "docno": 843>>
-
-endpoint access that is permitted. Caps an endpoint's individual access level
-(management.endpoint.<id>.access) and the default access
-(management.endpoints.access.default).' unrestricted
-management.endpoints.jackson.isolated-json-mapper Whether to use an isolated
-JsonMapper to serialize endpoint JSON. true management.endpoints.jmx.domain
-Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
-org.springframework.boot management.endpoints.jmx.exposure.exclude Endpoint IDs
-that should be excluded or '*' for all.
-management.endpoints.jmx.exposure.include Endpoint IDs that should be included
-or '*' for all. health management.endpoints.jmx.static-names Additional static
-properties to append to all ObjectNames of MBeans representing Endpoints.
-management.endpoints.migrate-legacy-ids Whether to transparently migrate legacy
-endpoint IDs. false management.endpoints.web.base-path Base path for Web
-endpoints. Relative to the servlet context path (server.servlet.context-path) or
-WebFlux base path (spring.webflux.base-path) when the management server is
-sharing the main server port. Relative to the management server base path
-(management.server.base-path) when a separate management server port
-(management.server.port) is configured. /actuator
-management.endpoints.web.cors.allow-credentials Whether credentials are
-supported. When not set, credentials are not supported.
-management.endpoints.web.cors.allowed-headers List of headers to allow in a
-request. '*' allows all headers. management.endpoints.web.cors.allowed-methods
-List of methods to allow. '*' allows all methods. When not set, defaults to GET.
-management.endpoints.web.cors.allowed-origin-patterns List of origin patterns to
-allow. Unlike allowed origins which only supports '*', origin patterns are more
-flexible (for example 'https://*.example.com') and can be used when credentials
-are allowed. When no allowed origin patterns or allowed origins are set, CORS
-support is disabled. management.endpoints.web.cors.allowed-origins List of
-origins to allow. '*' allows all origins. When credentials are allowed, '*'
-cannot be used and origin patterns should be configured instead. When no allowed
-origins or allowed origin patterns are set, CORS support is disabled.
-----------------------------------------------------------------------------------------------------
-Index: 17635 <<"chunk_id": 5, "docno": 2346>>
-
-major features of Spring Boot, including auto-configuration, data access,
-actuators, and more. Key features are divided into two main areas: Basics:
-Spring Boot principles, auto-configuration, profiles, overriding defaults using
-properties and/or your own configuration Topics: Spring Boot applied to
-web-applications (Spring MVC, GSP, REST), data-access (JDBC, JPA, Spring Data,
-NoSQL), Security and OAuth, Messaging (AMQP, RabbitMQ), Monitoring (actuators) A
-reasonable familiarity with the Spring Framework is useful for this course. We
-recommend that students that are new to Spring attend the Core Spring class
-first. Visit the Spring Boot Developer page to learn more, view the course
-datasheet, and enroll today. Spring Cloud Services Microservices and Cloud
-Native Applications are a popular pattern for delivering applications more
-quickly. Spring Cloud Services is a 2-day course that explores using Spring Boot
-and Spring Cloud to support this style of application. Course topics are
-organized into four functional areas: Basics: Why Cloud Native? How cloud-native
-changes development Infrastructure: Building Spring Boot applications, deploying
-to a PaaS (PCF) Microservices: Overview, Cloud Native design, 12 Factors. Spring
-Cloud: Shared configuration, service discovery, client-side load-balancing,
-handling and monitoring failed services using a circuit-breaker Microservice
-applications involve many collaborating processes making them harder to deploy
-without a smart underlying infrastructure. The course deploys applications to
-Pivotal’s Cloud Foundry PaaS to show the benefits of one-step deployment,
-automated recovery, and scalability. A reasonable familiarity with Spring is
-useful for this course. We recommend that students that are new to Spring attend
-either the Core Spring or Spring Boot class first. To learn more,
-----------------------------------------------------------------------------------------------------
-Index: 8005 <<"chunk_id": 2, "docno": 1252>>
-
-connections that affect auto-configuration.
-org.springframework.boot.autoconfigure.ssl Auto-configuration for SSL bundles.
-org.springframework.boot.autoconfigure.task Auto-configuration for task
-execution and scheduling. org.springframework.boot.autoconfigure.template Base
-classes for template Auto-configuration.
-org.springframework.boot.autoconfigure.web Auto-configuration for common web
-concerns. org.springframework.boot.autoconfigure.web.format Support classes for
-web-specific formatting. org.springframework.boot.autoconfigureprocessor
-Annotation processor for compile-time capturing of information about
-auto-configuration classes. org.springframework.boot.availability Support for
-describing the availability of Spring Boot applications.
-org.springframework.boot.batch.autoconfigure Auto-configuration for Spring
-Batch. org.springframework.boot.batch.autoconfigure.observation
-Auto-configuration for Spring Batch observations.
-org.springframework.boot.batch.jdbc.autoconfigure Auto-configuration for Spring
-Batch JDBC. org.springframework.boot.batch.mongodb.autoconfigure
-Auto-configuration for Spring Batch with Data MongoDB.
-org.springframework.boot.bootstrap Bootstrap concerns to support the creation of
-potentially expensive singletons while the application starts.
-org.springframework.boot.builder Fluent 'builder' style API to construct a
-SpringApplication . org.springframework.boot.buildpack.platform.build Central
-API for performing a buildpack build.
-org.springframework.boot.buildpack.platform.docker A limited Docker API
-providing the operations needed by pack.
-org.springframework.boot.buildpack.platform.docker.configuration Docker
-configuration options. org.springframework.boot.buildpack.platform.docker.ssl
-Utilities and classes for managing SSL context and keys.
-org.springframework.boot.buildpack.platform.docker.transport Docker transport
-classes providing HTTP operations on a local or remote engine.
-org.springframework.boot.buildpack.platform.docker.type Docker types.
-org.springframework.boot.buildpack.platform.io IO classes and utilities.
-org.springframework.boot.buildpack.platform.json Utilities and classes for JSON
-processing. org.springframework.boot.buildpack.platform.socket Low-level Socket
-implementations required for local Docker access.
-org.springframework.boot.buildpack.platform.system System abstractions.
-org.springframework.boot.cache.actuate.endpoint Actuator endpoint for caches.
-org.springframework.boot.cache.autoconfigure Auto-configuration for the cache
-abstraction. org.springframework.boot.cache.autoconfigure.metrics
-Auto-configuration for the cache abstraction metrics.
-org.springframework.boot.cache.metrics Metrics for caches.
-org.springframework.boot.cache.test.autoconfigure Auto-configuration for testing
-code that uses the cache abstraction.
-org.springframework.boot.cassandra.autoconfigure Auto-configuration for
-Cassandra. org.springframework.boot.cassandra.autoconfigure.health
-Auto-configuration for Cassandra health.
-org.springframework.boot.cassandra.health Health integration for Cassandra.
-org.springframework.boot.cloud Low level support for Cloud deployments.
-org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint
-Auto-configuration for Cloud Foundry endpoints.
-org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.reactive
-Auto-configuration for Cloud Foundry WebFlux endpoints.
-org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.servlet
-Auto-configuration for Cloud Foundry Servlet endpoints.
-org.springframework.boot.context Classes related to Spring's
-----------------------------------------------------------------------------------------------------
-Index: 2111 <<"chunk_id": 1, "docno": 275>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 2180 <<"chunk_id": 1, "docno": 287>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 6057 <<"chunk_id": 1, "docno": 877>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 6700 <<"chunk_id": 1, "docno": 982>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 6736 <<"chunk_id": 1, "docno": 991>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 6897 <<"chunk_id": 1, "docno": 1026>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 7309 <<"chunk_id": 1, "docno": 1107>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 7529 <<"chunk_id": 1, "docno": 1147>>
-
-Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
-Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
-Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
-Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
-Images Introducing GraalVM Native Images Advanced Native Images Topics
-Checkpoint and Restore With the JVM Container Images Efficient Container Images
-Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
-Production-ready Features Endpoints Monitoring and Management Over HTTP
-Monitoring and Management over JMX Observability Loggers Metrics Tracing
-Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
-How-to Guides Spring Boot Application Properties and Configuration Embedded Web
-Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
-Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
-Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
-Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
-Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
-Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
-Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
-Packaging OCI Images Running your Application with Maven Ahead-of-Time
-Processing Running Integration Tests Integrating with Actuator Help Information
-Gradle Plugin Getting Started Managing Dependencies Packaging Executable
-Archives Packaging OCI Images Publishing your Application Running your
-Application with Gradle Ahead-of-Time Processing Integrating with Actuator
-Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
-Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
-Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
-Evaluation Report ( conditions ) Configuration
-----------------------------------------------------------------------------------------------------
-Index: 117 <<"chunk_id": 1, "docno": 14>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 148 <<"chunk_id": 1, "docno": 18>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 248 <<"chunk_id": 1, "docno": 33>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 359 <<"chunk_id": 1, "docno": 52>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 387 <<"chunk_id": 1, "docno": 57>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 424 <<"chunk_id": 1, "docno": 66>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 442 <<"chunk_id": 1, "docno": 68>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 478 <<"chunk_id": 1, "docno": 76>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 489 <<"chunk_id": 1, "docno": 79>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 577 <<"chunk_id": 1, "docno": 86>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 602 <<"chunk_id": 1, "docno": 93>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 733 <<"chunk_id": 1, "docno": 108>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 997 <<"chunk_id": 1, "docno": 140>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 1017 <<"chunk_id": 1, "docno": 144>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 1194 <<"chunk_id": 1, "docno": 160>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
-----------------------------------------------------------------------------------------------------
-Index: 1309 <<"chunk_id": 1, "docno": 165>>
-
-OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
-Applications Testing Spring Boot Applications Testcontainers Test Utilities
-Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
-Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
-Advanced Native Images Topics Checkpoint and Restore With the JVM Container
-Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
-Production-ready Features Enabling Production-ready Features Endpoints
-Monitoring and Management Over HTTP Monitoring and Management over JMX
-Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
-Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
-Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
-Logging Data Access Database Initialization NoSQL Messaging Batch Applications
-Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
-Native Applications Developing Your First GraalVM Native Application Testing
-GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
-Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
-Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
-Packaging Executable Archives Packaging OCI Images Running your Application with
-Maven Ahead-of-Time Processing Running Integration Tests Integrating with
-Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
-Packaging Executable Archives Packaging OCI Images Publishing your Application
-Running your Application with Gradle Ahead-of-Time Processing Integrating with
-Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
-Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
-Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
-Conditions Evaluation Report ( conditions ) Configuration Properties (
-configprops )
 ----------------------------------------------------------------------------------------------------

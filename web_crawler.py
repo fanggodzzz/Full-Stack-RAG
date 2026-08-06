@@ -6,9 +6,6 @@ import os
 from shared import document_queue, filter_url, meta_raw, save_meta_raw, add_meta, META_RAW, normalize_url
 import hashlib
 from Document_processor import html, md, txt
-import dotenv
-
-dotenv.load_dotenv()
 
 SEED_URLS = []
 SOURCES_FILE = "sources.txt"
@@ -17,7 +14,7 @@ ROBOT_FILE = "robots.txt"
 DOCNUM = 0
 RAW = "./Data/raw"
 META_RAW = "./Data/meta_raw.jsonl"
-MAX_DOCS = int(os.getenv("max_docs", 1000))  # Default to 1000 if not set in .env
+MAX_DOCS = 5000  # Default to 1000 if not set in .env
 
 
 robots = {}

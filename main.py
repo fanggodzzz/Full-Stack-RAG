@@ -35,8 +35,8 @@ def get_query_response():
 def main():
     # prepare_data()
     # train_data()
-    # get_query_response()
-    # retrieval_evaluate()
+    get_query_response()
+    retrieval_evaluate()
     rag_evaluate()
 
 if __name__ == "__main__":

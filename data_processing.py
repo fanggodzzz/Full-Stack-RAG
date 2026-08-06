@@ -10,16 +10,13 @@ from shared import document_queue, import_meta_raw, meta_raw
 from Document_processor import html, md, txt
 import json
 import os
-import dotenv
-
-dotenv.load_dotenv()
 
 DATA = "./Data/processed.jsonl"
 RAW = "./Data/raw/"
 CHUNK = "./Data/chunked.jsonl"
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 256))  # Default chunk size to 100 if not set in .env
-OVERLAP = int(os.getenv("OVERLAP", 50))  # Default overlap to 20 if not set in .env
-MAX_DOCS = int(os.getenv("MAX_DOCS", 5000))  # Limit the number of documents to process for testing purposes
+CHUNK_SIZE = 256  
+OVERLAP = 50  
+MAX_DOCS = 5000
 
 # Stop words from NLTK
 stopWords = set(nltk.corpus.stopwords.words("english"))

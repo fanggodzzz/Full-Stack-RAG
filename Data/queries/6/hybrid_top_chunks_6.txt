@@ -22,27 +22,6 @@ stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
 spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
 output via a shell Short
 ----------------------------------------------------------------------------------------------------
-Index: 2351 <<"chunk_id": 6, "docno": 313>>
-
-to the same race-condition class of bugs found in traditional multi-threaded
-programming. Things to watch for Worker threads are for CPU-bound work, not I/O
-— a worker still has to wait on I/O just like the main thread would, so spinning
-one up for a database call or a network request adds overhead for no benefit.
-Spinning up a worker has a real cost. For small, frequent tasks, that setup
-overhead can outweigh the benefit — consider a pool of long-lived workers (see
-the workerpool package) instead of creating one per task. Cluster cluster solves
-a different problem: a single Node.js process only uses one CPU core. To take
-advantage of a multi-core machine for a network server, cluster forks multiple
-full copies of your process (each one a child_process under the hood) that all
-listen on the same port. Example: scaling an HTTP server across cores const
-cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
-; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
-isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
-numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
-code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
-(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
-console . log ( `
-----------------------------------------------------------------------------------------------------
 Index: 2353 <<"chunk_id": 8, "docno": 313>>
 
 does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
@@ -68,28 +47,26 @@ common pattern for something like an image-upload service is to combine all
 three: cluster to spread incoming requests across cores, and worker_threads (or
 child_process ) within each worker to
 ----------------------------------------------------------------------------------------------------
-Index: 2354 <<"chunk_id": 9, "docno": 313>>
+Index: 2351 <<"chunk_id": 6, "docno": 313>>
 
-like an image-upload service is to combine all three: cluster to spread incoming
-requests across cores, and worker_threads (or child_process ) within each worker
-to do the actual image processing without blocking that worker's event loop.
-Further reading child_process API reference worker_threads API reference cluster
-API reference The Node.js Event Loop Don't Block the Event Loop Reading Time 7
-min read Contribute Edit this page Table of Contents The three options at a
-glance Child Process spawn, exec, execFile, and fork streaming a long-running
-command with spawn() talking to another Node.js process with fork() Things to
-watch for Worker Threads offloading CPU-bound work Sharing memory Things to
-watch for Cluster scaling an HTTP server across cores How the workers share one
-port isPrimary / isWorker Things to watch for Choosing between them Further
-reading Copyright OpenJS Foundation and Node.js contributors. All rights
-reserved. The OpenJS Foundation has registered trademarks and uses trademarks.
-For a list of trademarks of the OpenJS Foundation , please see our Trademark
-Policy and Trademark List . Trademarks and logos not indicated on the list of
-OpenJS Foundation trademarks are trademarks™ or registered® trademarks of their
-respective holders. Use of them does not imply any affiliation with or
-endorsement by them. OpenJS Foundation AI Coding Assistants Policy Bylaws Code
-of Conduct Cookie Policy Privacy Policy Security Policy Terms of Use Trademark
-List Trademark Policy
+to the same race-condition class of bugs found in traditional multi-threaded
+programming. Things to watch for Worker threads are for CPU-bound work, not I/O
+— a worker still has to wait on I/O just like the main thread would, so spinning
+one up for a database call or a network request adds overhead for no benefit.
+Spinning up a worker has a real cost. For small, frequent tasks, that setup
+overhead can outweigh the benefit — consider a pool of long-lived workers (see
+the workerpool package) instead of creating one per task. Cluster cluster solves
+a different problem: a single Node.js process only uses one CPU core. To take
+advantage of a multi-core machine for a network server, cluster forks multiple
+full copies of your process (each one a child_process under the hood) that all
+listen on the same port. Example: scaling an HTTP server across cores const
+cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
+; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
+isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
+numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
+code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
+(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( `
 ----------------------------------------------------------------------------------------------------
 Index: 2346 <<"chunk_id": 1, "docno": 313>>
 
@@ -161,31 +138,28 @@ can share any TCP connection // In this case it is an HTTP server http .
 createServer ( ( req , res ) => { res . writeHead ( 200 ) ; res . end ( 'hello
 world \n ' ) ; } ) . listen ( 8000 ) ; console . log ( `Worker ${
 ----------------------------------------------------------------------------------------------------
-Index: 238 <<"chunk_id": 2, "docno": 31>>
+Index: 2354 <<"chunk_id": 9, "docno": 313>>
 
-start the event-loop. Typically, behavior is defined through callbacks at the
-beginning of a script, and at the end a server is started through a blocking
-call like EventMachine::run() . In Node.js, there is no such
-start-the-event-loop call. Node.js simply enters the event loop after executing
-the input script. Node.js exits the event loop when there are no more callbacks
-to perform. This behavior is like browser JavaScript — the event loop is hidden
-from the user. HTTP is a first-class citizen in Node.js, designed with streaming
-and low latency in mind. This makes Node.js well suited for the foundation of a
-web library or framework. Node.js being designed without threads doesn't mean
-you can't take advantage of multiple cores in your environment. Child processes
-can be spawned by using our child_process.fork() API, and are designed to be
-easy to communicate with. Built upon that same interface is the cluster module,
-which allows you to share sockets between processes to enable load balancing
-over your cores. Official Node.js Resources To ensure authenticity and security
-when working with Node.js, always use official sources. Avoid trusting emails,
-binaries, or downloads from unofficial sources. Official Node.js Domains For
-downloading Node.js binaries and accessing official documentation, use only
-these domains: nodejs.org nodejs.dev (Redirects to https://nodejs.org ) iojs.org
-(Redirects to https://nodejs.org ) Official npm Packages The Node.js team
-maintains the following official npm package scopes: @node-core @pkgjs
-Additionally, the Node.js team maintains packages published by the
-nodejs-foundation npm account, though other Node.js-related packages (like
-undici ) may also be maintained by
+like an image-upload service is to combine all three: cluster to spread incoming
+requests across cores, and worker_threads (or child_process ) within each worker
+to do the actual image processing without blocking that worker's event loop.
+Further reading child_process API reference worker_threads API reference cluster
+API reference The Node.js Event Loop Don't Block the Event Loop Reading Time 7
+min read Contribute Edit this page Table of Contents The three options at a
+glance Child Process spawn, exec, execFile, and fork streaming a long-running
+command with spawn() talking to another Node.js process with fork() Things to
+watch for Worker Threads offloading CPU-bound work Sharing memory Things to
+watch for Cluster scaling an HTTP server across cores How the workers share one
+port isPrimary / isWorker Things to watch for Choosing between them Further
+reading Copyright OpenJS Foundation and Node.js contributors. All rights
+reserved. The OpenJS Foundation has registered trademarks and uses trademarks.
+For a list of trademarks of the OpenJS Foundation , please see our Trademark
+Policy and Trademark List . Trademarks and logos not indicated on the list of
+OpenJS Foundation trademarks are trademarks™ or registered® trademarks of their
+respective holders. Use of them does not imply any affiliation with or
+endorsement by them. OpenJS Foundation AI Coding Assistants Policy Bylaws Code
+of Conduct Cookie Policy Privacy Policy Security Policy Terms of Use Trademark
+List Trademark Policy
 ----------------------------------------------------------------------------------------------------
 Index: 27034 <<"chunk_id": 3, "docno": 4351>>
 
@@ -217,6 +191,142 @@ ResourceHttpRequestHandler now does) in order to provide a CorsConfiguration for
 each request. ##Filter based CORS support As an alternative to other methods
 presented above, Spring Framework also provides a CorsFilter
 ----------------------------------------------------------------------------------------------------
+Index: 13865 <<"chunk_id": 3, "docno": 2159>>
+
+process can fork a new worker when a worker encounters an error. For Node.js
+programs that scale to multiple machines, the terminating proxy or service
+registry can take note of the failure, and react accordingly. For example, this
+is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
+) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
+process, but what it does is worse! // Though we've prevented abrupt process
+restarting, we are leaking // a lot of resources if this ever happens. // This
+is no better than process.on('uncaughtException')! console . log ( `error, but
+oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
+. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
+(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
+separating our program into multiple worker processes, we can react more
+appropriately, and handle errors with much greater safety. // Much better! const
+cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
+1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
+than 2 workers, // and perhaps not put the primary and worker in the same file.
+// // It is also possible to get a
+----------------------------------------------------------------------------------------------------
+Index: 15930 <<"chunk_id": 1489, "docno": 2234>>
+
+guaranteed that the removal from the cluster.workers list happens before the
+last 'disconnect' or 'exit' event is emitted. import cluster from 'node:cluster'
+; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } const cluster = require ( 'node:cluster'
+) ; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } javascript copy Command-line API #
+Node.js comes with a variety of CLI options. These options expose built-in
+debugging, multiple ways to execute scripts, and other helpful runtime options.
+To view this documentation as a manual page in a terminal, run man node .
+Synopsis # node [options] [V8 options] [<program-entry-point> | -e "script" | -]
+[--] [arguments] node inspect [<program-entry-point> | -e "script" |
+<host>:<port>] … node --v8-options Execute without arguments to start the REPL .
+For more info about node inspect , see the debugger documentation. Program entry
+point # The program entry point is a specifier-like string. If the string is not
+an absolute path, it's resolved as a relative path from the current working
+directory. That entry point string is then resolved as if it's been requested by
+require() from the current working directory. If no corresponding file is found,
+an error is thrown. By default, the resolved path is also loaded as if it's been
+requested by require() , unless one of the conditions below apply—then it's
+loaded as if it's been requested
+----------------------------------------------------------------------------------------------------
+Index: 14813 <<"chunk_id": 372, "docno": 2234>>
+
+triggered the error, while letting the others finish in their normal time, and
+stop listening for new requests in that worker. In this way, domain usage goes
+hand-in-hand with the cluster module, since the primary process can fork a new
+worker when a worker encounters an error. For Node.js programs that scale to
+multiple machines, the terminating proxy or service registry can take note of
+the failure, and react accordingly. For example, this is not a good idea: // XXX
+WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
+'error' , ( er ) => { // The error won't crash the process, but what it does is
+worse! // Though we've prevented abrupt process restarting, we are leaking // a
+lot of resources if this ever happens. // This is no better than
+process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
+message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
+( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
+copy By using the context of a domain, and the resilience of separating our
+program into multiple worker processes, we can react more appropriately, and
+handle errors with much greater safety. // Much better! const cluster = require
+( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
+----------------------------------------------------------------------------------------------------
+Index: 3839 <<"chunk_id": 2, "docno": 557>>
+
+a database or the filesystem, instead of blocking the thread and wasting CPU
+cycles waiting, Node.js will resume the operations when the response comes back.
+This allows Node.js to handle thousands of concurrent connections with a single
+server without introducing the burden of managing thread concurrency, which
+could be a significant source of bugs. Node.js has a unique advantage because
+millions of frontend developers that write JavaScript for the browser are now
+able to write the server-side code in addition to the client-side code without
+the need to learn a completely different language. In Node.js the new ECMAScript
+standards can be used without problems, as you don't have to wait for all your
+users to update their browsers - you are in charge of deciding which ECMAScript
+version to use by changing the Node.js version, and you can also enable specific
+experimental features by running Node.js with flags. An Example Node.js
+Application The most common example Hello World of Node.js is a web server: CJS
+ESM const { createServer } = require ( ' node:http ' ) ; const hostname = '
+127.0.0.1 ' ; const port = 3000 ; const server = createServer ( ( req , res ) =>
+{ res . statusCode = 200 ; res . setHeader ( ' Content-Type ' , ' text/plain ' )
+; res . end ( ' Hello World ' ) ; } ) ; server . listen ( port , hostname , ()
+=> { console . log ( ` Server running at http:// ${ hostname
+----------------------------------------------------------------------------------------------------
+Index: 238 <<"chunk_id": 2, "docno": 31>>
+
+start the event-loop. Typically, behavior is defined through callbacks at the
+beginning of a script, and at the end a server is started through a blocking
+call like EventMachine::run() . In Node.js, there is no such
+start-the-event-loop call. Node.js simply enters the event loop after executing
+the input script. Node.js exits the event loop when there are no more callbacks
+to perform. This behavior is like browser JavaScript — the event loop is hidden
+from the user. HTTP is a first-class citizen in Node.js, designed with streaming
+and low latency in mind. This makes Node.js well suited for the foundation of a
+web library or framework. Node.js being designed without threads doesn't mean
+you can't take advantage of multiple cores in your environment. Child processes
+can be spawned by using our child_process.fork() API, and are designed to be
+easy to communicate with. Built upon that same interface is the cluster module,
+which allows you to share sockets between processes to enable load balancing
+over your cores. Official Node.js Resources To ensure authenticity and security
+when working with Node.js, always use official sources. Avoid trusting emails,
+binaries, or downloads from unofficial sources. Official Node.js Domains For
+downloading Node.js binaries and accessing official documentation, use only
+these domains: nodejs.org nodejs.dev (Redirects to https://nodejs.org ) iojs.org
+(Redirects to https://nodejs.org ) Official npm Packages The Node.js team
+maintains the following official npm package scopes: @node-core @pkgjs
+Additionally, the Node.js team maintains packages published by the
+nodejs-foundation npm account, though other Node.js-related packages (like
+undici ) may also be maintained by
+----------------------------------------------------------------------------------------------------
+Index: 29341 <<"chunk_id": 8, "docno": 4906>>
+
+ability to upgrade these libraries dynamically. By understanding the different
+types of beans that an application contains, the Admin Console will provide for
+detailed insight into application internals and allow for dynamic
+reconfiguration of certain application components. To support typical enterprise
+deployment scenarios, the 2.0 version of the Platform will provide explicit
+support for common enterprise middleware components such as Oracle, TIBCO EMS
+and IBM MQSeries. Integration with the Admin Console will allow for connections
+to these middleware providers to be established in minutes rather than hours or
+days. Applications will be able to access these connections using the OSGi
+service registry and Spring DM’s <osgi:reference> . The 2.0 release will
+introduce additional personalities to cover batch, web services and SOA
+applications. Clustering is an important feature for the 2.0 release, with
+cluster-wide Single System Image (SSI) being the critical piece, and
+load-balancing and clustered caching being on the roadmap as well. Using the SSI
+support, administration and deployment operations will be propagated across the
+cluster. Ultimately, we want to support per-module updates across the cluster,
+with full cluster-rollback if the upgrade breaks a deployed application. DMK 2.0
+will include improvements to the concurrency subsystem to support large numbers
+of bundles that change frequently and to support larger numbers of modules with
+more complex interdependencies. Also included will be updates to the
+provisioning subsystem and integrated resource management and monitoring for
+memory, threads, IO and CPU. What next? Please download the Platform and try it
+out. We are keen to hear about your experiences building new
+----------------------------------------------------------------------------------------------------
 Index: 11873 <<"chunk_id": 19, "docno": 1862>>
 
 12.8.1 This is a security release. Node.js, as well as many other
@@ -243,46 +353,29 @@ potentially leading to a denial of service. CVE-2019-9515 “Settings Flood” :
 attacker sends a stream of SETTINGS frames to the peer. Since the RFC requires
 that the peer reply with
 ----------------------------------------------------------------------------------------------------
-Index: 2799 <<"chunk_id": 15, "docno": 378>>
+Index: 21458 <<"chunk_id": 1, "docno": 3185>>
 
-i + 1 , cb )) ; } // Start the helper, with CB to call avgCB. help ( 1 ,
-function ( sum ) { const avg = sum / n ; avgCB ( avg ) ; } ) ; } asyncAvg ( n ,
-function ( avg ) { console . log ( ' avg of 1-n: ' + avg ) ; } ) ; JavaScript
-Copy to clipboard You can apply this principle to array iterations and so forth.
-Offloading If you need to do something more complex, partitioning is not a good
-option. This is because partitioning uses only the Event Loop, and you won't
-benefit from multiple cores almost certainly available on your machine.
-Remember, the Event Loop should orchestrate client requests, not fulfill them
-itself. For a complicated task, move the work off of the Event Loop onto a
-Worker Pool. How to offload You have two options for a destination Worker Pool
-to which to offload work. You can use the built-in Node.js Worker Pool by
-developing a C++ addon . On older versions of Node, build your C++ addon using
-NAN , and on newer versions use N-API . node-webworker-threads offers a
-JavaScript-only way to access the Node.js Worker Pool. You can create and manage
-your own Worker Pool dedicated to computation rather than the Node.js I/O-themed
-Worker Pool. The most straightforward ways to do this is using Child Process or
-Cluster . You should not simply create a Child Process for every client. You can
-receive client
-----------------------------------------------------------------------------------------------------
-Index: 13865 <<"chunk_id": 3, "docno": 2159>>
-
-process can fork a new worker when a worker encounters an error. For Node.js
-programs that scale to multiple machines, the terminating proxy or service
-registry can take note of the failure, and react accordingly. For example, this
-is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
-) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
-process, but what it does is worse! // Though we've prevented abrupt process
-restarting, we are leaking // a lot of resources if this ever happens. // This
-is no better than process.on('uncaughtException')! console . log ( `error, but
-oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
-. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
-(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
-separating our program into multiple worker processes, we can react more
-appropriately, and handle errors with much greater safety. // Much better! const
-cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
-1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
-than 2 workers, // and perhaps not put the primary and worker in the same file.
-// // It is also possible to get a
+instance by applying defined custom resources to the cluster. You can
+dynamically configure a spawned SCG instance in a Kubernetes platform to enable
+API route updates for a continuous integration (CI) and continuous delivery (CD)
+pipeline. Furthermore, the SCG for Kubernetes offers commercial API route
+filters for Single Sign-On (SSO) authentication, role-based access control,
+scopes authorization, authorized token relay, client certificate authorization,
+rate limiting, and circuit breaker. SCG instances in a Kubernetes platform run
+with high availability and adjustable settings for memory and vCPU resources
+consumption. Spring Cloud Gateway for Kubernetes is easy to install and use. In
+this blog. I show how to install SCG for Kubernetes in a local development
+environment and show how to create and configure a gateway instance with routes.
+You need to have both Docker and the Helm command-line interface (CLI) tools
+installed. Let us first start by setting up an environment with a local
+Kubernetes cluster. It would be also helpful to configure the cluster with a
+local Docker registry and ingress controller. We can use KinD to create a local
+cluster. You can install KinD from here . First, we spin off a local registry
+(named myregistry ) with port 5000 by using the “registry” docker image as
+follows: $ Docker run -d –restart=always -p “127.0.0.1:5000” –name myregistry
+registry:2 You can use the command below to create a new KinD cluster named
+mycluster . The cluster consists of two nodes, one as a control plane node and
+the other as a workload node with port 80 and 443
 ----------------------------------------------------------------------------------------------------
 Index: 15912 <<"chunk_id": 1471, "docno": 2234>>
 
@@ -308,69 +401,55 @@ for other use cases requiring worker processes. Class: Worker # Added in: v0.7.0
 Extends: <EventEmitter> A Worker object contains all public information and
 method about a worker. In
 ----------------------------------------------------------------------------------------------------
-Index: 21027 <<"chunk_id": 2, "docno": 3084>>
+Index: 22733 <<"chunk_id": 26, "docno": 3382>>
 
-the control over the concurrent processing that you need without you having to
-take responsibility for the low level details of concurrent programming. How
-does OSGi help? You can fully prevent the synchronous breakdown without OSGi. It
-just makes life so much better that you shouldn't miss out on it. Doing a full
-redeploy and restart of the jvm every time you make a little change wouldn't be
-much fun. And there is another thing that makes the combination of OSGi and
-Messaging very interesting. If an enterprise application grows big you have to
-modularize at some point. Running multiple modules in the same traditional
-server is a recipe for disaster (also called jar hell). In traditional
-architectures people have therefore scaled out prematurely in many cases. This
-makes for a very poor setup. The different nodes have to talk to each other over
-the network, and they can't share resources like cpu and memory. This renders
-the architecture inefficient and severely impacts performance. Not only are you
-wasting cycles on some cores in one server, you are now repeating the same
-inefficiency over multiple nodes. To add insult to injury there is network
-latency adding I/O waits where a normal local method call would have sufficed.
-With OSGi you don't have to take that hit, you can run different bundles in the
-same jvm, so that calls between them are fast as normal method calls, without
-the dreaded jar hell associated with deploying jars of different teams on the
-same classpath. Having an application that
+= content; } public String getId() { return id; } public String getContent() {
+return content; } } Once that is done your application will be loadable in a
+browser. On the command line you can do this $ mvn spring-boot:run
+-Dserver.port=9000 and go to a browser at http://localhost:9000 and you should
+see JSON with a greeting. You can bake in the port change in
+application.properties (in"src/main/resources"): application.properties
+server.port: 9000 If you try loading that resource from the UI (on port 8080) in
+a browser, you will find that it doesn’t work because the browser won’t allow
+the XHR request. CORS Negotiation The browser tries to negotiate with our
+resource server to find out if it is allowed to access it according to the Cross
+Origin Resource Sharing protocol. It’s not an Angular responsibility, so just
+like the cookie contract it will work like this with all JavaScript in the
+browser. The two servers do not declare that they have a common origin, so the
+browser declines to send the request and the UI is broken. To fix that we need
+to support the CORS protocol which involves a "pre-flight" OPTIONS request and
+some headers to list the allowed behaviour of the caller. Spring has
+fine-grained CORS support , so we can just add an annotation to our controller
+mapping, for example: ResourceApplication.java @RequestMapping("/")
+@CrossOrigin(origins="*", maxAge=3600) public Message home() { return new
+Message("Hello World"); } Blithely using origins=* is quick and dirty, and it
+works, but it is not not secure and is not in any
 ----------------------------------------------------------------------------------------------------
-Index: 3839 <<"chunk_id": 2, "docno": 557>>
+Index: 2202 <<"chunk_id": 1, "docno": 292>>
 
-a database or the filesystem, instead of blocking the thread and wasting CPU
-cycles waiting, Node.js will resume the operations when the response comes back.
-This allows Node.js to handle thousands of concurrent connections with a single
-server without introducing the burden of managing thread concurrency, which
-could be a significant source of bugs. Node.js has a unique advantage because
-millions of frontend developers that write JavaScript for the browser are now
-able to write the server-side code in addition to the client-side code without
-the need to learn a completely different language. In Node.js the new ECMAScript
-standards can be used without problems, as you don't have to wait for all your
-users to update their browsers - you are in charge of deciding which ECMAScript
-version to use by changing the Node.js version, and you can also enable specific
-experimental features by running Node.js with flags. An Example Node.js
-Application The most common example Hello World of Node.js is a web server: CJS
-ESM const { createServer } = require ( ' node:http ' ) ; const hostname = '
-127.0.0.1 ' ; const port = 3000 ; const server = createServer ( ( req , res ) =>
-{ res . statusCode = 200 ; res . setHeader ( ' Content-Type ' , ' text/plain ' )
-; res . end ( ' Hello World ' ) ; } ) ; server . listen ( port , hostname , ()
-=> { console . log ( ` Server running at http:// ${ hostname
-----------------------------------------------------------------------------------------------------
-Index: 14813 <<"chunk_id": 372, "docno": 2234>>
-
-triggered the error, while letting the others finish in their normal time, and
-stop listening for new requests in that worker. In this way, domain usage goes
-hand-in-hand with the cluster module, since the primary process can fork a new
-worker when a worker encounters an error. For Node.js programs that scale to
-multiple machines, the terminating proxy or service registry can take note of
-the failure, and react accordingly. For example, this is not a good idea: // XXX
-WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
-'error' , ( er ) => { // The error won't crash the process, but what it does is
-worse! // Though we've prevented abrupt process restarting, we are leaking // a
-lot of resources if this ever happens. // This is no better than
-process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
-message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
-( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
-copy By using the context of a domain, and the resilience of separating our
-program into multiple worker processes, we can react more appropriately, and
-handle errors with much greater safety. // Much better! const cluster = require
-( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Multiple loading and unloading
+Instance data Resources Example Cleanup hooks Resources Example Context
+Awareness Node.js has historically run as a single-threaded process. This all
+changed with the introduction of Worker Threads in Node 10. Worker Threads add a
+JavaScript-friendly concurrency abstraction that native add-on developers need
+to be aware of. What this means practically is that your native add-on may be
+loaded and unloaded more than once and its code may be executed concurrently in
+multiple threads. There are specific steps you must take to ensure your native
+add-on code runs correctly. The Worker Thread model specifies that each Worker
+runs completely independently of each other and communicate to the parent Worker
+using a MessagePort object supplied by the parent. This makes the Worker Threads
+essentially isolated from one another. The same is true for your native add-on.
+Each Worker Thread operates within its own
 ----------------------------------------------------------------------------------------------------
 Index: 5378 <<"chunk_id": 11, "docno": 790>>
 
@@ -399,834 +478,4 @@ with JSON, Jackson is used for serialization and deserialization. By default, an
 isolated JsonMapper is used. This isolation means that it does not share the
 same configuration as the application’s JsonMapper and it is not affected by
 spring.jackson.* properties. To disable this behavior and configure
-----------------------------------------------------------------------------------------------------
-Index: 2801 <<"chunk_id": 17, "docno": 378>>
-
-system, etc.) and waiting for its response. While a Worker with an I/O-intensive
-task is waiting for its response, it has nothing else to do and can be
-de-scheduled by the operating system, giving another Worker a chance to submit
-their request. Thus, I/O-intensive tasks will be making progress even while the
-associated thread is not running . External service providers like databases and
-file systems have been highly optimized to handle many pending requests
-concurrently. For example, a file system will examine a large set of pending
-write and read requests to merge conflicting updates and to retrieve files in an
-optimal order. If you rely on only one Worker Pool, e.g. the Node.js Worker
-Pool, then the differing characteristics of CPU-bound and I/O-bound work may
-harm your application's performance. For this reason, you might wish to maintain
-a separate Computation Worker Pool. Offloading: conclusions For simple tasks,
-like iterating over the elements of an arbitrarily long array, partitioning
-might be a good option. If your computation is more complex, offloading is a
-better approach: the communication costs, i.e. the overhead of passing
-serialized objects between the Event Loop and the Worker Pool, are offset by the
-benefit of using multiple cores. However, if your server relies heavily on
-complex calculations, you should think about whether Node.js is really a good
-fit. Node.js excels for I/O-bound work, but for expensive computation it might
-not be the best option. If you take the offloading approach, see the section on
-not blocking the Worker Pool. Don't block
-----------------------------------------------------------------------------------------------------
-Index: 21026 <<"chunk_id": 1, "docno": 3084>>
-
-and some of the dm Server features. You should be able to do this yourself, if
-you have downloaded and installed the latest SpringSource Tool Suite and dm
-Server. You don't need the sample code to follow the story, but it will be
-available in the Spring Integration sandbox if you're interested. The
-synchronous breakdown Synchronous calls in applications perform fine, but they
-don't scale. It has been documented quite a bit before, so I'll give you a quick
-refresher and then move on. When you make a synchronous call, the calling thread
-has to block until the call is done. If you happen to do I/O in that method, the
-blocking thread is wasting cpu cycles. If you have a massively parallel web
-application this isn't too big a problem, because you can just increase the max
-size of the threadpool you're using. However, if you need to make use of the
-full potential of your servers cpu power from a single call, you're out of luck.
-Since one thread runs on one core, the more cores you have the more inefficient
-a single threaded program will be. Messaging to the rescue Getting into
-concurrent programming yourself is a lot of fun, but it isn't the easiest thing
-to do, and you might want to finish work early today. That's where Spring
-Integration can help you. It gives you all the control over the concurrent
-processing that you need without you having to take responsibility for the low
-level details of concurrent programming. How does
-----------------------------------------------------------------------------------------------------
-Index: 1474 <<"chunk_id": 5, "docno": 184>>
-
-unique port, generate a port number based on the cluster worker ID. Node.js does
-not provide routing logic. It is therefore important to design an application
-such that it does not rely too heavily on in-memory data objects for things like
-sessions and login. Because workers are all separate processes, they can be
-killed or re-spawned depending on a program's needs, without affecting other
-workers. As long as there are some workers still alive, the server will continue
-to accept connections. If no workers are alive, existing connections will be
-dropped and new connections will be refused. Node.js does not automatically
-manage the number of workers, however. It is the application's responsibility to
-manage the worker pool based on its own needs. Although a primary use case for
-the node:cluster module is networking, it can also be used for other use cases
-requiring worker processes. Class: Worker # Added in: v0.7.0 Extends:
-<EventEmitter> A Worker object contains all public information and method about
-a worker. In the primary it can be obtained using cluster.workers . In a worker
-it can be obtained using cluster.worker . Event: 'disconnect' # Added in: v0.7.7
-Similar to the cluster.on('disconnect') event, but specific to this worker.
-cluster . fork () . on ( 'disconnect' , () => { // Worker has disconnected } ) ;
-js copy Event: 'error' # Added in: v0.7.3 This event is the same as the one
-provided by child_process.fork() . Within a worker, process.on('error') may also
-be used. Event: 'exit' # Added in: v0.11.2 code <number>
-----------------------------------------------------------------------------------------------------
-Index: 19449 <<"chunk_id": 180, "docno": 2775>>
-
-Browser determines priority based on request context (default) TIP: Use
-`priority: 'high'` for requests that affect Largest Contentful Paint (LCP) and
-`priority: 'low'` for requests that don't impact initial user experience. ####
-Request mode The `mode` option controls how the request handles cross-origin
-requests and determines the response type. ```ts // Same-origin requests only
-http .get('/api/local-data', { mode: 'same-origin', }) .subscribe((data) => { //
-... }); // CORS-enabled cross-origin requests http
-.get('https://api.external.com/data', { mode: 'cors', }) .subscribe((data) => {
-// ... }); // No-CORS mode for simple cross-origin requests http
-.get('https://external-api.com/public-data', { mode: 'no-cors', })
-.subscribe((data) => { // ... }); ``` Available `mode` values: -
-`'same-origin'`: Only allow same-origin requests, fail for cross-origin requests
-- `'cors'`: Allow cross-origin requests with CORS (default) - `'no-cors'`: Allow
-simple cross-origin requests without CORS, response is opaque TIP: In the
-browser, use `mode: 'same-origin'` for sensitive requests that should never go
-cross-origin. IMPORTANT: During SSR on Node.js, `HttpClient` uses Node.js's
-[Undici-based Fetch implementation](https://nodejs.org/api/globals.html#fetch).
-[Undici does not enforce browser CORS checks](https://undici.nodejs.org/#cors),
-so `mode: 'same-origin'` does not restrict server-side requests. Validate
-user-influenced URLs against an allowlist. #### Redirect handling The `redirect`
-option specifies how to handle redirect responses from the server. ```ts //
-Follow redirects automatically (default behavior) http .get('/api/resource', {
-redirect: 'follow', }) .subscribe((data) => { // ... }); // Prevent automatic
-redirects http .get('/api/resource', { redirect: 'manual', })
-.subscribe((response) => { // Handle redirect manually }); // Treat redirects as
-errors http .get('/api/resource', { redirect: 'error', }) .subscribe({ next:
-(data) => { // Success response }, error: (err) =>
-----------------------------------------------------------------------------------------------------
-Index: 14814 <<"chunk_id": 373, "docno": 2234>>
-
-Much better! const cluster = require ( 'node:cluster' ) ; const PORT = + process
-. env . PORT || 1337 ; if (cluster . isPrimary) { // A more realistic scenario
-would have more than 2 workers, // and perhaps not put the primary and worker in
-the same file. // // It is also possible to get a bit fancier about logging, and
-// implement whatever custom logic is needed to prevent DoS // attacks and other
-bad behavior. // // See the options in the cluster documentation. // // The
-important thing is that the primary does very little, // increasing our
-resilience to unexpected errors. cluster . fork () ; cluster . fork () ; cluster
-. on ( 'disconnect' , ( worker ) => { console . error ( 'disconnect!' ) ;
-cluster . fork () ; } ) ; } else { // the worker // // This is where we put our
-bugs! const domain = require ( 'node:domain' ) ; // See the cluster
-documentation for more details about using // worker processes to serve
-requests. How it works, caveats, etc. const server = require ( 'node:http' ) .
-createServer ( ( req , res ) => { const d = domain . create () ; d . on (
-'error' , ( er ) => { console . error ( `error ${ er . stack } ` ) ; // We're in
-dangerous territory! // By definition, something unexpected occurred, // which
-we probably didn't want. //
-----------------------------------------------------------------------------------------------------
-Index: 8772 <<"chunk_id": 26, "docno": 1381>>
-
-uv_get_constrained_memory for more information.
-process.cpuUsage([previousValue]) # Added in: v6.1.0 previousValue <Object> A
-previous return value from calling process.cpuUsage() Returns: <Object> user
-<integer> system <integer> The process.cpuUsage() method returns the user and
-system CPU time usage of the current process, in an object with properties user
-and system , whose values are microsecond values (millionth of a second). These
-values measure time spent in user and system code respectively, and may end up
-being greater than actual elapsed time if multiple CPU cores are performing work
-for this process. The result of a previous call to process.cpuUsage() can be
-passed as the argument to the function, to get a diff reading. import { cpuUsage
-} from 'node:process' ; const startUsage = cpuUsage () ; // { user: 38579,
-system: 6986 } // spin the CPU for 500 milliseconds const now = Date . now () ;
-while (Date . now () - now < 500 ) ; console . log ( cpuUsage (startUsage)) ; //
-{ user: 514883, system: 11226 } const { cpuUsage } = require ( 'node:process' )
-; const startUsage = cpuUsage () ; // { user: 38579, system: 6986 } // spin the
-CPU for 500 milliseconds const now = Date . now () ; while (Date . now () - now
-< 500 ) ; console . log ( cpuUsage (startUsage)) ; // { user: 514883, system:
-11226 } javascript copy process.cwd() # Added in: v0.1.8 Returns: <string> The
-process.cwd() method returns the current working directory of the Node.js
-process. import {
-----------------------------------------------------------------------------------------------------
-Index: 1473 <<"chunk_id": 4, "docno": 184>>
-
-connections and distributes them across the workers in a round-robin fashion,
-with some built-in smarts to avoid overloading a worker process. The second
-approach is where the primary process creates the listen socket and sends it to
-interested workers. The workers then accept incoming connections directly. The
-second approach should, in theory, give the best performance. In practice
-however, distribution tends to be very unbalanced due to operating system
-scheduler vagaries. Loads have been observed where over 70% of all connections
-ended up in just two processes, out of a total of eight. Because server.listen()
-hands off most of the work to the primary process, there are three cases where
-the behavior between a normal Node.js process and a cluster worker differs:
-server.listen({fd: 7}) Because the message is passed to the primary, file
-descriptor 7 in the parent will be listened on, and the handle passed to the
-worker, rather than listening to the worker's idea of what the number 7 file
-descriptor references. server.listen(handle) Listening on handles explicitly
-will cause the worker to use the supplied handle, rather than talk to the
-primary process. server.listen(0) Normally, this will cause servers to listen on
-a random port. However, in a cluster, each worker will receive the same "random"
-port each time they do listen(0) . In essence, the port is random the first
-time, but predictable thereafter. To listen on a unique port, generate a port
-number based on the cluster worker ID. Node.js does not provide routing logic.
-It is therefore important to design an
-----------------------------------------------------------------------------------------------------
-Index: 15930 <<"chunk_id": 1489, "docno": 2234>>
-
-guaranteed that the removal from the cluster.workers list happens before the
-last 'disconnect' or 'exit' event is emitted. import cluster from 'node:cluster'
-; for ( const worker of Object . values (cluster . workers)) { worker . send (
-'big announcement to all workers' ) ; } const cluster = require ( 'node:cluster'
-) ; for ( const worker of Object . values (cluster . workers)) { worker . send (
-'big announcement to all workers' ) ; } javascript copy Command-line API #
-Node.js comes with a variety of CLI options. These options expose built-in
-debugging, multiple ways to execute scripts, and other helpful runtime options.
-To view this documentation as a manual page in a terminal, run man node .
-Synopsis # node [options] [V8 options] [<program-entry-point> | -e "script" | -]
-[--] [arguments] node inspect [<program-entry-point> | -e "script" |
-<host>:<port>] … node --v8-options Execute without arguments to start the REPL .
-For more info about node inspect , see the debugger documentation. Program entry
-point # The program entry point is a specifier-like string. If the string is not
-an absolute path, it's resolved as a relative path from the current working
-directory. That entry point string is then resolved as if it's been requested by
-require() from the current working directory. If no corresponding file is found,
-an error is thrown. By default, the resolved path is also loaded as if it's been
-requested by require() , unless one of the conditions below apply—then it's
-loaded as if it's been requested
-----------------------------------------------------------------------------------------------------
-Index: 1487 <<"chunk_id": 18, "docno": 184>>
-
-; js copy Event: 'setup' # Added in: v0.7.1 settings <Object> Emitted every time
-.setupPrimary() is called. The settings object is the cluster.settings object at
-the time .setupPrimary() was called and is advisory only, since multiple calls
-to .setupPrimary() can be made in a single tick. If accuracy is important, use
-cluster.settings . cluster.disconnect([callback]) # Added in: v0.7.7 callback
-<Function> Called when all workers are disconnected and handles are closed.
-Calls .disconnect() on each worker in cluster.workers . When they are
-disconnected all internal handles will be closed, allowing the primary process
-to die gracefully if no other event is waiting. The method takes an optional
-callback argument which will be called when finished. This can only be called
-from the primary process. cluster.fork([env]) # Added in: v0.6.0 env <Object>
-Key/value pairs to add to worker process environment. Returns: <cluster.Worker>
-Spawn a new worker process. This can only be called from the primary process.
-cluster.isMaster # Added in: v0.8.1 Deprecated in: v16.0.0 Stability: 0 -
-Deprecated Deprecated alias for cluster.isPrimary . cluster.isPrimary # Added
-in: v16.0.0 Type: <boolean> True if the process is a primary. This is determined
-by the process.env.NODE_UNIQUE_ID . If process.env.NODE_UNIQUE_ID is undefined,
-then isPrimary is true . cluster.isWorker # Added in: v0.6.0 Type: <boolean>
-True if the process is not a primary (it is the negation of cluster.isPrimary ).
-cluster.schedulingPolicy # Added in: v0.11.2 The scheduling policy, either
-cluster.SCHED_RR for round-robin or cluster.SCHED_NONE to leave it to the
-operating system. This is a global setting and effectively frozen once either
-the first
-----------------------------------------------------------------------------------------------------
-Index: 22733 <<"chunk_id": 26, "docno": 3382>>
-
-= content; } public String getId() { return id; } public String getContent() {
-return content; } } Once that is done your application will be loadable in a
-browser. On the command line you can do this $ mvn spring-boot:run
--Dserver.port=9000 and go to a browser at http://localhost:9000 and you should
-see JSON with a greeting. You can bake in the port change in
-application.properties (in"src/main/resources"): application.properties
-server.port: 9000 If you try loading that resource from the UI (on port 8080) in
-a browser, you will find that it doesn’t work because the browser won’t allow
-the XHR request. CORS Negotiation The browser tries to negotiate with our
-resource server to find out if it is allowed to access it according to the Cross
-Origin Resource Sharing protocol. It’s not an Angular responsibility, so just
-like the cookie contract it will work like this with all JavaScript in the
-browser. The two servers do not declare that they have a common origin, so the
-browser declines to send the request and the UI is broken. To fix that we need
-to support the CORS protocol which involves a "pre-flight" OPTIONS request and
-some headers to list the allowed behaviour of the caller. Spring has
-fine-grained CORS support , so we can just add an annotation to our controller
-mapping, for example: ResourceApplication.java @RequestMapping("/")
-@CrossOrigin(origins="*", maxAge=3600) public Message home() { return new
-Message("Hello World"); } Blithely using origins=* is quick and dirty, and it
-works, but it is not not secure and is not in any
-----------------------------------------------------------------------------------------------------
-Index: 29341 <<"chunk_id": 8, "docno": 4906>>
-
-ability to upgrade these libraries dynamically. By understanding the different
-types of beans that an application contains, the Admin Console will provide for
-detailed insight into application internals and allow for dynamic
-reconfiguration of certain application components. To support typical enterprise
-deployment scenarios, the 2.0 version of the Platform will provide explicit
-support for common enterprise middleware components such as Oracle, TIBCO EMS
-and IBM MQSeries. Integration with the Admin Console will allow for connections
-to these middleware providers to be established in minutes rather than hours or
-days. Applications will be able to access these connections using the OSGi
-service registry and Spring DM’s <osgi:reference> . The 2.0 release will
-introduce additional personalities to cover batch, web services and SOA
-applications. Clustering is an important feature for the 2.0 release, with
-cluster-wide Single System Image (SSI) being the critical piece, and
-load-balancing and clustered caching being on the roadmap as well. Using the SSI
-support, administration and deployment operations will be propagated across the
-cluster. Ultimately, we want to support per-module updates across the cluster,
-with full cluster-rollback if the upgrade breaks a deployed application. DMK 2.0
-will include improvements to the concurrency subsystem to support large numbers
-of bundles that change frequently and to support larger numbers of modules with
-more complex interdependencies. Also included will be updates to the
-provisioning subsystem and integrated resource management and monitoring for
-memory, threads, IO and CPU. What next? Please download the Platform and try it
-out. We are keen to hear about your experiences building new
-----------------------------------------------------------------------------------------------------
-Index: 1479 <<"chunk_id": 10, "docno": 184>>
-
-connections will be allowed to close as usual. When no more connections exist,
-see server.close() , the IPC channel to the worker will close allowing it to die
-gracefully. The above applies only to server connections, client connections are
-not automatically closed by workers, and disconnect does not wait for them to
-close before exiting. In a worker, process.disconnect exists, but it is not this
-function; it is disconnect() . Because long living server connections may block
-workers from disconnecting, it may be useful to send a message, so application
-specific actions may be taken to close them. It also may be useful to implement
-a timeout, killing a worker if the 'disconnect' event has not been emitted after
-some time. if (cluster . isPrimary) { const worker = cluster . fork () ; let
-timeout ; worker . on ( 'listening' , ( address ) => { worker . send (
-'shutdown' ) ; worker . disconnect () ; timeout = setTimeout ( () => { worker .
-kill () ; }, 2000 ) ; } ) ; worker . on ( 'disconnect' , () => { clearTimeout
-(timeout) ; } ) ; } else if (cluster . isWorker) { const net = require (
-'node:net' ) ; const server = net . createServer ( ( socket ) => { //
-Connections never end } ) ; server . listen ( 8000 ) ; process . on ( 'message'
-, ( msg ) => { if (msg === 'shutdown' ) { // Initiate graceful close
-----------------------------------------------------------------------------------------------------
-Index: 1478 <<"chunk_id": 9, "docno": 184>>
-
-{ cluster . fork () ; } for ( const id in cluster . workers) { cluster .
-workers[id] . on ( 'message' , messageHandler) ; } } else { // Worker processes
-have a http server. http . Server ( ( req , res ) => { res . writeHead ( 200 ) ;
-res . end ( 'hello world \n ' ) ; // Notify primary about the request process .
-send ( { cmd : 'notifyRequest' } ) ; } ) . listen ( 8000 ) ; } javascript copy
-Event: 'online' # Added in: v0.7.0 Similar to the cluster.on('online') event,
-but specific to this worker. cluster . fork () . on ( 'online' , () => { //
-Worker is online } ) ; js copy It is not emitted in the worker.
-worker.disconnect() # Added in: v0.7.7 History Version Changes v7.3.0 This
-method now returns a reference to worker . Returns: <cluster.Worker> A reference
-to worker . In a worker, this function will close all servers, wait for the
-'close' event on those servers, and then disconnect the IPC channel. In the
-primary, an internal message is sent to the worker causing it to call
-.disconnect() on itself. Causes .exitedAfterDisconnect to be set. After a server
-is closed, it will no longer accept new connections, but connections may be
-accepted by any other listening worker. Existing connections will be allowed to
-close as usual. When no more connections exist, see server.close() , the IPC
-channel to the worker will close allowing
-----------------------------------------------------------------------------------------------------
-Index: 2352 <<"chunk_id": 7, "docno": 313>>
-
-( worker . exitedAfterDisconnect ) { // A voluntary exit (e.g.
-worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
-console . log ( ` Worker ${ worker . process . pid } died, restarting ` ) ;
-cluster . fork () ; } ) ; } else { http . createServer ( ( req , res ) => { res
-. writeHead ( 200 ) ; res . end ( ' handled by worker ' + process . pid ) ; } )
-. listen ( 3000 ) ; } JavaScript Copy to clipboard The primary process (
-cluster.isPrimary ) forks one worker per core and restarts any worker that exits
-unexpectedly. Each worker ( cluster.isWorker ) runs your normal server code,
-unaware that it's one of several. The worker.exitedAfterDisconnect flag
-distinguishes a voluntary exit (e.g. during a graceful shutdown via
-worker.disconnect() or cluster.disconnect() ) from a crash — without checking
-it, a deliberate shutdown would keep spawning new workers instead of winding
-down. How the workers share one port Rather than relying on an OS-level
-mechanism, the primary process itself distributes incoming connections to its
-workers — by default in a round-robin fashion ( cluster.SCHED_RR ), which is the
-default on every platform except Windows. This is configurable via
-cluster.schedulingPolicy . (You may see older material claim this is done via
-SO_REUSEPORT ; that's not how Node's cluster module does it by default.)
-isPrimary / isWorker cluster.isPrimary is true in the process that forks
-workers; cluster.isWorker is true in the forked workers themselves. (You
-----------------------------------------------------------------------------------------------------
-Index: 24890 <<"chunk_id": 5, "docno": 3864>>
-
-see there's no big difference to what you are already used to when working with
-Spring Data Redis. Redis Cluster behaves different from single node Redis or
-even a Sentinel monitored master slave environment. This is caused by the
-automatic sharding that maps a key to one of 16384 slots which are distributed
-across the nodes. Therefore, commands that involve more than one key must assert
-that all keys map to the exact same slot in order to avoid cross slot execution
-errors. RedisClusterConnection offers both an API to talk to a single slot or
-node but retains expected behavior when interacting with the cluster. It takes
-care of executing commands that involve more than one key, slot or cluster node
-and therefore connects to the required nodes and collects results so that eg the
-KEYS command not only returns the matching keys of one single node but the
-cumulated list of all matching keys within the cluster. More information and a
-complete sample how to setup Spring Data Redis to work with a cluster can be
-found in the Redis Cluster module of the Spring Data Examples GitHub repository
-as well as the reference documentation . Redis Repositories With Redis
-repositories, Hopper ships an implementation of the Spring Data repositories
-abstraction on top of Redis so that you can execute basic CRUD operations and
-execute derived query methods. It allows you to seamlessly convert and store
-domain objects into Redis Hashes, apply custom mapping strategies and make use
-of secondary indexes. Let's have a look
-----------------------------------------------------------------------------------------------------
-Index: 13866 <<"chunk_id": 4, "docno": 2159>>
-
-than 2 workers, // and perhaps not put the primary and worker in the same file.
-// // It is also possible to get a bit fancier about logging, and // implement
-whatever custom logic is needed to prevent DoS // attacks and other bad
-behavior. // // See the options in the cluster documentation. // // The
-important thing is that the primary does very little, // increasing our
-resilience to unexpected errors. cluster . fork () ; cluster . fork () ; cluster
-. on ( 'disconnect' , ( worker ) => { console . error ( 'disconnect!' ) ;
-cluster . fork () ; } ) ; } else { // the worker // // This is where we put our
-bugs! const domain = require ( 'node:domain' ) ; // See the cluster
-documentation for more details about using // worker processes to serve
-requests. How it works, caveats, etc. const server = require ( 'node:http' ) .
-createServer ( ( req , res ) => { const d = domain . create () ; d . on (
-'error' , ( er ) => { console . error ( `error ${ er . stack } ` ) ; // We're in
-dangerous territory! // By definition, something unexpected occurred, // which
-we probably didn't want. // Anything can happen now! Be very careful! try { //
-Make sure we close down within 30 seconds const killtimer = setTimeout ( () => {
-process . exit ( 1 ) ; }, 30000
-----------------------------------------------------------------------------------------------------
-Index: 21534 <<"chunk_id": 7, "docno": 3197>>
-
-<optional>true</optional> </dependency> <!-- This provides a Spring Converter to
-convert Strings to Expression, required for CouchbaseConsumerProperties as
-implemented --> <dependency> <groupId>org.springframework.cloud.fn</groupId>
-<artifactId>config-common</artifactId> </dependency> As mentioned earlier, this
-is not a Spring Boot application, but a component that must be embedded in a
-Spring Boot application to run. Spring Boot binds the @ConfigurationPropeties
-and also provides CouchbaseAutoConfiguration . Note This example does not use
-spring-data-couchbase since it is intended for using Spring Data Repositories
-and automatically mapping specific domain objects. Since our function is
-intended to handle any payload type, we use boot to autoconfigure the Cluster
-along with the Couchbase Java SDK. So how did we end up with a function that
-actually works? The sample code above is the result of test driven development,
-refined over several iterations. Since the function depends on the Couchbase SDK
-Cluster object which does all the work, we need to create a Cluster instance
-before we can do anything. The Cluster needs to connect to a Couchbase server.
-If we happen to have a Couchbase cluster already running on our network, with a
-bucket we can use for testing, then we might use that initially. But even if we
-assume Couchbase is accessable from our development and CI environment, what
-happens if we can’t connect to Couchbase for some reason - the cluster is down,
-credentials expired, permissions changed, or some other reason? Do we want to
-let that break our CI/CD pipeline or stop our progress? Fortunately, we can use
-the Testcontainers couchbase module to spin up our
-----------------------------------------------------------------------------------------------------
-Index: 3755 <<"chunk_id": 1, "docno": 542>>
-
-How to use streams Backpressuring in Streams Publishing a package How to publish
-a Node-API package ABI Stability Diagnostics User Journey Memory Overview
-Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot Tracing
-garbage collection Live Debugging Overview Using Inspector Poor Performance
-Overview Using Linux Perf Flame Graphs Test Runner Discovering Node.js's test
-runner Using Node.js's test runner Mocking in tests Collecting code coverage in
-Node.js Node-API What is Node-API? Getting Started Overview Pre-requisites Tools
-Anatomy of a Node-API project Your First Project Object Wrap Migrating to
-Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp Special Topics
-Overview Context Awareness Object and Function References AsyncWorker
-Thread-Safe Functions On this page My application has a poor performance
-Symptoms Debugging Poor Performance In this document you can learn about how to
-profile a Node.js process. My application has a poor performance Symptoms My
-applications latency is high and I have already confirmed that the bottleneck is
-not my dependencies like databases and downstream services. So I suspect that my
-application spends significant time to run code or process information. You are
-satisfied with your application performance in general but would like to
-understand which part of our application can be improved to run faster or more
-efficient. It can be useful when we want to improve the user experience or save
-computation cost. Debugging In this use-case, we are interested in code pieces
-that use more CPU cycles than the others. When we do this locally, we usually
-try to optimize our code. This document provides two simple
-----------------------------------------------------------------------------------------------------
-Index: 21458 <<"chunk_id": 1, "docno": 3185>>
-
-instance by applying defined custom resources to the cluster. You can
-dynamically configure a spawned SCG instance in a Kubernetes platform to enable
-API route updates for a continuous integration (CI) and continuous delivery (CD)
-pipeline. Furthermore, the SCG for Kubernetes offers commercial API route
-filters for Single Sign-On (SSO) authentication, role-based access control,
-scopes authorization, authorized token relay, client certificate authorization,
-rate limiting, and circuit breaker. SCG instances in a Kubernetes platform run
-with high availability and adjustable settings for memory and vCPU resources
-consumption. Spring Cloud Gateway for Kubernetes is easy to install and use. In
-this blog. I show how to install SCG for Kubernetes in a local development
-environment and show how to create and configure a gateway instance with routes.
-You need to have both Docker and the Helm command-line interface (CLI) tools
-installed. Let us first start by setting up an environment with a local
-Kubernetes cluster. It would be also helpful to configure the cluster with a
-local Docker registry and ingress controller. We can use KinD to create a local
-cluster. You can install KinD from here . First, we spin off a local registry
-(named myregistry ) with port 5000 by using the “registry” docker image as
-follows: $ Docker run -d –restart=always -p “127.0.0.1:5000” –name myregistry
-registry:2 You can use the command below to create a new KinD cluster named
-mycluster . The cluster consists of two nodes, one as a control plane node and
-the other as a workload node with port 80 and 443
-----------------------------------------------------------------------------------------------------
-Index: 11868 <<"chunk_id": 14, "docno": 1862>>
-
-This can be used to debug TLS connection problems (cjihrig) #27497 , (Sam
-Roberts) #27376 . cli : Added a --trace-tls command-line flag that enables
-tracing of TLS connections without the need to modify existing application code
-(cjihrig) #27497 . Added a --cpu-prof-interval command-line flag. It can be used
-to specify the sampling interval for the CPU profiles generated by --cpu-prof
-(Joyee Cheung) #27535 . module : Added the createRequire() method. It allows to
-create a require function from a file URL object, a file URL string or an
-absolute path string. The existing createRequireFromPath() method is now
-deprecated (Myles Borins) #27405 . Throw on require('./path.mjs') . This is
-technically a breaking change that should have landed with Node.js 12.0.0. It is
-necessary to have this to keep the possibility for a future minor version to
-load ES Modules with the require function (Myles Borins) #27417 . repl : The
-REPL now supports multi-line statements using BigInt literals as well as public
-and private class fields and methods (Ruben Bridgewater) #27400 . The REPL now
-supports tab autocompletion of file paths with fs methods (Anto Aravinth) #26648
-. meta : Added Christian Clauss to collaborators #27554 . Notable Changes in
-Node.js 12.3.0 esm : Added the --experimental-wasm-modules flag to support
-WebAssembly modules (Myles Borins & Guy Bedford) #27659 process : Log errors
-using util.inspect in case of fatal exceptions (Ruben Bridgewater) #27243 repl :
-Add process.on('uncaughtException') support (Ruben Bridgewater) #27151 stream :
-Implemented Readable.from async iterator utility (Guy Bedford) #27660 tls :
-Expose built-in root certificates
-----------------------------------------------------------------------------------------------------
-Index: 5767 <<"chunk_id": 41, "docno": 843>>
-
-idle connection to make sure it's still alive. 30s
-spring.cassandra.pool.idle-timeout Idle timeout before an idle connection is
-removed. 5s spring.cassandra.port Port to use if a contact point does not
-specify one. 9042 spring.cassandra.request.consistency Queries consistency
-level. spring.cassandra.request.page-size How many rows will be retrieved
-simultaneously in a single network round-trip. 5000
-spring.cassandra.request.serial-consistency Queries serial consistency level.
-spring.cassandra.request.throttler.drain-interval How often the throttler
-attempts to dequeue requests. Set this high enough that each attempt will
-process multiple entries in the queue, but not delay requests too much.
-spring.cassandra.request.throttler.max-concurrent-requests Maximum number of
-requests that are allowed to execute in parallel.
-spring.cassandra.request.throttler.max-queue-size Maximum number of requests
-that can be enqueued when the throttling threshold is exceeded.
-spring.cassandra.request.throttler.max-requests-per-second Maximum allowed
-request rate. spring.cassandra.request.throttler.type Request throttling type.
-none spring.cassandra.request.timeout How long the driver waits for a request to
-complete. 2s spring.cassandra.schema-action Schema action to take at startup.
-none spring.cassandra.session-name Name of the Cassandra session.
-spring.cassandra.ssl.bundle SSL bundle name. spring.cassandra.ssl.enabled
-Whether to enable SSL support. spring.cassandra.ssl.verify-hostname Whether to
-perform hostname verification. true spring.cassandra.username Login user of the
-server. spring.couchbase.authentication.jks.location Java KeyStore location for
-certificate-based cluster authentication.
-spring.couchbase.authentication.jks.password Java KeyStore password for
-certificate-based cluster authentication.
-spring.couchbase.authentication.pem.certificates PEM-formatted certificates for
-certificate-based cluster authentication.
-spring.couchbase.authentication.pem.private-key PEM-formatted private key for
-certificate-based cluster authentication.
-spring.couchbase.authentication.pem.private-key-password Private key password
-for certificate-based cluster authentication. spring.couchbase.connection-string
-Connection string used to locate the Couchbase cluster.
-spring.couchbase.env.io.idle-http-connection-timeout Length of time an HTTP
-connection may remain idle before it is closed and removed from the pool. 1s
-spring.couchbase.env.io.max-endpoints Maximum number of sockets per node. 12
-spring.couchbase.env.io.min-endpoints Minimum number of sockets per node. 1
-spring.couchbase.env.ssl.bundle SSL
-----------------------------------------------------------------------------------------------------
-Index: 15473 <<"chunk_id": 1032, "docno": 2234>>
-
-family <string> The address family ( 'IPv4' or 'IPv6' ). port <number> The
-sender port. size <number> The message size. If the source address of the
-incoming packet is an IPv6 link-local address, the interface name is added to
-the address . For example, a packet received on the en0 interface might have the
-address field set to 'fe80::2618:1234:ab11:3b9c%en0' , where '%en0' is the
-interface name as a zone ID suffix. socket.addMembership(multicastAddress[,
-multicastInterface]) # Added in: v0.6.9 multicastAddress <string>
-multicastInterface <string> Tells the kernel to join a multicast group at the
-given multicastAddress and multicastInterface using the IP_ADD_MEMBERSHIP socket
-option. If the multicastInterface argument is not specified, the operating
-system will choose one interface and will add membership to it. To add
-membership to every available interface, call addMembership multiple times, once
-per interface. When called on an unbound socket, this method will implicitly
-bind to a random port, listening on all interfaces. When sharing a UDP socket
-across multiple cluster workers, the socket.addMembership() function must be
-called only once or an EADDRINUSE error will occur: import cluster from
-'node:cluster' ; import dgram from 'node:dgram' ; if (cluster . isPrimary) {
-cluster . fork () ; // Works ok. cluster . fork () ; // Fails with EADDRINUSE. }
-else { const s = dgram . createSocket ( 'udp4' ) ; s . bind ( 1234 , () => { s .
-addMembership ( '224.0.0.114' ) ; } ) ; } const cluster = require (
-'node:cluster' ) ; const dgram = require ( 'node:dgram' )
-----------------------------------------------------------------------------------------------------
-Index: 2758 <<"chunk_id": 6, "docno": 370>>
-
-application, no additional dependency is required For both, the
-spring.graphql.websocket.path application property must be set Spring GraphQL
-provides a Web Interception model. This is quite useful for retrieving
-information from an HTTP request header and set it in the GraphQL context or
-fetching information from the same context and writing it to a response header.
-With Spring Boot, you can declare a WebGraphQlInterceptor bean to have it
-registered with the web transport. Spring MVC and Spring WebFlux support CORS
-(Cross-Origin Resource Sharing) requests. CORS is a critical part of the web
-config for GraphQL applications that are accessed from browsers using different
-domains. Spring Boot supports many configuration properties under the
-spring.graphql.cors.* namespace; here’s a short configuration sample: Properties
-YAML spring.graphql.cors.allowed-origins=https://example.org
-spring.graphql.cors.allowed-methods=GET,POST spring.graphql.cors.max-age=1800s
-spring: graphql: cors: allowed-origins: "https://example.org" allowed-methods:
-GET,POST max-age: 1800s RSocket RSocket is also supported as a transport, on top
-of WebSocket or TCP. Once the RSocket server is configured , we can configure
-our GraphQL handler on a particular route using spring.graphql.rsocket.mapping .
-For example, configuring that mapping as "graphql" means we can use that as a
-route when sending requests with the RSocketGraphQlClient . Spring Boot
-auto-configures a RSocketGraphQlClient.Builder<?> bean that you can inject in
-your components: Java Kotlin @Component public class RSocketGraphQlClientExample
-{ private final RSocketGraphQlClient graphQlClient; public
-RSocketGraphQlClientExample(RSocketGraphQlClient.Builder<?> builder) {
-this.graphQlClient = builder.tcp("example.spring.io",
-8181).route("graphql").build(); } @Component class
-RSocketGraphQlClientExample(private val builder:
-RSocketGraphQlClient.Builder<*>) { And then send a request:
-include-code::RSocketGraphQlClientExample[tag=request] Exception Handling Spring
-GraphQL enables applications to register one or more Spring
-DataFetcherExceptionResolver components that are invoked sequentially. The
-Exception must be
-----------------------------------------------------------------------------------------------------
-Index: 14143 <<"chunk_id": 5, "docno": 2186>>
-
-will implicitly bind to a random port, listening on all interfaces. When sharing
-a UDP socket across multiple cluster workers, the socket.addMembership()
-function must be called only once or an EADDRINUSE error will occur: import
-cluster from 'node:cluster' ; import dgram from 'node:dgram' ; if (cluster .
-isPrimary) { cluster . fork () ; // Works ok. cluster . fork () ; // Fails with
-EADDRINUSE. } else { const s = dgram . createSocket ( 'udp4' ) ; s . bind ( 1234
-, () => { s . addMembership ( '224.0.0.114' ) ; } ) ; } const cluster = require
-( 'node:cluster' ) ; const dgram = require ( 'node:dgram' ) ; if (cluster .
-isPrimary) { cluster . fork () ; // Works ok. cluster . fork () ; // Fails with
-EADDRINUSE. } else { const s = dgram . createSocket ( 'udp4' ) ; s . bind ( 1234
-, () => { s . addMembership ( '224.0.0.114' ) ; } ) ; } javascript copy
-socket.addSourceSpecificMembership(sourceAddress, groupAddress[,
-multicastInterface]) # Added in: v13.1.0, v12.16.0 sourceAddress <string>
-groupAddress <string> multicastInterface <string> Tells the kernel to join a
-source-specific multicast channel at the given sourceAddress and groupAddress ,
-using the multicastInterface with the IP_ADD_SOURCE_MEMBERSHIP socket option. If
-the multicastInterface argument is not specified, the operating system will
-choose one interface and will add membership to it. To add membership to every
-available interface, call socket.addSourceSpecificMembership() multiple times,
-once per interface. When called on an unbound socket, this method will
-implicitly bind to
-----------------------------------------------------------------------------------------------------
-Index: 15917 <<"chunk_id": 1476, "docno": 2234>>
-
-v0.7.7 History Version Changes v7.3.0 This method now returns a reference to
-worker . Returns: <cluster.Worker> A reference to worker . In a worker, this
-function will close all servers, wait for the 'close' event on those servers,
-and then disconnect the IPC channel. In the primary, an internal message is sent
-to the worker causing it to call .disconnect() on itself. Causes
-.exitedAfterDisconnect to be set. After a server is closed, it will no longer
-accept new connections, but connections may be accepted by any other listening
-worker. Existing connections will be allowed to close as usual. When no more
-connections exist, see server.close() , the IPC channel to the worker will close
-allowing it to die gracefully. The above applies only to server connections,
-client connections are not automatically closed by workers, and disconnect does
-not wait for them to close before exiting. In a worker, process.disconnect
-exists, but it is not this function; it is disconnect() . Because long living
-server connections may block workers from disconnecting, it may be useful to
-send a message, so application specific actions may be taken to close them. It
-also may be useful to implement a timeout, killing a worker if the 'disconnect'
-event has not been emitted after some time. if (cluster . isPrimary) { const
-worker = cluster . fork () ; let timeout ; worker . on ( 'listening' , ( address
-) => { worker . send ( 'shutdown' ) ; worker . disconnect () ; timeout =
-setTimeout ( () =>
-----------------------------------------------------------------------------------------------------
-Index: 22474 <<"chunk_id": 1, "docno": 3365>>
-
-World and is reflected in the response, as the following listing shows:
-{"id":1,"content":"Hello, User!"} This service differs slightly from the one
-described in Building a RESTful Web Service , in that it uses Spring Framework
-CORS support to add the relevant CORS response headers. What You Need About 15
-minutes A favorite text editor or IDE Java 17 or later Gradle 7.5+ or Maven 3.5+
-You can also import the code straight into your IDE: Spring Tool Suite (STS)
-IntelliJ IDEA VSCode How to complete this guide Like most Spring Getting Started
-guides , you can start from scratch and complete each step or you can bypass
-basic setup steps that are already familiar to you. Either way, you end up with
-working code. To start from scratch , move on to Starting with Spring Initializr
-. To skip the basics , do the following: Download and unzip the source
-repository for this guide, or clone it using Git: git clone
-https://github.com/spring-guides/gs-rest-service-cors.git cd into
-gs-rest-service-cors/initial Jump ahead to Create a Resource Representation
-Class . When you finish , you can check your results against the code in
-gs-rest-service-cors/complete . Starting with Spring Initializr You can use this
-pre-initialized project and click Generate to download a ZIP file. This project
-is configured to fit the examples in this tutorial. To manually initialize the
-project: Navigate to https://start.spring.io . This service pulls in all the
-dependencies you need for an application and does most of the setup for you.
-Choose either Gradle or Maven and the language you
-----------------------------------------------------------------------------------------------------
-Index: 23546 <<"chunk_id": 4, "docno": 3553>>
-
-server (CORS) Web developers may encounter a cross-origin resource sharing error
-when making a network request to a server other than the application's own host
-server. Browsers forbid such requests unless the server explicitly permits them.
-There isn't anything Angular or the client application can do about these
-errors. The server must be configured to accept the application's requests. Read
-about how to enable CORS for specific servers at enable-cors.org . Production
-optimizations ng build uses the production configuration unless configured
-otherwise. This configuration enables the following build optimization features.
-Features Details Ahead-of-Time (AOT) Compilation Pre-compiles Angular component
-templates. Production mode Optimizes the application for the best runtime
-performance Bundling Concatenates your many application and library files into a
-minimum number of deployed files. Minification Removes excess whitespace,
-comments, and optional tokens. Mangling Renames functions, classes, and
-variables to use shorter, arbitrary identifiers. Dead code elimination Removes
-unreferenced modules and unused code. See ng build for more about CLI build
-options and their effects. Development-only features When you run an application
-locally using ng serve , Angular uses the development configuration at runtime
-which enables: Extra safety checks such as expression-changed-after-checked
-detection. More detailed error messages. Additional debugging utilities such as
-the global ng variable with debugging functions and Angular DevTools support.
-These features are helpful during development, but they require extra code in
-the app, which is undesirable in production. To ensure these features do not
-negatively impact bundle size for end users, Angular CLI removes
-development-only code from the bundle when building for production.
-----------------------------------------------------------------------------------------------------
-Index: 11544 <<"chunk_id": 1, "docno": 1761>>
-
-future. - [C++ embedder API](https://nodejs.org/docs/latest/api/embedding.md):
-Node.js provides a number of C++ APIs that can be used to execute JavaScript in
-a Node.js environment from other C++ software. - [Environment
-Variables](https://nodejs.org/docs/latest/api/environment_variables.md):
-Environment variables are variables associated to the environment the Node.js
-process runs in. - [Errors](https://nodejs.org/docs/latest/api/errors.md):
-Applications running in Node.js will generally experience the following
-categories of errors: - [C++
-addons](https://nodejs.org/docs/latest/api/addons.md): _Addons_ are
-dynamically-linked shared objects that can be loaded via the `require()`
-function as ordinary Node.js modules. Addons provide a foreign function
-interface between JavaScript and native code. -
-[Assert](https://nodejs.org/docs/latest/api/assert.md): The `node:assert` module
-provides a set of assertion functions for verifying invariants. - [Asynchronous
-context tracking](https://nodejs.org/docs/latest/api/async_context.md): - [Async
-hooks](https://nodejs.org/docs/latest/api/async_hooks.md): We strongly
-discourage the use of the `async_hooks` API. Other APIs that can cover most of
-its use cases include: - [Buffer](https://nodejs.org/docs/latest/api/buffer.md):
-`Buffer` objects are used to represent a fixed-length sequence of bytes. Many
-Node.js APIs support `Buffer`s. - [Child
-process](https://nodejs.org/docs/latest/api/child_process.md): The
-`node:child_process` module provides the ability to spawn subprocesses in a
-manner that is similar, but not identical, to `popen(3)`. This capability is
-primarily provided by the `child_process.spawn()` function: - [Command-line
-API](https://nodejs.org/docs/latest/api/cli.md): Node.js comes with a variety of
-CLI options. These options expose built-in debugging, multiple ways to execute
-scripts, and other helpful runtime options. -
-[Cluster](https://nodejs.org/docs/latest/api/cluster.md): Clusters of Node.js
-processes can be used to run multiple instances of Node.js that can distribute
-workloads among their application threads. When process isolation is not needed,
-use the `worker_threads` module instead, which allows running multiple
-application threads within a single Node.js instance. -
-[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
-module provides
-----------------------------------------------------------------------------------------------------
-Index: 12160 <<"chunk_id": 2, "docno": 1873>>
-
-the default XHR Request this property will be undefined responseType
-ResponseType | undefined Indicates the type of the HTTP response, based on how
-the request was made and how the browser handles the response. This corresponds
-to the type property of the Fetch API's Response object, which can indicate
-values such as: 'basic' : A same-origin response, allowing full access to the
-body and headers. 'cors' : A cross-origin response with CORS enabled, exposing
-only safe response headers. 'opaque' : A cross-origin response made with no-cors
-, where the response body and headers are inaccessible. 'opaqueredirect' : A
-response resulting from a redirect followed in no-cors mode. 'error' : A
-response representing a network error or similar failure. This property is only
-available when using the Fetch-based backend (via withFetch() ). When using
-Angular's (XHR) backend, this value will be undefined . Jump to details Social
-Media Blog X (formerly Twitter) Bluesky YouTube Discord GitHub Stack Overflow
-Community Contribute Code of Conduct Report Issues Google's DevLibrary Angular
-Google Developer Experts Resources Press Kit Roadmap Community translations
-Azərbaycanca Español Türkçe Русский 한국어 日本語版 简体中文版 正體中文版 Super-powered by Google
-©2010-2026. Code licensed under an MIT-style License . Documentation licensed
-under CC BY 4.0 . Built by Angular at v22.1.0+sha-6f86d66.
-----------------------------------------------------------------------------------------------------
-Index: 16183 <<"chunk_id": 1742, "docno": 2234>>
-
-http . createServer ( ( req , res ) => { res . setHeader ( 'content-type' ,
-'multipart/octet-stream' ) ; repl . start ( { prompt : 'curl repl> ' , input :
-req , output : res , terminal : false , useColors : true , useGlobal : false , }
-) ; } ) ; server . listen ( 8000 ) ; javascript copy When the above script is
-running you can then use curl() to connect to the server and connect to its REPL
-instance by running curl --no-progress-meter -sSNT. localhost:8000 . Warning
-This example is intended purely for educational purposes to demonstrate how
-Node.js REPLs can be started using different I/O streams. It should not be used
-in production environments or any context where security is a concern without
-additional protective measures. If you need to implement REPLs in a real-world
-application, consider alternative approaches that mitigate these risks, such as
-using secure input mechanisms and avoiding open network interfaces. Original
-code from https://gist.github.com/TooTallNate/2053342 . Single executable
-applications # Source Code: src/node_sea.cc Added in: v19.7.0, v18.16.0 History
-Version Changes v25.5.0 Added built-in single executable application generation
-via the CLI flag --build-sea . v20.6.0 Added support for "useSnapshot". v20.6.0
-Added support for "useCodeCache". Stability: 1.1 - Active development This
-feature allows the distribution of a Node.js application conveniently to a
-system that does not have Node.js installed. Node.js supports the creation of
-single executable applications by allowing the injection of a blob prepared by
-Node.js, which can contain a bundled script, into the
-----------------------------------------------------------------------------------------------------
-Index: 1470 <<"chunk_id": 1, "docno": 184>>
-
-system FFI Globals HTTP HTTP/2 HTTPS Inspector Internationalization Iterable
-Streams API Modules: CommonJS modules Modules: ECMAScript modules Modules:
-node:module API Modules: Packages Modules: TypeScript Net OS Path Performance
-hooks Permissions Process Punycode Query strings Readline REPL Report Single
-executable applications SQLite Stream String decoder Test runner Timers TLS/SSL
-Trace events TTY UDP/datagram URL Utilities V8 Virtual File System VM WASI Web
-Crypto API Web Streams API Worker threads Zlib Other versions 26.x 25.x 24.x LTS
-23.x 22.x LTS 21.x 20.x 19.x 18.x 17.x 16.x 15.x 14.x 13.x 12.x 11.x 10.x 9.x
-8.x 7.x 6.x 5.x 4.x 0.12.x 0.10.x Options View on single page View as JSON Edit
-on GitHub Table of contents Cluster How it works Class: Worker Event:
-'disconnect' Event: 'error' Event: 'exit' Event: 'listening' Event: 'message'
-Event: 'online' worker.disconnect() worker.exitedAfterDisconnect worker.id
-worker.isConnected() worker.isDead() worker.kill([signal]) worker.process
-worker.send(message[, sendHandle[, options]][, callback]) Event: 'disconnect'
-Event: 'exit' Event: 'fork' Event: 'listening' Event: 'message' Event: 'online'
-Event: 'setup' cluster.disconnect([callback]) cluster.fork([env])
-cluster.isMaster cluster.isPrimary cluster.isWorker cluster.schedulingPolicy
-cluster.settings cluster.setupMaster([settings])
-cluster.setupPrimary([settings]) cluster.worker cluster.workers Cluster # Source
-Code: lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be
-used to run multiple instances of Node.js that can distribute workloads among
-their application threads. When process isolation is not needed, use the
-worker_threads module instead, which allows running multiple application threads
-within a single Node.js instance. The cluster module allows easy creation of
-child processes that all share server ports. import cluster from 'node:cluster'
-; import http from 'node:http' ; import { availableParallelism } from 'node:os'
-; import process from 'node:process' ; const numCPUs
-----------------------------------------------------------------------------------------------------
-Index: 20931 <<"chunk_id": 8, "docno": 3070>>
-
-so we have to configure a solution. Load-Balancing Between Producers and
-Consumers To efficiently handle these potentially very high loads as more client
-applications (Agents) come online, we can modify this topology in several ways.
-First, an optimization from the above configuration to load-balance messages
-across a Rabbit cluster. We can create one queue for each node in the Rabbit
-cluster. If we have four nodes, for each high-traffic queue we create
-hfq.{0,1,2,3} for that operation. Now each agent can randomly pick a node by a
-number between zero and three, or a more sophisticated round-robin
-implementation, to publish to. With RabbitMQ there are RPC calls or you can use
-the Rabbit management plugin to GET the number of nodes, which you can use in
-your round-robin algorithm. Worker Queues With Round-Robin Dispatching Worker
-Queues, or Task Queues, are generally used to efficiently distribute
-time-consuming tasks among multiple workers and easily parallelise work. In
-addition, this topology applies to eliminating the need to execute
-resource-intensive tasks and having to block until they complete. Running
-several worker queues allows these tasks to be distributed among them. With
-Worker Queues, by default, Rabbit uses a round-robin distribution method,
-sending each message to the next consumer in sequence. Each consumer receives
-roughly the same number of messages. If you declare a queue and spin up 3
-competing consumers, bind them to the exchange, and send 20,000 messages,
-messages zero will route to the first consumer, message one to the second,
-message two to the third and so on. If
-----------------------------------------------------------------------------------------------------
-Index: 16062 <<"chunk_id": 1621, "docno": 2234>>
-
-the process.connected property will return true so long as the IPC channel is
-connected and will return false after process.disconnect() is called. Once
-process.connected is false , it is no longer possible to send messages over the
-IPC channel using process.send() . process.constrainedMemory() # Added in:
-v19.6.0, v18.15.0 History Version Changes v24.0.0, v22.16.0 Change stability
-index for this feature from Experimental to Stable. v22.0.0, v20.13.0 Aligned
-return value with uv_get_constrained_memory . Returns: <number> Gets the amount
-of memory available to the process (in bytes) based on limits imposed by the OS.
-If there is no such constraint, or the constraint is unknown, 0 is returned. See
-uv_get_constrained_memory for more information.
-process.cpuUsage([previousValue]) # Added in: v6.1.0 previousValue <Object> A
-previous return value from calling process.cpuUsage() Returns: <Object> user
-<integer> system <integer> The process.cpuUsage() method returns the user and
-system CPU time usage of the current process, in an object with properties user
-and system , whose values are microsecond values (millionth of a second). These
-values measure time spent in user and system code respectively, and may end up
-being greater than actual elapsed time if multiple CPU cores are performing work
-for this process. The result of a previous call to process.cpuUsage() can be
-passed as the argument to the function, to get a diff reading. import { cpuUsage
-} from 'node:process' ; const startUsage = cpuUsage () ; // { user: 38579,
-system: 6986 } // spin the CPU for 500 milliseconds const now = Date . now () ;
-while (Date . now ()
 ----------------------------------------------------------------------------------------------------

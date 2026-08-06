@@ -4,8 +4,8 @@ Question: What does Spring Boot auto-configuration do, and what annotations enab
 Correct Document: 815 
 
 BM25: Correct document found for query 1 at rank [6, 11] []
-W2V: Correct document found for query 1 at rank [45] []
-Hybrid: Correct document found for query 1 at rank [8, 10] []
+W2V: Correct document NOT found for query 1
+Hybrid: Correct document found for query 1 at rank [6] []
 
 BM25 Docs:
 Docno: 27, URL: https://docs.spring.io/spring-boot/how-to/application.html
@@ -24,24 +24,6 @@ Docno: 3375, URL: https://spring.io/guides/tutorials/rest
 Docno: 3710, URL: https://spring.io/blog/2016/11/28/going-reactive-with-spring-data
 Docno: 1221, URL: https://spring.io/guides/gs/batch-processing
 Docno: 3201, URL: https://spring.io/blog/2020/07/13/introducing-java-functions-for-spring-cloud-stream-applications-part-0
-Docno: 4903, URL: https://spring.io/blog/2012/11/12/spring-framework-3-2-rc1-spring-mvc-test-framework
-Docno: 96, URL: https://docs.spring.io/spring-boot/how-to/data-initialization.html
-Docno: 1288, URL: https://spring.io/security/cve-2026-40992
-Docno: 4369, URL: https://spring.io/blog/2019/01/22/spring-cloud-task-2-1-0-ga-is-now-available
-Docno: 341, URL: https://docs.spring.io/spring-boot/reference/actuator/metrics.html
-Docno: 360, URL: https://docs.spring.io/spring-boot/reference/data/nosql.html
-Docno: 1439, URL: https://spring.io/blog/2013/11/12/it-can-t-just-be-big-data-it-has-to-be-fast-data-reactor-1-0-goes-ga
-Docno: 963, URL: https://docs.spring.io/spring-boot/reference/actuator/observability.html
-Docno: 3058, URL: https://spring.io/blog/2018/10/18/how-welcoming-is-the-spring-community-for-apprentice-developers-a-recent-survey-says-we-can-do-better
-Docno: 73, URL: https://docs.spring.io/spring-boot/reference/io/spring-batch.html
-Docno: 726, URL: https://docs.spring.io/spring-boot/how-to/data-access.html
-Docno: 1115, URL: https://docs.spring.io/spring-boot/reference/io/caching.html
-Docno: 3206, URL: https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector
-Docno: 1252, URL: https://docs.spring.io/spring-boot/api/java/index.html
-Docno: 1004, URL: https://spring.io/authors/jkschneider
-Docno: 4704, URL: https://spring.io/blog/2014/03/31/spring-integration-3-0-2-and-4-0-milestone-4-released
-Docno: 4393, URL: https://spring.io/blog/2006/10/28/oracle-open-source-and-commodization
-Docno: 3657, URL: https://spring.io/blog/2018/03/07/testing-auto-configurations-with-spring-boot-2-0
 
 W2V Docs:
 Docno: 1183, URL: https://docs.spring.io/spring-boot/documentation.html
@@ -58,65 +40,23 @@ Docno: 4343, URL: https://spring.io/blog/2020/11/23/spring-native-for-graalvm-0-
 Docno: 3657, URL: https://spring.io/blog/2018/03/07/testing-auto-configurations-with-spring-boot-2-0
 Docno: 1124, URL: https://docs.spring.io/spring-boot/reference/web/servlet.html
 Docno: 2389, URL: https://spring.io/blog/2025/12/18/next-level-kotlin-support-in-spring-boot-4
-Docno: 3258, URL: https://spring.io/blog/2015/03/18/spring-boot-support-in-spring-tool-suite-3-6-4
-Docno: 4098, URL: https://spring.io/blog/2011/06/10/spring-3-1-m2-configuration-enhancements
-Docno: 2081, URL: https://spring.io/blog/2011/11/04/using-cloud-foundry-services-with-spring-part-2-auto-reconfiguration
-Docno: 3232, URL: https://spring.io/blog/2020/10/29/notice-of-permissions-changes-to-repo-spring-io-fall-and-winter-2020
-Docno: 4704, URL: https://spring.io/blog/2014/03/31/spring-integration-3-0-2-and-4-0-milestone-4-released
-Docno: 3141, URL: https://spring.io/blog/2026/01/23/spring-ai-2-0-0-M2-available-now
-Docno: 2602, URL: https://spring.io/blog/2011/06/21/spring-3-1-m2-testing-with-configuration-classes-and-profiles
-Docno: 4903, URL: https://spring.io/blog/2012/11/12/spring-framework-3-2-rc1-spring-mvc-test-framework
-Docno: 4308, URL: https://spring.io/blog/2019/03/05/spring-hateoas-1-0-m1-released
-Docno: 3692, URL: https://spring.io/blog/2007/06/26/so-should-you-still-use-spring-s-hibernatetemplate-and-or-jpatemplate
-Docno: 3449, URL: https://spring.io/blog/2009/09/29/spring-framework-3-0-rc1-released
-Docno: 3407, URL: https://spring.io/blog/2019/02/20/what-s-new-with-spring-initializr
-Docno: 3729, URL: https://spring.io/blog/2013/12/19/serving-static-web-content-with-spring-boot
-Docno: 2051, URL: https://spring.io/blog/2013/10/23/the-spring-io-site
-Docno: 203, URL: https://docs.spring.io/spring-framework/reference
-Docno: 1016, URL: https://spring.io/authors/misvy
-Docno: 815, URL: https://docs.spring.io/spring-boot/reference/using/auto-configuration.html
-Docno: 4266, URL: https://spring.io/blog/2010/08/11/simplified-spring-security-with-grails
-Docno: 1247, URL: https://spring.io/guides/gs/accessing-data-mongodb
-Docno: 1559, URL: https://spring.io/blog/2021/02/04/making-the-most-of-available-resources-for-spring-boot
-Docno: 2346, URL: https://spring.io/blog/2017/05/10/pivotal-announces-spring-curriculum-certification-changes
 
 Hybrid Docs:
 Docno: 27, URL: https://docs.spring.io/spring-boot/how-to/application.html
 Docno: 802, URL: https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html
-Docno: 4234, URL: https://spring.io/blog/2023/09/28/producer-initiated-transactions-in-spring-cloud-stream-kafka-applications
 Docno: 761, URL: https://docs.spring.io/spring-boot/tutorial/first-application/index.html
-Docno: 2524, URL: https://spring.io/blog/2020/12/23/cloud-events-and-spring-part-2
-Docno: 2505, URL: https://spring.io/blog/2020/12/10/cloud-events-and-spring-part-1
 Docno: 1042, URL: https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html
 Docno: 815, URL: https://docs.spring.io/spring-boot/reference/using/auto-configuration.html
-Docno: 1706, URL: https://spring.io/blog/2007/07/19/debunking-myths-proxies-impact-performance
+Docno: 3687, URL: https://spring.io/blog/2007/06/05/more-on-java-configuration
+Docno: 1183, URL: https://docs.spring.io/spring-boot/documentation.html
 Docno: 4337, URL: https://spring.io/blog/2021/12/09/new-aot-engine-brings-spring-native-to-the-next-level
 Docno: 4903, URL: https://spring.io/blog/2012/11/12/spring-framework-3-2-rc1-spring-mvc-test-framework
-Docno: 748, URL: https://docs.spring.io/spring-boot/reference/using/using-the-springbootapplication-annotation.html
-Docno: 1221, URL: https://spring.io/guides/gs/batch-processing
-Docno: 3710, URL: https://spring.io/blog/2016/11/28/going-reactive-with-spring-data
-Docno: 3201, URL: https://spring.io/blog/2020/07/13/introducing-java-functions-for-spring-cloud-stream-applications-part-0
-Docno: 498, URL: https://spring.io/authors/wilkinsona
-Docno: 3687, URL: https://spring.io/blog/2007/06/05/more-on-java-configuration
-Docno: 96, URL: https://docs.spring.io/spring-boot/how-to/data-initialization.html
-Docno: 726, URL: https://docs.spring.io/spring-boot/how-to/data-access.html
-Docno: 4343, URL: https://spring.io/blog/2020/11/23/spring-native-for-graalvm-0-8-3-available-now
-Docno: 1439, URL: https://spring.io/blog/2013/11/12/it-can-t-just-be-big-data-it-has-to-be-fast-data-reactor-1-0-goes-ga
 Docno: 164, URL: https://spring.io/guides/gs/spring-boot
-Docno: 3058, URL: https://spring.io/blog/2018/10/18/how-welcoming-is-the-spring-community-for-apprentice-developers-a-recent-survey-says-we-can-do-better
-Docno: 6, URL: https://docs.spring.io/spring-boot/reference/features/external-config.html
-Docno: 1004, URL: https://spring.io/authors/jkschneider
-Docno: 3206, URL: https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector
-Docno: 1288, URL: https://spring.io/security/cve-2026-40992
-Docno: 3258, URL: https://spring.io/blog/2015/03/18/spring-boot-support-in-spring-tool-suite-3-6-4
-Docno: 4704, URL: https://spring.io/blog/2014/03/31/spring-integration-3-0-2-and-4-0-milestone-4-released
-Docno: 3375, URL: https://spring.io/guides/tutorials/rest
-Docno: 4393, URL: https://spring.io/blog/2006/10/28/oracle-open-source-and-commodization
 Docno: 4386, URL: https://spring.io/blog/2006/10/03/spring-2-0-final-released
-Docno: 341, URL: https://docs.spring.io/spring-boot/reference/actuator/metrics.html
-Docno: 3344, URL: https://spring.io/blog/2019/10/14/spring-cloud-stream-demystified-and-simplified
-Docno: 73, URL: https://docs.spring.io/spring-boot/reference/io/spring-batch.html
-Docno: 2286, URL: https://spring.io/blog/2013/12/13/springone2gx-2013-replay-building-your-java-configuration-muscle-memory
+Docno: 4343, URL: https://spring.io/blog/2020/11/23/spring-native-for-graalvm-0-8-3-available-now
+Docno: 726, URL: https://docs.spring.io/spring-boot/how-to/data-access.html
+Docno: 1221, URL: https://spring.io/guides/gs/batch-processing
+Docno: 2524, URL: https://spring.io/blog/2020/12/23/cloud-events-and-spring-part-2
 
 --------------------------------------------------
 
@@ -125,9 +65,9 @@ Query 2
 Question: What are Spring Boot Actuator endpoints used for, and how can you create a custom HealthIndicator?
 Correct Document: 790 
 
-BM25: Correct document found for query 2 at rank [1, 2, 3, 4, 7, 10, 11, 12, 15, 26, 27, 33, 35, 43, 46] []
-W2V: Correct document found for query 2 at rank [1, 2, 4, 7, 8, 9, 10, 13, 23] []
-Hybrid: Correct document found for query 2 at rank [1, 2, 4, 6, 9, 10, 11, 13, 18, 20, 23, 31, 32, 35, 36, 40] []
+BM25: Correct document found for query 2 at rank [1, 2, 3, 4, 7, 10, 11, 12, 15] []
+W2V: Correct document found for query 2 at rank [1, 2, 4, 7, 8, 9, 10, 13] []
+Hybrid: Correct document found for query 2 at rank [1, 2, 5, 6, 7, 10, 15, 17, 18] []
 
 BM25 Docs:
 Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
@@ -140,23 +80,6 @@ Docno: 3788, URL: https://docs.spring.io/spring-cloud-netflix/reference/spring-c
 Docno: 3551, URL: https://angular.dev/tools/cli/schematics
 Docno: 3984, URL: https://spring.io/blog/2020/11/12/spring-boot-2-4-0-available-now
 Docno: 1647, URL: https://spring.io/blog/2023/07/05/active-health-check-strategies-with-spring-cloud-gateway
-Docno: 1123, URL: https://spring.io/guides/gs/centralized-configuration
-Docno: 2736, URL: https://spring.io/blog/2025/09/23/http-service-client-enhancements
-Docno: 3206, URL: https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector
-Docno: 2799, URL: https://spring.io/blog/2021/12/07/spring-cloud-sleuth-3-1-0-is-out
-Docno: 341, URL: https://docs.spring.io/spring-boot/reference/actuator/metrics.html
-Docno: 1020, URL: https://docs.spring.io/spring-boot/reference/features/spring-application.html
-Docno: 3189, URL: https://spring.io/blog/2008/12/11/spring-integration-in-grails-part-1
-Docno: 2389, URL: https://spring.io/blog/2025/12/18/next-level-kotlin-support-in-spring-boot-4
-Docno: 1252, URL: https://docs.spring.io/spring-boot/api/java/index.html
-Docno: 1080, URL: https://spring.io/authors/mhalbritter
-Docno: 2507, URL: https://spring.io/blog/2021/12/02/spring-cloud-function-3-2-is-out
-Docno: 4234, URL: https://spring.io/blog/2023/09/28/producer-initiated-transactions-in-spring-cloud-stream-kafka-applications
-Docno: 1404, URL: https://spring.io/guides/topicals/observing-graphql-in-action
-Docno: 843, URL: https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-Docno: 1899, URL: https://spring.io/blog/2010/09/29/new-spring-integration-samples
-Docno: 2739, URL: https://spring.io/blog/2025/09/16/api-versioning-in-spring
-Docno: 155, URL: https://angular.dev/ecosystem/custom-build-pipeline
 
 W2V Docs:
 Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
@@ -170,55 +93,17 @@ Docno: 4443, URL: https://spring.io/blog/2018/04/10/announcing-general-availabil
 Docno: 1124, URL: https://docs.spring.io/spring-boot/reference/web/servlet.html
 Docno: 1123, URL: https://spring.io/guides/gs/centralized-configuration
 Docno: 1113, URL: https://docs.spring.io/spring-boot/how-to/deployment/traditional-deployment.html
-Docno: 1042, URL: https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html
-Docno: 909, URL: https://docs.spring.io/spring-boot/how-to/spring-mvc.html
-Docno: 1023, URL: https://docs.spring.io/spring-boot/reference/messaging/jms.html
-Docno: 4949, URL: https://spring.io/blog/2025/09/30/the-state-of-http-clients-in-spring
-Docno: 365, URL: https://docs.spring.io/spring-boot/api/rest/actuator/health.html
-Docno: 2078, URL: https://spring.io/blog/2014/08/05/extending-spring-cloud
-Docno: 6, URL: https://docs.spring.io/spring-boot/reference/features/external-config.html
-Docno: 4729, URL: https://spring.io/blog/2021/05/19/spring-integration-5-5-goes-ga
-Docno: 4780, URL: https://spring.io/blog/2018/09/27/what-s-new-in-spring-data-lovelace
-Docno: 1247, URL: https://spring.io/guides/gs/accessing-data-mongodb
-Docno: 802, URL: https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html
-Docno: 3365, URL: https://spring.io/guides/gs/rest-service-cors
-Docno: 164, URL: https://spring.io/guides/gs/spring-boot
-Docno: 3454, URL: https://spring.io/blog/2022/03/22/initial-aot-support-in-spring-framework-6-0-0-m3
-Docno: 3197, URL: https://spring.io/blog/2020/12/15/testing-spring-cloud-stream-applications-part-1
-Docno: 3729, URL: https://spring.io/blog/2013/12/19/serving-static-web-content-with-spring-boot
-Docno: 3336, URL: https://spring.io/blog/2025/11/24/towards-spring-tools-5-part1
-Docno: 1048, URL: https://spring.io/authors/bhale
-Docno: 4999, URL: https://spring.io/blog/2025/07/17/spring-framework-7-0-0-M7-available-now
-Docno: 4984, URL: https://docs.spring.io/spring-data/ldap/reference/repositories/core-extensions.html
 
 Hybrid Docs:
 Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
 Docno: 153, URL: https://docs.spring.io/spring-boot/reference/web/spring-security.html
 Docno: 27, URL: https://docs.spring.io/spring-boot/how-to/application.html
 Docno: 3648, URL: https://spring.io/blog/2017/09/15/security-changes-in-spring-boot-2-0-m4
-Docno: 164, URL: https://spring.io/guides/gs/spring-boot
 Docno: 1647, URL: https://spring.io/blog/2023/07/05/active-health-check-strategies-with-spring-cloud-gateway
 Docno: 3984, URL: https://spring.io/blog/2020/11/12/spring-boot-2-4-0-available-now
+Docno: 164, URL: https://spring.io/guides/gs/spring-boot
 Docno: 1123, URL: https://spring.io/guides/gs/centralized-configuration
-Docno: 3788, URL: https://docs.spring.io/spring-cloud-netflix/reference/spring-cloud-netflix.html
-Docno: 1020, URL: https://docs.spring.io/spring-boot/reference/features/spring-application.html
-Docno: 341, URL: https://docs.spring.io/spring-boot/reference/actuator/metrics.html
-Docno: 2799, URL: https://spring.io/blog/2021/12/07/spring-cloud-sleuth-3-1-0-is-out
-Docno: 3206, URL: https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector
-Docno: 3189, URL: https://spring.io/blog/2008/12/11/spring-integration-in-grails-part-1
-Docno: 1026, URL: https://docs.spring.io/spring-boot/reference/actuator/monitoring.html
-Docno: 1899, URL: https://spring.io/blog/2010/09/29/new-spring-integration-samples
 Docno: 1124, URL: https://docs.spring.io/spring-boot/reference/web/servlet.html
-Docno: 2739, URL: https://spring.io/blog/2025/09/16/api-versioning-in-spring
-Docno: 3136, URL: https://spring.io/blog/2021/02/09/metrics-and-tracing-better-together
-Docno: 726, URL: https://docs.spring.io/spring-boot/how-to/data-access.html
-Docno: 6, URL: https://docs.spring.io/spring-boot/reference/features/external-config.html
-Docno: 4236, URL: https://spring.io/blog/2020/12/21/announcing-spring-cloud-stream-applications-2020-0-0-ga-release
-Docno: 2383, URL: https://spring.io/blog/2007/06/25/code-samples-from-springone-beyond-the-obvious-talk
-Docno: 4678, URL: https://spring.io/blog/2020/01/23/spring-integration-5-3-milestone-1-available
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
-Docno: 361, URL: https://spring.io/authors/mbhave
-Docno: 4724, URL: https://spring.io/blog/2020/10/26/case-study-aggregator-function-and-processor
 
 --------------------------------------------------
 
@@ -235,21 +120,15 @@ Query 5
 Question: How does Node.js stream backpressure control buffering when the writable side cannot keep up with the producer?
 Correct Document: 1424 
 
-BM25: Correct document found for query 5 at rank [22, 35, 39, 42, 44, 45, 47] []
-W2V: Correct document found for query 5 at rank [11, 16, 18, 22, 23, 27, 30, 33, 34, 35, 37, 40, 41, 42, 45, 46, 48, 49, 50] []
-Hybrid: Correct document found for query 5 at rank [23, 27, 32, 35, 38, 40, 42, 43, 45, 47] []
+BM25: Correct document NOT found for query 5
+W2V: Correct document found for query 5 at rank [11, 16, 18] []
+Hybrid: Correct document found for query 5 at rank [15] []
 
 BM25 Docs:
 Docno: 2155, URL: https://nodejs.org/api/stream_iter.html
 Docno: 2234, URL: https://nodejs.org/api/all.html
 Docno: 418, URL: https://nodejs.org/learn/modules/how-to-use-streams
 Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
-Docno: 1424, URL: https://nodejs.org/api/stream.html
-Docno: 1462, URL: https://nodejs.org/api/webstreams.html
-Docno: 700, URL: https://nodejs.org/en/blog/events/collab-summit-2026-london
-Docno: 4234, URL: https://spring.io/blog/2023/09/28/producer-initiated-transactions-in-spring-cloud-stream-kafka-applications
-Docno: 1445, URL: https://nodejs.org/api/crypto.html
-Docno: 2135, URL: https://nodejs.org/api/net.html
 
 W2V Docs:
 Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
@@ -259,13 +138,11 @@ Docno: 418, URL: https://nodejs.org/learn/modules/how-to-use-streams
 Docno: 1424, URL: https://nodejs.org/api/stream.html
 
 Hybrid Docs:
-Docno: 418, URL: https://nodejs.org/learn/modules/how-to-use-streams
 Docno: 2155, URL: https://nodejs.org/api/stream_iter.html
 Docno: 2234, URL: https://nodejs.org/api/all.html
+Docno: 418, URL: https://nodejs.org/learn/modules/how-to-use-streams
 Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
 Docno: 1424, URL: https://nodejs.org/api/stream.html
-Docno: 700, URL: https://nodejs.org/en/blog/events/collab-summit-2026-london
-Docno: 1462, URL: https://nodejs.org/api/webstreams.html
 
 --------------------------------------------------
 
@@ -274,9 +151,9 @@ Query 6
 Question: How does Node.js cluster allow a server application to use multiple CPU cores?
 Correct Document: 184 
 
-BM25: Correct document found for query 6 at rank [12, 18, 23, 29, 32, 36] []
+BM25: Correct document found for query 6 at rank [12, 18] []
 W2V: Correct document NOT found for query 6
-Hybrid: Correct document found for query 6 at rank [20, 24, 26, 29, 30, 48] []
+Hybrid: Correct document NOT found for query 6
 
 BM25 Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
@@ -291,18 +168,6 @@ Docno: 2775, URL: https://angular.dev/assets/context/llms-full.txt
 Docno: 1862, URL: https://nodejs.org/en/blog/uncategorized/10-lts-to-12-lts
 Docno: 3084, URL: https://spring.io/blog/2009/02/27/spring-integration-on-dm-server
 Docno: 1761, URL: https://nodejs.org/llms.txt
-Docno: 843, URL: https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
-Docno: 2159, URL: https://nodejs.org/api/domain.html
-Docno: 557, URL: https://nodejs.org/learn/getting-started/introduction-to-nodejs
-Docno: 370, URL: https://docs.spring.io/spring-boot/reference/web/spring-graphql.html
-Docno: 3365, URL: https://spring.io/guides/gs/rest-service-cors
-Docno: 3197, URL: https://spring.io/blog/2020/12/15/testing-spring-cloud-stream-applications-part-1
-Docno: 527, URL: https://nodejs.org/learn/getting-started/profiling
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
-Docno: 1124, URL: https://docs.spring.io/spring-boot/reference/web/servlet.html
-Docno: 2186, URL: https://nodejs.org/api/dgram.html
-Docno: 1112, URL: https://angular.dev/api/common/http/HttpErrorResponse
 
 W2V Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
@@ -319,51 +184,21 @@ Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
 Docno: 3553, URL: https://angular.dev/tools/cli/deployment
 Docno: 354, URL: https://nodejs.org/learn/getting-started/debugging
 Docno: 557, URL: https://nodejs.org/learn/getting-started/introduction-to-nodejs
-Docno: 3763, URL: https://spring.io/blog/2010/10/12/vmware-vfabric-gemfire-6-5-modern-data-management-for-modern-applications
-Docno: 875, URL: https://nodejs.org/en/security
-Docno: 542, URL: https://nodejs.org/learn/diagnostics/poor-performance
-Docno: 3070, URL: https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
-Docno: 31, URL: https://nodejs.org/en/about
-Docno: 3786, URL: https://angular.dev/ecosystem/service-workers
-Docno: 3787, URL: https://angular.dev/ecosystem/service-workers/devops
-Docno: 1485, URL: https://nodejs.org/api/errors.html
-Docno: 431, URL: https://nodejs.org/learn/getting-started/differences-between-nodejs-and-the-browser
-Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
-Docno: 199, URL: https://nodejs.org/learn/asynchronous-work/asynchronous-flow-control
-Docno: 554, URL: https://nodejs.org/learn/diagnostics/live-debugging/using-inspector
-Docno: 1465, URL: https://nodejs.org/api/http.html
-Docno: 3984, URL: https://spring.io/blog/2020/11/12/spring-boot-2-4-0-available-now
-Docno: 4360, URL: https://spring.io/blog/2015/06/17/spring-xd-benchmarks-part-1
 
 Hybrid Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
 Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
 Docno: 2234, URL: https://nodejs.org/api/all.html
-Docno: 31, URL: https://nodejs.org/en/about
 Docno: 4351, URL: https://spring.io/blog/2015/06/08/cors-support-in-spring-framework
-Docno: 1862, URL: https://nodejs.org/en/blog/uncategorized/10-lts-to-12-lts
 Docno: 2159, URL: https://nodejs.org/api/domain.html
-Docno: 3084, URL: https://spring.io/blog/2009/02/27/spring-integration-on-dm-server
 Docno: 557, URL: https://nodejs.org/learn/getting-started/introduction-to-nodejs
-Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
-Docno: 184, URL: https://nodejs.org/api/cluster.html
-Docno: 2775, URL: https://angular.dev/assets/context/llms-full.txt
-Docno: 1381, URL: https://nodejs.org/api/process.html
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
+Docno: 31, URL: https://nodejs.org/en/about
 Docno: 4906, URL: https://spring.io/blog/2008/04/30/introducing-the-springsource-application-platform
-Docno: 3864, URL: https://spring.io/blog/2016/05/03/what-s-new-in-spring-data-hopper
-Docno: 3197, URL: https://spring.io/blog/2020/12/15/testing-spring-cloud-stream-applications-part-1
-Docno: 542, URL: https://nodejs.org/learn/diagnostics/poor-performance
+Docno: 1862, URL: https://nodejs.org/en/blog/uncategorized/10-lts-to-12-lts
 Docno: 3185, URL: https://spring.io/blog/2021/05/04/spring-cloud-gateway-for-kubernetes
-Docno: 843, URL: https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-Docno: 370, URL: https://docs.spring.io/spring-boot/reference/web/spring-graphql.html
-Docno: 2186, URL: https://nodejs.org/api/dgram.html
-Docno: 3365, URL: https://spring.io/guides/gs/rest-service-cors
-Docno: 3553, URL: https://angular.dev/tools/cli/deployment
-Docno: 1761, URL: https://nodejs.org/llms.txt
-Docno: 1873, URL: https://angular.dev/api/common/http/HttpResponseBase
-Docno: 3070, URL: https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
+Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
+Docno: 292, URL: https://nodejs.org/learn/node-api/special-topics/context-awareness
+Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
 
 --------------------------------------------------
 
@@ -372,21 +207,15 @@ Query 7
 Question: How does Node.js determine whether a file is treated as CommonJS or an ECMAScript module?
 Correct Document: 1402 
 
-BM25: Correct document found for query 7 at rank [2, 10, 25, 29, 38, 42] []
-W2V: Correct document found for query 7 at rank [16, 22, 28, 32] []
-Hybrid: Correct document found for query 7 at rank [4, 10, 42, 46] []
+BM25: Correct document found for query 7 at rank [2, 10] []
+W2V: Correct document found for query 7 at rank [16] []
+Hybrid: Correct document found for query 7 at rank [9, 16] []
 
 BM25 Docs:
 Docno: 1397, URL: https://nodejs.org/api/packages.html
 Docno: 1402, URL: https://nodejs.org/api/modules.html
 Docno: 2234, URL: https://nodejs.org/api/all.html
 Docno: 2163, URL: https://nodejs.org/api/single-executable-applications.html
-Docno: 1400, URL: https://nodejs.org/api/esm.html
-Docno: 1394, URL: https://nodejs.org/api/module.html
-Docno: 2241, URL: https://nodejs.org/api/globals.html
-Docno: 1360, URL: https://nodejs.org/api/cli.html
-Docno: 2109, URL: https://nodejs.org/en/blog/release/v12.17.0
-Docno: 1921, URL: https://nodejs.org/api/vfs.html
 
 W2V Docs:
 Docno: 1397, URL: https://nodejs.org/api/packages.html
@@ -397,25 +226,12 @@ Docno: 2828, URL: https://angular.dev/tools/cli/build
 Docno: 1402, URL: https://nodejs.org/api/modules.html
 Docno: 1394, URL: https://nodejs.org/api/module.html
 Docno: 3257, URL: https://spring.io/blog/2012/11/20/dependency-analysis-in-scripted
-Docno: 284, URL: https://nodejs.org/learn/modules/publishing-a-package
-Docno: 1485, URL: https://nodejs.org/api/errors.html
-Docno: 4111, URL: https://spring.io/blog/2014/04/11/javascript-modularity-without-the-buzzwords
-Docno: 2021, URL: https://nodejs.org/en/blog/announcements/v22-release-announce
-Docno: 2109, URL: https://nodejs.org/en/blog/release/v12.17.0
 
 Hybrid Docs:
-Docno: 1397, URL: https://nodejs.org/api/packages.html
 Docno: 2234, URL: https://nodejs.org/api/all.html
+Docno: 1397, URL: https://nodejs.org/api/packages.html
 Docno: 1402, URL: https://nodejs.org/api/modules.html
 Docno: 1400, URL: https://nodejs.org/api/esm.html
-Docno: 2163, URL: https://nodejs.org/api/single-executable-applications.html
-Docno: 1394, URL: https://nodejs.org/api/module.html
-Docno: 1360, URL: https://nodejs.org/api/cli.html
-Docno: 2109, URL: https://nodejs.org/en/blog/release/v12.17.0
-Docno: 3257, URL: https://spring.io/blog/2012/11/20/dependency-analysis-in-scripted
-Docno: 2828, URL: https://angular.dev/tools/cli/build
-Docno: 2018, URL: https://nodejs.org/en/blog/announcements/v21-release-announce
-Docno: 284, URL: https://nodejs.org/learn/modules/publishing-a-package
 
 --------------------------------------------------
 
@@ -424,9 +240,9 @@ Query 8
 Question: How does React decide whether state should be preserved or reset when a component is rendered in a different position or with a different key?
 Correct Document: 174 
 
-BM25: Correct document found for query 8 at rank [1, 2, 3, 4, 5, 7, 8, 30, 31, 44, 46] []
-W2V: Correct document found for query 8 at rank [25] []
-Hybrid: Correct document found for query 8 at rank [1, 2, 3, 5, 8, 9, 10, 36] []
+BM25: Correct document found for query 8 at rank [1, 2, 3, 4, 5, 7, 8] []
+W2V: Correct document NOT found for query 8
+Hybrid: Correct document found for query 8 at rank [2, 7, 11] []
 
 BM25 Docs:
 Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
@@ -437,23 +253,6 @@ Docno: 628, URL: https://react.dev/reference/react/Component
 Docno: 740, URL: https://react.dev/reference/react-dom/createPortal
 Docno: 946, URL: https://react.dev/reference/react-dom/render
 Docno: 796, URL: https://react.dev/reference/react/useRef
-Docno: 703, URL: https://react.dev/reference/react-dom/components/input
-Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 874, URL: https://react.dev/blog/2022/06/15/react-labs-what-we-have-been-working-on-june-2022
-Docno: 132, URL: https://react.dev/learn/lifecycle-of-reactive-effects
-Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 236, URL: https://nodejs.org/learn/manipulating-files/working-with-different-filesystems
-Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 812, URL: https://react.dev/reference/react/useId
-Docno: 150, URL: https://react.dev/learn/conditional-rendering
-Docno: 525, URL: https://react.dev/reference/react/useReducer
-Docno: 358, URL: https://react.dev/reference/react-dom/client/createRoot
-Docno: 84, URL: https://react.dev/learn/escape-hatches
-Docno: 336, URL: https://react.dev/reference/react/Fragment
 
 W2V Docs:
 Docno: 239, URL: https://react.dev/learn/keeping-components-pure
@@ -473,64 +272,26 @@ Docno: 310, URL: https://react.dev/reference/react/apis
 Docno: 494, URL: https://react.dev/reference/react/memo
 Docno: 15, URL: https://angular.dev/ai
 Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
-Docno: 1124, URL: https://docs.spring.io/spring-boot/reference/web/servlet.html
-Docno: 685, URL: https://react.dev/reference/react-dom/components/common
-Docno: 3553, URL: https://angular.dev/tools/cli/deployment
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
-Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
-Docno: 222, URL: https://react.dev/learn/build-a-react-app-from-scratch
-Docno: 4273, URL: https://spring.io/blog/2010/06/01/what-s-a-plugin-oriented-architecture
-Docno: 483, URL: https://nodejs.org/learn/getting-started/security-best-practices
-Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
-Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
-Docno: 2745, URL: https://angular.dev/guide/signals
-Docno: 424, URL: https://react.dev/reference/react-dom/components/select
-Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 1384, URL: https://nodejs.org/api/n-api.html
-Docno: 4780, URL: https://spring.io/blog/2018/09/27/what-s-new-in-spring-data-lovelace
-Docno: 571, URL: https://react.dev/reference/react-dom/components/link
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 640, URL: https://react.dev/reference/react/ViewTransition
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 2234, URL: https://nodejs.org/api/all.html
-Docno: 556, URL: https://react.dev/reference/react/useTransition
-Docno: 3732, URL: https://spring.io/blog/2011/08/26/clean-code-in-android-applications
-Docno: 2404, URL: https://spring.io/blog/2025/03/10/null-safety-in-spring-apps-with-jspecify-and-null-away
-Docno: 192, URL: https://react.dev/learn/your-first-component
-Docno: 2131, URL: https://spring.io/blog/2023/08/29/spring-data-jdbc-how-to-maintain-your-database-schema
-Docno: 535, URL: https://react.dev/reference/react/hooks
-Docno: 804, URL: https://react.dev/reference/react/useMemo
 
 Hybrid Docs:
-Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
 Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 703, URL: https://react.dev/reference/react-dom/components/input
+Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
 Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 874, URL: https://react.dev/blog/2022/06/15/react-labs-what-we-have-been-working-on-june-2022
 Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 740, URL: https://react.dev/reference/react-dom/createPortal
-Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 16, URL: https://react.dev/learn/managing-state
+Docno: 703, URL: https://react.dev/reference/react-dom/components/input
 Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
-Docno: 628, URL: https://react.dev/reference/react/Component
+Docno: 874, URL: https://react.dev/blog/2022/06/15/react-labs-what-we-have-been-working-on-june-2022
 Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 946, URL: https://react.dev/reference/react-dom/render
-Docno: 525, URL: https://react.dev/reference/react/useReducer
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 737, URL: https://react.dev/reference/react-dom/components/textarea
+Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
 Docno: 331, URL: https://react.dev/reference/react/useCallback
+Docno: 525, URL: https://react.dev/reference/react/useReducer
 Docno: 535, URL: https://react.dev/reference/react/hooks
-Docno: 150, URL: https://react.dev/learn/conditional-rendering
 Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
-Docno: 685, URL: https://react.dev/reference/react-dom/components/common
-Docno: 132, URL: https://react.dev/learn/lifecycle-of-reactive-effects
+Docno: 146, URL: https://react.dev/learn/thinking-in-react
+Docno: 737, URL: https://react.dev/reference/react-dom/components/textarea
+Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
 Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 791, URL: https://react.dev/reference/react/Profiler
-Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
-Docno: 358, URL: https://react.dev/reference/react-dom/client/createRoot
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 440, URL: https://react.dev/reference/rsc/use-client
-Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
+Docno: 494, URL: https://react.dev/reference/react/memo
 
 --------------------------------------------------
 
@@ -541,7 +302,7 @@ Correct Document: 115
 
 BM25: Correct document found for query 9 at rank [2, 3, 4, 10, 16] []
 W2V: Correct document found for query 9 at rank [1, 2] []
-Hybrid: Correct document found for query 9 at rank [2, 3, 4, 7, 18] []
+Hybrid: Correct document found for query 9 at rank [1, 3, 5, 14] []
 
 BM25 Docs:
 Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
@@ -555,26 +316,6 @@ Docno: 525, URL: https://react.dev/reference/react/useReducer
 Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
 Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
 Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
-Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 192, URL: https://react.dev/learn/your-first-component
-Docno: 749, URL: https://react.dev/reference/react/useOptimistic
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
-Docno: 754, URL: https://react.dev/reference/react/startTransition
-Docno: 906, URL: https://react.dev/blog/2024/12/05/react-19
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 535, URL: https://react.dev/reference/react/hooks
-Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 40, URL: https://react.dev/learn/add-react-to-an-existing-project
-Docno: 156, URL: https://react.dev/learn/scaling-up-with-reducer-and-context
-Docno: 556, URL: https://react.dev/reference/react/useTransition
-Docno: 252, URL: https://react.dev/learn/referencing-values-with-refs
-Docno: 914, URL: https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
 
 W2V Docs:
 Docno: 115, URL: https://react.dev/learn/render-and-commit
@@ -596,67 +337,22 @@ Docno: 84, URL: https://react.dev/learn/escape-hatches
 Docno: 110, URL: https://react.dev/learn/reacting-to-input-with-state
 Docno: 104, URL: https://react.dev/learn/passing-props-to-a-component
 Docno: 179, URL: https://react.dev/learn/manipulating-the-dom-with-refs
-Docno: 67, URL: https://react.dev/learn/adding-interactivity
-Docno: 267, URL: https://react.dev/learn/react-compiler/introduction
-Docno: 126, URL: https://react.dev/learn/writing-markup-with-jsx
-Docno: 204, URL: https://react.dev/learn/setup
-Docno: 234, URL: https://react.dev/learn/reusing-logic-with-custom-hooks
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 224, URL: https://react.dev/learn/react-compiler/debugging
-Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
-Docno: 906, URL: https://react.dev/blog/2024/12/05/react-19
-Docno: 119, URL: https://react.dev/learn/typescript
-Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
-Docno: 272, URL: https://react.dev/learn/react-compiler
-Docno: 101, URL: https://react.dev/learn/react-developer-tools
-Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 166, URL: https://react.dev/learn/importing-and-exporting-components
-Docno: 91, URL: https://react.dev/learn/react-compiler/incremental-adoption
-Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 209, URL: https://react.dev/learn/javascript-in-jsx-with-curly-braces
-Docno: 257, URL: https://react.dev/learn/editor-setup
-Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
-Docno: 37, URL: https://react.dev/blog
-Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
-Docno: 946, URL: https://react.dev/reference/react-dom/render
-Docno: 107, URL: https://react.dev/learn/updating-arrays-in-state
 
 Hybrid Docs:
-Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
 Docno: 115, URL: https://react.dev/learn/render-and-commit
+Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
 Docno: 67, URL: https://react.dev/learn/adding-interactivity
+Docno: 45, URL: https://react.dev/learn/describing-the-ui
+Docno: 192, URL: https://react.dev/learn/your-first-component
 Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 564, URL: https://react.dev/reference/react/useLayoutEffect
 Docno: 137, URL: https://react.dev/learn/state-as-a-snapshot
-Docno: 616, URL: https://react.dev/reference/react/useSyncExternalStore
-Docno: 525, URL: https://react.dev/reference/react/useReducer
 Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
 Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 192, URL: https://react.dev/learn/your-first-component
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
 Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
-Docno: 224, URL: https://react.dev/learn/react-compiler/debugging
 Docno: 218, URL: https://react.dev/learn/responding-to-events
-Docno: 252, URL: https://react.dev/learn/referencing-values-with-refs
-Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 107, URL: https://react.dev/learn/updating-arrays-in-state
-Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 156, URL: https://react.dev/learn/scaling-up-with-reducer-and-context
-Docno: 906, URL: https://react.dev/blog/2024/12/05/react-19
-Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
-Docno: 847, URL: https://react.dev/blog/2025/10/01/react-19-2
-Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 126, URL: https://react.dev/learn/writing-markup-with-jsx
+Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
+Docno: 224, URL: https://react.dev/learn/react-compiler/debugging
+Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
 
 --------------------------------------------------
 
@@ -665,9 +361,9 @@ Query 10
 Question: How does React Suspense display fallback content while a child is not ready, and what happens when the child finishes loading?
 Correct Document: 675 
 
-BM25: Correct document found for query 10 at rank [1, 2, 3, 4, 5, 9, 10, 14, 17, 22, 23, 25, 26, 29, 32] []
-W2V: Correct document found for query 10 at rank [1, 2, 3, 5, 6, 9, 17, 23, 35] []
-Hybrid: Correct document found for query 10 at rank [1, 2, 3, 4, 5, 7, 10, 15, 16, 19, 21, 29, 48, 50] []
+BM25: Correct document found for query 10 at rank [1, 2, 3, 4, 5, 9, 10, 14, 17] []
+W2V: Correct document found for query 10 at rank [1, 2, 3, 5, 6, 9, 17] []
+Hybrid: Correct document found for query 10 at rank [1, 2, 3, 4, 5, 6, 11, 13, 14] []
 
 BM25 Docs:
 Docno: 675, URL: https://react.dev/reference/react/Suspense
@@ -679,20 +375,6 @@ Docno: 690, URL: https://react.dev/reference/react-dom/server/renderToPipeableSt
 Docno: 651, URL: https://react.dev/reference/react/use
 Docno: 294, URL: https://react.dev/reference/react/useDeferredValue
 Docno: 472, URL: https://react.dev/reference/react-dom/server/resume
-Docno: 718, URL: https://react.dev/reference/react-dom/static/prerenderToNodeStream
-Docno: 698, URL: https://react.dev/reference/react-dom/components/script
-Docno: 322, URL: https://react.dev/reference/react-dom/static/prerender
-Docno: 679, URL: https://react.dev/reference/react/components
-Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
-Docno: 415, URL: https://react.dev/reference/react/lazy
-Docno: 906, URL: https://react.dev/blog/2024/12/05/react-19
-Docno: 640, URL: https://react.dev/reference/react/ViewTransition
-Docno: 847, URL: https://react.dev/blog/2025/10/01/react-19-2
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 477, URL: https://react.dev/reference/react/Activity
-Docno: 3553, URL: https://angular.dev/tools/cli/deployment
-Docno: 512, URL: https://react.dev/reference/react-dom/components/style
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
 
 W2V Docs:
 Docno: 675, URL: https://react.dev/reference/react/Suspense
@@ -707,42 +389,16 @@ Docno: 910, URL: https://react.dev/blog/2024/04/25/react-19-upgrade-guide
 Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
 Docno: 906, URL: https://react.dev/blog/2024/12/05/react-19
 Docno: 2234, URL: https://nodejs.org/api/all.html
-Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
-Docno: 847, URL: https://react.dev/blog/2025/10/01/react-19-2
-Docno: 874, URL: https://react.dev/blog/2022/06/15/react-labs-what-we-have-been-working-on-june-2022
-Docno: 294, URL: https://react.dev/reference/react/useDeferredValue
-Docno: 640, URL: https://react.dev/reference/react/ViewTransition
-Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 564, URL: https://react.dev/reference/react/useLayoutEffect
-Docno: 740, URL: https://react.dev/reference/react-dom/createPortal
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 358, URL: https://react.dev/reference/react-dom/client/createRoot
-Docno: 3592, URL: https://angular.dev/guide/di/hierarchical-dependency-injection
-Docno: 651, URL: https://react.dev/reference/react/use
 
 Hybrid Docs:
 Docno: 675, URL: https://react.dev/reference/react/Suspense
 Docno: 910, URL: https://react.dev/blog/2024/04/25/react-19-upgrade-guide
 Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
-Docno: 714, URL: https://react.dev/reference/react-dom/server/renderToReadableStream
 Docno: 690, URL: https://react.dev/reference/react-dom/server/renderToPipeableStream
-Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
 Docno: 718, URL: https://react.dev/reference/react-dom/static/prerenderToNodeStream
-Docno: 651, URL: https://react.dev/reference/react/use
+Docno: 714, URL: https://react.dev/reference/react-dom/server/renderToReadableStream
 Docno: 322, URL: https://react.dev/reference/react-dom/static/prerender
-Docno: 472, URL: https://react.dev/reference/react-dom/server/resume
-Docno: 294, URL: https://react.dev/reference/react/useDeferredValue
-Docno: 679, URL: https://react.dev/reference/react/components
-Docno: 665, URL: https://react.dev/reference/dev-tools/react-performance-tracks
-Docno: 847, URL: https://react.dev/blog/2025/10/01/react-19-2
-Docno: 415, URL: https://react.dev/reference/react/lazy
-Docno: 640, URL: https://react.dev/reference/react/ViewTransition
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 698, URL: https://react.dev/reference/react-dom/components/script
-Docno: 3553, URL: https://angular.dev/tools/cli/deployment
-Docno: 914, URL: https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more
-Docno: 67, URL: https://react.dev/learn/adding-interactivity
+Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
 
 --------------------------------------------------
 
@@ -751,9 +407,9 @@ Query 11
 Question: How does Angular's hierarchical dependency injection determine which provider instance is used, and how does this differ from Angular's zoneless change-detection mechanism?
 Correct Document: 3592 2744
 
-BM25: Correct document found for query 11 at rank [8] [1, 3, 6, 7, 28, 45]
-W2V: Correct document found for query 11 at rank [38] []
-Hybrid: Correct document found for query 11 at rank [9] [2, 5, 6, 8, 31]
+BM25: Correct document found for query 11 at rank [8] [1, 3, 6, 7]
+W2V: Correct document NOT found for query 11
+Hybrid: Correct document found for query 11 at rank [12] [4, 5, 8, 17]
 
 BM25 Docs:
 Docno: 2744, URL: https://angular.dev/guide/zoneless
@@ -764,22 +420,6 @@ Docno: 3346, URL: https://angular.dev/best-practices/performance
 Docno: 25, URL: https://angular.dev/roadmap
 Docno: 3356, URL: https://angular.dev/best-practices/zone-pollution
 Docno: 2311, URL: https://angular.dev/api/upgrade/static/downgradeModule
-Docno: 3585, URL: https://angular.dev/guide/di/lightweight-injection-tokens
-Docno: 1822, URL: https://angular.dev/api/core/provideCheckNoChangesConfig
-Docno: 3347, URL: https://angular.dev/best-practices/slow-computations
-Docno: 3561, URL: https://angular.dev/tools/cli/aot-metadata-errors
-Docno: 2723, URL: https://angular.dev/api/core/provideZonelessChangeDetection
-Docno: 3584, URL: https://angular.dev/guide/di/di-in-action
-Docno: 2797, URL: https://angular.dev/guide/di
-Docno: 3020, URL: https://angular.dev/best-practices/skipping-subtrees
-Docno: 3581, URL: https://angular.dev/guide/di/dependency-injection-context
-Docno: 177, URL: https://angular.dev/ai/mcp
-Docno: 3385, URL: https://angular.dev/guide/forms/reactive-forms
-Docno: 2918, URL: https://angular.dev/api/core/BootstrapOptions
-Docno: 4087, URL: https://angular.dev/guide/elements
-Docno: 3594, URL: https://angular.dev/guide/di/debugging-and-troubleshooting-di
-Docno: 4088, URL: https://angular.dev/guide/components/queries
-Docno: 4084, URL: https://angular.dev/guide/components/content-projection
 
 W2V Docs:
 Docno: 2775, URL: https://angular.dev/assets/context/llms-full.txt
@@ -798,59 +438,21 @@ Docno: 955, URL: https://nodejs.org/en/blog/vulnerability/january-2026-dos-mitig
 Docno: 2889, URL: https://spring.io/blog/2024/09/26/ai-meets-spring-petclinic-implementing-an-ai-assistant-with-spring-ai-part-i
 Docno: 98, URL: https://angular.dev/style-guide
 Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 3203, URL: https://spring.io/blog/2020/09/29/case-study-remote-file-ingest-with-spring-cloud-data-flow
-Docno: 3031, URL: https://spring.io/blog/2018/07/03/spring-social-end-of-life-announcement
-Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 89, URL: https://angular.dev/update
-Docno: 3250, URL: https://spring.io/blog/2011/01/11/what-s-new-in-spring-roo-1-1-1
-Docno: 4470, URL: https://spring.io/blog/2025/01/21/spring-ai-agentic-patterns
-Docno: 3604, URL: https://angular.dev/guide/components
-Docno: 2891, URL: https://spring.io/blog/2024/11/19/why-spring-ai
-Docno: 25, URL: https://angular.dev/roadmap
-Docno: 4386, URL: https://spring.io/blog/2006/10/03/spring-2-0-final-released
-Docno: 331, URL: https://react.dev/reference/react/useCallback
-Docno: 4337, URL: https://spring.io/blog/2021/12/09/new-aot-engine-brings-spring-native-to-the-next-level
-Docno: 4088, URL: https://angular.dev/guide/components/queries
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 2723, URL: https://angular.dev/api/core/provideZonelessChangeDetection
-Docno: 163, URL: https://angular.dev/best-practices/security
-Docno: 3592, URL: https://angular.dev/guide/di/hierarchical-dependency-injection
-Docno: 3420, URL: https://angular.dev/guide/hydration
-Docno: 1446, URL: https://spring.io/blog/2014/10/21/reactor-2-0-0-m1-released-with-reactive-streams-integration
-Docno: 3000, URL: https://spring.io/blog/2008/05/15/why-should-i-care-about-osgi-anyway
-Docno: 4750, URL: https://spring.io/blog/2022/10/21/introducing-spring-modulith
-Docno: 2311, URL: https://angular.dev/api/upgrade/static/downgradeModule
-Docno: 2797, URL: https://angular.dev/guide/di
-Docno: 804, URL: https://react.dev/reference/react/useMemo
-Docno: 115, URL: https://react.dev/learn/render-and-commit
-Docno: 499, URL: https://react.dev/reference/eslint-plugin-react-hooks/lints/incompatible-library
 
 Hybrid Docs:
 Docno: 2775, URL: https://angular.dev/assets/context/llms-full.txt
-Docno: 2744, URL: https://angular.dev/guide/zoneless
 Docno: 3589, URL: https://angular.dev/guide/di/defining-dependency-providers
-Docno: 3592, URL: https://angular.dev/guide/di/hierarchical-dependency-injection
+Docno: 2744, URL: https://angular.dev/guide/zoneless
 Docno: 3346, URL: https://angular.dev/best-practices/performance
-Docno: 25, URL: https://angular.dev/roadmap
 Docno: 2723, URL: https://angular.dev/api/core/provideZonelessChangeDetection
-Docno: 3356, URL: https://angular.dev/best-practices/zone-pollution
-Docno: 3585, URL: https://angular.dev/guide/di/lightweight-injection-tokens
-Docno: 3347, URL: https://angular.dev/best-practices/slow-computations
-Docno: 3584, URL: https://angular.dev/guide/di/di-in-action
-Docno: 1822, URL: https://angular.dev/api/core/provideCheckNoChangesConfig
-Docno: 2797, URL: https://angular.dev/guide/di
-Docno: 3561, URL: https://angular.dev/tools/cli/aot-metadata-errors
-Docno: 3581, URL: https://angular.dev/guide/di/dependency-injection-context
-Docno: 3020, URL: https://angular.dev/best-practices/skipping-subtrees
-Docno: 2311, URL: https://angular.dev/api/upgrade/static/downgradeModule
-Docno: 3594, URL: https://angular.dev/guide/di/debugging-and-troubleshooting-di
-Docno: 4093, URL: https://angular.dev/guide/components/advanced-configuration
 Docno: 3345, URL: https://angular.dev/best-practices/profiling-with-chrome-devtools
-Docno: 177, URL: https://angular.dev/ai/mcp
-Docno: 2918, URL: https://angular.dev/api/core/BootstrapOptions
-Docno: 4087, URL: https://angular.dev/guide/elements
-Docno: 3579, URL: https://angular.dev/guide/di/creating-and-using-services
-Docno: 4088, URL: https://angular.dev/guide/components/queries
+Docno: 25, URL: https://angular.dev/roadmap
+Docno: 3592, URL: https://angular.dev/guide/di/hierarchical-dependency-injection
+Docno: 4093, URL: https://angular.dev/guide/components/advanced-configuration
+Docno: 3584, URL: https://angular.dev/guide/di/di-in-action
+Docno: 4085, URL: https://angular.dev/guide/components/lifecycle
+Docno: 3347, URL: https://angular.dev/best-practices/slow-computations
+Docno: 2797, URL: https://angular.dev/guide/di
 
 --------------------------------------------------
 
@@ -859,9 +461,9 @@ Query 12
 Question: How does Spring Boot's auto-configuration mechanism interact with Actuator endpoint availability and exposure when an application includes Actuator?
 Correct Document: 815 790
 
-BM25: Correct document found for query 12 at rank [] [1, 2, 7, 15, 23]
-W2V: Correct document found for query 12 at rank [] [4, 5, 6, 7, 8, 10, 11, 12, 14, 18, 24, 46]
-Hybrid: Correct document found for query 12 at rank [] [1, 3, 9, 11, 13, 18]
+BM25: Correct document found for query 12 at rank [] [1, 2, 7, 15]
+W2V: Correct document found for query 12 at rank [] [4, 5, 6, 7, 8, 10, 11, 12, 14, 18]
+Hybrid: Correct document found for query 12 at rank [] [1, 5, 7, 10, 12, 14, 15, 18, 20]
 
 BM25 Docs:
 Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
@@ -874,31 +476,6 @@ Docno: 1123, URL: https://spring.io/guides/gs/centralized-configuration
 Docno: 3648, URL: https://spring.io/blog/2017/09/15/security-changes-in-spring-boot-2-0-m4
 Docno: 1026, URL: https://docs.spring.io/spring-boot/reference/actuator/monitoring.html
 Docno: 1080, URL: https://spring.io/authors/mhalbritter
-Docno: 2507, URL: https://spring.io/blog/2021/12/02/spring-cloud-function-3-2-is-out
-Docno: 3971, URL: https://spring.io/security/cve-2026-40976
-Docno: 523, URL: https://docs.spring.io/spring-boot/how-to/actuator.html
-Docno: 14, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-batch-jdbc.html
-Docno: 18, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-elasticsearch.html
-Docno: 33, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-couchbase.html
-Docno: 52, URL: https://docs.spring.io/spring-boot/tutorial/index.html
-Docno: 57, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-security-saml2.html
-Docno: 66, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-h2console.html
-Docno: 68, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-session.html
-Docno: 76, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-integration.html
-Docno: 79, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-servlet.html
-Docno: 86, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-jooq.html
-Docno: 93, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-jpa.html
-Docno: 108, URL: https://docs.spring.io/spring-boot/search.html
-Docno: 140, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-commons.html
-Docno: 144, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-hibernate.html
-Docno: 160, URL: https://docs.spring.io/spring-boot/how-to/logging.html
-Docno: 165, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-pulsar.html
-Docno: 173, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-devtools.html
-Docno: 176, URL: https://docs.spring.io/spring-boot/maven-plugin/goals.html
-Docno: 181, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-r2dbc.html
-Docno: 188, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-mongodb.html
-Docno: 198, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-ldap.html
-Docno: 207, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-http-converter.html
 
 W2V Docs:
 Docno: 4443, URL: https://spring.io/blog/2018/04/10/announcing-general-availability-of-spring-cloud-stream-elmhurst-release-2-0-0-release
@@ -910,60 +487,18 @@ Docno: 843, URL: https://docs.spring.io/spring-boot/appendix/application-propert
 Docno: 1995, URL: https://docs.spring.io/spring-boot/4.1.0/api/java/org/springframework/boot/actuate/endpoint/annotation/Endpoint.html
 Docno: 153, URL: https://docs.spring.io/spring-boot/reference/web/spring-security.html
 Docno: 3648, URL: https://spring.io/blog/2017/09/15/security-changes-in-spring-boot-2-0-m4
-Docno: 1183, URL: https://docs.spring.io/spring-boot/documentation.html
-Docno: 3984, URL: https://spring.io/blog/2020/11/12/spring-boot-2-4-0-available-now
-Docno: 1647, URL: https://spring.io/blog/2023/07/05/active-health-check-strategies-with-spring-cloud-gateway
-Docno: 4704, URL: https://spring.io/blog/2014/03/31/spring-integration-3-0-2-and-4-0-milestone-4-released
-Docno: 3189, URL: https://spring.io/blog/2008/12/11/spring-integration-in-grails-part-1
-Docno: 1026, URL: https://docs.spring.io/spring-boot/reference/actuator/monitoring.html
-Docno: 3206, URL: https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector
-Docno: 1042, URL: https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html
-Docno: 3331, URL: https://spring.io/blog/2015/02/11/java-doesn-t-suck-rockin-the-jvm
-Docno: 1207, URL: https://spring.io/projects/spring-data-rest
-Docno: 3136, URL: https://spring.io/blog/2021/02/09/metrics-and-tracing-better-together
-Docno: 41, URL: https://spring.io/microservices
-Docno: 1252, URL: https://docs.spring.io/spring-boot/api/java/index.html
-Docno: 4999, URL: https://spring.io/blog/2025/07/17/spring-framework-7-0-0-M7-available-now
-Docno: 3242, URL: https://spring.io/blog/2020/06/15/spring-boot-for-apache-geode-vmware-gemfire-1-3-0-release-available
-Docno: 2088, URL: https://spring.io/blog/2011/10/13/using-cloud-foundry-services-with-spring-part-1-the-basics
-Docno: 3382, URL: https://spring.io/guides/tutorials/spring-security-and-angular-js
 
 Hybrid Docs:
 Docno: 790, URL: https://docs.spring.io/spring-boot/reference/actuator/endpoints.html
 Docno: 164, URL: https://spring.io/guides/gs/spring-boot
-Docno: 1252, URL: https://docs.spring.io/spring-boot/api/java/index.html
 Docno: 4443, URL: https://spring.io/blog/2018/04/10/announcing-general-availability-of-spring-cloud-stream-elmhurst-release-2-0-0-release
 Docno: 1123, URL: https://spring.io/guides/gs/centralized-configuration
 Docno: 27, URL: https://docs.spring.io/spring-boot/how-to/application.html
+Docno: 1252, URL: https://docs.spring.io/spring-boot/api/java/index.html
 Docno: 153, URL: https://docs.spring.io/spring-boot/reference/web/spring-security.html
 Docno: 3648, URL: https://spring.io/blog/2017/09/15/security-changes-in-spring-boot-2-0-m4
-Docno: 1080, URL: https://spring.io/authors/mhalbritter
-Docno: 1026, URL: https://docs.spring.io/spring-boot/reference/actuator/monitoring.html
+Docno: 1995, URL: https://docs.spring.io/spring-boot/4.1.0/api/java/org/springframework/boot/actuate/endpoint/annotation/Endpoint.html
 Docno: 843, URL: https://docs.spring.io/spring-boot/appendix/application-properties/index.html
-Docno: 2346, URL: https://spring.io/blog/2017/05/10/pivotal-announces-spring-curriculum-certification-changes
-Docno: 275, URL: https://docs.spring.io/spring-boot/gradle-plugin/running.html
-Docno: 287, URL: https://docs.spring.io/spring-boot/reference/actuator/jmx.html
-Docno: 877, URL: https://docs.spring.io/spring-boot/maven-plugin/run.html
-Docno: 982, URL: https://docs.spring.io/spring-boot/reference/packaging/aot.html
-Docno: 991, URL: https://docs.spring.io/spring-boot/api/rest/actuator/sbom.html
-Docno: 1107, URL: https://docs.spring.io/spring-boot/reference/using/spring-beans-and-dependency-injection.html
-Docno: 1147, URL: https://docs.spring.io/spring-boot/reference/using/packaging-for-production.html
-Docno: 14, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-batch-jdbc.html
-Docno: 18, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-elasticsearch.html
-Docno: 33, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-couchbase.html
-Docno: 52, URL: https://docs.spring.io/spring-boot/tutorial/index.html
-Docno: 57, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-security-saml2.html
-Docno: 66, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-h2console.html
-Docno: 68, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-session.html
-Docno: 76, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-integration.html
-Docno: 79, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-servlet.html
-Docno: 86, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-jooq.html
-Docno: 93, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-jpa.html
-Docno: 108, URL: https://docs.spring.io/spring-boot/search.html
-Docno: 140, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-data-commons.html
-Docno: 144, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-hibernate.html
-Docno: 160, URL: https://docs.spring.io/spring-boot/how-to/logging.html
-Docno: 165, URL: https://docs.spring.io/spring-boot/appendix/auto-configuration-classes/spring-boot-pulsar.html
 
 --------------------------------------------------
 
@@ -974,7 +509,7 @@ Correct Document: 174 115
 
 BM25: Correct document found for query 13 at rank [2, 5] [1, 6]
 W2V: Correct document found for query 13 at rank [20] []
-Hybrid: Correct document found for query 13 at rank [2, 23] [1, 16]
+Hybrid: Correct document found for query 13 at rank [1] [7]
 
 BM25 Docs:
 Docno: 115, URL: https://react.dev/learn/render-and-commit
@@ -993,36 +528,6 @@ Docno: 7, URL: https://react.dev/learn
 Docno: 104, URL: https://react.dev/learn/passing-props-to-a-component
 Docno: 166, URL: https://react.dev/learn/importing-and-exporting-components
 Docno: 91, URL: https://react.dev/learn/react-compiler/incremental-adoption
-Docno: 272, URL: https://react.dev/learn/react-compiler
-Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 146, URL: https://react.dev/learn/thinking-in-react
-Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 249, URL: https://react.dev/learn/extracting-state-logic-into-a-reducer
-Docno: 101, URL: https://react.dev/learn/react-developer-tools
-Docno: 107, URL: https://react.dev/learn/updating-arrays-in-state
-Docno: 132, URL: https://react.dev/learn/lifecycle-of-reactive-effects
-Docno: 224, URL: https://react.dev/learn/react-compiler/debugging
-Docno: 169, URL: https://react.dev/learn/choosing-the-state-structure
-Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 204, URL: https://react.dev/learn/setup
-Docno: 126, URL: https://react.dev/learn/writing-markup-with-jsx
-Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 257, URL: https://react.dev/learn/editor-setup
-Docno: 110, URL: https://react.dev/learn/reacting-to-input-with-state
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
-Docno: 218, URL: https://react.dev/learn/responding-to-events
-Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 119, URL: https://react.dev/learn/typescript
-Docno: 179, URL: https://react.dev/learn/manipulating-the-dom-with-refs
-Docno: 187, URL: https://react.dev/learn/removing-effect-dependencies
-Docno: 40, URL: https://react.dev/learn/add-react-to-an-existing-project
-Docno: 84, URL: https://react.dev/learn/escape-hatches
-Docno: 222, URL: https://react.dev/learn/build-a-react-app-from-scratch
-Docno: 59, URL: https://react.dev/learn/installation
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 192, URL: https://react.dev/learn/your-first-component
 
 W2V Docs:
 Docno: 146, URL: https://react.dev/learn/thinking-in-react
@@ -1040,72 +545,27 @@ Docno: 249, URL: https://react.dev/learn/extracting-state-logic-into-a-reducer
 Docno: 494, URL: https://react.dev/reference/react/memo
 Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
 Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
-Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
-Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
-Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 331, URL: https://react.dev/reference/react/useCallback
-Docno: 166, URL: https://react.dev/learn/importing-and-exporting-components
-Docno: 110, URL: https://react.dev/learn/reacting-to-input-with-state
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 3331, URL: https://spring.io/blog/2015/02/11/java-doesn-t-suck-rockin-the-jvm
-Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 4085, URL: https://angular.dev/guide/components/lifecycle
-Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 525, URL: https://react.dev/reference/react/useReducer
-Docno: 2775, URL: https://angular.dev/assets/context/llms-full.txt
-Docno: 187, URL: https://react.dev/learn/removing-effect-dependencies
-Docno: 804, URL: https://react.dev/reference/react/useMemo
 
 Hybrid Docs:
-Docno: 115, URL: https://react.dev/learn/render-and-commit
 Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
 Docno: 156, URL: https://react.dev/learn/scaling-up-with-reducer-and-context
+Docno: 202, URL: https://react.dev/learn/state-a-components-memory
 Docno: 137, URL: https://react.dev/learn/state-as-a-snapshot
-Docno: 252, URL: https://react.dev/learn/referencing-values-with-refs
 Docno: 244, URL: https://react.dev/learn/sharing-state-between-components
-Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
-Docno: 67, URL: https://react.dev/learn/adding-interactivity
 Docno: 16, URL: https://react.dev/learn/managing-state
-Docno: 166, URL: https://react.dev/learn/importing-and-exporting-components
+Docno: 115, URL: https://react.dev/learn/render-and-commit
+Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
+Docno: 169, URL: https://react.dev/learn/choosing-the-state-structure
 Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
+Docno: 252, URL: https://react.dev/learn/referencing-values-with-refs
+Docno: 107, URL: https://react.dev/learn/updating-arrays-in-state
 Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 150, URL: https://react.dev/learn/conditional-rendering
+Docno: 67, URL: https://react.dev/learn/adding-interactivity
+Docno: 249, URL: https://react.dev/learn/extracting-state-logic-into-a-reducer
+Docno: 166, URL: https://react.dev/learn/importing-and-exporting-components
+Docno: 146, URL: https://react.dev/learn/thinking-in-react
 Docno: 104, URL: https://react.dev/learn/passing-props-to-a-component
 Docno: 7, URL: https://react.dev/learn
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 107, URL: https://react.dev/learn/updating-arrays-in-state
-Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 169, URL: https://react.dev/learn/choosing-the-state-structure
-Docno: 249, URL: https://react.dev/learn/extracting-state-logic-into-a-reducer
-Docno: 91, URL: https://react.dev/learn/react-compiler/incremental-adoption
-Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 239, URL: https://react.dev/learn/keeping-components-pure
-Docno: 132, URL: https://react.dev/learn/lifecycle-of-reactive-effects
-Docno: 267, URL: https://react.dev/learn/react-compiler/introduction
-Docno: 146, URL: https://react.dev/learn/thinking-in-react
-Docno: 110, URL: https://react.dev/learn/reacting-to-input-with-state
-Docno: 257, URL: https://react.dev/learn/editor-setup
-Docno: 218, URL: https://react.dev/learn/responding-to-events
-Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 204, URL: https://react.dev/learn/setup
-Docno: 264, URL: https://react.dev/learn/separating-events-from-effects
-Docno: 187, URL: https://react.dev/learn/removing-effect-dependencies
-Docno: 126, URL: https://react.dev/learn/writing-markup-with-jsx
-Docno: 179, URL: https://react.dev/learn/manipulating-the-dom-with-refs
-Docno: 224, URL: https://react.dev/learn/react-compiler/debugging
-Docno: 84, URL: https://react.dev/learn/escape-hatches
-Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
-Docno: 209, URL: https://react.dev/learn/javascript-in-jsx-with-curly-braces
-Docno: 234, URL: https://react.dev/learn/reusing-logic-with-custom-hooks
-Docno: 272, URL: https://react.dev/learn/react-compiler
-Docno: 192, URL: https://react.dev/learn/your-first-component
-Docno: 222, URL: https://react.dev/learn/build-a-react-app-from-scratch
-Docno: 119, URL: https://react.dev/learn/typescript
-Docno: 54, URL: https://react.dev/learn/creating-a-react-app
 
 --------------------------------------------------
 
@@ -1114,9 +574,9 @@ Query 14
 Question: How do Node.js streams and the cluster module complement each other when designing a server that processes large amounts of data while using multiple CPU cores?
 Correct Document: 1424 184
 
-BM25: Correct document found for query 14 at rank [] [20, 22, 25]
+BM25: Correct document found for query 14 at rank [] [20]
 W2V: Correct document NOT found for query 14
-Hybrid: Correct document found for query 14 at rank [] [23]
+Hybrid: Correct document NOT found for query 14
 
 BM25 Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
@@ -1130,23 +590,6 @@ Docno: 700, URL: https://nodejs.org/en/blog/events/collab-summit-2026-london
 Docno: 1381, URL: https://nodejs.org/api/process.html
 Docno: 4470, URL: https://spring.io/blog/2025/01/21/spring-ai-agentic-patterns
 Docno: 184, URL: https://nodejs.org/api/cluster.html
-Docno: 4515, URL: https://spring.io/blog/2021/01/27/spring-batch-on-kubernetes-efficient-batch-processing-at-scale
-Docno: 1631, URL: https://spring.io/blog/2013/02/26/spring-for-apache-hadoop-1-0-goes-ga
-Docno: 3084, URL: https://spring.io/blog/2009/02/27/spring-integration-on-dm-server
-Docno: 4464, URL: https://spring.io/blog/2016/07/20/notes-on-reactive-programming-part-iii-a-simple-http-server-application
-Docno: 1438, URL: https://nodejs.org/api/repl.html
-Docno: 4352, URL: https://spring.io/blog/2016/04/19/understanding-reactive-types
-Docno: 154, URL: https://nodejs.org/api/child_process.html
-Docno: 2084, URL: https://nodejs.org/en/blog/vulnerability/march-2025-ci-incident
-Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
-Docno: 1449, URL: https://spring.io/blog/2013/05/13/reactor-a-foundation-for-asynchronous-applications-on-the-jvm
-Docno: 1761, URL: https://nodejs.org/llms.txt
-Docno: 1112, URL: https://angular.dev/api/common/http/HttpErrorResponse
-Docno: 3093, URL: https://spring.io/blog/2026/02/25/optimizing-spring-mvc
-Docno: 2159, URL: https://nodejs.org/api/domain.html
-Docno: 483, URL: https://nodejs.org/learn/getting-started/security-best-practices
-Docno: 2254, URL: https://spring.io/blog/2025/10/27/spring-ai-anthropic-prompt-caching-blog
-Docno: 194, URL: https://nodejs.org/learn/getting-started/the-v8-javascript-engine
 
 W2V Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
@@ -1167,58 +610,23 @@ Docno: 3553, URL: https://angular.dev/tools/cli/deployment
 Docno: 700, URL: https://nodejs.org/en/blog/events/collab-summit-2026-london
 Docno: 4465, URL: https://spring.io/blog/2016/06/07/notes-on-reactive-programming-part-i-the-reactive-landscape
 Docno: 1595, URL: https://spring.io/blog/2009/04/28/springsource-tc-server-the-logical-next-step
-Docno: 1674, URL: https://spring.io/blog/2012/10/11/scripted-a-javascript-editor-from-vmware
-Docno: 4906, URL: https://spring.io/blog/2008/04/30/introducing-the-springsource-application-platform
-Docno: 4549, URL: https://spring.io/blog/2025/10/22/spring-batch-6-0-0-rc1-released
-Docno: 2387, URL: https://spring.io/blog/2023/10/16/runtime-efficiency-with-spring
-Docno: 3454, URL: https://spring.io/blog/2022/03/22/initial-aot-support-in-spring-framework-6-0-0-m3
-Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
-Docno: 483, URL: https://nodejs.org/learn/getting-started/security-best-practices
-Docno: 955, URL: https://nodejs.org/en/blog/vulnerability/january-2026-dos-mitigation-async-hooks
-Docno: 3670, URL: https://spring.io/blog/2011/04/27/getting-started-with-redis-spring-data-cloud-foundry
-Docno: 3199, URL: https://spring.io/blog/2020/07/20/introducing-java-functions-for-spring-cloud-stream-applications-part-1
-Docno: 1449, URL: https://spring.io/blog/2013/05/13/reactor-a-foundation-for-asynchronous-applications-on-the-jvm
-Docno: 2482, URL: https://spring.io/blog/2010/05/06/springsource-to-acquire-gemstone-data-management
-Docno: 31, URL: https://nodejs.org/en/about
-Docno: 1485, URL: https://nodejs.org/api/errors.html
-Docno: 4830, URL: https://spring.io/blog/2022/03/22/spring-for-graphql-1-0-milestone-6-released
-Docno: 1446, URL: https://spring.io/blog/2014/10/21/reactor-2-0-0-m1-released-with-reactive-streams-integration
-Docno: 1978, URL: https://nodejs.org/en/blog/announcements/making-nodejs-downloads-reliable
-Docno: 3375, URL: https://spring.io/guides/tutorials/rest
 
 Hybrid Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
-Docno: 1862, URL: https://nodejs.org/en/blog/uncategorized/10-lts-to-12-lts
-Docno: 31, URL: https://nodejs.org/en/about
 Docno: 418, URL: https://nodejs.org/learn/modules/how-to-use-streams
+Docno: 1862, URL: https://nodejs.org/en/blog/uncategorized/10-lts-to-12-lts
+Docno: 4352, URL: https://spring.io/blog/2016/04/19/understanding-reactive-types
+Docno: 4464, URL: https://spring.io/blog/2016/07/20/notes-on-reactive-programming-part-iii-a-simple-http-server-application
 Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
 Docno: 1446, URL: https://spring.io/blog/2014/10/21/reactor-2-0-0-m1-released-with-reactive-streams-integration
-Docno: 2234, URL: https://nodejs.org/api/all.html
-Docno: 4464, URL: https://spring.io/blog/2016/07/20/notes-on-reactive-programming-part-iii-a-simple-http-server-application
-Docno: 700, URL: https://nodejs.org/en/blog/events/collab-summit-2026-london
-Docno: 4515, URL: https://spring.io/blog/2021/01/27/spring-batch-on-kubernetes-efficient-batch-processing-at-scale
-Docno: 4352, URL: https://spring.io/blog/2016/04/19/understanding-reactive-types
-Docno: 4470, URL: https://spring.io/blog/2025/01/21/spring-ai-agentic-patterns
-Docno: 1631, URL: https://spring.io/blog/2013/02/26/spring-for-apache-hadoop-1-0-goes-ga
-Docno: 1449, URL: https://spring.io/blog/2013/05/13/reactor-a-foundation-for-asynchronous-applications-on-the-jvm
-Docno: 184, URL: https://nodejs.org/api/cluster.html
-Docno: 3084, URL: https://spring.io/blog/2009/02/27/spring-integration-on-dm-server
-Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
-Docno: 154, URL: https://nodejs.org/api/child_process.html
-Docno: 2159, URL: https://nodejs.org/api/domain.html
-Docno: 4360, URL: https://spring.io/blog/2015/06/17/spring-xd-benchmarks-part-1
-Docno: 2084, URL: https://nodejs.org/en/blog/vulnerability/march-2025-ci-incident
-Docno: 4549, URL: https://spring.io/blog/2025/10/22/spring-batch-6-0-0-rc1-released
-Docno: 292, URL: https://nodejs.org/learn/node-api/special-topics/context-awareness
 Docno: 3763, URL: https://spring.io/blog/2010/10/12/vmware-vfabric-gemfire-6-5-modern-data-management-for-modern-applications
-Docno: 3172, URL: https://spring.io/blog/2016/08/26/spring-cloud-stream-brooklyn-m1-is-available
-Docno: 483, URL: https://nodejs.org/learn/getting-started/security-best-practices
-Docno: 662, URL: https://nodejs.org/en/blog/vulnerability/march-2026-hashdos
-Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
-Docno: 1431, URL: https://spring.io/blog/2015/02/18/reactor-2-0-0-rc1-with-native-reactive-streams-support-now-available
-Docno: 189, URL: https://nodejs.org/en/learn/asynchronous-work/overview-of-blocking-vs-non-blocking
-Docno: 4906, URL: https://spring.io/blog/2008/04/30/introducing-the-springsource-application-platform
-Docno: 199, URL: https://nodejs.org/learn/asynchronous-work/asynchronous-flow-control
+Docno: 4515, URL: https://spring.io/blog/2021/01/27/spring-batch-on-kubernetes-efficient-batch-processing-at-scale
+Docno: 333, URL: https://nodejs.org/learn/modules/backpressuring-in-streams
+Docno: 1449, URL: https://spring.io/blog/2013/05/13/reactor-a-foundation-for-asynchronous-applications-on-the-jvm
+Docno: 4360, URL: https://spring.io/blog/2015/06/17/spring-xd-benchmarks-part-1
+Docno: 3070, URL: https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
+Docno: 2234, URL: https://nodejs.org/api/all.html
+Docno: 4549, URL: https://spring.io/blog/2025/10/22/spring-batch-6-0-0-rc1-released
 
 --------------------------------------------------
 
@@ -1227,9 +635,9 @@ Query 15
 Question: How does React Context automatically persist component state after a browser is completely closed and reopened?
 Correct Document: 174 
 
-BM25: Correct document found for query 15 at rank [30] []
+BM25: Correct document NOT found for query 15
 W2V: Correct document NOT found for query 15
-Hybrid: Correct document found for query 15 at rank [25] []
+Hybrid: Correct document NOT found for query 15
 
 BM25 Docs:
 Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
@@ -1248,31 +656,6 @@ Docno: 494, URL: https://react.dev/reference/react/memo
 Docno: 126, URL: https://react.dev/learn/writing-markup-with-jsx
 Docno: 685, URL: https://react.dev/reference/react-dom/components/common
 Docno: 115, URL: https://react.dev/learn/render-and-commit
-Docno: 4276, URL: https://spring.io/blog/2010/06/23/gorm-gotchas-part-1
-Docno: 556, URL: https://react.dev/reference/react/useTransition
-Docno: 84, URL: https://react.dev/learn/escape-hatches
-Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 3327, URL: https://angular.dev/guide/forms/signals/validation
-Docno: 535, URL: https://react.dev/reference/react/hooks
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
-Docno: 564, URL: https://react.dev/reference/react/useLayoutEffect
-Docno: 137, URL: https://react.dev/learn/state-as-a-snapshot
-Docno: 914, URL: https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more
-Docno: 2234, URL: https://nodejs.org/api/all.html
-Docno: 67, URL: https://react.dev/learn/adding-interactivity
-Docno: 4087, URL: https://angular.dev/guide/elements
-Docno: 3219, URL: https://spring.io/blog/2014/10/08/streaming-json-patch-from-spring-to-a-react-ui
-Docno: 525, URL: https://react.dev/reference/react/useReducer
-Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
-Docno: 430, URL: https://react.dev/reference/react/useEffect
-Docno: 156, URL: https://react.dev/learn/scaling-up-with-reducer-and-context
-Docno: 169, URL: https://react.dev/learn/choosing-the-state-structure
-Docno: 7, URL: https://react.dev/learn
-Docno: 91, URL: https://react.dev/learn/react-compiler/incremental-adoption
-Docno: 4302, URL: https://spring.io/blog/2015/09/01/react-js-and-spring-data-rest-part-1-basic-features
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 197, URL: https://react.dev/learn/synchronizing-with-effects
 
 W2V Docs:
 Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
@@ -1291,70 +674,26 @@ Docno: 137, URL: https://react.dev/learn/state-as-a-snapshot
 Docno: 202, URL: https://react.dev/learn/state-a-components-memory
 Docno: 192, URL: https://react.dev/learn/your-first-component
 Docno: 4499, URL: https://spring.io/blog/2024/11/20/spring-batch-5-2-0-goes-ga
-Docno: 214, URL: https://react.dev/learn/passing-data-deeply-with-context
-Docno: 616, URL: https://react.dev/reference/react/useSyncExternalStore
-Docno: 491, URL: https://react.dev/reference/react-dom/flushSync
-Docno: 1020, URL: https://docs.spring.io/spring-boot/reference/features/spring-application.html
-Docno: 294, URL: https://react.dev/reference/react/useDeferredValue
-Docno: 3605, URL: https://spring.io/blog/2015/08/17/spring-integration-4-2-release-candidate-is-available
-Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
-Docno: 430, URL: https://react.dev/reference/react/useEffect
-Docno: 112, URL: https://react.dev/learn/rendering-lists
-Docno: 1366, URL: https://nodejs.org/api/fs.html
-Docno: 1635, URL: https://angular.dev/api/service-worker/SwUpdate
-Docno: 146, URL: https://react.dev/learn/thinking-in-react
-Docno: 564, URL: https://react.dev/reference/react/useLayoutEffect
-Docno: 1485, URL: https://nodejs.org/api/errors.html
-Docno: 54, URL: https://react.dev/learn/creating-a-react-app
-Docno: 889, URL: https://react.dev/blog/2024/02/15/react-labs-what-we-have-been-working-on-february-2024
-Docno: 4085, URL: https://angular.dev/guide/components/lifecycle
-Docno: 218, URL: https://react.dev/learn/responding-to-events
-Docno: 2018, URL: https://nodejs.org/en/blog/announcements/v21-release-announce
-Docno: 244, URL: https://react.dev/learn/sharing-state-between-components
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 718, URL: https://react.dev/reference/react-dom/static/prerenderToNodeStream
 
 Hybrid Docs:
-Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
 Docno: 628, URL: https://react.dev/reference/react/Component
-Docno: 280, URL: https://react.dev/reference/rules
+Docno: 882, URL: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
 Docno: 97, URL: https://react.dev/learn/understanding-your-ui-as-a-tree
-Docno: 272, URL: https://react.dev/learn/react-compiler
-Docno: 101, URL: https://react.dev/learn/react-developer-tools
-Docno: 267, URL: https://react.dev/learn/react-compiler/introduction
-Docno: 204, URL: https://react.dev/learn/setup
-Docno: 16, URL: https://react.dev/learn/managing-state
-Docno: 202, URL: https://react.dev/learn/state-a-components-memory
-Docno: 685, URL: https://react.dev/reference/react-dom/components/common
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 4276, URL: https://spring.io/blog/2010/06/23/gorm-gotchas-part-1
-Docno: 535, URL: https://react.dev/reference/react/hooks
-Docno: 914, URL: https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more
-Docno: 137, URL: https://react.dev/learn/state-as-a-snapshot
-Docno: 67, URL: https://react.dev/learn/adding-interactivity
-Docno: 161, URL: https://react.dev/learn/tutorial-tic-tac-toe
-Docno: 870, URL: https://react.dev/blog/2023/03/16/introducing-react-dev
-Docno: 7, URL: https://react.dev/learn
-Docno: 174, URL: https://react.dev/learn/preserving-and-resetting-state
-Docno: 156, URL: https://react.dev/learn/scaling-up-with-reducer-and-context
-Docno: 169, URL: https://react.dev/learn/choosing-the-state-structure
-Docno: 4302, URL: https://spring.io/blog/2015/09/01/react-js-and-spring-data-rest-part-1-basic-features
-Docno: 115, URL: https://react.dev/learn/render-and-commit
-Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
-Docno: 494, URL: https://react.dev/reference/react/memo
-Docno: 45, URL: https://react.dev/learn/describing-the-ui
-Docno: 252, URL: https://react.dev/learn/referencing-values-with-refs
-Docno: 91, URL: https://react.dev/learn/react-compiler/incremental-adoption
-Docno: 878, URL: https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023
-Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
-Docno: 556, URL: https://react.dev/reference/react/useTransition
 Docno: 129, URL: https://react.dev/reference/react/useState
-Docno: 84, URL: https://react.dev/learn/escape-hatches
+Docno: 204, URL: https://react.dev/learn/setup
+Docno: 280, URL: https://react.dev/reference/rules
+Docno: 857, URL: https://react.dev/blog/2022/03/29/react-v18
+Docno: 16, URL: https://react.dev/learn/managing-state
+Docno: 727, URL: https://react.dev/reference/rules/components-and-hooks-must-be-pure
+Docno: 67, URL: https://react.dev/learn/adding-interactivity
+Docno: 685, URL: https://react.dev/reference/react-dom/components/common
+Docno: 535, URL: https://react.dev/reference/react/hooks
+Docno: 202, URL: https://react.dev/learn/state-a-components-memory
+Docno: 4276, URL: https://spring.io/blog/2010/06/23/gorm-gotchas-part-1
+Docno: 7, URL: https://react.dev/learn
+Docno: 141, URL: https://react.dev/learn/queueing-a-series-of-state-updates
 Docno: 229, URL: https://react.dev/learn/updating-objects-in-state
-Docno: 110, URL: https://react.dev/learn/reacting-to-input-with-state
-Docno: 179, URL: https://react.dev/learn/manipulating-the-dom-with-refs
-Docno: 430, URL: https://react.dev/reference/react/useEffect
-Docno: 150, URL: https://react.dev/learn/conditional-rendering
+Docno: 2701, URL: https://angular.dev/api/router/NavigationBehaviorOptions
 
 --------------------------------------------------
 
@@ -1363,9 +702,9 @@ Query 16
 Question: What built-in Node.js database engine does the cluster module use to store and synchronize state between worker processes?
 Correct Document: 184 
 
-BM25: Correct document found for query 16 at rank [1, 4, 6, 9, 18, 33, 34, 39, 44, 49] []
-W2V: Correct document found for query 16 at rank [19, 26, 27, 28, 32, 33, 34] []
-Hybrid: Correct document found for query 16 at rank [3, 5, 6, 14, 15, 28, 33, 34, 40, 42, 45] []
+BM25: Correct document found for query 16 at rank [1, 4, 6, 9, 18] []
+W2V: Correct document found for query 16 at rank [19] []
+Hybrid: Correct document found for query 16 at rank [5, 9, 13, 17] []
 
 BM25 Docs:
 Docno: 184, URL: https://nodejs.org/api/cluster.html
@@ -1376,20 +715,6 @@ Docno: 2159, URL: https://nodejs.org/api/domain.html
 Docno: 1761, URL: https://nodejs.org/llms.txt
 Docno: 4724, URL: https://spring.io/blog/2020/10/26/case-study-aggregator-function-and-processor
 Docno: 3375, URL: https://spring.io/guides/tutorials/rest
-Docno: 31, URL: https://nodejs.org/en/about
-Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
-Docno: 1402, URL: https://nodejs.org/api/modules.html
-Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
-Docno: 36, URL: https://nodejs.org/learn
-Docno: 2894, URL: https://spring.io/blog/2024/09/27/ai-meets-spring-petclinic-implementing-an-ai-assistant-with-spring-ai-part
-Docno: 3331, URL: https://spring.io/blog/2015/02/11/java-doesn-t-suck-rockin-the-jvm
-Docno: 1360, URL: https://nodejs.org/api/cli.html
-Docno: 441, URL: https://nodejs.org/learn/modules/abi-stability
-Docno: 4201, URL: https://spring.io/blog/2019/12/09/stream-processing-with-spring-cloud-stream-and-apache-kafka-streams-part-6-state-stores-and-interactive-queries
-Docno: 4515, URL: https://spring.io/blog/2021/01/27/spring-batch-on-kubernetes-efficient-batch-processing-at-scale
-Docno: 3864, URL: https://spring.io/blog/2016/05/03/what-s-new-in-spring-data-hopper
-Docno: 4474, URL: https://spring.io/blog/2020/12/14/case-study-change-data-capture-cdc-analysis-with-cdc-debezium-source-and-analytics-sink-in-real-time
-Docno: 796, URL: https://react.dev/reference/react/useRef
 
 W2V Docs:
 Docno: 2159, URL: https://nodejs.org/api/domain.html
@@ -1399,40 +724,14 @@ Docno: 292, URL: https://nodejs.org/learn/node-api/special-topics/context-awaren
 Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
 Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
 Docno: 184, URL: https://nodejs.org/api/cluster.html
-Docno: 4906, URL: https://spring.io/blog/2008/04/30/introducing-the-springsource-application-platform
-Docno: 199, URL: https://nodejs.org/learn/asynchronous-work/asynchronous-flow-control
-Docno: 875, URL: https://nodejs.org/en/security
-Docno: 974, URL: https://nodejs.org/en/blog/events/collab-summit-2025-paris
-Docno: 3763, URL: https://spring.io/blog/2010/10/12/vmware-vfabric-gemfire-6-5-modern-data-management-for-modern-applications
-Docno: 3787, URL: https://angular.dev/ecosystem/service-workers/devops
-Docno: 1485, URL: https://nodejs.org/api/errors.html
-Docno: 364, URL: https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick
-Docno: 3070, URL: https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 4201, URL: https://spring.io/blog/2019/12/09/stream-processing-with-spring-cloud-stream-and-apache-kafka-streams-part-6-state-stores-and-interactive-queries
-Docno: 509, URL: https://nodejs.org/learn/asynchronous-work/understanding-processnexttick
-Docno: 3331, URL: https://spring.io/blog/2015/02/11/java-doesn-t-suck-rockin-the-jvm
 
 Hybrid Docs:
 Docno: 313, URL: https://nodejs.org/learn/concurrency/comparing-nodejs-concurrency-models
+Docno: 2159, URL: https://nodejs.org/api/domain.html
 Docno: 2234, URL: https://nodejs.org/api/all.html
 Docno: 184, URL: https://nodejs.org/api/cluster.html
-Docno: 2159, URL: https://nodejs.org/api/domain.html
-Docno: 3257, URL: https://spring.io/blog/2012/11/20/dependency-analysis-in-scripted
 Docno: 1407, URL: https://nodejs.org/api/worker_threads.html
-Docno: 3375, URL: https://spring.io/guides/tutorials/rest
-Docno: 4724, URL: https://spring.io/blog/2020/10/26/case-study-aggregator-function-and-processor
-Docno: 31, URL: https://nodejs.org/en/about
-Docno: 378, URL: https://nodejs.org/learn/asynchronous-work/dont-block-the-event-loop
-Docno: 36, URL: https://nodejs.org/learn
-Docno: 3864, URL: https://spring.io/blog/2016/05/03/what-s-new-in-spring-data-hopper
-Docno: 1761, URL: https://nodejs.org/llms.txt
-Docno: 3070, URL: https://spring.io/blog/2011/04/01/routing-topologies-for-performance-and-scalability-with-rabbitmq
-Docno: 4201, URL: https://spring.io/blog/2019/12/09/stream-processing-with-spring-cloud-stream-and-apache-kafka-streams-part-6-state-stores-and-interactive-queries
-Docno: 441, URL: https://nodejs.org/learn/modules/abi-stability
-Docno: 123, URL: https://react.dev/learn/you-might-not-need-an-effect
-Docno: 509, URL: https://nodejs.org/learn/asynchronous-work/understanding-processnexttick
-Docno: 2894, URL: https://spring.io/blog/2024/09/27/ai-meets-spring-petclinic-implementing-an-ai-assistant-with-spring-ai-part
+Docno: 3257, URL: https://spring.io/blog/2012/11/20/dependency-analysis-in-scripted
 
 --------------------------------------------------
 
