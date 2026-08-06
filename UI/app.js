@@ -20,6 +20,8 @@ function createMessage(role, text) {
     const paragraph = document.createElement("p");
     paragraph.textContent = text;
 
+    print(text); // Print the message to the console for debugging
+
     bubble.appendChild(paragraph);
     article.appendChild(avatar);
     article.appendChild(bubble);
@@ -43,6 +45,7 @@ form.addEventListener("submit", async (event) => {
     if (!query) {
         return;
     }
+    // print(`User query: ${query}`); // Print the user query to the console for debugging
 
     const sendButton = form.querySelector("button");
     sendButton.disabled = true;
