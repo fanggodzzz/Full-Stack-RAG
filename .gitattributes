@@ -1,3 +1,5 @@
 Data/chunked.jsonl filter=lfs diff=lfs merge=lfs -text
 Data/processed.jsonl filter=lfs diff=lfs merge=lfs -text
-Models/indexes/** filter=lfs diff=lfs merge=lfs -text
+Models/index/*.model filter=lfs diff=lfs merge=lfs -text
+Models/index/*.pkl filter=lfs diff=lfs merge=lfs -text
+Models/index/*.npy filter=lfs diff=lfs merge=lfs -text
