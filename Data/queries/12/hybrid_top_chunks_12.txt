@@ -1,489 +1,1730 @@
-Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+Index: 5374 <<"chunk_id": 7, "docno": 790>>
 
-that would cause the required CSRF cookie to be sent. Solution: use
-ensure_csrf_cookie() on the view that sends the page. CSRF protection in
-reusable applications ¶ Because it is possible for the developer to turn off the
-CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
-decorator to ensure the security of these applications against CSRF. It is
-recommended that the developers of other reusable apps that want the same
-guarantees also use the csrf_protect decorator on their views. Previous page and
-next page How to use Django’s Content Security Policy How to write a custom
-storage class Back to Top Additional Information Support Django! Abu Ashraf
-Masnun donated to the Django Software Foundation to support Django development.
-Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
-with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
-False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
-Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
-Using the decorator method Handling rejected requests Using CSRF protection with
-caching Testing and CSRF protection Edge cases Disabling CSRF protection for
-just a few views Setting the token when CsrfViewMiddleware.process_view() is not
-used Including the CSRF token in an unprotected view Protecting a view for only
-one path Protecting a page that uses AJAX without an HTML form CSRF protection
-in reusable applications Browse Prev: How to use Django’s Content Security
-Policy Next: How to write a custom storage class Table of contents General Index
-Python Module Index You are
+endpoints: jmx: exposure: include: "health,info" * can be used to select all
+endpoints. For example, to expose everything over HTTP except the env and beans
+endpoints, use the following properties: Properties YAML
+management.endpoints.web.exposure.include=*
+management.endpoints.web.exposure.exclude=env,beans management: endpoints: web:
+exposure: include: "*" exclude: "env,beans" * has a special meaning in YAML, so
+be sure to add quotation marks if you want to include (or exclude) all
+endpoints. If your application is exposed publicly, we strongly recommend that
+you also secure your endpoints . If you want to implement your own strategy for
+when endpoints are exposed, you can register an EndpointFilter bean. Security
+For security purposes, only the /health endpoint is exposed over HTTP by
+default. You can use the management.endpoints.web.exposure.include property to
+configure the endpoints that are exposed. Before setting the
+management.endpoints.web.exposure.include , ensure that the exposed actuators do
+not contain sensitive information, are secured by placing them behind a
+firewall, or are secured by something like Spring Security. If Spring Security
+is on the classpath and no other SecurityFilterChain bean is present, all
+actuators other than /health are secured by Spring Boot auto-configuration. If
+you define a custom SecurityFilterChain bean, Spring Boot auto-configuration
+backs off and lets you fully control the actuator access rules. If you wish to
+configure custom security for HTTP endpoints (for example, to allow only users
+with a certain role to access them), Spring Boot provides some convenient
+RequestMatcher objects that you can use in combination with Spring Security. A
+typical Spring Security configuration might look something like the following
+example: Java
 ----------------------------------------------------------------------------------------------------
-Index: 50847 <<"chunk_id": 0, "docno": 8103>>
+Index: 1305 <<"chunk_id": 8, "docno": 164>>
 
-How to use Django’s CSRF protection | Django documentation | Django Skip to main
-content Django The web framework for perfectionists with deadlines. Menu Main
-navigation Overview Download Documentation News Code Issues Community Foundation
-♥ Donate Search Submit Toggle theme (current theme: auto) Toggle theme (current
-theme: light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto
-color theme Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it
-id fr es el Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 How to use
-Django’s CSRF protection ¶ To take advantage of CSRF protection in your views,
-follow these steps: The CSRF middleware is activated by default in the
-MIDDLEWARE setting. If you override that setting, remember that
-'django.middleware.csrf.CsrfViewMiddleware' should come before any view
-middleware that assume that CSRF attacks have been dealt with. If you disabled
-it, which is not recommended, you can use csrf_protect() on particular views you
-want to protect (see below). In any template that uses a POST form, use the
-csrf_token tag inside the <form> element if the form is for an internal URL,
-e.g.: < form method = "post" > {% csrf_token %} This should not be done for POST
-forms that target external URLs, since that would cause the CSRF token to be
-leaked, leading to a vulnerability. In the corresponding view functions, ensure
-that RequestContext is used to render the response so that {% csrf_token %} will
-work properly. If you’re using the render() function, generic views, or contrib
-apps, you are
+terminal window: ./mvnw spring-boot:run You should see that a new set of RESTful
+end points has been added to the application. These are management services
+provided by Spring Boot. The following listing shows a typical output:
+management.endpoint.health-org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointProperties
+management.endpoints.web-org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties
+management.endpoints.web.cors-org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties
+management.health.diskspace-org.springframework.boot.health.autoconfigure.application.DiskSpaceHealthIndicatorProperties
+management.health.ssl-org.springframework.boot.health.autoconfigure.application.SslHealthIndicatorProperties
+management.info-org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties
+management.metrics-org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties
+management.observations-org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties
+management.simple.metrics.export-org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleProperties
+The actuator exposes the following: actuator/health actuator There is also an
+/actuator/shutdown endpoint, but, by default, it is disabled. To expose it , add
+management.endpoint.shutdown.access=unrestricted to your application.properties
+file and expose it with
+management.endpoints.web.exposure.include=health,info,shutdown . However, you
+probably should not enable the shutdown endpoint for a publicly available
+application. You can check the health of the application by running the
+following command: $ curl http://localhost:8080/actuator/health {"status":"UP"}
+You can try also to invoke shutdown through curl, to see what happens when you
+have not added the necessary line (shown in the preceding note) to
+application.properties : $ curl -X POST http://localhost:8080/actuator/shutdown
+{"timestamp":"2026-02-06T08:13:01.514Z","status":404,"error":"Not
+Found","path":"/actuator/shutdown"} Because we did not enable it, the requested
+endpoint is not available (because the endpoint does not exist). For more
+details about each of these REST endpoints and how you can tune their settings
+with an application.properties file (in src/main/resources ), see the
+documentation about the endpoints . View Spring Boot’s Starters You have seen
+some of Spring Boot’s “starters” . You can see them all here in source code .
+JAR Support The last example showed how Spring Boot lets you wire beans that you
+may not be aware you need. It also showed how to turn on convenient management
+services. However, Spring Boot does more than that.
 ----------------------------------------------------------------------------------------------------
-Index: 50853 <<"chunk_id": 6, "docno": 8103>>
+Index: 5370 <<"chunk_id": 3, "docno": 790>>
 
-CSRF protection, but a few do not. Solution: rather than disabling the
-middleware and applying csrf_protect to all the views that need it, enable the
-middleware and use csrf_exempt() . Setting the token when
-CsrfViewMiddleware.process_view() is not used ¶ There are cases when
-CsrfViewMiddleware.process_view may not have run before your view is run - 404
-and 500 handlers, for example - but you still need the CSRF token in a form.
-Solution: use requires_csrf_token() Including the CSRF token in an unprotected
-view ¶ There may be some views that are unprotected and have been exempted by
-csrf_exempt , but still need to include the CSRF token. Solution: use
-csrf_exempt() followed by requires_csrf_token() . (i.e. requires_csrf_token
-should be the innermost decorator). Protecting a view for only one path ¶ A view
-needs CSRF protection under one set of conditions only, and mustn’t have it for
-the rest of the time. Solution: use csrf_exempt() for the whole view function,
-and csrf_protect() for the path within it that needs protection. Example: from
-django.views.decorators.csrf import csrf_exempt , csrf_protect @csrf_exempt def
-my_view ( request ): @csrf_protect def protected_path ( request ): do_something
-() if some_condition (): return protected_path ( request ) else :
-do_something_else () Protecting a page that uses AJAX without an HTML form ¶ A
-page makes a POST request via AJAX, and the page does not have an HTML form with
-a csrf_token that would cause the required CSRF cookie to be sent. Solution: use
-ensure_csrf_cookie() on the view that sends the page. CSRF protection in
-reusable applications
+spring-boot-micrometer-metrics spring-boot-micrometer-observation
+spring-boot-micrometer-tracing spring-boot-micrometer-tracing-brave
+spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
+spring-boot-mustache spring-boot-neo4j spring-boot-netty
+spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
+spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
+spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
+spring-boot-rsocket spring-boot-security
+spring-boot-security-oauth2-authorization-server
+spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
+spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
+spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
+spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
+spring-boot-transaction spring-boot-validation spring-boot-webclient
+spring-boot-webflux spring-boot-webmvc spring-boot-webservices
+spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
+Test Slices Dependency Versions Managed Dependency Coordinates Version
+Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
+Reference Production-ready Features Endpoints Endpoints Actuator endpoints let
+you monitor and interact with your application. Spring Boot includes a number of
+built-in endpoints and lets you add your own. For example, the health endpoint
+provides basic application health information. You can control access to each
+individual endpoint and expose them (make them remotely accessible) over HTTP or
+JMX . An endpoint is considered to be available when access to it is permitted
+and it is exposed. The built-in endpoints are auto-configured only when they are
+available. Most applications choose exposure over HTTP, where the ID of the
+endpoint and a prefix of /actuator is mapped to a URL. For example, by default,
+the health endpoint is mapped to /actuator/health . To learn more about the
+Actuator’s endpoints and their request and response formats, see the API
+documentation . The following technology-agnostic endpoints are available: ID
+Description auditevents Exposes audit events information for the current
+application. Requires an AuditEventRepository bean. beans Displays a complete
+list of all the Spring beans in your application. caches Exposes available
+caches. conditions Shows the conditions that were evaluated on configuration and
+auto-configuration classes and the reasons why they did
 ----------------------------------------------------------------------------------------------------
-Index: 6346 <<"chunk_id": 4, "docno": 828>>
+Index: 8003 <<"chunk_id": 0, "docno": 1252>>
 
-Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
-Signals Listening to signals Defining and sending signals Disconnecting signals
-System check framework Writing your own checks External packages Localflavor
-Comments Formtools Asynchronous support Async views Async safety Async adapter
-functions Django’s Tasks framework Background Task fundamentals Configuring a
-Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
-data and databases How to provide initial data for models How to integrate
-Django with a legacy database How to create custom model fields How to create
-database migrations How to write custom lookups Templates and output How to
-create CSV output How to create PDF files How to override templates How to
-implement a custom template backend How to create custom template tags and
-filters Project configuration and management How to manage static files (e.g.
-images, JavaScript, CSS) How to configure and use logging How to manage error
-reporting How to delete a Django application Installing, deploying and upgrading
-How to upgrade Django to a newer version How to install Django on Windows How to
-deploy Django How to deploy static files Other guides How to authenticate using
-REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
-protection How to write a custom storage class How to create custom django-admin
-commands How to customize the shell command Django FAQ FAQ: General Why does
-this project exist? What does “Django” mean, and how do you pronounce it? Is
-Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
-does Django
+Overview (Spring Boot 4.1.0 API) Skip navigation links Overview Tree Deprecated
+Index Search Help Spring Boot 4.1.0 API Packages Package Description
+org.springframework.boot Core Spring Boot classes.
+org.springframework.boot.activemq.autoconfigure Auto-configuration for ActiveMQ.
+org.springframework.boot.actuate.audit Core actuator auditing classes.
+org.springframework.boot.actuate.audit.listener Actuator auditing listeners.
+org.springframework.boot.actuate.autoconfigure Classes for general actuator
+auto-configuration concerns.
+org.springframework.boot.actuate.autoconfigure.audit Auto-configuration for
+actuator audit concerns. org.springframework.boot.actuate.autoconfigure.beans
+Auto-configuration for actuator Spring Bean concerns.
+org.springframework.boot.actuate.autoconfigure.condition Auto-configuration for
+actuator condition concerns.
+org.springframework.boot.actuate.autoconfigure.context Auto-configuration for
+actuator Spring Context concerns.
+org.springframework.boot.actuate.autoconfigure.context.properties
+Auto-configuration for actuator property concerns.
+org.springframework.boot.actuate.autoconfigure.endpoint Core classes for
+actuator endpoint auto-configuration.
+org.springframework.boot.actuate.autoconfigure.endpoint.condition Actuator
+endpoint auto-configuration conditions.
+org.springframework.boot.actuate.autoconfigure.endpoint.expose Endpoint exposure
+logic used for auto-configuration and conditions.
+org.springframework.boot.actuate.autoconfigure.endpoint.jackson Actuator Jackson
+auto-configuration. org.springframework.boot.actuate.autoconfigure.endpoint.jmx
+Actuator JMX endpoint auto-configuration.
+org.springframework.boot.actuate.autoconfigure.endpoint.web Auto-configuration
+for the Actuator's web endpoints.
+org.springframework.boot.actuate.autoconfigure.env Auto-configuration for
+actuator Spring Environment concerns.
+org.springframework.boot.actuate.autoconfigure.info Auto-configuration for
+actuator info concerns. org.springframework.boot.actuate.autoconfigure.logging
+Auto-configuration for actuator logging concerns.
+org.springframework.boot.actuate.autoconfigure.management Auto-configuration for
+actuator management concerns.
+org.springframework.boot.actuate.autoconfigure.sbom Auto-configuration for
+actuator SBOM concerns.
+org.springframework.boot.actuate.autoconfigure.scheduling Auto-configuration for
+actuator scheduling concerns.
+org.springframework.boot.actuate.autoconfigure.startup Auto-configuration for
+actuator ApplicationStartup concerns.
+org.springframework.boot.actuate.autoconfigure.web Core classes for
+auto-configuration of actuator web concerns.
+org.springframework.boot.actuate.autoconfigure.web.exchanges Auto-configuration
+for actuator HTTP exchanges.
+org.springframework.boot.actuate.autoconfigure.web.mappings Classes for
+auto-configuration of actuator web request mapping concerns.
+org.springframework.boot.actuate.autoconfigure.web.server Actuator web server
+support. org.springframework.boot.actuate.beans Actuator support relating to
+Spring Beans. org.springframework.boot.actuate.context Actuator support relating
+to Spring Context. org.springframework.boot.actuate.context.properties Actuator
+support relating to external configuration properties.
+org.springframework.boot.actuate.endpoint Endpoint support.
+org.springframework.boot.actuate.endpoint.annotation Annotation support for
+actuator endpoints. org.springframework.boot.actuate.endpoint.invoke Interfaces
+and classes relating to invoking operation methods.
+org.springframework.boot.actuate.endpoint.invoke.convert Converter support for
+actuator endpoints. org.springframework.boot.actuate.endpoint.invoke.reflect
+Endpoint reflection support.
+org.springframework.boot.actuate.endpoint.invoker.cache Caching support for
+actuator endpoints. org.springframework.boot.actuate.endpoint.jackson Jackson
+support classes for actuator endpoints.
+org.springframework.boot.actuate.endpoint.jmx JMX support for actuator
 ----------------------------------------------------------------------------------------------------
-Index: 50848 <<"chunk_id": 1, "docno": 8103>>
+Index: 27509 <<"chunk_id": 2, "docno": 4443>>
 
-to render the response so that {% csrf_token %} will work properly. If you’re
-using the render() function, generic views, or contrib apps, you are covered
-already since these all use RequestContext . Using CSRF protection with AJAX ¶
-While the above method can be used for AJAX POST requests, it has some
-inconveniences: you have to remember to pass the CSRF token in as POST data with
-every POST request. For this reason, there is an alternative method: on each
-XMLHttpRequest, set a custom X-CSRFToken header (as specified by the
-CSRF_HEADER_NAME setting) to the value of the CSRF token. This is often easier
-because many JavaScript frameworks provide hooks that allow headers to be set on
-every request. First, you must get the CSRF token. How to do that depends on
-whether or not the CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY settings are
-enabled. Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
-False ¶ The recommended source for the token is the csrftoken cookie, which will
-be set if you’ve enabled CSRF protection for your views as outlined above. The
-CSRF token cookie is named csrftoken by default, but you can control the cookie
-name via the CSRF_COOKIE_NAME setting. You can acquire the token like this:
-function getCookie ( name ) { let cookieValue = null ; if ( document . cookie &&
-document . cookie !== '' ) { const cookies = document . cookie . split ( ';' );
-for ( let i = 0 ; i < cookies . length ; i ++ ) {
+PollableMessageSource inputSource(); Start using it in your application:
+@Autowire PollableMessageSource inputSource; . . .
+inputSource.poll(System.out::println); More information can be found in the
+Using Polled Consumers section of the reference guide. Actuator and Web Are Now
+Optional To simplify the footprint and to provide greater flexibility with
+regard to the choice of web frameworks (imperative versus webflux), we've made
+both Spring Boot Actuator and Web optional dependencies and do not include them
+by default. However, you can add them as application dependencies if you need
+to, by including the following dependency elements: <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-web</artifactId> </dependency> <dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-actuator</artifactId> </dependency> New Binding
+Actuator Endpoints You can now both visualize as well as control bindings by
+using new actuator endpoints. Set the
+management.endpoints.web.exposure.include=bindings Boot property and enable one
+of the web frameworks and actuator by including their respective starters as
+dependencies in your project (as described in Actuator and Web Are Now Optional
+) Start your application and access the following URL to visualize the current
+bindings: http://localhost:8080/actuator/bindings From that URL, you can receive
+output similar to the following: [ { name: "myDestination", group: "myGroup",
+pausable: false, state: "running", extendedInfo: { bindingDestination:
+"RabbitConsumerDestination{queue=Queue [name=myDestination.myGroup,
+durable=true, . . .}", ExtendedConsumerProperties: { concurrency: 1,
+instanceCount: 1, maxAttempts: 3, backOffInitialInterval: 1000,
+backOffMaxInterval: 10000, backOffMultiplier: 2, extension: { exchangeType:
+"topic", declareExchange: true, . . . You can also visualize individual bindings
+as well as control their lifecycle (such as stop, start, pause, and resume).
+More details can be found in the Binding Visualization and Control section of
+the user guide. Micrometer support
 ----------------------------------------------------------------------------------------------------
-Index: 18583 <<"chunk_id": 5, "docno": 2457>>
+Index: 8004 <<"chunk_id": 1, "docno": 1252>>
 
-{} # ... return render ( request , "a_template.html" , c ) ensure_csrf_cookie (
-view ) ¶ This decorator forces a view to send the CSRF cookie. Settings ¶ A
-number of settings can be used to control Django’s CSRF behavior:
-CSRF_COOKIE_AGE CSRF_COOKIE_DOMAIN CSRF_COOKIE_HTTPONLY CSRF_COOKIE_NAME
-CSRF_COOKIE_PATH CSRF_COOKIE_SAMESITE CSRF_COOKIE_SECURE CSRF_FAILURE_VIEW
-CSRF_HEADER_NAME CSRF_TRUSTED_ORIGINS CSRF_USE_SESSIONS Frequently Asked
-Questions ¶ Is posting an arbitrary CSRF token pair (cookie and POST data) a
-vulnerability? ¶ No, this is by design. Without a man-in-the-middle attack,
-there is no way for an attacker to send a CSRF token cookie to a victim’s
-browser, so a successful attack would need to obtain the victim’s browser’s
-cookie via XSS or similar, in which case an attacker usually doesn’t need CSRF
-attacks. Some security audit tools flag this as a problem but as mentioned
-before, an attacker cannot steal a user’s browser’s CSRF cookie. “Stealing” or
-modifying your own token using Firebug, Chrome dev tools, etc. isn’t a
-vulnerability. Is it a problem that Django’s CSRF protection isn’t linked to a
-session by default? ¶ No, this is by design. Not linking CSRF protection to a
-session allows using the protection on sites such as a pastebin that allow
-submissions from anonymous users which don’t have a session. If you wish to
-store the CSRF token in the user’s session, use the CSRF_USE_SESSIONS setting.
-Why might a user encounter a CSRF validation failure after logging in? ¶ For
-security reasons, CSRF tokens are rotated each time a user logs in. Any page
-with a form generated
+for actuator endpoints. org.springframework.boot.actuate.endpoint.invoke.reflect
+Endpoint reflection support.
+org.springframework.boot.actuate.endpoint.invoker.cache Caching support for
+actuator endpoints. org.springframework.boot.actuate.endpoint.jackson Jackson
+support classes for actuator endpoints.
+org.springframework.boot.actuate.endpoint.jmx JMX support for actuator
+endpoints. org.springframework.boot.actuate.endpoint.jmx.annotation Annotation
+support for actuator JMX endpoints.
+org.springframework.boot.actuate.endpoint.web Web support for actuator
+endpoints. org.springframework.boot.actuate.endpoint.web.annotation Annotation
+support for actuator web endpoints. org.springframework.boot.actuate.env
+Actuator support for Spring Framework's Environment .
+org.springframework.boot.actuate.info Classes for application info.
+org.springframework.boot.actuate.logging Actuator support for logging.
+org.springframework.boot.actuate.management Actuator support for JVM management.
+org.springframework.boot.actuate.sbom Actuator support for SBOMs.
+org.springframework.boot.actuate.scheduling Actuator scheduling support.
+org.springframework.boot.actuate.security Actuator support for security.
+org.springframework.boot.actuate.startup Actuator support for ApplicationStartup
+. org.springframework.boot.actuate.web.exchanges Actuator HTTP exchanges
+support. org.springframework.boot.actuate.web.mappings Actuator web request
+mappings support. org.springframework.boot.admin Administration support for
+Spring Boot applications. org.springframework.boot.amqp.autoconfigure
+Auto-configuration for RabbitMQ.
+org.springframework.boot.amqp.autoconfigure.health Auto-configuration for
+RabbitMQ health. org.springframework.boot.amqp.autoconfigure.metrics
+Auto-configuration for RabbitMQ metrics. org.springframework.boot.amqp.health
+Health integration for AMQP and RabbitMQ. org.springframework.boot.amqp.metrics
+Metrics for AMQP and RabbitMQ. org.springframework.boot.ansi Support classes to
+provide ANSI color output. org.springframework.boot.artemis.autoconfigure
+Auto-configuration for Artemis. org.springframework.boot.autoconfigure Spring
+Boot's auto-configuration capabilities.
+org.springframework.boot.autoconfigure.admin Auto-configuration for
+admin-related features. org.springframework.boot.autoconfigure.aop
+Auto-configuration for Spring AOP.
+org.springframework.boot.autoconfigure.availability Auto-configuration for
+application availability features. org.springframework.boot.autoconfigure.cache
+Auto-configuration base classes for Caching support.
+org.springframework.boot.autoconfigure.condition @Condition annotations and
+supporting classes. org.springframework.boot.autoconfigure.container Support
+classes related to auto-configuration involving containers.
+org.springframework.boot.autoconfigure.context Auto-configuration for the Spring
+context. org.springframework.boot.autoconfigure.data Auto-configuration base
+classes for Spring Data. org.springframework.boot.autoconfigure.info
+Auto-configuration for project information.
+org.springframework.boot.autoconfigure.jmx Auto-configuration for JMX.
+org.springframework.boot.autoconfigure.logging Auto-configuration for logging.
+org.springframework.boot.autoconfigure.preinitialize Capabilities to
+preinitialize code in the background to improve startup performance.
+org.springframework.boot.autoconfigure.service.connection Support for service
+connections that affect auto-configuration.
+org.springframework.boot.autoconfigure.ssl Auto-configuration for SSL bundles.
+org.springframework.boot.autoconfigure.task Auto-configuration for task
+execution and scheduling. org.springframework.boot.autoconfigure.template Base
+classes for template Auto-configuration.
+org.springframework.boot.autoconfigure.web Auto-configuration for
 ----------------------------------------------------------------------------------------------------
-Index: 50852 <<"chunk_id": 5, "docno": 8103>>
+Index: 7395 <<"chunk_id": 6, "docno": 1123>>
 
-without either one. In this case, on any views that will require a CSRF token to
-be inserted you should use the django.views.decorators.csrf.csrf_protect()
-decorator first: from django.views.decorators.cache import cache_page from
-django.views.decorators.csrf import csrf_protect @cache_page ( 60 * 15 )
-@csrf_protect def my_view ( request ): ... If you are using class-based views,
-you can refer to Decorating class-based views . Testing and CSRF protection ¶
-The CsrfViewMiddleware will usually be a big hindrance to testing view
-functions, due to the need for the CSRF token which must be sent with every POST
-request. For this reason, Django’s HTTP client for tests has been modified to
-set a flag on requests which relaxes the middleware and the csrf_protect
-decorator so that they no longer rejects requests. In every other respect (e.g.
-sending cookies etc.), they behave the same. If, for some reason, you want the
-test client to perform CSRF checks, you can create an instance of the test
-client that enforces CSRF checks: >>> from django.test import Client >>>
-csrf_client = Client ( enforce_csrf_checks = True ) Edge cases ¶ Certain views
-can have unusual requirements that mean they don’t fit the normal pattern
-envisaged here. A number of utilities can be useful in these situations. The
-scenarios they might be needed in are described in the following section.
-Disabling CSRF protection for just a few views ¶ Most views requires CSRF
-protection, but a few do not. Solution: rather than disabling the middleware and
-applying csrf_protect to all the views that need it, enable the
+} @RefreshScope @RestController class MessageRestController {
+@Value("${message:Hello default}") private String message;
+@RequestMapping("/message") String getMessage() { return this.message; } } Test
+the Application You can test the end-to-end result by starting the Config
+Service first and then, once it is running, starting the client. Visit the
+client app in the browser at http://localhost:8080/message . There, you should
+see Hello world in the response. Change the message key in the
+a-bootiful-client.properties file in the Git repository to something different (
+Hello Spring! , perhaps?). You can confirm that the Config Server sees the
+change by visiting http://localhost:8888/a-bootiful-client/default . You need to
+invoke the refresh Spring Boot Actuator endpoint in order to force the client to
+refresh itself and draw in the new value. Spring Boot’s Actuator exposes
+operational endpoints (such as health checks and environment information) about
+an application. To use it, you must add
+org.springframework.boot:spring-boot-starter-actuator to the client
+application’s classpath. You can invoke the refresh Actuator endpoint by sending
+an empty HTTP POST to the client’s refresh endpoint:
+http://localhost:8080/actuator/refresh . Then you can confirm it worked by
+visting the http://localhost:8080/message endpoint. The following command
+invokes the Actuator’s refresh command: $ curl -X POST
+localhost:8080/actuator/refresh -d {} -H "Content-Type: application/json" We set
+management.endpoints.web.exposure.include=* in the client application to make
+this is easy to test (since Spring Boot 2.0, the Actuator endpoints are not
+exposed by default). By default, you can still access them over JMX if you do
+not set the flag. Summary Congratulations! You have just used Spring to
+centralize configuration for all of your services by
 ----------------------------------------------------------------------------------------------------
-Index: 50851 <<"chunk_id": 4, "docno": 8103>>
+Index: 216 <<"chunk_id": 4, "docno": 27>>
 
-Use of the decorator by itself is not recommended , since if you forget to use
-it, you will have a security hole. The ‘belt and braces’ strategy of using both
-is fine, and will incur minimal overhead. Handling rejected requests ¶ By
-default, a ‘403 Forbidden’ response is sent to the user if an incoming request
-fails the checks performed by CsrfViewMiddleware . This should usually only be
-seen when there is a genuine Cross Site Request Forgery, or when, due to a
-programming error, the CSRF token has not been included with a POST form. The
-error page, however, is not very friendly, so you may want to provide your own
-view for handling this condition. To do this, set the CSRF_FAILURE_VIEW setting.
-CSRF failures are logged as warnings to the django.security.csrf logger. Using
-CSRF protection with caching ¶ If the csrf_token template tag is used by a
-template (or the get_token function is called some other way),
-CsrfViewMiddleware will add a cookie and a Vary: Cookie header to the response.
-This means that the middleware will play well with the cache middleware if it is
-used as instructed ( UpdateCacheMiddleware goes before all other middleware).
-However, if you use cache decorators on individual views, the CSRF middleware
-will not yet have been able to set the Vary header or the CSRF cookie, and the
-response will be cached without either one. In this case, on any views that will
-require a CSRF token to be inserted you should use the
-django.views.decorators.csrf.csrf_protect() decorator first:
+Spring Boot auto-configuration tries its best to “do the right thing”, but
+sometimes things fail, and it can be hard to tell why. There is a really useful
+ConditionEvaluationReport available in any Spring Boot ApplicationContext . You
+can see it if you enable DEBUG logging output. If you use the
+spring-boot-actuator (see the Actuator section), there is also a conditions
+endpoint that renders the report in JSON. Use that endpoint to debug the
+application and see what features have been added (and which have not been
+added) by Spring Boot at runtime. Many more questions can be answered by looking
+at the source code and the API documentation. When reading the code, remember
+the following rules of thumb: Look for classes called *AutoConfiguration and
+read their sources. Pay special attention to the @Conditional* annotations to
+find out what features they enable and when. Add --debug to the command line or
+the System property -Ddebug to get a log on the console of all the
+auto-configuration decisions that were made in your app. In a running
+application with actuator enabled, look at the conditions endpoint (
+/actuator/conditions or the JMX equivalent) for the same information. Look for
+classes that are @ConfigurationProperties (such as ServerProperties ) and read
+from there the available external configuration options. The
+@ConfigurationProperties annotation has a name attribute that acts as a prefix
+to external properties. Thus, ServerProperties has prefix="server" and its
+configuration properties are server.port , server.address , and others. In a
+running application with actuator enabled, look at the configprops endpoint.
+Look
 ----------------------------------------------------------------------------------------------------
-Index: 18579 <<"chunk_id": 1, "docno": 2457>>
+Index: 5392 <<"chunk_id": 25, "docno": 790>>
 
-the steps outlined in How to use Django’s CSRF protection . How it works ¶ The
-CSRF protection is based on the following things: A CSRF cookie that is a random
-secret value, which other sites will not have access to. CsrfViewMiddleware
-sends this cookie with the response whenever django.middleware.csrf.get_token()
-is called. It can also send it in other cases. For security reasons, the value
-of the secret is changed each time a user logs in. A hidden form field with the
-name ‘csrfmiddlewaretoken’, present in all outgoing POST forms. In order to
-protect against BREACH attacks, the value of this field is not simply the
-secret. It is scrambled differently with each response using a mask. The mask is
-generated randomly on every call to get_token() , so the form field value is
-different each time. This part is done by the csrf_token template tag. For all
-incoming requests that are not using HTTP GET, HEAD, OPTIONS or TRACE, a CSRF
-cookie must be present, and the ‘csrfmiddlewaretoken’ field must be present and
-correct. If it isn’t, the user will get a 403 error. When validating the
-‘csrfmiddlewaretoken’ field value, only the secret, not the full token, is
-compared with the secret in the cookie value. This allows the use of
-ever-changing tokens. While each request may use its own token, the secret
-remains common to all. This check is done by CsrfViewMiddleware .
-CsrfViewMiddleware verifies the Origin header , if provided by the browser,
-against the current host and the CSRF_TRUSTED_ORIGINS setting. This provides
+Probes . Depending on your Kubernetes configuration , the kubelet calls those
+probes and reacts to the result. By default, Spring Boot manages your
+Application Availability state. If deployed in a Kubernetes environment,
+actuator gathers the “Liveness” and “Readiness” information from the
+ApplicationAvailability interface and uses that information in dedicated health
+indicators : LivenessStateHealthIndicator and ReadinessStateHealthIndicator .
+These indicators are shown on the global health endpoint ( "/actuator/health" ).
+They are also exposed as separate HTTP Probes by using health groups :
+"/actuator/health/liveness" and "/actuator/health/readiness" . You can then
+configure your Kubernetes infrastructure with the following endpoint
+information: livenessProbe: httpGet: path: "/actuator/health/liveness" port:
+<actuator-port> failureThreshold: ... periodSeconds: ... readinessProbe:
+httpGet: path: "/actuator/health/readiness" port: <actuator-port>
+failureThreshold: ... periodSeconds: ... <actuator-port> should be set to the
+port that the actuator endpoints are available on. It could be the main web
+server port or a separate management port if the "management.server.port"
+property has been set. These health groups are automatically enabled. You can
+disable them by using the management.endpoint.health.probes.enabled
+configuration property. If an application takes longer to start than the
+configured liveness period, Kubernetes mentions the "startupProbe" as a possible
+solution . Generally speaking, the "startupProbe" is not necessarily needed here
+as the "readinessProbe" fails until all startup tasks are done. This means your
+application will not receive traffic until it is ready. However, if your
+application takes a long time to start, consider configuring a "startupProbe"
+that uses the liveness HTTP probe to make sure that Kubernetes won’t kill your
+application while it is in the process of
 ----------------------------------------------------------------------------------------------------
-Index: 18578 <<"chunk_id": 0, "docno": 2457>>
+Index: 1092 <<"chunk_id": 5, "docno": 153>>
 
-Cross Site Request Forgery protection | Django documentation | Django Skip to
-main content Django The web framework for perfectionists with deadlines. Menu
-Main navigation Overview Download Documentation News Code Issues Community
-Foundation ♥ Donate Search Submit Toggle theme (current theme: auto) Toggle
-theme (current theme: light) Toggle theme (current theme: dark) Toggle Light /
-Dark / Auto color theme Documentation Getting Help Language: en zh-hans sv pt-br
-pl ko ja it id fr es el Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1
-4.0 3.2 3.1 3.0 2.2 2.1 2.0 1.11 1.10 1.9 1.8 Cross Site Request Forgery
-protection ¶ The CSRF middleware and template tag provides easy-to-use
-protection against Cross Site Request Forgeries . This type of attack occurs
-when a malicious website contains a link, a form button or some JavaScript that
-is intended to perform some action on your website, using the credentials of a
-logged-in user who visits the malicious site in their browser. A related type of
-attack, ‘login CSRF’, where an attacking site tricks a user’s browser into
-logging into a site with someone else’s credentials, is also covered. The first
-defense against CSRF attacks is to ensure that GET requests (and other ‘safe’
-methods, as defined by RFC 9110 Section 9.2.1 ) are side effect free. Requests
-via ‘unsafe’ methods, such as POST, PUT, and DELETE, can then be protected by
-the steps outlined in How to use Django’s CSRF protection . How it works ¶ The
-CSRF protection is based on the following things: A
+can be used to override access rules for actuator endpoints and static
+resources. EndpointRequest can be used to create a RequestMatcher that is based
+on the management.endpoints.web.base-path property. PathRequest can be used to
+create a RequestMatcher for resources in commonly used locations. WebFlux
+Security Similar to Spring MVC applications, you can secure your WebFlux
+applications by adding the spring-boot-starter-security dependency. The default
+security configuration is implemented in ReactiveWebSecurityAutoConfiguration
+and ReactiveUserDetailsServiceAutoConfiguration . In addition to reactive web
+applications, the latter is also auto-configured when RSocket is in use.
+ReactiveWebSecurityAutoConfiguration imports WebFluxSecurityConfiguration for
+web security. ReactiveUserDetailsServiceAutoConfiguration auto-configures
+authentication. To completely switch off the default web application security
+configuration, including Actuator security, add a bean of type
+WebFilterChainProxy (doing so does not disable the ReactiveUserDetailsService
+configuration). To also switch off the ReactiveUserDetailsService configuration,
+add a bean of type ReactiveUserDetailsService or ReactiveAuthenticationManager .
+The auto-configuration will also back off when any of the following Spring
+Security modules is on the classpath: spring-security-oauth2-client
+spring-security-oauth2-resource-server To use ReactiveUserDetailsService in
+addition to one or more of these dependencies, define your own
+MapReactiveUserDetailsService bean. Access rules and the use of multiple Spring
+Security components such as OAuth 2 Client and Resource Server can be configured
+by adding a custom SecurityWebFilterChain bean. Spring Boot provides convenience
+methods that can be used to override access rules for actuator endpoints and
+static resources. EndpointRequest can be used to create a
+ServerWebExchangeMatcher that is based on the management.endpoints.web.base-path
+property. PathRequest can be used to create a ServerWebExchangeMatcher for
+resources in commonly used locations. For example, you can customize
 ----------------------------------------------------------------------------------------------------
-Index: 18584 <<"chunk_id": 6, "docno": 2457>>
+Index: 5375 <<"chunk_id": 8, "docno": 790>>
 
-validation failure after logging in? ¶ For security reasons, CSRF tokens are
-rotated each time a user logs in. Any page with a form generated before a login
-will have an old, invalid CSRF token and need to be reloaded. This might happen
-if a user uses the back button after a login or if they log in a different
-browser tab. Previous page and next page Content Security Policy Databases Back
-to Top Additional Information Support Django! Andrew Cordery donated to the
-Django Software Foundation to support Django development. Donate today! Contents
-Cross Site Request Forgery protection How it works Limitations Utilities
-Settings Frequently Asked Questions Is posting an arbitrary CSRF token pair
-(cookie and POST data) a vulnerability? Is it a problem that Django’s CSRF
-protection isn’t linked to a session by default? Why might a user encounter a
-CSRF validation failure after logging in? Browse Prev: Content Security Policy
-Next: Databases Table of contents General Index Python Module Index You are
-here: Django 6.0 documentation API Reference Cross Site Request Forgery
-protection Getting help FAQ Try the FAQ — it's got answers to many common
-questions. Index , Module Index , or Table of Contents Handy when looking for
-specific information. Django Discord Server Join the Django Discord Community.
-Official Django Forum Join the community on the Django Forum. Ticket tracker
-Report bugs with Django or Django documentation in our ticket tracker. Download:
-Offline (Django 6.0): HTML | PDF | ePub Provided by Read the Docs . Diamond and
-Platinum Members Sentry Monitor
+convenient RequestMatcher objects that you can use in combination with Spring
+Security. A typical Spring Security configuration might look something like the
+following example: Java Kotlin import
+org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
+import org.springframework.context.annotation.Bean; import
+org.springframework.context.annotation.Configuration; import
+org.springframework.security.config.annotation.web.builders.HttpSecurity; import
+org.springframework.security.web.SecurityFilterChain; import static
+org.springframework.security.config.Customizer.withDefaults;
+@Configuration(proxyBeanMethods = false) public class MySecurityConfiguration {
+@Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+http.securityMatcher(EndpointRequest.toAnyEndpoint());
+http.authorizeHttpRequests((requests) ->
+requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
+http.httpBasic(withDefaults()); return http.build(); } } import
+org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest
+import org.springframework.context.annotation.Bean import
+org.springframework.context.annotation.Configuration import
+org.springframework.security.config.Customizer.withDefaults import
+org.springframework.security.config.annotation.web.builders.HttpSecurity import
+org.springframework.security.web.SecurityFilterChain
+@Configuration(proxyBeanMethods = false) class MySecurityConfiguration { @Bean
+fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+http.securityMatcher(EndpointRequest.toAnyEndpoint()).authorizeHttpRequests {
+requests -> requests.anyRequest().hasRole("ENDPOINT_ADMIN") }
+http.httpBasic(withDefaults()) return http.build() } } The preceding example
+uses EndpointRequest.toAnyEndpoint() to match a request to any endpoint and then
+ensures that all have the ENDPOINT_ADMIN role. Several other matcher methods are
+also available on EndpointRequest . See the API documentation for details. When
+matching for Actuator endpoints, EndpointRequest.to("endpoint") will consider
+the endpoint root and all its subpaths, effectively matching
+"/actuator/endpoint/**" even if the endpoint does not declare nested routes. If
+you deploy applications behind a firewall, you may prefer that all your actuator
+endpoints can be accessed without requiring authentication. You can do so by
+changing the management.endpoints.web.exposure.include property, as follows:
+Properties YAML management.endpoints.web.exposure.include=* management:
+endpoints: web: exposure: include: "*" Additionally, if Spring Security is
+present, you would need to add custom security configuration that allows
+unauthenticated access to the endpoints, as the following example shows: Java
+Kotlin import
+org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
+import org.springframework.context.annotation.Bean; import
+org.springframework.context.annotation.Configuration; import
+org.springframework.security.config.annotation.web.builders.HttpSecurity; import
+org.springframework.security.web.SecurityFilterChain;
+@Configuration(proxyBeanMethods = false) public class MySecurityConfiguration {
+@Bean public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+http.securityMatcher(EndpointRequest.toAnyEndpoint());
+http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 ----------------------------------------------------------------------------------------------------
-Index: 36280 <<"chunk_id": 7, "docno": 5177>>
+Index: 1091 <<"chunk_id": 4, "docno": 153>>
 
-coming from the evil website. Since the session is no longer present in the
-transfer request coming from the evil website, the application is protected from
-the CSRF attack. There are some important considerations to be aware of when
-using SameSite attribute to protect against CSRF attacks. Setting the SameSite
-attribute to Strict provides a stronger defense but can confuse users. Consider
-a user who stays logged into a social media site hosted at social.example.com .
-The user receives an email at email.example.org that includes a link to the
-social media site. If the user clicks on the link, they would rightfully expect
-to be authenticated to the social media site. However, if the SameSite attribute
-is Strict , the cookie would not be sent and so the user would not be
-authenticated. Another obvious consideration is that, in order for the SameSite
-attribute to protect users, the browser must support the SameSite attribute.
-Most modern browsers do support the SameSite attribute . However, older browsers
-that are still in use may not. For this reason, we generally recommend using the
-SameSite attribute as a defense in depth rather than the sole protection against
-CSRF attacks. When to use CSRF protection When should you use CSRF protection?
-Our recommendation is to use CSRF protection for any request that could be
-processed by a browser by normal users. If you are creating a service that is
-used only by non-browser clients, you likely want to disable CSRF protection.
-CSRF protection and JSON A common question is “do
+and spring.security.user.password . The basic features you get by default in a
+web application are: A UserDetailsService (or ReactiveUserDetailsService in case
+of a WebFlux application) bean with in-memory store and a single user with a
+generated password (see SecurityProperties.User for the properties of the user).
+Form-based login or HTTP Basic security (depending on the Accept header in the
+request) for the entire application (including actuator endpoints if actuator is
+on the classpath). A DefaultAuthenticationEventPublisher for publishing
+authentication events. You can provide a different AuthenticationEventPublisher
+by adding a bean for it. MVC Security The default security configuration is
+implemented in SecurityAutoConfiguration and UserDetailsServiceAutoConfiguration
+. SecurityAutoConfiguration imports SpringBootWebSecurityConfiguration for web
+security and UserDetailsServiceAutoConfiguration for authentication. To
+completely switch off the default web application security configuration,
+including Actuator security, or to combine multiple Spring Security components
+such as OAuth2 Client and Resource Server, add a bean of type
+SecurityFilterChain (doing so does not disable the UserDetailsService
+configuration). To also switch off the UserDetailsService configuration, add a
+bean of type UserDetailsService , AuthenticationProvider , or
+AuthenticationManager . The auto-configuration of a UserDetailsService will also
+back off when any of the following Spring Security modules is on the classpath:
+spring-security-oauth2-client spring-security-oauth2-resource-server
+spring-security-saml2-service-provider To use UserDetailsService in addition to
+one or more of these dependencies, define your own InMemoryUserDetailsManager
+bean. Access rules can be overridden by adding a custom SecurityFilterChain
+bean. Spring Boot provides convenience methods that can be used to override
+access rules for actuator endpoints and static resources. EndpointRequest can be
+used to create a RequestMatcher that is based on
 ----------------------------------------------------------------------------------------------------
-Index: 13551 <<"chunk_id": 11, "docno": 1811>>
+Index: 5378 <<"chunk_id": 11, "docno": 790>>
 
-filename="app/page.tsx" async function deletePost(id: number) { "use server"; //
-verify id and that you can still delete it ... } export async function Page({
-slug }) { const post = await getPost(slug); return Delete ; } The principle is
-that the argument list to Server Actions ( "use server" ) must always be treated
-as hostile and the input has to be verified. CSRF All Server Actions can be
-invoked by plain , which could open them up to CSRF attacks. Behind the scenes,
-Server Actions are always implemented using POST and only this HTTP method is
-allowed to invoke them. This alone prevents most CSRF vulnerabilities in modern
-browsers, particularly due to Same-Site cookies being the default. As an
-additional protection Server Actions in Next.js 14 also compares the Origin
-header to the Host header (or X-Forwarded-Host ). If they don't match, the
-Action will be rejected. In other words, Server Actions can only be invoked on
-the same host as the page that hosts it. Very old unsupported and outdated
-browsers that don't support the Origin header could be at risk. Server Actions
-doesn't use CSRF tokens, therefore HTML sanitization is crucial. When Custom
-Route Handlers ( route.tsx ) are used instead, extra auditing can be necessary
-since CSRF protection has to be done manually there. The traditional rules apply
-there. Error Handling Bugs happen. When errors are thrown on the Server they are
-eventually rethrown in Client code to be handled in the UI. The error messages
-and stack traces might end up
+beans have been defined. Hypermedia for Actuator Web Endpoints A “discovery
+page” is added with links to all the endpoints. The “discovery page” is
+available on /actuator by default. To disable the “discovery page”, add the
+following property to your application properties: Properties YAML
+management.endpoints.web.discovery.enabled=false management: endpoints: web:
+discovery: enabled: false When a custom management context path is configured,
+the “discovery page” automatically moves from /actuator to the root of the
+management context. For example, if the management context path is /management ,
+the discovery page is available from /management . When the management context
+path is set to / , the discovery page is disabled to prevent the possibility of
+a clash with other mappings. CORS Support Cross-origin resource sharing (CORS)
+is a W3C specification that lets you specify in a flexible way what kind of
+cross-domain requests are authorized. If you use Spring MVC or Spring WebFlux,
+you can configure Actuator’s web endpoints to support such scenarios. CORS
+support is disabled by default and is only enabled once you have set the
+management.endpoints.web.cors.allowed-origins property. The following
+configuration permits GET and POST calls from the example.com domain: Properties
+YAML management.endpoints.web.cors.allowed-origins=https://example.com
+management.endpoints.web.cors.allowed-methods=GET,POST management: endpoints:
+web: cors: allowed-origins: "https://example.com" allowed-methods: "GET,POST"
+See CorsEndpointProperties for a complete list of options. JSON When working
+with JSON, Jackson is used for serialization and deserialization. By default, an
+isolated JsonMapper is used. This isolation means that it does not share the
+same configuration as the application’s JsonMapper and it is not affected by
+spring.jackson.* properties. To disable this behavior and configure
 ----------------------------------------------------------------------------------------------------
-Index: 58011 <<"chunk_id": 3, "docno": 9464>>
+Index: 23966 <<"chunk_id": 1, "docno": 3648>>
 
-_csrf parameter with a random value. Now the evil website will not be able to
-guess the correct value for the _csrf parameter (which must be explicitly
-provided on the evil website) and the transfer will fail when the server
-compares the actual token to the expected token. Using Spring Security CSRF
-Support So what are the steps necessary to use Spring Security's to protect our
-site against CSRF attacks? The steps to using Spring Security's CSRF protection
-are outlined below: Use proper HTTP verbs Configure CSRF Protection Include CSRF
-Token Use proper HTTP Verbs The first step to protecting against CSRF attacks is
-to ensure your website uses proper HTTP verbs. Specifically, before Spring
-Security's CSRF support can be of use, you need to be certain that your
-application is using PATCH, POST, PUT, and/or DELETE for anything that modifies
-state. This is not a limitation of Spring Security's support, but instead a
-general requirement for proper CSRF prevention. Configuring CSRF Protection The
-next step is to include Spring Security's CSRF protection within your
-application. If you are using the XML configuration, this can be done using the
-<csrf /> element: <http ...> ... <csrf /> </http> CSRF protection is enabled by
-default with Java configuration. If you would like to disable CSRF, the
-corresponding Java configuration can be seen below: @EnableWebSecurity
-@Configuration public class WebSecurityConfig extends
-WebSecurityConfigurerAdapter { @Override protected void configure(HttpSecurity
-http) throws Exception { http .csrf().disable() ...; } } Include CSRF token Form
-Submissions If you are using Spring MVC form:form tag,
+the effects of the management.security.enabled flag based on whether Spring
+Security was on the classpath or not was quite confusing. There were a number of
+properties under security.* and management.security.* that were applicable only
+to the auto-configuration provided by Spring Boot. For example, if
+security.basic.enabled was set to false , setting security.sessions would have
+absolutely no effect and this turned out to be quite misleading. Improvements in
+2.0 In Spring Boot 2.0, our main goal was to greatly simplify the default
+security configuration and and make adding custom security easy. Simplified
+default configuration Providing sensible defaults for security is challenging.
+We've decided to opt for the most secure default, which is, secure everything,
+even public and static resources. By default, if Spring Security is on the
+classpath, Spring Boot will add @EnableWebSecurity , and rely on Spring
+Security's content-negotiation to decide which authentication mechanism to use.
+A default user with a generated password will be provided. If actuator is on the
+classpath, the same default security configuration will also apply to actuator
+endpoints. In order to prevent actuators from exposing sensitive data
+accidentally, most web endpoints will be disabled by default ( status and info
+are enabled by default however). Users need to take an explicit step to enable
+those web endpoints. This behavior is consistent, regardless of whether Spring
+Security is present on the classpath or not. Consistent customization Once users
+decide that they want to add custom security, the default security configuration
+provided by Spring Boot will back off completely. At this point, users
 ----------------------------------------------------------------------------------------------------
-Index: 48479 <<"chunk_id": 4, "docno": 7649>>
+Index: 23967 <<"chunk_id": 2, "docno": 3648>>
 
-performance Using different versions of available software Serializing Django
-objects Serializing data Deserializing data Serialization formats Natural keys
-Django settings The basics Designating the settings Default settings Using
-settings in Python code Altering settings at runtime Security Available settings
-Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
-Signals Listening to signals Defining and sending signals Disconnecting signals
-System check framework Writing your own checks External packages Localflavor
-Comments Formtools Asynchronous support Async views Async safety Async adapter
-functions Django’s Tasks framework Background Task fundamentals Configuring a
-Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
-data and databases How to provide initial data for models How to integrate
-Django with a legacy database How to create custom model fields How to create
-database migrations How to write custom lookups Templates and output How to
-create CSV output How to create PDF files How to override templates How to
-implement a custom template backend How to create custom template tags and
-filters Project configuration and management How to manage static files (e.g.
-images, JavaScript, CSS) How to configure and use logging How to manage error
-reporting How to delete a Django application Installing, deploying and upgrading
-How to upgrade Django to a newer version Πώς να εγκαταστήσετε το Django στα
-Windows How to deploy Django How to deploy static files Other guides How to
-authenticate using REMOTE_USER How to use Django’s Content Security Policy How
-to use Django’s CSRF protection How to write a custom storage class How to
-create custom django-admin commands How
+users decide that they want to add custom security, the default security
+configuration provided by Spring Boot will back off completely. At this point,
+users need to explicitly define all the bits they want to secure. This means
+security configuration is now in one place and avoids any kind of ordering
+issues with existing WebSecurityConfigurerAdapter s. We provide dedicated
+helpers to make your configuration more readable and explicit. For management
+endpoints and static resources, Spring Boot provides convenience factories that
+will supply the right RequestMatcher . For management endpoints, the
+RequestMatcher will be created based on the management.context-path . Using
+RequestMatcher s gives users the flexibility to secure the application using
+existing Spring Security expressions such as permitAll , hasRole etc. Here is an
+example of a custom security: http .authorizeRequests() // 1
+.requestMatchers(EndpointRequest.to("status", "info")) .permitAll() // 2
+.requestMatchers(EndpointRequest.toAnyEndpoint()) .hasRole("ACTUATOR") // 3
+.requestMatchers(StaticResourceRequest.toCommonLocations()) .permitAll() // 4
+.antMatchers("/**") .hasRole("USER") .and() ... // additional configuration
+/status and /info endpoints do not require authentication. All other actuator
+endpoints are protected by the ACTUATOR role. Common static resource locations
+are open to all. All other application endpoints are protected by the USER role.
+We have reduced SecurityProperties to a minimum so that there is no confusion
+about which properties are used only by the auto-configuration and which ones
+get used even if the default security is turned off. As mentioned before, Spring
+Boot provides a default user with a generated password. If you want to configure
+your own user, you can define a bean of type UserDetailsService as follows:
+@Bean
 ----------------------------------------------------------------------------------------------------
-Index: 36281 <<"chunk_id": 8, "docno": 5177>>
+Index: 8017 <<"chunk_id": 14, "docno": 1252>>
 
-a service that is used only by non-browser clients, you likely want to disable
-CSRF protection. CSRF protection and JSON A common question is “do I need to
-protect JSON requests made by JavaScript?” The short answer is: It depends.
-However, you must be very careful, as there are CSRF exploits that can impact
-JSON requests. For example, a malicious user can create a CSRF with JSON by
-using the following form : CSRF with JSON form <form
-action="https://bank.example.com/transfer" method="post" enctype="text/plain">
-<input
-name='{"amount":100,"routingNumber":"evilsRoutingNumber","account":"evilsAccountNumber",
-"ignore_me":"' value='test"}' type='hidden'> <input type="submit" value="Win
-Money!"/> </form> This produces the following JSON structure CSRF with JSON
-request { "amount": 100, "routingNumber": "evilsRoutingNumber", "account":
-"evilsAccountNumber", "ignore_me": "=test" } If an application were not
-validating the Content-Type header, it would be exposed to this exploit.
-Depending on the setup, a Spring MVC application that validates the Content-Type
-could still be exploited by updating the URL suffix to end with .json , as
-follows: CSRF with JSON Spring MVC form <form
-action="https://bank.example.com/transfer.json" method="post"
-enctype="text/plain"> <input
-name='{"amount":100,"routingNumber":"evilsRoutingNumber","account":"evilsAccountNumber",
-"ignore_me":"' value='test"}' type='hidden'> <input type="submit" value="Win
-Money!"/> </form> CSRF and Stateless Browser Applications What if my application
-is stateless? That does not necessarily mean you are protected. In fact, if a
-user does not need to perform any actions in the web browser for a given
-request, they are likely still vulnerable to CSRF attacks. For example, consider
-an application that uses a custom cookie that contains all the state within it
-for authentication (instead of the JSESSIONID). When the CSRF attack is made,
-the custom cookie is sent
+Auto-configuration for web clients.
+org.springframework.boot.webflux.actuate.endpoint.web Spring WebFlux support for
+actuator endpoints. org.springframework.boot.webflux.actuate.web.exchanges
+Actuator HTTP exchanges support for reactive servers.
+org.springframework.boot.webflux.actuate.web.mappings Actuator reactive request
+mappings support. org.springframework.boot.webflux.autoconfigure
+Auto-configuration for reactive web servers and Spring WebFlux.
+org.springframework.boot.webflux.autoconfigure.actuate.endpoint.web
+Auto-configuration for Spring WebFlux actuator web endpoint support.
+org.springframework.boot.webflux.autoconfigure.actuate.web Auto-configuration
+for WebFlux-based actuator web concerns.
+org.springframework.boot.webflux.autoconfigure.actuate.web.exchanges Actuator
+HTTP exchanges auto-configuration for reactive servers.
+org.springframework.boot.webflux.autoconfigure.actuate.web.mappings Actuator
+reactive request mappings auto-configuration.
+org.springframework.boot.webflux.autoconfigure.error Auto-configuration for
+Spring WebFlux error handling. org.springframework.boot.webflux.error Spring
+WebFlux error handling infrastructure. org.springframework.boot.webflux.filter
+Spring Boot specific WebFilter implementations.
+org.springframework.boot.webflux.test.autoconfigure Auto-configuration for
+Spring WebFlux tests. org.springframework.boot.webmvc.actuate.endpoint.web
+Spring MVC support for actuator endpoints.
+org.springframework.boot.webmvc.actuate.web.mappings Actuator request mappings
+support for Spring MVC. org.springframework.boot.webmvc.autoconfigure
+Auto-configuration for Spring MVC.
+org.springframework.boot.webmvc.autoconfigure.actuate.endpoint.web
+Auto-configuration for Spring MVC actuator web endpoint support.
+org.springframework.boot.webmvc.autoconfigure.actuate.web Auto-configuration for
+Spring MVC-based actuator infrastructure.
+org.springframework.boot.webmvc.autoconfigure.actuate.web.mappings Actuator
+request mappings auto-configuration for Spring MVC.
+org.springframework.boot.webmvc.autoconfigure.error Auto-configuration for
+Spring MVC error handling. org.springframework.boot.webmvc.error Spring MVC
+error handling infrastructure.
+org.springframework.boot.webmvc.test.autoconfigure Auto-configuration for Spring
+MVC tests. org.springframework.boot.webservices.autoconfigure Auto-configuration
+for Spring Web Services.
+org.springframework.boot.webservices.autoconfigure.client Auto-configuration for
+Spring Web Services Clients. org.springframework.boot.webservices.client Web
+Services client utilities.
+org.springframework.boot.webservices.test.autoconfigure.client
+Auto-configuration for web service clients.
+org.springframework.boot.webservices.test.autoconfigure.server
+Auto-configuration for web service server tests.
+org.springframework.boot.websocket.autoconfigure.servlet Auto-configuration for
+WebSocket support in servlet web servers.
+org.springframework.boot.webtestclient.autoconfigure Auto-configuration for
+WebTestClient. org.springframework.boot.zipkin.autoconfigure Auto-configuration
+for Zipkin.
 ----------------------------------------------------------------------------------------------------
-Index: 18581 <<"chunk_id": 3, "docno": 2457>>
+Index: 7163 <<"chunk_id": 1, "docno": 1080>>
 
-(and other requests that are defined as ‘safe’ by RFC 9110 Section 9.2.1 ).
-These requests ought never to have any potentially dangerous side effects, and
-so a CSRF attack with a GET request ought to be harmless. RFC 9110 Section 9.2.1
-defines POST, PUT, and DELETE as ‘unsafe’, and all other methods are also
-assumed to be unsafe, for maximum protection. The CSRF protection cannot protect
-against man-in-the-middle attacks, so use HTTPS with HTTP Strict Transport
-Security . It also assumes validation of the HOST header and that there aren’t
-any cross-site scripting vulnerabilities on your site (because XSS
-vulnerabilities already let an attacker do anything a CSRF vulnerability allows
-and much worse). Removing the Referer header To avoid disclosing the referrer
-URL to third-party sites, you might want to disable the referer on your site’s
-<a> tags. For example, you might use the <meta name="referrer"
-content="no-referrer"> tag or include the Referrer-Policy: no-referrer header.
-Due to the CSRF protection’s strict referer checking on HTTPS requests, those
-techniques cause a CSRF failure on requests with ‘unsafe’ methods. Instead, use
-alternatives like <a rel="noreferrer" ...>" for links to third-party sites.
-Limitations ¶ Subdomains within a site will be able to set cookies on the client
-for the whole domain. By setting the cookie and using a corresponding token,
-subdomains will be able to circumvent the CSRF protection. The only way to avoid
-this is to ensure that subdomains are controlled by trusted users (or, are at
-least unable to set cookies). Note that even without CSRF, there
+"CVE-2026-22731: Authentication Bypass under Actuator Health groups paths" and
+"CVE-2026-22733: Authentication Bypass under Actuator CloudFoundry endpoints".
+Spring Boot Commercial releases are also available. How can… Read more Spring
+Boot 4.0.4 available now Releases | March 19, 2026 | ... On behalf of the team
+and everyone who has contributed, I'm happy to announce that Spring Boot 4.0.4
+has been released and is now available from Maven Central. This release includes
+67 bug fixes, documentation improvements, and dependency upgrades. Thanks to all
+those who have contributed with issue reports and pull requests. CVEs fixed in
+this release This release fixes both "CVE-2026-22731: Authentication Bypass
+under Actuator Health groups paths" and "CVE-2026-22733: Authentication Bypass
+under Actuator CloudFoundry endpoints". Spring Boot Commercial releases are also
+available. How can you… Read more Spring Boot 4.0.3 available now Releases |
+February 19, 2026 | ... On behalf of the team and everyone who has contributed,
+I'm happy to announce that Spring Boot 4.0.3 has been released and is now
+available from Maven Central. This release includes 47 bug fixes, documentation
+improvements, and dependency upgrades. Thanks to all those who have contributed
+with issue reports and pull requests. How can you help? If you're interested in
+helping out, check out the "ideal for contribution" tag in the issue repository.
+If you have general questions, please ask on stackoverflow.com using the
+spring-boot tag. Project Page | GitHub | Issues | Documentation | Stack… Read
+more Spring Boot 3.5.11 available now Releases | February 19, 2026 | ... On
+behalf of the team and
 ----------------------------------------------------------------------------------------------------
-Index: 36284 <<"chunk_id": 11, "docno": 5177>>
+Index: 5379 <<"chunk_id": 12, "docno": 790>>
 
-to have some JavaScript that lets the user know their session is about to
-expire. The user can click a button to continue and refresh the session.
-Finally, the expected CSRF token could be stored in a cookie. This lets the
-expected CSRF token outlive the session. One might ask why the expected CSRF
-token is not stored in a cookie by default. This is because there are known
-exploits in which headers (for example, to specify the cookies) can be set by
-another domain. This is the same reason Ruby on Rails no longer skips a CSRF
-checks when the header X-Requested-With is present . See this webappsec.org
-thread for details on how to perform the exploit. Another disadvantage is that
-by removing the state (that is, the timeout), you lose the ability to forcibly
-invalidate the token if it is compromised. Multipart (file upload) Protecting
-multipart requests (file uploads) from CSRF attacks causes a chicken or the egg
-problem. To prevent a CSRF attack from occurring, the body of the HTTP request
-must be read to obtain the actual CSRF token. However, reading the body means
-that the file is uploaded, which means an external site can upload a file. There
-are three options to using CSRF protection with multipart/form-data: Include
-CSRF Token in an HTTP Request Header Place CSRF Token in the Body Place CSRF
-Token in the URL Each option has its trade-offs. Before you integrate Spring
-Security’s CSRF protection with multipart file upload, you should first ensure
-that you can upload
+it does not share the same configuration as the application’s JsonMapper and it
+is not affected by spring.jackson.* properties. To disable this behavior and
+configure Actuator to use the application’s JsonMapper , set
+management.endpoints.jackson.isolated-json-mapper to false . Alternatively, you
+can define your own EndpointJsonMapper bean that produces a JsonMapper that
+meets your needs. Actuator will then use it for JSON processing. Implementing
+Custom Endpoints If you add a @Bean annotated with @Endpoint , any methods
+annotated with @ReadOperation , @WriteOperation , or @DeleteOperation are
+automatically exposed over JMX and, in a web application, over HTTP as well.
+Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring
+WebFlux. If both Jersey and Spring MVC are available, Spring MVC is used. The
+following example exposes a read operation that returns a custom object: Java
+Kotlin @ReadOperation public CustomData getData() { return new
+CustomData("test", 5); } @ReadOperation fun getData(): CustomData { return
+CustomData("test", 5) } You can also write technology-specific endpoints by
+using @JmxEndpoint or @WebEndpoint . These endpoints are restricted to their
+respective technologies. For example, @WebEndpoint is exposed only over HTTP and
+not over JMX. You can write technology-specific extensions by using
+@EndpointWebExtension and @EndpointJmxExtension . These annotations let you
+provide technology-specific operations to augment an existing endpoint. An
+endpoint may have at most one extension of each type. Finally, if you need
+access to web-framework-specific functionality, you can implement servlet or
+Spring @Controller and @RestController endpoints at the cost of them not being
+available over JMX or when using a different web
 ----------------------------------------------------------------------------------------------------
-Index: 16820 <<"chunk_id": 3, "docno": 2231>>
+Index: 23965 <<"chunk_id": 0, "docno": 3648>>
 
-, max_length = None ) ¶ Returns a filename that is available in the storage
-mechanism, possibly taking the provided filename into account. The name argument
-passed to this method will have already cleaned to a filename valid for the
-storage system, according to the get_valid_name() method described above. The
-length of the filename will not exceed max_length , if provided. If a free
-unique filename cannot be found, a SuspiciousFileOperation exception is raised.
-If a file with name already exists, get_alternative_name() is called to obtain
-an alternative name. Use your custom storage engine ¶ The first step to using
-your custom storage with Django is to tell Django about the file storage backend
-you’ll be using. This is done using the STORAGES setting. This setting maps
-storage aliases, which are a way to refer to a specific storage throughout
-Django, to a dictionary of settings for that specific storage backend. The
-settings in the inner dictionaries are described fully in the STORAGES
-documentation. Storages are then accessed by alias from the
-django.core.files.storage.storages dictionary: from django.core.files.storage
-import storages example_storage = storages [ "example" ] Previous page and next
-page How to use Django’s CSRF protection How to create custom django-admin
-commands Back to Top Additional Information Support Django! Omer Katz donated to
-the Django Software Foundation to support Django development. Donate today!
-Contents How to write a custom storage class Use your custom storage engine
-Browse Prev: How to use Django’s CSRF protection Next: How to create custom
-django-admin commands Table of contents General Index Python
+Security changes in Spring Boot 2.0 M4 Skip to main content Learn more about Day
+0 access to security patches via Enterprise support. Why Spring Overview
+Trending Generative AI Cloud Architecture Patterns Microservices Reactive Event
+Driven Application Types Web Applications Serverless Batch Learn Getting Started
+Quickstart Guides Academy Courses Get Certified Projects Overview Projects
+Spring Boot Spring Framework Spring Cloud Spring AI Spring Data Spring
+Integration Spring Batch Spring Security Foundational Projects Micrometer
+Reactor Development Tools Spring Tools Spring Initializr Resources Blog Release
+Calendar Version Mappings Release Highlights Security Advisories GitHub Orgs
+Spring Projects Spring Cloud Community Overview Events Authors Enterprise
+Overview Long-term Support Automated Upgrades Governance and Compliance Modern
+App Development Spring Blog RSS feeds All Posts Engineering Releases News &
+Events Security changes in Spring Boot 2.0 M4 Engineering | Madhura Bhave |
+September 15, 2017 | 3 min read | ... Milestone 4 of Spring Boot 2.0 brings
+important changes to the security auto-configuration provided by Spring Boot.
+Problem Statement Until Spring Boot 1.x, the default auto-configuration secured
+all of the application endpoints using basic authentication. If actuator was on
+the classpath, there was a separate security configuration that applied to the
+actuator endpoints. The way these two auto-configurations would turn on and off
+was completely independent. Because of this, users wanting to provide custom
+security found themselves fighting ordering issues with
+WebSecurityConfigurerAdapter s. Additionally, for actuator endpoints, the
+effects of the management.security.enabled flag based on whether Spring Security
+was on the classpath or not was quite confusing. There were a number of
 ----------------------------------------------------------------------------------------------------
-Index: 1090 <<"chunk_id": 15, "docno": 165>>
+Index: 6899 <<"chunk_id": 3, "docno": 1026>>
 
-), ], }; Disabling XSRF protection If the built-in XSRF protection mechanism
-doesn't work for your application, you can disable it using the
-withNoXsrfProtection feature: export const appConfig : ApplicationConfig = {
-providers: [ provideHttpClient ( withNoXsrfProtection ())], }; For information
-about CSRF at the Open Web Application Security Project (OWASP), see Cross-Site
-Request Forgery (CSRF) and Cross-Site Request Forgery (CSRF) Prevention Cheat
-Sheet . The Stanford University paper Robust Defenses for Cross-Site Request
-Forgery is a rich source of detail. See also Dave Smith's talk on XSRF at
-AngularConnect 2016 . Cross-site script inclusion (XSSI) Cross-site script
-inclusion, also known as JSON vulnerability, can allow an attacker's website to
-read data from a JSON API. The attack works on older browsers by overriding
-built-in JavaScript object constructors, and then including an API URL using a
-<script> tag. This attack is only successful if the returned JSON is executable
-as JavaScript. Servers can prevent an attack by prefixing all JSON responses to
-make them non-executable, by convention, using the well-known string ")]}',\n" .
-Angular's HttpClient library recognizes this convention and automatically strips
-the string ")]}',\n" from all responses before further parsing. For more
-information, see the XSSI section of this Google web security blog post .
-Preventing Server-Side Request Forgery (SSRF) Angular includes strict validation
-for Host , Forwarded , X-Forwarded-Host , X-Forwarded-Proto , X-Forwarded-Prefix
-, and X-Forwarded-Port headers in the request handling pipeline to prevent
-header-based Server-Side Request Forgery (SSRF) . The validation rules are: Host
-, X-Forwarded-Host , and the host parameter of the
+spring-boot-kotlinx-serialization-json spring-boot-ldap spring-boot-liquibase
+spring-boot-mail spring-boot-micrometer-metrics
+spring-boot-micrometer-observation spring-boot-micrometer-tracing
+spring-boot-micrometer-tracing-brave
+spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
+spring-boot-mustache spring-boot-neo4j spring-boot-netty
+spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
+spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
+spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
+spring-boot-rsocket spring-boot-security
+spring-boot-security-oauth2-authorization-server
+spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
+spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
+spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
+spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
+spring-boot-transaction spring-boot-validation spring-boot-webclient
+spring-boot-webflux spring-boot-webmvc spring-boot-webservices
+spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
+Test Slices Dependency Versions Managed Dependency Coordinates Version
+Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
+Reference Production-ready Features Monitoring and Management Over HTTP
+Monitoring and Management Over HTTP If you are developing a web application,
+Spring Boot Actuator auto-configures all enabled endpoints to be exposed over
+HTTP. The default convention is to use the id of the endpoint with a prefix of
+/actuator as the URL path. For example, health is exposed as /actuator/health .
+Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey. If
+both Jersey and Spring MVC are available, Spring MVC is used. Jackson is a
+required dependency in order to get the correct JSON responses as documented in
+the API documentation . Jackson 3 should be used for Spring MVC and Spring
+WebFlux. Jersey does not yet have a Jackson 3 module, so you will need to use
+Jackson 2. Customizing the Management Endpoint Paths Sometimes, it is useful to
+customize the prefix for the management endpoints. For example, your application
+might already use /actuator for another purpose. You can use the
+management.endpoints.web.base-path property to change the prefix for your
+management endpoint, as the following example shows: Properties YAML
+management.endpoints.web.base-path=/manage management: endpoints: web:
+base-path: "/manage" The preceding application.properties example
+----------------------------------------------------------------------------------------------------
+Index: 8011 <<"chunk_id": 8, "docno": 1252>>
+
+files. org.springframework.boot.logging Support and abstractions across several
+logging libraries. org.springframework.boot.logging.java Support for 'Java Util
+Logging'. org.springframework.boot.logging.log4j2 Support for the Log4j 2
+logging library. org.springframework.boot.logging.logback Support for the
+Logback logging library. org.springframework.boot.logging.structured Support for
+structured logging. org.springframework.boot.mail.autoconfigure
+Auto-configuration for email support. org.springframework.boot.mail.health
+Health integration for JavaMail. org.springframework.boot.micrometer.metrics
+General metrics-related classes.
+org.springframework.boot.micrometer.metrics.actuate.endpoint Actuator endpoint
+for metrics. org.springframework.boot.micrometer.metrics.autoconfigure
+Auto-configuration for metrics with Micrometer.
+org.springframework.boot.micrometer.metrics.autoconfigure.export
+Auto-configuration for metrics exporter.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.appoptics
+Support for exporting actuator metrics to AppOptics.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.atlas Support
+for exporting actuator metrics to Atlas.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.datadog Support
+for exporting actuator metrics to Datadog.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.dynatrace
+Support for exporting actuator metrics to Dynatrace.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.elastic Support
+for exporting actuator metrics to Elastic.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.ganglia Support
+for exporting actuator metrics to Ganglia.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.graphite
+Support for exporting actuator metrics to Graphite.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.humio Support
+for exporting actuator metrics to Humio.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.influx Support
+for exporting actuator metrics to InfluxDB.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.jmx Support for
+exporting actuator metrics to JMX.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.kairos Support
+for exporting actuator metrics to KairosDB.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.newrelic
+Support for exporting actuator metrics to New Relic.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp Support
+for exporting actuator metrics to OTLP.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus
+Support for exporting actuator metrics to Prometheus.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.properties Base
+properties and adapters used when exporting actuator metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.simple Support
+for exporting actuator metrics to a simple in-memory store.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.stackdriver
+Support for exporting actuator metrics to Stackdriver.
+org.springframework.boot.micrometer.metrics.autoconfigure.export.statsd Support
+for exporting actuator metrics to StatsD.
+org.springframework.boot.micrometer.metrics.autoconfigure.jvm Auto-configuration
+for JVM metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.logging.log4j2
+Auto-configuration for Log4J2 metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.logging.logback
+Auto-configuration for Logback metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.ssl Auto-configuration
+for SSL metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.startup
+Auto-configuration for actuator startup time metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.system
+Auto-configuration for system metrics.
+org.springframework.boot.micrometer.metrics.autoconfigure.task
+Auto-configuration for task execution and scheduling metrics.
+org.springframework.boot.micrometer.metrics.export.prometheus
+----------------------------------------------------------------------------------------------------
+Index: 8014 <<"chunk_id": 11, "docno": 1252>>
+
+Auto-configuration for Spring Security's Reactive OAuth 2 client.
+org.springframework.boot.security.oauth2.client.autoconfigure.servlet
+Auto-configuration for Spring Security's OAuth 2 client.
+org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet
+Auto-configuration for Spring Security's OAuth2 authorization server.
+org.springframework.boot.security.oauth2.server.resource.autoconfigure Support
+for Spring Security's OAuth2 resource server.
+org.springframework.boot.security.oauth2.server.resource.autoconfigure.reactive
+Auto-configuration for Spring Security's Reactive OAuth2 resource server.
+org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet
+Support for Spring Security's OAuth2 resource server.
+org.springframework.boot.security.oauth2.server.resource.autoconfigure.web
+Auto-configuration for OAuth2 resource server web security.
+org.springframework.boot.security.oauth2.server.resource.autoconfigure.web.reactive
+Auto-configuration for OAuth2 resource server reactive web security.
+org.springframework.boot.security.saml2.autoconfigure Auto-configuration for
+Spring Security's SAML 2.0.
+org.springframework.boot.security.test.autoconfigure.webflux Auto-configuration
+for tests involving WebFlux and Spring Security.
+org.springframework.boot.security.test.autoconfigure.webmvc Auto-configuration
+for tests involving Spring MVC and Spring Security.
+org.springframework.boot.security.web.reactive Classes and utilities for
+reactive Spring Security. org.springframework.boot.security.web.servlet Classes
+and utilities for Servlet-based Spring Security.
+org.springframework.boot.sendgrid.autoconfigure Auto-configuration for SendGrid.
+org.springframework.boot.servlet Application support for the jakarta.servlet
+specification. org.springframework.boot.servlet.actuate.web.exchanges Actuator
+HTTP exchanges support for Servlet servers.
+org.springframework.boot.servlet.actuate.web.mappings Actuator servlet request
+mappings support. org.springframework.boot.servlet.autoconfigure
+Auto-configuration for application support of the jakarta.servlet specification.
+org.springframework.boot.servlet.autoconfigure.actuate.web Auto-configuration
+for jakarta.servlet actuator web concerns.
+org.springframework.boot.servlet.autoconfigure.actuate.web.exchanges Actuator
+HTTP exchanges auto-configuration for Servlet servers.
+org.springframework.boot.servlet.autoconfigure.actuate.web.mappings Actuator
+servlet request mappings auto-configuration.
+org.springframework.boot.servlet.filter Spring Boot specific Filter
+implementations. org.springframework.boot.session.actuate.endpoint Actuator
+endpoint for Spring Session. org.springframework.boot.session.autoconfigure
+Auto-configuration for Spring Session.
+org.springframework.boot.session.data.redis.autoconfigure Auto-configuration for
+Spring Session Data Redis. org.springframework.boot.session.jdbc.autoconfigure
+Auto-configuration for Spring Session JDBC.
+org.springframework.boot.sql.autoconfigure.init Auto-configuration for basic
+script-based initialization of an SQL database.
+org.springframework.boot.sql.init Support for initialization of an SQL database.
+org.springframework.boot.sql.init.dependency Infrastructure for establishing
+database initialization bean dependencies. org.springframework.boot.ssl
+Management of trust material that can be used to establish an SSL connection.
+org.springframework.boot.ssl.jks SSL trust material provider for Java KeyStores.
+org.springframework.boot.ssl.pem SSL trust material provider for PEM-encoded
+certificates. org.springframework.boot.support Classes supporting application
+concerns and the
+----------------------------------------------------------------------------------------------------
+Index: 8009 <<"chunk_id": 6, "docno": 1252>>
+
+HTTP. org.springframework.boot.http.client.autoconfigure.imperative
+Auto-configuration for client-side imperative HTTP.
+org.springframework.boot.http.client.autoconfigure.metrics Auto-configuration
+for client-side HTTP metrics.
+org.springframework.boot.http.client.autoconfigure.reactive Auto-configuration
+for client-side reactive HTTP.
+org.springframework.boot.http.client.autoconfigure.service Auto-configuration
+support classes for HTTP Service Clients.
+org.springframework.boot.http.client.reactive Client-side reactive HTTP support
+classes. org.springframework.boot.http.codec Support for web-based codecs.
+org.springframework.boot.http.codec.autoconfigure Auto-configuration for HTTP
+codecs. org.springframework.boot.http.converter.autoconfigure Auto-configuration
+for HTTP converters. org.springframework.boot.info Support for providing
+information about an application.
+org.springframework.boot.integration.actuate.endpoint Actuator endpoint for
+Spring Integration. org.springframework.boot.integration.autoconfigure
+Auto-configuration for Spring Integration.
+org.springframework.boot.integration.autoconfigure.metrics Auto-configuration
+for Spring Integration metrics. org.springframework.boot.io Support for loading
+resources. org.springframework.boot.jackson Custom enhancements and support for
+the Jackson project. org.springframework.boot.jackson.autoconfigure
+Auto-configuration for Jackson. org.springframework.boot.jackson2 Custom
+enhancements and support for Jackson 2.
+org.springframework.boot.jackson2.autoconfigure Auto-configuration for Jackson
+2. org.springframework.boot.jdbc Support for Java Database Connectivity (JDBC).
+org.springframework.boot.jdbc.autoconfigure Auto-configuration for JDBC.
+org.springframework.boot.jdbc.autoconfigure.health Auto-configuration for JDBC
+health. org.springframework.boot.jdbc.autoconfigure.metrics Auto-configuration
+for JDBC metrics. org.springframework.boot.jdbc.health Health integration for
+JDBC. org.springframework.boot.jdbc.init Support for initialization of an SQL
+database using a JDBC DataSource . org.springframework.boot.jdbc.metadata
+Support for accessing JDBC DataSource metadata.
+org.springframework.boot.jdbc.metrics Metrics for JDBC.
+org.springframework.boot.jdbc.test.autoconfigure Auto-configuration for JDBC
+tests. org.springframework.boot.jersey.actuate.endpoint.web Jersey support for
+actuator endpoints. org.springframework.boot.jersey.autoconfigure
+Auto-configuration for Jersey.
+org.springframework.boot.jersey.autoconfigure.actuate.endpoint.web
+Auto-configuration for Jersey actuator web endpoint support.
+org.springframework.boot.jersey.autoconfigure.actuate.web Auto-configuration for
+Jersey actuator web concerns.
+org.springframework.boot.jersey.autoconfigure.metrics Auto-configuration for
+Jersey metrics. org.springframework.boot.jetty Reactive and servlet web server
+implementations backed by Jetty. org.springframework.boot.jetty.autoconfigure
+Auto-configuration for Jetty.
+org.springframework.boot.jetty.autoconfigure.actuate.web.server
+Auto-configuration for Jetty actuator web concerns.
+org.springframework.boot.jetty.autoconfigure.metrics Auto-configuration for
+Jetty metrics. org.springframework.boot.jetty.autoconfigure.reactive Classes
+related to the auto-configuration of a reactive web server using Jetty.
+org.springframework.boot.jetty.autoconfigure.servlet Classes related to the
+auto-configuration of a servlet web server using Jetty.
+org.springframework.boot.jetty.metrics Actuator support for Jetty metrics.
+org.springframework.boot.jetty.reactive Reactive web server implementation
+backed by Jetty. org.springframework.boot.jetty.servlet
+----------------------------------------------------------------------------------------------------
+Index: 5737 <<"chunk_id": 11, "docno": 843>>
+
+endpoint access that is permitted. Caps an endpoint's individual access level
+(management.endpoint.<id>.access) and the default access
+(management.endpoints.access.default).' unrestricted
+management.endpoints.jackson.isolated-json-mapper Whether to use an isolated
+JsonMapper to serialize endpoint JSON. true management.endpoints.jmx.domain
+Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+org.springframework.boot management.endpoints.jmx.exposure.exclude Endpoint IDs
+that should be excluded or '*' for all.
+management.endpoints.jmx.exposure.include Endpoint IDs that should be included
+or '*' for all. health management.endpoints.jmx.static-names Additional static
+properties to append to all ObjectNames of MBeans representing Endpoints.
+management.endpoints.migrate-legacy-ids Whether to transparently migrate legacy
+endpoint IDs. false management.endpoints.web.base-path Base path for Web
+endpoints. Relative to the servlet context path (server.servlet.context-path) or
+WebFlux base path (spring.webflux.base-path) when the management server is
+sharing the main server port. Relative to the management server base path
+(management.server.base-path) when a separate management server port
+(management.server.port) is configured. /actuator
+management.endpoints.web.cors.allow-credentials Whether credentials are
+supported. When not set, credentials are not supported.
+management.endpoints.web.cors.allowed-headers List of headers to allow in a
+request. '*' allows all headers. management.endpoints.web.cors.allowed-methods
+List of methods to allow. '*' allows all methods. When not set, defaults to GET.
+management.endpoints.web.cors.allowed-origin-patterns List of origin patterns to
+allow. Unlike allowed origins which only supports '*', origin patterns are more
+flexible (for example 'https://*.example.com') and can be used when credentials
+are allowed. When no allowed origin patterns or allowed origins are set, CORS
+support is disabled. management.endpoints.web.cors.allowed-origins List of
+origins to allow. '*' allows all origins. When credentials are allowed, '*'
+cannot be used and origin patterns should be configured instead. When no allowed
+origins or allowed origin patterns are set, CORS support is disabled.
+----------------------------------------------------------------------------------------------------
+Index: 17635 <<"chunk_id": 5, "docno": 2346>>
+
+major features of Spring Boot, including auto-configuration, data access,
+actuators, and more. Key features are divided into two main areas: Basics:
+Spring Boot principles, auto-configuration, profiles, overriding defaults using
+properties and/or your own configuration Topics: Spring Boot applied to
+web-applications (Spring MVC, GSP, REST), data-access (JDBC, JPA, Spring Data,
+NoSQL), Security and OAuth, Messaging (AMQP, RabbitMQ), Monitoring (actuators) A
+reasonable familiarity with the Spring Framework is useful for this course. We
+recommend that students that are new to Spring attend the Core Spring class
+first. Visit the Spring Boot Developer page to learn more, view the course
+datasheet, and enroll today. Spring Cloud Services Microservices and Cloud
+Native Applications are a popular pattern for delivering applications more
+quickly. Spring Cloud Services is a 2-day course that explores using Spring Boot
+and Spring Cloud to support this style of application. Course topics are
+organized into four functional areas: Basics: Why Cloud Native? How cloud-native
+changes development Infrastructure: Building Spring Boot applications, deploying
+to a PaaS (PCF) Microservices: Overview, Cloud Native design, 12 Factors. Spring
+Cloud: Shared configuration, service discovery, client-side load-balancing,
+handling and monitoring failed services using a circuit-breaker Microservice
+applications involve many collaborating processes making them harder to deploy
+without a smart underlying infrastructure. The course deploys applications to
+Pivotal’s Cloud Foundry PaaS to show the benefits of one-step deployment,
+automated recovery, and scalability. A reasonable familiarity with Spring is
+useful for this course. We recommend that students that are new to Spring attend
+either the Core Spring or Spring Boot class first. To learn more,
+----------------------------------------------------------------------------------------------------
+Index: 8005 <<"chunk_id": 2, "docno": 1252>>
+
+connections that affect auto-configuration.
+org.springframework.boot.autoconfigure.ssl Auto-configuration for SSL bundles.
+org.springframework.boot.autoconfigure.task Auto-configuration for task
+execution and scheduling. org.springframework.boot.autoconfigure.template Base
+classes for template Auto-configuration.
+org.springframework.boot.autoconfigure.web Auto-configuration for common web
+concerns. org.springframework.boot.autoconfigure.web.format Support classes for
+web-specific formatting. org.springframework.boot.autoconfigureprocessor
+Annotation processor for compile-time capturing of information about
+auto-configuration classes. org.springframework.boot.availability Support for
+describing the availability of Spring Boot applications.
+org.springframework.boot.batch.autoconfigure Auto-configuration for Spring
+Batch. org.springframework.boot.batch.autoconfigure.observation
+Auto-configuration for Spring Batch observations.
+org.springframework.boot.batch.jdbc.autoconfigure Auto-configuration for Spring
+Batch JDBC. org.springframework.boot.batch.mongodb.autoconfigure
+Auto-configuration for Spring Batch with Data MongoDB.
+org.springframework.boot.bootstrap Bootstrap concerns to support the creation of
+potentially expensive singletons while the application starts.
+org.springframework.boot.builder Fluent 'builder' style API to construct a
+SpringApplication . org.springframework.boot.buildpack.platform.build Central
+API for performing a buildpack build.
+org.springframework.boot.buildpack.platform.docker A limited Docker API
+providing the operations needed by pack.
+org.springframework.boot.buildpack.platform.docker.configuration Docker
+configuration options. org.springframework.boot.buildpack.platform.docker.ssl
+Utilities and classes for managing SSL context and keys.
+org.springframework.boot.buildpack.platform.docker.transport Docker transport
+classes providing HTTP operations on a local or remote engine.
+org.springframework.boot.buildpack.platform.docker.type Docker types.
+org.springframework.boot.buildpack.platform.io IO classes and utilities.
+org.springframework.boot.buildpack.platform.json Utilities and classes for JSON
+processing. org.springframework.boot.buildpack.platform.socket Low-level Socket
+implementations required for local Docker access.
+org.springframework.boot.buildpack.platform.system System abstractions.
+org.springframework.boot.cache.actuate.endpoint Actuator endpoint for caches.
+org.springframework.boot.cache.autoconfigure Auto-configuration for the cache
+abstraction. org.springframework.boot.cache.autoconfigure.metrics
+Auto-configuration for the cache abstraction metrics.
+org.springframework.boot.cache.metrics Metrics for caches.
+org.springframework.boot.cache.test.autoconfigure Auto-configuration for testing
+code that uses the cache abstraction.
+org.springframework.boot.cassandra.autoconfigure Auto-configuration for
+Cassandra. org.springframework.boot.cassandra.autoconfigure.health
+Auto-configuration for Cassandra health.
+org.springframework.boot.cassandra.health Health integration for Cassandra.
+org.springframework.boot.cloud Low level support for Cloud deployments.
+org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint
+Auto-configuration for Cloud Foundry endpoints.
+org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.reactive
+Auto-configuration for Cloud Foundry WebFlux endpoints.
+org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.servlet
+Auto-configuration for Cloud Foundry Servlet endpoints.
+org.springframework.boot.context Classes related to Spring's
+----------------------------------------------------------------------------------------------------
+Index: 2111 <<"chunk_id": 1, "docno": 275>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 2180 <<"chunk_id": 1, "docno": 287>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 6057 <<"chunk_id": 1, "docno": 877>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 6700 <<"chunk_id": 1, "docno": 982>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 6736 <<"chunk_id": 1, "docno": 991>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 6897 <<"chunk_id": 1, "docno": 1026>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 7309 <<"chunk_id": 1, "docno": 1107>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 7529 <<"chunk_id": 1, "docno": 1147>>
+
+Spring Integration WebSockets Security OAuth2 SAML 2.0 Testing Test Modules Test
+Scope Dependencies Testing Spring Applications Testing Spring Boot Applications
+Testcontainers Test Utilities Packaging Spring Boot Applications Efficient
+Deployments AOT Cache Ahead-of-Time Processing With the JVM GraalVM Native
+Images Introducing GraalVM Native Images Advanced Native Images Topics
+Checkpoint and Restore With the JVM Container Images Efficient Container Images
+Dockerfiles Cloud Native Buildpacks Production-ready Features Enabling
+Production-ready Features Endpoints Monitoring and Management Over HTTP
+Monitoring and Management over JMX Observability Loggers Metrics Tracing
+Auditing Recording HTTP Exchanges Process Monitoring Cloud Foundry Support
+How-to Guides Spring Boot Application Properties and Configuration Embedded Web
+Servers Spring MVC Jersey HTTP Clients Logging Data Access Database
+Initialization NoSQL Messaging Batch Applications Actuator Security Hot Swapping
+Testing Build Ahead-of-Time Processing GraalVM Native Applications Developing
+Your First GraalVM Native Application Testing GraalVM Native Images AOT Cache
+Deploying Spring Boot Applications Traditional Deployment Deploying to the Cloud
+Installing Spring Boot Applications Docker Compose Build Tool Plugins Maven
+Plugin Getting Started Using the Plugin Goals Packaging Executable Archives
+Packaging OCI Images Running your Application with Maven Ahead-of-Time
+Processing Running Integration Tests Integrating with Actuator Help Information
+Gradle Plugin Getting Started Managing Dependencies Packaging Executable
+Archives Packaging OCI Images Publishing your Application Running your
+Application with Gradle Ahead-of-Time Processing Integrating with Actuator
+Reacting to Other Plugins Spring Boot AntLib Module Supporting Other Build
+Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs Actuator
+Audit Events ( auditevents ) Beans ( beans ) Caches ( caches ) Conditions
+Evaluation Report ( conditions ) Configuration
+----------------------------------------------------------------------------------------------------
+Index: 117 <<"chunk_id": 1, "docno": 14>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 148 <<"chunk_id": 1, "docno": 18>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 248 <<"chunk_id": 1, "docno": 33>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 359 <<"chunk_id": 1, "docno": 52>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 387 <<"chunk_id": 1, "docno": 57>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 424 <<"chunk_id": 1, "docno": 66>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 442 <<"chunk_id": 1, "docno": 68>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 478 <<"chunk_id": 1, "docno": 76>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 489 <<"chunk_id": 1, "docno": 79>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 577 <<"chunk_id": 1, "docno": 86>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 602 <<"chunk_id": 1, "docno": 93>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 733 <<"chunk_id": 1, "docno": 108>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 997 <<"chunk_id": 1, "docno": 140>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 1017 <<"chunk_id": 1, "docno": 144>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 1194 <<"chunk_id": 1, "docno": 160>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
+----------------------------------------------------------------------------------------------------
+Index: 1309 <<"chunk_id": 1, "docno": 165>>
+
+OAuth2 SAML 2.0 Testing Test Modules Test Scope Dependencies Testing Spring
+Applications Testing Spring Boot Applications Testcontainers Test Utilities
+Packaging Spring Boot Applications Efficient Deployments AOT Cache Ahead-of-Time
+Processing With the JVM GraalVM Native Images Introducing GraalVM Native Images
+Advanced Native Images Topics Checkpoint and Restore With the JVM Container
+Images Efficient Container Images Dockerfiles Cloud Native Buildpacks
+Production-ready Features Enabling Production-ready Features Endpoints
+Monitoring and Management Over HTTP Monitoring and Management over JMX
+Observability Loggers Metrics Tracing Auditing Recording HTTP Exchanges Process
+Monitoring Cloud Foundry Support How-to Guides Spring Boot Application
+Properties and Configuration Embedded Web Servers Spring MVC Jersey HTTP Clients
+Logging Data Access Database Initialization NoSQL Messaging Batch Applications
+Actuator Security Hot Swapping Testing Build Ahead-of-Time Processing GraalVM
+Native Applications Developing Your First GraalVM Native Application Testing
+GraalVM Native Images AOT Cache Deploying Spring Boot Applications Traditional
+Deployment Deploying to the Cloud Installing Spring Boot Applications Docker
+Compose Build Tool Plugins Maven Plugin Getting Started Using the Plugin Goals
+Packaging Executable Archives Packaging OCI Images Running your Application with
+Maven Ahead-of-Time Processing Running Integration Tests Integrating with
+Actuator Help Information Gradle Plugin Getting Started Managing Dependencies
+Packaging Executable Archives Packaging OCI Images Publishing your Application
+Running your Application with Gradle Ahead-of-Time Processing Integrating with
+Actuator Reacting to Other Plugins Spring Boot AntLib Module Supporting Other
+Build Systems Spring Boot CLI Installing the CLI Using the CLI Rest APIs
+Actuator Audit Events ( auditevents ) Beans ( beans ) Caches ( caches )
+Conditions Evaluation Report ( conditions ) Configuration Properties (
+configprops )
 ----------------------------------------------------------------------------------------------------

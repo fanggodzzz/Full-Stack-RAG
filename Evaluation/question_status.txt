@@ -1,0 +1,16 @@
+1: Answerable - Corresponding document found: docno 815
+2: Answerable - Corresponding document found: docno 790
+3: Unanswerable - No corresponding document found for the provided answer URL.
+4: Unanswerable - No corresponding document found for the provided answer URL.
+5: Answerable - Corresponding document found: docno 1424
+6: Answerable - Corresponding document found: docno 184
+7: Answerable - Corresponding document found: docno 1402
+8: Answerable - Corresponding document found: docno 174
+9: Answerable - Corresponding document found: docno 115
+10: Answerable - Corresponding document found: docno 675
+11: Answerable - Corresponding document found: docno 3592
+12: Answerable - Corresponding document found: docno 815
+13: Answerable - Corresponding document found: docno 174
+14: Answerable - Corresponding document found: docno 1424
+15: Answerable - Corresponding document found: docno 174
+16: Answerable - Corresponding document found: docno 184

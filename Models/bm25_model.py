@@ -7,10 +7,11 @@ INDEX_DIR = os.path.join(os.path.dirname(__file__), "./index")
 MODEL_NAME = "bm25.pkl"
 TEMP_DIR = os.path.join(os.path.dirname(__file__), "../Temp/index/")
 
-def build_bm25_model(chunks):
+def build_bm25_model():
     print("Training BM25 model...")
 
     corpus = load_corpus()
+    # print(corpus[0])
 
     bm25 = BM25Okapi(corpus)
 

@@ -1,479 +1,1249 @@
-Index: 3837 <<"chunk_id": 6, "docno": 519>>
+Index: 2347 <<"chunk_id": 2, "docno": 313>>
 
-depend on others. Thread Locals ¶ Flask uses thread local objects (context local
-objects in fact, they support greenlet contexts as well) for request, session
-and an extra object you can put your own things on ( g ). Why is that and isn’t
-that a bad idea? Yes it is usually not such a bright idea to use thread locals.
-They cause troubles for servers that are not based on the concept of threads and
-make large applications harder to maintain. However Flask is just not designed
-for large applications or asynchronous servers. Flask wants to make it quick and
-easy to write a traditional web application. Async/await and ASGI support ¶
-Flask supports async coroutines for view functions by executing the coroutine on
-a separate thread instead of using an event loop on the main thread as an
-async-first (ASGI) framework would. This is necessary for Flask to remain
-backwards compatible with extensions and code built before async was introduced
-into Python. This compromise introduces a performance cost compared with the
-ASGI frameworks, due to the overhead of the threads. Due to how tied to WSGI
-Flask’s code is, it’s not clear if it’s possible to make the Flask class support
-ASGI and WSGI at the same time. Work is currently being done in Werkzeug to work
-with ASGI, which may eventually enable support in Flask as well. See Using async
-and await for more discussion. What Flask is, What Flask is Not ¶ Flask will
-never have a database layer. It will not
+It's a poor fit for two other situations, though: CPU-bound work (image
+resizing, hashing, parsing huge payloads) ties up the single thread and makes
+your whole application unresponsive while it runs. Scaling across CPU cores — a
+single Node.js process only ever uses one core for its JavaScript, no matter how
+many cores the machine has. Node.js ships three built-in modules to address
+this: node:child_process , node:worker_threads , and node:cluster . They solve
+overlapping problems in different ways, which is why it's easy to reach for the
+wrong one. This guide compares them side by side and walks through when to use
+each. The three options at a glance Runs Memory Talks via Best for child_process
+Separate process Isolated stdio, or IPC ( fork() ) Running external programs
+worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
+Multiple processes Isolated IPC Scaling a server across cores A useful way to
+tell them apart: cluster is built on top of child_process specifically to solve
+the "scale a server across cores" problem, while worker_threads exists to solve
+the "run CPU-heavy code without blocking" problem without paying the cost of a
+whole new process. Child Process Use child_process when you need to run another
+program — a shell command, a binary, a script in another language — from
+Node.js, or when you want a fully isolated Node.js process that you drive over
+stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
+spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
+output via a shell Short
 ----------------------------------------------------------------------------------------------------
-Index: 4051 <<"chunk_id": 1, "docno": 555>>
+Index: 2354 <<"chunk_id": 9, "docno": 313>>
 
-not a pluggable app because it is not actually an application – it’s a set of
-operations which can be registered on an application, even multiple times. Why
-not have multiple application objects? You can do that (see Application
-Dispatching ), but your applications will have separate configs and will be
-managed at the WSGI layer. Blueprints instead provide separation at the Flask
-level, share application config, and can change an application object as
-necessary with being registered. The downside is that you cannot unregister a
-blueprint once an application was created without having to destroy the whole
-application object. The Concept of Blueprints ¶ The basic concept of blueprints
-is that they record operations to execute when registered on an application.
-Flask associates view functions with blueprints when dispatching requests and
-generating URLs from one endpoint to another. My First Blueprint ¶ This is what
-a very basic blueprint looks like. In this case we want to implement a blueprint
-that does simple rendering of static templates: from flask import Blueprint ,
-render_template , abort from jinja2 import TemplateNotFound simple_page =
-Blueprint ( 'simple_page' , __name__ , template_folder = 'templates' )
-@simple_page . route ( '/' , defaults = { 'page' : 'index' }) @simple_page .
-route ( '/<page>' ) def show ( page ): try : return render_template ( f 'pages/
-{ page } .html' ) except TemplateNotFound : abort ( 404 ) When you bind a
-function with the help of the @simple_page.route decorator, the blueprint will
-record the intention of registering the
+like an image-upload service is to combine all three: cluster to spread incoming
+requests across cores, and worker_threads (or child_process ) within each worker
+to do the actual image processing without blocking that worker's event loop.
+Further reading child_process API reference worker_threads API reference cluster
+API reference The Node.js Event Loop Don't Block the Event Loop Reading Time 7
+min read Contribute Edit this page Table of Contents The three options at a
+glance Child Process spawn, exec, execFile, and fork streaming a long-running
+command with spawn() talking to another Node.js process with fork() Things to
+watch for Worker Threads offloading CPU-bound work Sharing memory Things to
+watch for Cluster scaling an HTTP server across cores How the workers share one
+port isPrimary / isWorker Things to watch for Choosing between them Further
+reading Copyright OpenJS Foundation and Node.js contributors. All rights
+reserved. The OpenJS Foundation has registered trademarks and uses trademarks.
+For a list of trademarks of the OpenJS Foundation , please see our Trademark
+Policy and Trademark List . Trademarks and logos not indicated on the list of
+OpenJS Foundation trademarks are trademarks™ or registered® trademarks of their
+respective holders. Use of them does not imply any affiliation with or
+endorsement by them. OpenJS Foundation AI Coding Assistants Policy Bylaws Code
+of Conduct Cookie Policy Privacy Policy Security Policy Terms of Use Trademark
+List Trademark Policy
 ----------------------------------------------------------------------------------------------------
-Index: 32167 <<"chunk_id": 2, "docno": 4263>>
+Index: 238 <<"chunk_id": 2, "docno": 31>>
 
-"lucky" in this respect. We had the good fortune to be able to design the
-SpringSource dm Server (part of the SpringSource Application Platform) from the
-ground up on OSGi, with no legacy to be concerned with. This has enabled us to
-exploit OSGi to the full. Other vendors have had to retrofit OSGi into large
-existing code bases. I know from first hand experience how difficult it is to
-retrospectively try and modularize a large existing code base. If you do manage
-to modularize it, making it behave well in a dynamic environment is even harder
-(even Eclipse struggles to pull off that latter requirement, often requiring
-restarts after updates).Â A characteristic you tend to see in products where
-OSGi has been retrofitted are a small number of large bundles (very coarse
-grained modularity) and limited dynamic support for managing modules at runtime.
-Vendors such as SpringSource, Paremus, and ProSyst go one crucial step further.
-Building a server platform on OSGi can only get you so far. What if you actually
-want to take advantage of OSGi for building your own applications? For this you
-need an OSGi technology-based programming and deployment model. This is where
-the true frontier for next generation server platforms is - not in making things
-easier for the server vendor to build their platform, but in making things
-easier for the application developer to build and deploy their applications onto
-that platform. The SpringSource dm Server supports traditional war files, OSGi
-bundles, and applications consisting of several bundles (modules) working
+start the event-loop. Typically, behavior is defined through callbacks at the
+beginning of a script, and at the end a server is started through a blocking
+call like EventMachine::run() . In Node.js, there is no such
+start-the-event-loop call. Node.js simply enters the event loop after executing
+the input script. Node.js exits the event loop when there are no more callbacks
+to perform. This behavior is like browser JavaScript — the event loop is hidden
+from the user. HTTP is a first-class citizen in Node.js, designed with streaming
+and low latency in mind. This makes Node.js well suited for the foundation of a
+web library or framework. Node.js being designed without threads doesn't mean
+you can't take advantage of multiple cores in your environment. Child processes
+can be spawned by using our child_process.fork() API, and are designed to be
+easy to communicate with. Built upon that same interface is the cluster module,
+which allows you to share sockets between processes to enable load balancing
+over your cores. Official Node.js Resources To ensure authenticity and security
+when working with Node.js, always use official sources. Avoid trusting emails,
+binaries, or downloads from unofficial sources. Official Node.js Domains For
+downloading Node.js binaries and accessing official documentation, use only
+these domains: nodejs.org nodejs.dev (Redirects to https://nodejs.org ) iojs.org
+(Redirects to https://nodejs.org ) Official npm Packages The Node.js team
+maintains the following official npm package scopes: @node-core @pkgjs
+Additionally, the Node.js team maintains packages published by the
+nodejs-foundation npm account, though other Node.js-related packages (like
+undici ) may also be maintained by
 ----------------------------------------------------------------------------------------------------
-Index: 4050 <<"chunk_id": 0, "docno": 555>>
+Index: 11873 <<"chunk_id": 19, "docno": 1862>>
 
-Modular Applications with Blueprints — Flask Documentation (3.1.x) Navigation
-index modules | next | previous | Flask Documentation (3.1.x) » Modular
-Applications with Blueprints Modular Applications with Blueprints ¶ Changelog
-Added in version 0.7. Flask uses a concept of blueprints for making application
-components and supporting common patterns within an application or across
-applications. Blueprints can greatly simplify how large applications work and
-provide a central means for Flask extensions to register operations on
-applications. A Blueprint object works similarly to a Flask application object,
-but it is not actually an application. Rather it is a blueprint of how to
-construct or extend an application. Why Blueprints? ¶ Blueprints in Flask are
-intended for these cases: Factor an application into a set of blueprints. This
-is ideal for larger applications; a project could instantiate an application
-object, initialize several extensions, and register a collection of blueprints.
-Register a blueprint on an application at a URL prefix and/or subdomain.
-Parameters in the URL prefix/subdomain become common view arguments (with
-defaults) across all view functions in the blueprint. Register a blueprint
-multiple times on an application with different URL rules. Provide template
-filters, static files, templates, and other utilities through blueprints. A
-blueprint does not have to implement applications or view functions. Register a
-blueprint on an application for any of these cases when initializing a Flask
-extension. A blueprint in Flask is not a pluggable app because it is not
-actually an application – it’s a set of operations which can be registered on an
-application, even
+12.8.1 This is a security release. Node.js, as well as many other
+implementations of HTTP/2, have been found vulnerable to Denial of Service
+attacks. See
+https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md
+for more information. Vulnerabilities fixed: CVE-2019-9511 “Data Dribble” : The
+attacker requests a large amount of data from a specified resource over multiple
+streams. They manipulate window size and stream priority to force the server to
+queue the data in 1-byte chunks. Depending on how efficiently this data is
+queued, this can consume excess CPU, memory, or both, potentially leading to a
+denial of service. CVE-2019-9512 “Ping Flood” : The attacker sends continual
+pings to an HTTP/2 peer, causing the peer to build an internal queue of
+responses. Depending on how efficiently this data is queued, this can consume
+excess CPU, memory, or both, potentially leading to a denial of service.
+CVE-2019-9513 “Resource Loop” : The attacker creates multiple request streams
+and continually shuffles the priority of the streams in a way that causes
+substantial churn to the priority tree. This can consume excess CPU, potentially
+leading to a denial of service. CVE-2019-9514 “Reset Flood” : The attacker opens
+a number of streams and sends an invalid request over each stream that should
+solicit a stream of RST_STREAM frames from the peer. Depending on how the peer
+queues the RST_STREAM frames, this can consume excess memory, CPU, or both,
+potentially leading to a denial of service. CVE-2019-9515 “Settings Flood” : The
+attacker sends a stream of SETTINGS frames to the peer. Since the RFC requires
+that the peer reply with
 ----------------------------------------------------------------------------------------------------
-Index: 4413 <<"chunk_id": 0, "docno": 608>>
+Index: 2353 <<"chunk_id": 8, "docno": 313>>
 
-Application Factories — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » Patterns for Flask » Application
-Factories Application Factories ¶ If you are already using packages and
-blueprints for your application ( Modular Applications with Blueprints ) there
-are a couple of really nice ways to further improve the experience. A common
-pattern is creating the application object when the blueprint is imported. But
-if you move the creation of this object into a function, you can then create
-multiple instances of this app later. So why would you want to do this? Testing.
-You can have instances of the application with different settings to test every
-case. Multiple instances. Imagine you want to run different versions of the same
-application. Of course you could have multiple instances with different configs
-set up in your webserver, but if you use factories, you can have multiple
-instances of the same application running in the same application process which
-can be handy. So how would you then actually implement that? Basic Factories ¶
-The idea is to set up the application in a function. Like this: def create_app (
-config_filename ): app = Flask ( __name__ ) app . config . from_pyfile (
-config_filename ) from yourapplication.model import db db . init_app ( app )
-from yourapplication.views.admin import admin from
-yourapplication.views.frontend import frontend app . register_blueprint ( admin
-) app . register_blueprint ( frontend ) return app The downside is that you
-cannot use the application object in the blueprints at
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
 ----------------------------------------------------------------------------------------------------
-Index: 4052 <<"chunk_id": 2, "docno": 555>>
+Index: 2998 <<"chunk_id": 3, "docno": 418>>
 
-abort ( 404 ) When you bind a function with the help of the @simple_page.route
-decorator, the blueprint will record the intention of registering the function
-show on the application when it’s later registered. Additionally it will prefix
-the endpoint of the function with the name of the blueprint which was given to
-the Blueprint constructor (in this case also simple_page ). The blueprint’s name
-does not modify the URL, only the endpoint. Registering Blueprints ¶ So how do
-you register that blueprint? Like this: from flask import Flask from
-yourapplication.simple_page import simple_page app = Flask ( __name__ ) app .
-register_blueprint ( simple_page ) If you check the rules registered on the
-application, you will find these: >>> app . url_map Map([<Rule
-'/static/<filename>' (HEAD, OPTIONS, GET) -> static>, <Rule '/<page>' (HEAD,
-OPTIONS, GET) -> simple_page.show>, <Rule '/' (HEAD, OPTIONS, GET) ->
-simple_page.show>]) The first one is obviously from the application itself for
-the static files. The other two are for the show function of the simple_page
-blueprint. As you can see, they are also prefixed with the name of the blueprint
-and separated by a dot ( . ). Blueprints however can also be mounted at
-different locations: app . register_blueprint ( simple_page , url_prefix =
-'/pages' ) And sure enough, these are the generated rules: >>> app . url_map
-Map([<Rule '/static/<filename>' (HEAD, OPTIONS, GET) -> static>, <Rule
-'/pages/<page>' (HEAD, OPTIONS, GET) -> simple_page.show>, <Rule '/pages/'
-(HEAD, OPTIONS, GET) -> simple_page.show>]) On top of that you can register
-blueprints multiple times though not every blueprint
+signals for received data ( data event) and the stream's completion ( end
+event). Developers can listen to these events and execute custom logic
+accordingly. This event-driven nature makes streams highly efficient for the
+processing of data from external sources. Why use Streams? Streams provide three
+key advantages over other data-handling methods: Memory Efficiency : Streams
+process data incrementally, consuming and processing data in chunks rather than
+loading the entire dataset into memory. This is a major advantage when dealing
+with large datasets, as it significantly reduces memory usage and prevents
+memory-related performance issues. Improved Response Time : Streams allow for
+immediate data processing. When a chunk of data arrives, it can be processed
+without waiting for the entire payload or dataset to be received. This reduces
+latency and improves your application's overall responsiveness. Scalability for
+Real-Time Processing : By handling data in chunks, Node.js streams can
+efficiently handle large amounts of data with limited resources. This
+scalability makes streams ideal for applications that process high volumes of
+data in real time. These advantages make streams a powerful tool for building
+high-performance, scalable Node.js applications, particularly when working with
+large datasets or real-time data processing. Note on performance If your
+application already has all the data readily available in memory, using streams
+might add unnecessary overhead, complexity, and slow down your application.
+Stream history This section is a reference of the history of streams in Node.js.
+Unless you’re working with a codebase written for a Node.js version prior to
+0.11.5 (2013), you will rarely encounter older
 ----------------------------------------------------------------------------------------------------
-Index: 31970 <<"chunk_id": 1, "docno": 4247>>
+Index: 2351 <<"chunk_id": 6, "docno": 313>>
 
-to our open source projects and SpringSource product offerings. Nothing changes
-that is, apart from the fact that we’ll have even more opportunity in the future
-to add exciting new features to them. Spring 3.0 is coming soon, and we just
-released milestone 4 . dm Server is making rapid progress towards a 2.0 release
-, and we have some very cool stuff up our sleeves for a forthcoming release of
-tc Server. The Eclipse tool support for Groovy is generating masses of interest,
-Grails is pushing on towards a 1.2 release , and exciting things are happening
-across our Spring projects. All of this will continue at pace. The power of
-blueprints Every Spring-powered application has what we call an “ application
-blueprint ”. This blueprint contains a description of all of the components
-(beans) that make up the application, how they are configured and connected, how
-they interact with the surrounding environment, and how cross-cutting concerns
-such as security and transactions should be handled. The blueprint is
-represented at runtime by a collection of BeanDefinitions , The BeanDefinitions
-are derived from a variety of sources including XML definitions, annotations,
-JavaConfig, Groovy DSLs, and any other configuration mechanism that can be
-plugged into Spring. It’s the job of the Spring container to take the blueprint
-that you have specified for your application and “make it so”. The application
-blueprint gives Spring a high degree of insight into the workings of your
-application. We’ll come back to that thought... What happens when a
-Spring-powered application is
+to the same race-condition class of bugs found in traditional multi-threaded
+programming. Things to watch for Worker threads are for CPU-bound work, not I/O
+— a worker still has to wait on I/O just like the main thread would, so spinning
+one up for a database call or a network request adds overhead for no benefit.
+Spinning up a worker has a real cost. For small, frequent tasks, that setup
+overhead can outweigh the benefit — consider a pool of long-lived workers (see
+the workerpool package) instead of creating one per task. Cluster cluster solves
+a different problem: a single Node.js process only uses one CPU core. To take
+advantage of a multi-core machine for a network server, cluster forks multiple
+full copies of your process (each one a child_process under the hood) that all
+listen on the same port. Example: scaling an HTTP server across cores const
+cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
+; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
+isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
+numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
+code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
+(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( `
 ----------------------------------------------------------------------------------------------------
-Index: 3748 <<"chunk_id": 1, "docno": 505>>
+Index: 2346 <<"chunk_id": 1, "docno": 313>>
 
-unlimited streams unless the WSGI server indicates support. MAX_FORM_MEMORY_SIZE
-or Request.max_form_memory_size controls how large any non-file
-multipart/form-data field can be. It is set to 500kB by default. MAX_FORM_PARTS
-or Request.max_form_parts controls how many multipart/form-data fields can be
-parsed. It is set to 1000 by default. Combined with the default
-max_form_memory_size , this means that a form will occupy at most 500MB of
-memory. Regardless of these settings, you should also review what settings are
-available from your operating system, container deployment (Docker etc), WSGI
-server, HTTP server, and hosting platform. They typically have ways to set
-process resource limits, timeouts, and other checks regardless of how Flask is
-configured. Cross-Site Scripting (XSS) ¶ Cross site scripting is the concept of
-injecting arbitrary HTML (and with it JavaScript) into the context of a website.
-To remedy this, developers have to properly escape text so that it cannot
-include arbitrary HTML tags. For more information on that have a look at the
-Wikipedia article on Cross-Site Scripting . Flask configures Jinja to
-automatically escape all values unless explicitly told otherwise. This should
-rule out all XSS problems caused in templates, but there are still other places
-where you have to be careful: generating HTML without the help of Jinja calling
-Markup on data submitted by users sending out HTML from uploaded files, never do
-that, use the Content-Disposition: attachment header to prevent that problem.
-sending out textfiles from uploaded files. Some browsers are using content-type
-guessing based on the first few bytes so users could trick a browser
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page The three
+options at a glance Child Process spawn, exec, execFile, and fork streaming a
+long-running command with spawn() talking to another Node.js process with fork()
+Things to watch for Worker Threads offloading CPU-bound work Sharing memory
+Things to watch for Cluster scaling an HTTP server across cores How the workers
+share one port isPrimary / isWorker Things to watch for Choosing between them
+Further reading Comparing Node.js concurrency models Node.js runs your
+JavaScript on a single thread, driven by the event loop . That model is great
+for I/O-bound work — reading files, querying a database, handling HTTP requests
+— because Node hands off the waiting to the operating system and keeps the
+thread free. It's a poor fit for two other situations, though: CPU-bound work
+(image resizing, hashing, parsing huge payloads) ties up the single thread and
+makes your
 ----------------------------------------------------------------------------------------------------
-Index: 2849 <<"chunk_id": 0, "docno": 410>>
+Index: 15912 <<"chunk_id": 1471, "docno": 2234>>
 
-Flask Extension Development — Flask Documentation (3.1.x) Navigation index
-modules | next | previous | Flask Documentation (3.1.x) » Flask Extension
-Development Flask Extension Development ¶ Extensions are extra packages that add
-functionality to a Flask application. While PyPI contains many Flask extensions,
-you may not find one that fits your need. If this is the case, you can create
-your own, and publish it for others to use as well. This guide will show how to
-create a Flask extension, and some of the common patterns and requirements
-involved. Since extensions can do anything, this guide won’t be able to cover
-every possibility. The best ways to learn about extensions are to look at how
-other extensions you use are written, and discuss with others. Discuss your
-design ideas with others on our Discord Chat or GitHub Discussions . The best
-extensions share common patterns, so that anyone familiar with using one
-extension won’t feel completely lost with another. This can only work if
-collaboration happens early. Naming ¶ A Flask extension typically has flask in
-its name as a prefix or suffix. If it wraps another library, it should include
-the library name as well. This makes it easy to search for extensions, and makes
-their purpose clearer. A general Python packaging recommendation is that the
-install name from the package index and the name used in import statements
-should be related. The import name is lowercase, with words separated by
-underscores ( _ ). The install name is either lower case or title
+on, and the handle passed to the worker, rather than listening to the worker's
+idea of what the number 7 file descriptor references. server.listen(handle)
+Listening on handles explicitly will cause the worker to use the supplied
+handle, rather than talk to the primary process. server.listen(0) Normally, this
+will cause servers to listen on a random port. However, in a cluster, each
+worker will receive the same "random" port each time they do listen(0) . In
+essence, the port is random the first time, but predictable thereafter. To
+listen on a unique port, generate a port number based on the cluster worker ID.
+Node.js does not provide routing logic. It is therefore important to design an
+application such that it does not rely too heavily on in-memory data objects for
+things like sessions and login. Because workers are all separate processes, they
+can be killed or re-spawned depending on a program's needs, without affecting
+other workers. As long as there are some workers still alive, the server will
+continue to accept connections. If no workers are alive, existing connections
+will be dropped and new connections will be refused. Node.js does not
+automatically manage the number of workers, however. It is the application's
+responsibility to manage the worker pool based on its own needs. Although a
+primary use case for the node:cluster module is networking, it can also be used
+for other use cases requiring worker processes. Class: Worker # Added in: v0.7.0
+Extends: <EventEmitter> A Worker object contains all public information and
+method about a worker. In
 ----------------------------------------------------------------------------------------------------
-Index: 3838 <<"chunk_id": 7, "docno": 519>>
+Index: 2801 <<"chunk_id": 17, "docno": 378>>
 
-Using async and await for more discussion. What Flask is, What Flask is Not ¶
-Flask will never have a database layer. It will not have a form library or
-anything else in that direction. Flask itself just bridges to Werkzeug to
-implement a proper WSGI application and to Jinja to handle templating. It also
-binds to a few common standard library packages such as logging. Everything else
-is up for extensions. Why is this the case? Because people have different
-preferences and requirements and Flask could not meet those if it would force
-any of this into the core. The majority of web applications will need a template
-engine in some sort. However not every application needs a SQL database. As your
-codebase grows, you are free to make the design decisions appropriate for your
-project. Flask will continue to provide a very simple glue layer to the best
-that Python has to offer. You can implement advanced patterns in SQLAlchemy or
-another database tool, introduce non-relational data persistence as appropriate,
-and take advantage of framework-agnostic tools built for WSGI, the Python web
-interface. The idea of Flask is to build a good foundation for all applications.
-Everything else is up to you or extensions. Contents Design Decisions in Flask
-The Explicit Application Object The Routing System One Template Engine What does
-“micro” mean? Thread Locals Async/await and ASGI support What Flask is, What
-Flask is Not Navigation Overview Previous: API Next: Flask Extension Development
-Quick search © Copyright 2010 Pallets. Created using Sphinx 8.2.3.
+system, etc.) and waiting for its response. While a Worker with an I/O-intensive
+task is waiting for its response, it has nothing else to do and can be
+de-scheduled by the operating system, giving another Worker a chance to submit
+their request. Thus, I/O-intensive tasks will be making progress even while the
+associated thread is not running . External service providers like databases and
+file systems have been highly optimized to handle many pending requests
+concurrently. For example, a file system will examine a large set of pending
+write and read requests to merge conflicting updates and to retrieve files in an
+optimal order. If you rely on only one Worker Pool, e.g. the Node.js Worker
+Pool, then the differing characteristics of CPU-bound and I/O-bound work may
+harm your application's performance. For this reason, you might wish to maintain
+a separate Computation Worker Pool. Offloading: conclusions For simple tasks,
+like iterating over the elements of an arbitrarily long array, partitioning
+might be a good option. If your computation is more complex, offloading is a
+better approach: the communication costs, i.e. the overhead of passing
+serialized objects between the Event Loop and the Worker Pool, are offset by the
+benefit of using multiple cores. However, if your server relies heavily on
+complex calculations, you should think about whether Node.js is really a good
+fit. Node.js excels for I/O-bound work, but for expensive computation it might
+not be the best option. If you take the offloading approach, see the section on
+not blocking the Worker Pool. Don't block
 ----------------------------------------------------------------------------------------------------
-Index: 3554 <<"chunk_id": 38, "docno": 493>>
+Index: 2996 <<"chunk_id": 1, "docno": 418>>
 
-a function returns None or raises a BuildError , it is skipped. Otherwise, its
-return value is returned by url_for . Changelog Added in version 0.9.
-teardown_appcontext_funcs : list [ ft.TeardownCallable ] ¶ A list of functions
-that are called when the application context is destroyed. Since the application
-context is also torn down if the request ends this is the place to store code
-that disconnects from databases. Changelog Added in version 0.9.
-shell_context_processors : list [ ft.ShellContextProcessorCallable ] ¶ A list of
-shell context processor functions that should be run when a shell context is
-created. Changelog Added in version 0.11. blueprints : dict [ str , Blueprint ]
-¶ Maps registered blueprint names to blueprint objects. The dict retains the
-order the blueprints were registered in. Blueprints can be registered multiple
-times, this dict does not track how often they were attached. Changelog Added in
-version 0.7. extensions : dict [ str , t.Any ] ¶ a place where extensions can
-store application specific state. For example this is where an extension could
-store database engines and similar things. The key must match the name of the
-extension module. For example in case of a “Flask-Foo” extension in flask_foo ,
-the key would be 'foo' . Changelog Added in version 0.7. url_map ¶ The Map for
-this instance. You can use this to change the routing converters after the class
-was created but before any routes are connected. Example: from werkzeug.routing
-import BaseConverter class ListConverter ( BaseConverter ): def to_python ( self
-,
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page What are
+Node.js Streams? Event-Driven Architecture Why use Streams? Note on performance
+Stream history Streams 0 Streams 1 (Classic) Streams 2 Streams 3 Stream types
+Readable Writable Duplex Transform How to operate with streams .pipe() pipeline
+Async Iterators Object mode Backpressure Streams vs Web streams Interoperability
+of streams and Web Streams How To Use Streams Working with large amounts of data
+in Node.js applications can be a double-edged sword. The ability to handle
+massive amounts of data is extremely handy but can also lead to performance
+bottlenecks and memory exhaustion. Traditionally, developers tackled this
+challenge by reading the entire dataset into memory at once. This approach,
+while intuitive for smaller datasets, becomes inefficient and resource-intensive
+for large data (e.g., files, network requests…). This is where Node.js streams
+come in. Streams offer a fundamentally different approach, allowing you to
+process data incrementally
 ----------------------------------------------------------------------------------------------------
-Index: 4492 <<"chunk_id": 12, "docno": 618>>
+Index: 2800 <<"chunk_id": 16, "docno": 378>>
 
-solution for this problem in general, but there are a couple of things you can
-keep in mind to improve that experience: Create your application in a function
-and register blueprints on it. That way you can create multiple instances of
-your application with different configurations attached which makes unit testing
-a lot easier. You can use this to pass in configuration as needed. Do not write
-code that needs the configuration at import time. If you limit yourself to
-request-only accesses to the configuration you can reconfigure the object later
-on as needed. Make sure to load the configuration very early on, so that
-extensions can access the configuration when calling init_app . Development /
-Production ¶ Most applications need more than one configuration. There should be
-at least separate configurations for the production server and the one used
-during development. The easiest way to handle this is to use a default
-configuration that is always loaded and part of the version control, and a
-separate configuration that overrides the values as necessary as mentioned in
-the example above: app = Flask ( __name__ ) app . config . from_object (
-'yourapplication.default_settings' ) app . config . from_envvar (
-'YOURAPPLICATION_SETTINGS' ) Then you just have to add a separate config.py file
-and export YOURAPPLICATION_SETTINGS=/path/to/config.py and you are done. However
-there are alternative ways as well. For example you could use imports or
-subclassing. What is very popular in the Django world is to make the import
-explicit in the config file by adding from yourapplication.default_settings
+to do this is using Child Process or Cluster . You should not simply create a
+Child Process for every client. You can receive client requests more quickly
+than you can create and manage children, and your server might become a fork
+bomb . Downside of offloading The downside of the offloading approach is that it
+incurs overhead in the form of communication costs . Only the Event Loop is
+allowed to see the "namespace" (JavaScript state) of your application. From a
+Worker, you cannot manipulate a JavaScript object in the Event Loop's namespace.
+Instead, you have to serialize and deserialize any objects you wish to share.
+Then the Worker can operate on its own copy of these object(s) and return the
+modified object (or a "patch") to the Event Loop. For serialization concerns,
+see the section on JSON DOS. Some suggestions for offloading You may wish to
+distinguish between CPU-intensive and I/O-intensive tasks because they have
+markedly different characteristics. A CPU-intensive task only makes progress
+when its Worker is scheduled, and the Worker must be scheduled onto one of your
+machine's logical cores . If you have 4 logical cores and 5 Workers, one of
+these Workers cannot make progress. As a result, you are paying overhead (memory
+and scheduling costs) for this Worker and getting no return for it.
+I/O-intensive tasks involve querying an external service provider (DNS, file
+system, etc.) and waiting for its response. While a Worker with an I/O-intensive
+task is waiting for its response, it has nothing else to do
 ----------------------------------------------------------------------------------------------------
-Index: 3747 <<"chunk_id": 0, "docno": 505>>
+Index: 14813 <<"chunk_id": 372, "docno": 2234>>
 
-Security Considerations — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » Security Considerations Security
-Considerations ¶ Web applications face many types of potential security
-problems, and it can be hard to get everything right, or even to know what
-“right” is in general. Flask tries to solve a few of these things by default,
-but there are other parts you may have to take care of yourself. Many of these
-solutions are tradeoffs, and will depend on each application’s specific needs
-and threat model. Many hosting platforms may take care of certain types of
-problems without the need for the Flask application to handle them. Resource Use
-¶ A common category of attacks is “Denial of Service” (DoS or DDoS). This is a
-very broad category, and different variants target different layers in a
-deployed application. In general, something is done to increase how much
-processing time or memory is used to handle each request, to the point where
-there are not enough resources to handle legitimate requests. Flask provides a
-few configuration options to handle resource use. They can also be set on
-individual requests to customize only that request. The documentation for each
-goes into more detail. MAX_CONTENT_LENGTH or Request.max_content_length controls
-how much data will be read from a request. It is not set by default, although it
-will still block truly unlimited streams unless the WSGI server indicates
-support. MAX_FORM_MEMORY_SIZE or Request.max_form_memory_size controls how large
-any non-file multipart/form-data field can be. It is set to 500kB
+triggered the error, while letting the others finish in their normal time, and
+stop listening for new requests in that worker. In this way, domain usage goes
+hand-in-hand with the cluster module, since the primary process can fork a new
+worker when a worker encounters an error. For Node.js programs that scale to
+multiple machines, the terminating proxy or service registry can take note of
+the failure, and react accordingly. For example, this is not a good idea: // XXX
+WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
+'error' , ( er ) => { // The error won't crash the process, but what it does is
+worse! // Though we've prevented abrupt process restarting, we are leaking // a
+lot of resources if this ever happens. // This is no better than
+process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
+message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
+( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
+copy By using the context of a domain, and the resilience of separating our
+program into multiple worker processes, we can react more appropriately, and
+handle errors with much greater safety. // Much better! const cluster = require
+( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
 ----------------------------------------------------------------------------------------------------
-Index: 2900 <<"chunk_id": 0, "docno": 419>>
+Index: 11874 <<"chunk_id": 20, "docno": 1862>>
 
-The Application Context — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » The Application Context The
-Application Context ¶ The application context keeps track of the
-application-level data during a request, CLI command, or other activity. Rather
-than passing the application around to each function, the current_app and g
-proxies are accessed instead. This is similar to The Request Context , which
-keeps track of request-level data during a request. A corresponding application
-context is pushed when a request context is pushed. Purpose of the Context ¶ The
-Flask application object has attributes, such as config , that are useful to
-access within views and CLI commands . However, importing the app instance
-within the modules in your project is prone to circular import issues. When
-using the app factory pattern or writing reusable blueprints or extensions there
-won’t be an app instance to import at all. Flask solves this issue with the
-application context . Rather than referring to an app directly, you use the
-current_app proxy, which points to the application handling the current
-activity. Flask automatically pushes an application context when handling a
-request. View functions, error handlers, and other functions that run during a
-request will have access to current_app . Flask will also automatically push an
-app context when running CLI commands registered with Flask.cli using
-@app.cli.command() . Lifetime of the Context ¶ The application context is
-created and destroyed as necessary. When a Flask application begins handling a
-request, it pushes an application
+service. CVE-2019-9515 “Settings Flood” : The attacker sends a stream of
+SETTINGS frames to the peer. Since the RFC requires that the peer reply with one
+acknowledgement per SETTINGS frame, an empty SETTINGS frame is almost equivalent
+in behavior to a ping. Depending on how efficiently this data is queued, this
+can consume excess CPU, memory, or both, potentially leading to a denial of
+service. CVE-2019-9516 “0-Length Headers Leak” : The attacker sends a stream of
+headers with a 0-length header name and 0-length header value, optionally
+Huffman encoded into 1-byte or greater headers. Some implementations allocate
+memory for these headers and keep the allocation alive until the session dies.
+This can consume excess memory, potentially leading to a denial of service.
+CVE-2019-9517 “Internal Data Buffering” : The attacker opens the HTTP/2 window
+so the peer can send without constraint; however, they leave the TCP window
+closed so the peer cannot actually write (many of) the bytes on the wire. The
+attacker then sends a stream of requests for a large response object. Depending
+on how the servers queue the responses, this can consume excess memory, CPU, or
+both, potentially leading to a denial of service. CVE-2019-9518 “Empty Frames
+Flood” : The attacker sends a stream of frames with an empty payload and without
+the end-of-stream flag. These frames can be DATA, HEADERS, CONTINUATION and/or
+PUSH_PROMISE. The peer spends time processing each frame disproportionate to
+attack bandwidth. This can consume excess CPU, potentially leading to a denial
+of service. (Discovered by Piotr Sikora of Google) Notable
 ----------------------------------------------------------------------------------------------------
-Index: 3377 <<"chunk_id": 0, "docno": 472>>
+Index: 10046 <<"chunk_id": 5, "docno": 1446>>
 
-Blueprints and Views — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » Tutorial » Blueprints and Views
-Blueprints and Views ¶ A view function is the code you write to respond to
-requests to your application. Flask uses patterns to match the incoming request
-URL to the view that should handle it. The view returns data that Flask turns
-into an outgoing response. Flask can also go the other direction and generate a
-URL to a view based on its name and arguments. Create a Blueprint ¶ A Blueprint
-is a way to organize a group of related views and other code. Rather than
-registering views and other code directly with an application, they are
-registered with a blueprint. Then the blueprint is registered with the
-application when it is available in the factory function. Flaskr will have two
-blueprints, one for authentication functions and one for the blog posts
-functions. The code for each blueprint will go in a separate module. Since the
-blog needs to know about authentication, you’ll write the authentication one
-first. flaskr/auth.py ¶ import functools from flask import ( Blueprint , flash ,
-g , redirect , render_template , request , session , url_for ) from
-werkzeug.security import check_password_hash , generate_password_hash from
-flaskr.db import get_db bp = Blueprint ( 'auth' , __name__ , url_prefix =
-'/auth' ) This creates a Blueprint named 'auth' . Like the application object,
-the blueprint needs to know where it’s defined, so __name__ is passed as the
-second argument.
+1024 elements or however many were collected in 350ms. This allows you to write
+very, very efficient systems that deal with high volumes of data in batches to
+minimize network bandwidth usage and maximize throughput (while still maintaing
+a predicatble latency). Along with microbatching Stream provides facilities like
+filter , flatMap , movingBuffer , join , merge , sample , sort , and many other
+operations which are largely self-explanatory. Much like Scala's collection API
+or RxJava's Observable, Reactor's Stream provides functional and reactive ways
+to process data quickly, efficiently, and at extremely high volume while
+maintaining predictable, low latencies. It's not an exaggeration to say that you
+could write your entire application using the Stream as a foundational component
+that is used to submit asynchronous tasks for execution and also to process
+traditional collections of data in a reactive way--and then mix the two
+approaches by combining live data with historical data. Parallel processing It's
+sometimes necessary to split up a stream of data into parallel pipelines for
+doing concurrent processing. Reactor's Stream provides an extremely convenient
+way to do this with the parallel(int) operation. You simply attach your business
+logic to the Stream provided after the parallel call and data will be
+round-robined between the downstream pipelines for concurrent processing.
+HotStream<String> stream = Streams.defer(env); // by default uses number of CPUs
+as thread count stream.parallel(substream -> substream.map(greeting -> "Hello "
++ greeting + "!") .consume(log::info)); Here's an interesting example of the
+Reactive Streams implementation showing itself in your code: when you run this
+you
 ----------------------------------------------------------------------------------------------------
-Index: 27339 <<"chunk_id": 3, "docno": 3954>>
+Index: 16969 <<"chunk_id": 2528, "docno": 2234>>
 
-unable to articulate source code to the business in the terms that they
-understand, that functionality becomes ornamental and difficult to change or
-replace. Even the most complex domains can be divided into… Smaller but still
-quite complex subdomains (so-called core domains) - this is probably the largest
-competitive advantage of our enterprise hence, we invest much effort there.
-Simple and understandable subdomains that might not be unique to our enterprise
-(so-called generic subdomains) - we need them for our enterprise to operate but
-it does not give our customers competitive advantage. Think about inventory or
-invoicing. Our users will not come back attracted by even the prettiest
-invoices. Identifying those smaller products gives us a first draft of how to
-organize our code into modules. Each subdomain equals separate module.
-Understanding distinction between core and generic domains helps us see that
-they probably need different architectural style. Fortunately, there are a lot
-of ingredients we can pick and choose from! The example From this place I am
-happy to announce that together with my friend Michał Michaluk , we've created
-an initiative called #dddbyexamples. The purpose of the initiative is to bridge
-the many different parts of the Spring ecosystem with the interests of DDD
-enthusiasts. You can check our samples here . So far, there are two samples. One
-sample focuses on Event Sourcing and Command Query Responsibility Segregation,
-while the other focuses on an end-to-end DDD example. Both are implemented with
-Spring Boot. Let's dive into the end-to-end example. We are going to
+rejected while this limit is exceeded. The current number of Http2Stream
+sessions, the current memory use of the header compression tables, header blocks
+retained by open streams, current data queued to be sent, and unacknowledged
+PING and SETTINGS frames are all counted towards the current limit. Default: 10
+. maxHeaderListPairs <number> Sets the maximum number of header entries. This is
+similar to server.maxHeadersCount or request.maxHeadersCount in the node:http
+module. The minimum value is 4 . Default: 128 . maxOutstandingPings <number>
+Sets the maximum number of outstanding, unacknowledged pings. Default: 10 .
+maxSendHeaderBlockLength <number> Sets the maximum allowed size for a
+serialized, compressed block of headers. Attempts to send headers that exceed
+this limit will result in a 'frameError' event being emitted and the stream
+being closed and destroyed. While this sets the maximum allowed size to the
+entire block of headers, nghttp2 (the internal http2 library) has a limit of
+65536 for each decompressed key/value pair. paddingStrategy <number> The
+strategy used for determining the amount of padding to use for HEADERS and DATA
+frames. Default: http2.constants.PADDING_STRATEGY_NONE . Value may be one of:
+http2.constants.PADDING_STRATEGY_NONE : No padding is applied.
+http2.constants.PADDING_STRATEGY_MAX : The maximum amount of padding, determined
+by the internal implementation, is applied.
+http2.constants.PADDING_STRATEGY_ALIGNED : Attempts to apply enough padding to
+ensure that the total frame length, including the 9-byte header, is a multiple
+of 8. For each frame, there is a maximum allowed number of padding bytes that is
+determined by current flow control state and settings. If this maximum is less
+than the calculated amount
 ----------------------------------------------------------------------------------------------------
-Index: 14 <<"chunk_id": 0, "docno": 4>>
+Index: 4825 <<"chunk_id": 4, "docno": 700>>
 
-Welcome to Flask — Flask Documentation (3.1.x) Navigation index modules | next |
-Flask Documentation (3.1.x) » Welcome to Flask Welcome to Flask ¶ Welcome to
-Flask’s documentation. Flask is a lightweight WSGI web application framework. It
-is designed to make getting started quick and easy, with the ability to scale up
-to complex applications. Get started with Installation and then get an overview
-with the Quickstart . There is also a more detailed Tutorial that shows how to
-create a small but complete application with Flask. Common patterns are
-described in the Patterns for Flask section. The rest of the docs describe each
-component of Flask in detail, with a full reference in the API section. Flask
-depends on the Werkzeug WSGI toolkit, the Jinja template engine, and the Click
-CLI toolkit. Be sure to check their documentation as well as Flask’s when
-looking for information. User’s Guide ¶ Flask provides configuration and
-conventions, with sensible defaults, to get started. This section of the
-documentation explains the different parts of the Flask framework and how they
-can be used, customized, and extended. Beyond Flask itself, look for
-community-maintained extensions to add even more functionality. Installation
-Python Version Dependencies Virtual environments Install Flask Quickstart A
-Minimal Application Debug Mode HTML Escaping Routing Static Files Rendering
-Templates Accessing Request Data Redirects and Errors About Responses Sessions
-Message Flashing Logging Hooking in WSGI Middleware Using Flask Extensions
-Deploying to a Web Server Tutorial Project Layout Application Setup Define and
-Access the Database Blueprints and Views Templates Static Files
+exacerbated by the use of AI, the ethical concerns about AI, whether a ban is
+feasible or desirable, whether a disclosure on the use of AI may help or draw
+further legal and ethical concerns, how AI may help maintenance and lower
+barrier of entry, and ideas on reducing the amount of noise caused by the use of
+AI. We also brainstormed how to adapt open-source governance for the modern era.
+Strategies discussed include enforcing a process that requires lightweight
+design documents, RFCs, explicit maintainer buy-in before a large PR, and pledge
+from the human contributor submitting the code who should take full
+responsibility for its quality, security, and integration. We'll continue the
+discussions and iteration of the policy documents on GitHub. Userland migrations
+Jacob Smith and Bruno Rodrigues presented increased usage of userland
+migrations. Migrations for Node.js 22.x to 24.x deprecations are almost
+complete. For Node.js 25.9.0, a codemod was published along side the deprecation
+introduced. Stabilization of module customization hooks and vm.Modules Joyee
+Cheung facilitated a session to discuss the stabilization of module loader hooks
+and the vm Module API . As module.register() is set to be doc-deprecated for 25
+and below and runtime-deprecated for 26 and above due to maintenance issues , we
+are looking into helping the ecosystem migrate to the module.registerHooks()
+API. Ideas include providing a userland ponyfill that re-implements most of the
+module.register() functionality using module.registerHooks() , and having some
+userland-migration automation tools to help facilitate migration. Joyee also
+presented a new design for the vm Module APIs that have
 ----------------------------------------------------------------------------------------------------
-Index: 2855 <<"chunk_id": 6, "docno": 410>>
+Index: 8772 <<"chunk_id": 26, "docno": 1381>>
 
-. as_view ( model = self . post_model ) db = SQLAlchemy () blog = BlogExtension
-( db ) db . init_app ( app ) blog . init_app ( app ) Another technique could be
-to use an attribute on the extension, such as self.post_model from above. Add
-the extension to app.extensions in init_app , then access
-current_app.extensions["simple_blog"].post_model from views. You may also want
-to provide base classes so that users can provide their own Post model that
-conforms to the API your extension expects. So they could implement class
-Post(blog.BasePost) , then set it as blog.post_model . As you can see, this can
-get a bit complex. Unfortunately, there’s no perfect solution here, only
-different strategies and tradeoffs depending on your needs and how much
-customization you want to offer. Luckily, this sort of resource dependency is
-not a common need for most extensions. Remember, if you need help with design,
-ask on our Discord Chat or GitHub Discussions . Recommended Extension Guidelines
-¶ Flask previously had the concept of “approved extensions”, where the Flask
-maintainers evaluated the quality, support, and compatibility of the extensions
-before listing them. While the list became too difficult to maintain over time,
-the guidelines are still relevant to all extensions maintained and developed
-today, as they help the Flask ecosystem remain consistent and compatible. An
-extension requires a maintainer. In the event an extension author would like to
-move beyond the project, the project should find a new maintainer and transfer
-access to the repository, documentation, PyPI, and any
+uv_get_constrained_memory for more information.
+process.cpuUsage([previousValue]) # Added in: v6.1.0 previousValue <Object> A
+previous return value from calling process.cpuUsage() Returns: <Object> user
+<integer> system <integer> The process.cpuUsage() method returns the user and
+system CPU time usage of the current process, in an object with properties user
+and system , whose values are microsecond values (millionth of a second). These
+values measure time spent in user and system code respectively, and may end up
+being greater than actual elapsed time if multiple CPU cores are performing work
+for this process. The result of a previous call to process.cpuUsage() can be
+passed as the argument to the function, to get a diff reading. import { cpuUsage
+} from 'node:process' ; const startUsage = cpuUsage () ; // { user: 38579,
+system: 6986 } // spin the CPU for 500 milliseconds const now = Date . now () ;
+while (Date . now () - now < 500 ) ; console . log ( cpuUsage (startUsage)) ; //
+{ user: 514883, system: 11226 } const { cpuUsage } = require ( 'node:process' )
+; const startUsage = cpuUsage () ; // { user: 38579, system: 6986 } // spin the
+CPU for 500 milliseconds const now = Date . now () ; while (Date . now () - now
+< 500 ) ; console . log ( cpuUsage (startUsage)) ; // { user: 514883, system:
+11226 } javascript copy process.cwd() # Added in: v0.1.8 Returns: <string> The
+process.cwd() method returns the current working directory of the Node.js
+process. import {
 ----------------------------------------------------------------------------------------------------
-Index: 4056 <<"chunk_id": 6, "docno": 555>>
+Index: 27665 <<"chunk_id": 2, "docno": 4470>>
 
-if you don’t want a blueprint template to be accidentally overridden, make sure
-that no other blueprint or actual application template has the same relative
-path. When multiple blueprints provide the same relative template path the first
-blueprint registered takes precedence over the others. So if you have a
-blueprint in the folder yourapplication/admin and you want to render the
-template 'admin/index.html' and you have provided templates as a template_folder
-you will have to create a file like this:
-yourapplication/admin/templates/admin/index.html . The reason for the extra
-admin folder is to avoid getting our template overridden by a template named
-index.html in the actual application template folder. To further reiterate this:
-if you have a blueprint named admin and you want to render a template called
-index.html which is specific to this blueprint, the best idea is to lay out your
-templates like this: yourpackage / blueprints / admin / templates / admin /
-index . html __init__ . py And then when you want to render the template, use
-admin/index.html as the name to look up the template by. If you encounter
-problems loading the correct templates enable the EXPLAIN_TEMPLATE_LOADING
-config variable which will instruct Flask to print out the steps it goes through
-to locate templates on every render_template call. Building URLs ¶ If you want
-to link from one page to another you can use the url_for() function just like
-you normally would do just that you prefix the URL endpoint with the name of the
-blueprint and a dot ( . ): url_for
+output response = chatClient.prompt(input).call().content(); } return response;
+} } This implementation demonstrates several key principles: Each step has a
+focused responsibility Output from one step becomes input for the next The chain
+is easily extensible and maintainable 2. Parallelization Workflow LLMs can work
+simultaneously on tasks and have their outputs aggregated programmatically. The
+parallelization workflow manifests in two key variations: Sectioning : Breaking
+tasks into independent subtasks for parallel processing Voting : Running
+multiple instances of the same task for consensus When to Use: Processing large
+volumes of similar but independent items Tasks requiring multiple independent
+perspectives When processing time is critical and tasks are parallelizable The
+Parallelization Workflow pattern demonstrates efficient concurrent processing of
+multiple Large Language Model (LLM) operations. This pattern is particularly
+useful for scenarios requiring parallel execution of LLM calls with automated
+output aggregation. Here's a basic example of using the Parallelization
+Workflow: List<String> parallelResponse = new
+ParallelizationWorkflow(chatClient) .parallel( "Analyze how market changes will
+impact this stakeholder group.", List.of( "Customers: ...", "Employees: ...",
+"Investors: ...", "Suppliers: ..." ), 4 ); This example demonstrates parallel
+processing of stakeholder analysis, where each stakeholder group is analyzed
+concurrently. 3. Routing Workflow The Routing pattern implements intelligent
+task distribution, enabling specialized handling for different types of input.
+This pattern is designed for complex tasks where different types of inputs are
+better handled by specialized processes. It uses an LLM to analyze input content
+and route it to the most appropriate specialized prompt or handler. When to Use:
+Complex tasks with distinct categories of input When different
 ----------------------------------------------------------------------------------------------------
-Index: 42381 <<"chunk_id": 5, "docno": 6503>>
+Index: 1470 <<"chunk_id": 1, "docno": 184>>
 
-this makes sense at all or that it's a good thing but I think it's a reality.
-What do you think? I think it's fortunate that this is not a reality, because it
-makes no sense at all, is a Very Bad Thing and could potentially destroy the
-software industry. The blog concludes that: This is one of the reasons we worked
-hard to make sure our OpenLogic Expert Community compensates fairly. So I
-followed the link to their "Expert Community" FAQ to understand exactly how this
-works in practice. The interesting answers are: Do I get paid to be a part of
-the Expert Community? Yes, the OpenLogic Rewards program pays Expert Community
-members in points (redeemable for your choice of cash or rewards) upon
-successful resolution of an incident. OpenLogic charges enterprise for support.
-OpenLogic's internal technical support team resolves basic issues. OpenLogic, in
-turn, contracts with members of the community to resolve more complex issues.
-Right, so it works like this. OpenLogic hope that enterprise customers will pay
-them money up front for support contracts. OpenLogic don't appear to believe in
-paying developers salaries, so they expect that they won't be able to handle
-complex support issues internally. So in that case they reach out to the
-"community," and pay only if an incident is resolved. That works like this: What
-will I have to do as a Member of the Expert Community? As a member, you will
-have access to a list of customer incidents that we need help resolving. You can
+system FFI Globals HTTP HTTP/2 HTTPS Inspector Internationalization Iterable
+Streams API Modules: CommonJS modules Modules: ECMAScript modules Modules:
+node:module API Modules: Packages Modules: TypeScript Net OS Path Performance
+hooks Permissions Process Punycode Query strings Readline REPL Report Single
+executable applications SQLite Stream String decoder Test runner Timers TLS/SSL
+Trace events TTY UDP/datagram URL Utilities V8 Virtual File System VM WASI Web
+Crypto API Web Streams API Worker threads Zlib Other versions 26.x 25.x 24.x LTS
+23.x 22.x LTS 21.x 20.x 19.x 18.x 17.x 16.x 15.x 14.x 13.x 12.x 11.x 10.x 9.x
+8.x 7.x 6.x 5.x 4.x 0.12.x 0.10.x Options View on single page View as JSON Edit
+on GitHub Table of contents Cluster How it works Class: Worker Event:
+'disconnect' Event: 'error' Event: 'exit' Event: 'listening' Event: 'message'
+Event: 'online' worker.disconnect() worker.exitedAfterDisconnect worker.id
+worker.isConnected() worker.isDead() worker.kill([signal]) worker.process
+worker.send(message[, sendHandle[, options]][, callback]) Event: 'disconnect'
+Event: 'exit' Event: 'fork' Event: 'listening' Event: 'message' Event: 'online'
+Event: 'setup' cluster.disconnect([callback]) cluster.fork([env])
+cluster.isMaster cluster.isPrimary cluster.isWorker cluster.schedulingPolicy
+cluster.settings cluster.setupMaster([settings])
+cluster.setupPrimary([settings]) cluster.worker cluster.workers Cluster # Source
+Code: lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be
+used to run multiple instances of Node.js that can distribute workloads among
+their application threads. When process isolation is not needed, use the
+worker_threads module instead, which allows running multiple application threads
+within a single Node.js instance. The cluster module allows easy creation of
+child processes that all share server ports. import cluster from 'node:cluster'
+; import http from 'node:http' ; import { availableParallelism } from 'node:os'
+; import process from 'node:process' ; const numCPUs
+----------------------------------------------------------------------------------------------------
+Index: 15909 <<"chunk_id": 1468, "docno": 2234>>
+
+the structure of the passed data. Therefore, this feature requires opting in by
+setting the serialization option to 'advanced' when calling
+child_process.spawn() or child_process.fork() . Cluster # Source Code:
+lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be used
+to run multiple instances of Node.js that can distribute workloads among their
+application threads. When process isolation is not needed, use the
+worker_threads module instead, which allows running multiple application threads
+within a single Node.js instance. The cluster module allows easy creation of
+child processes that all share server ports. import cluster from 'node:cluster'
+; import http from 'node:http' ; import { availableParallelism } from 'node:os'
+; import process from 'node:process' ; const numCPUs = availableParallelism () ;
+if (cluster . isPrimary) { console . log ( `Primary ${ process . pid } is
+running` ) ; // Fork workers. for ( let i = 0 ; i < numCPUs ; i ++ ) { cluster .
+fork () ; } cluster . on ( 'exit' , ( worker , code , signal ) => { console .
+log ( `worker ${ worker . process . pid } died` ) ; } ) ; } else { // Workers
+can share any TCP connection // In this case it is an HTTP server http .
+createServer ( ( req , res ) => { res . writeHead ( 200 ) ; res . end ( 'hello
+world \n ' ) ; } ) . listen ( 8000 ) ; console . log ( `Worker ${
+----------------------------------------------------------------------------------------------------
+Index: 1473 <<"chunk_id": 4, "docno": 184>>
+
+connections and distributes them across the workers in a round-robin fashion,
+with some built-in smarts to avoid overloading a worker process. The second
+approach is where the primary process creates the listen socket and sends it to
+interested workers. The workers then accept incoming connections directly. The
+second approach should, in theory, give the best performance. In practice
+however, distribution tends to be very unbalanced due to operating system
+scheduler vagaries. Loads have been observed where over 70% of all connections
+ended up in just two processes, out of a total of eight. Because server.listen()
+hands off most of the work to the primary process, there are three cases where
+the behavior between a normal Node.js process and a cluster worker differs:
+server.listen({fd: 7}) Because the message is passed to the primary, file
+descriptor 7 in the parent will be listened on, and the handle passed to the
+worker, rather than listening to the worker's idea of what the number 7 file
+descriptor references. server.listen(handle) Listening on handles explicitly
+will cause the worker to use the supplied handle, rather than talk to the
+primary process. server.listen(0) Normally, this will cause servers to listen on
+a random port. However, in a cluster, each worker will receive the same "random"
+port each time they do listen(0) . In essence, the port is random the first
+time, but predictable thereafter. To listen on a unique port, generate a port
+number based on the cluster worker ID. Node.js does not provide routing logic.
+It is therefore important to design an
+----------------------------------------------------------------------------------------------------
+Index: 27914 <<"chunk_id": 2, "docno": 4515>>
+
+at any point in time some key metrics, including: What jobs are currently
+running? Which jobs have failed, if any? Other questions about how things are
+going. Being able to have these KPIs at a glance on a dashboard is vital for
+efficient operations. 5. Scalability We are dealing with an unprecedented
+amounts of data, which is impossible to handle on a single machine any more.
+Correctly processing large volumes of distributed data is probably the most
+challenging point. Cloud-native batch applications should be scalable by design.
+All these aspects should be taken into consideration when designing and
+developing cloud-native batch applications. This is a considerable amount of
+work on the developer's side. Spring Batch takes care of most of these issues. I
+explain the details in the next section. How does Spring Batch Make a Batch
+Developer's Life easier? Spring Batch is the de facto batch processing framework
+on the JVM. Entire books have been written on the rich feature set provided by
+Spring Batch, but I would like to highlight the most relevant features that
+address the previously mentioned challenges in the context of cloud-native
+development: 1. Fault Tolerance Spring Batch provides fault-tolerance features,
+such as transaction management and skip and retry mechanisms, which are useful
+when batch jobs interact with flaky services in a cloud environment. 2.
+Robustness Spring Batch uses a centralized transactional job repository, which
+prevents duplicate job executions. By design, human errors and platform
+limitations that may lead to running the same job twice are impossible. 3. Cost
+Efficiency Spring
+----------------------------------------------------------------------------------------------------
+Index: 10941 <<"chunk_id": 2, "docno": 1631>>
+
+complex solutions. The introduction of various Runner classes allows the
+execution of Hive , Pig scripts, vanilla Map/Reduce or Streaming jobs ,
+Cascading flows but also invocation of pre and post generic JVM-based scripting
+all through the familiar JDK Callable contract. You can mix and match the
+runners as needed but as complexity grows, one can easily upgrade to Spring
+Batch , such that multiple steps can be coordinated in a stateful manner and
+administered using a REST API. Spring Batch’s rich functionality for handling
+the ETL processing of large file translates directly into Hadoop use cases for
+the ingestion and export of files form HDFS. The use of Spring Hadoop in
+combination with Spring Integration allows for rich processing of event streams
+that can be transformed, enriched, filtered, before being read and written from
+HDFS or other storages such as NOSQL stores, for which Spring Data provides
+plenty of support. We have covered a variety of scenarios through the sample
+applications (no need to compile them, they are already compiled and ready to be
+downloaded) that complement the comprehensive user documentation (it includes
+even a section on how to get stared with Spring for Apache Hadoop using Amazon’s
+Elastic MapReduce service). Additionally, as a companion to the samples, one can
+use the recent Spring Data book [1] for the full feature set that can be
+achieved using Spring technologies, Hadoop and NOSQL. Portability Spring for
+Apache Hadoop is being tested daily against the various Hadoop 1.x distributions
+(such as vanilla Apache Hadoop, Cloudera CDH3 and
+----------------------------------------------------------------------------------------------------
+Index: 1474 <<"chunk_id": 5, "docno": 184>>
+
+unique port, generate a port number based on the cluster worker ID. Node.js does
+not provide routing logic. It is therefore important to design an application
+such that it does not rely too heavily on in-memory data objects for things like
+sessions and login. Because workers are all separate processes, they can be
+killed or re-spawned depending on a program's needs, without affecting other
+workers. As long as there are some workers still alive, the server will continue
+to accept connections. If no workers are alive, existing connections will be
+dropped and new connections will be refused. Node.js does not automatically
+manage the number of workers, however. It is the application's responsibility to
+manage the worker pool based on its own needs. Although a primary use case for
+the node:cluster module is networking, it can also be used for other use cases
+requiring worker processes. Class: Worker # Added in: v0.7.0 Extends:
+<EventEmitter> A Worker object contains all public information and method about
+a worker. In the primary it can be obtained using cluster.workers . In a worker
+it can be obtained using cluster.worker . Event: 'disconnect' # Added in: v0.7.7
+Similar to the cluster.on('disconnect') event, but specific to this worker.
+cluster . fork () . on ( 'disconnect' , () => { // Worker has disconnected } ) ;
+js copy Event: 'error' # Added in: v0.7.3 This event is the same as the one
+provided by child_process.fork() . Within a worker, process.on('error') may also
+be used. Event: 'exit' # Added in: v0.11.2 code <number>
+----------------------------------------------------------------------------------------------------
+Index: 21026 <<"chunk_id": 1, "docno": 3084>>
+
+and some of the dm Server features. You should be able to do this yourself, if
+you have downloaded and installed the latest SpringSource Tool Suite and dm
+Server. You don't need the sample code to follow the story, but it will be
+available in the Spring Integration sandbox if you're interested. The
+synchronous breakdown Synchronous calls in applications perform fine, but they
+don't scale. It has been documented quite a bit before, so I'll give you a quick
+refresher and then move on. When you make a synchronous call, the calling thread
+has to block until the call is done. If you happen to do I/O in that method, the
+blocking thread is wasting cpu cycles. If you have a massively parallel web
+application this isn't too big a problem, because you can just increase the max
+size of the threadpool you're using. However, if you need to make use of the
+full potential of your servers cpu power from a single call, you're out of luck.
+Since one thread runs on one core, the more cores you have the more inefficient
+a single threaded program will be. Messaging to the rescue Getting into
+concurrent programming yourself is a lot of fun, but it isn't the easiest thing
+to do, and you might want to finish work early today. That's where Spring
+Integration can help you. It gives you all the control over the concurrent
+processing that you need without you having to take responsibility for the low
+level details of concurrent programming. How does
+----------------------------------------------------------------------------------------------------
+Index: 27602 <<"chunk_id": 4, "docno": 4464>>
+
+the other in a single thread takes 1000ms, we might see a processing time of
+250ms for a single incoming request at our HTTP service. We should emphasise the
+"might" though: it’s only going to go that fast if there is no contention for
+the processing threads (in both stages, the Tomcat workers, and the application
+scheduler). If you have a server with a large number of cores, very low
+concurrency, i.e. a small number of clients connecting to your application, and
+hardly any chance that two will make a request at the same time, then you will
+probably see close to the theoretical improvement. As soon as there are multiple
+clients trying to connect, they will all be competing for the same 4 threads,
+and the latency will drift up, and could even be worse than that experienced by
+a single client with no background processing. We can improve the latency for
+concurrent clients by creating the scheduler with a larger thread pool, e.g.
+private Scheduler scheduler = Schedulers.newParallel("sub", 16); (16 threads.)
+Now we are using more memory for the threads and their stacks, and we can expect
+to see lower latency for low concurrency, but not necessarily for high
+concurrency if our hardware has fewer than 16 cores. We also do not expect
+higher throughput under load: if there is contention for the threads, there is a
+high cost for managing those resources and that has to be reflected somwehere in
+a metric that matters. If you are interested in more detailed analysis of
+----------------------------------------------------------------------------------------------------
+Index: 16062 <<"chunk_id": 1621, "docno": 2234>>
+
+the process.connected property will return true so long as the IPC channel is
+connected and will return false after process.disconnect() is called. Once
+process.connected is false , it is no longer possible to send messages over the
+IPC channel using process.send() . process.constrainedMemory() # Added in:
+v19.6.0, v18.15.0 History Version Changes v24.0.0, v22.16.0 Change stability
+index for this feature from Experimental to Stable. v22.0.0, v20.13.0 Aligned
+return value with uv_get_constrained_memory . Returns: <number> Gets the amount
+of memory available to the process (in bytes) based on limits imposed by the OS.
+If there is no such constraint, or the constraint is unknown, 0 is returned. See
+uv_get_constrained_memory for more information.
+process.cpuUsage([previousValue]) # Added in: v6.1.0 previousValue <Object> A
+previous return value from calling process.cpuUsage() Returns: <Object> user
+<integer> system <integer> The process.cpuUsage() method returns the user and
+system CPU time usage of the current process, in an object with properties user
+and system , whose values are microsecond values (millionth of a second). These
+values measure time spent in user and system code respectively, and may end up
+being greater than actual elapsed time if multiple CPU cores are performing work
+for this process. The result of a previous call to process.cpuUsage() can be
+passed as the argument to the function, to get a diff reading. import { cpuUsage
+} from 'node:process' ; const startUsage = cpuUsage () ; // { user: 38579,
+system: 6986 } // spin the CPU for 500 milliseconds const now = Date . now () ;
+while (Date . now ()
+----------------------------------------------------------------------------------------------------
+Index: 9817 <<"chunk_id": 2, "docno": 1438>>
+
+REPL over curl REPL # Source Code: lib/repl.js Stability: 2 - Stable The
+node:repl module provides a Read-Eval-Print-Loop (REPL) implementation that is
+available both as a standalone program or includible in other applications. It
+can be accessed using: import repl from 'node:repl' ; const repl = require (
+'node:repl' ) ; javascript copy Design and features # The node:repl module
+exports the repl.REPLServer class. While running, instances of repl.REPLServer
+will accept individual lines of user input, evaluate those according to a
+user-defined evaluation function, then output the result. Input and output may
+be from stdin and stdout , respectively, or may be connected to any Node.js
+stream . Instances of repl.REPLServer support automatic completion of inputs,
+completion preview, simplistic Emacs-style line editing, multi-line inputs, ZSH
+-like reverse-i-search, ZSH -like substring-based history search, ANSI-styled
+output, saving and restoring current REPL session state, error recovery, and
+customizable evaluation functions. Terminals that do not support ANSI styles and
+Emacs-style line editing automatically fall back to a limited feature set.
+Commands and special keys # The following special commands are supported by all
+REPL instances: .break : When in the process of inputting a multi-line
+expression, enter the .break command (or press Ctrl + C ) to abort further input
+or processing of that expression. .clear : Resets the REPL context to an empty
+object and clears any multi-line expression being input. .exit : Close the I/O
+stream, causing the REPL to exit. .help : Show this list of special commands.
+.save : Save the current REPL session to a
+----------------------------------------------------------------------------------------------------
+Index: 2799 <<"chunk_id": 15, "docno": 378>>
+
+i + 1 , cb )) ; } // Start the helper, with CB to call avgCB. help ( 1 ,
+function ( sum ) { const avg = sum / n ; avgCB ( avg ) ; } ) ; } asyncAvg ( n ,
+function ( avg ) { console . log ( ' avg of 1-n: ' + avg ) ; } ) ; JavaScript
+Copy to clipboard You can apply this principle to array iterations and so forth.
+Offloading If you need to do something more complex, partitioning is not a good
+option. This is because partitioning uses only the Event Loop, and you won't
+benefit from multiple cores almost certainly available on your machine.
+Remember, the Event Loop should orchestrate client requests, not fulfill them
+itself. For a complicated task, move the work off of the Event Loop onto a
+Worker Pool. How to offload You have two options for a destination Worker Pool
+to which to offload work. You can use the built-in Node.js Worker Pool by
+developing a C++ addon . On older versions of Node, build your C++ addon using
+NAN , and on newer versions use N-API . node-webworker-threads offers a
+JavaScript-only way to access the Node.js Worker Pool. You can create and manage
+your own Worker Pool dedicated to computation rather than the Node.js I/O-themed
+Worker Pool. The most straightforward ways to do this is using Child Process or
+Cluster . You should not simply create a Child Process for every client. You can
+receive client
+----------------------------------------------------------------------------------------------------
+Index: 27038 <<"chunk_id": 1, "docno": 4352>>
+
+requesting data from a remote server, more efficiently. They allow you to
+provide a better quality of service and a predictable capacity planning by
+dealing natively with time and latency without consuming more resources. Unlike
+traditional processing that blocks the current thread while waiting a result, a
+Reactive API that waits costs nothing, requests only the amount of data it is
+able to process and bring new capabilities since it deals with stream of data,
+not only with individual elements one by one. Before Java 8 Before Java 8,
+asynchronous non-blocking behavior was not obvious to implement for at least two
+reasons. The first reason is that callback based API required verbose anonymous
+classes and are not easy to chain. The second reason is that Future type is
+asynchronous but blocks the current thread until the computation completes when
+you try to get the result with the get() method. That's why Spring Framework 4.0
+introduced ListenableFuture , a Future implementation that adds non-blocking
+callback-based capabilities. Lambdas, CompletableFuture and Stream Then Java 8
+introduced lambdas and CompletableFuture . Lambdas allow to write concise
+callbacks, while CompletionStage interface and CompletableFuture class finally
+allows to deal with future in a non-blocking way and push-based fashion, while
+providing capabilities to chain such deferred result processing. Java 8 also
+introduced Stream , which has been designed to deal efficiently with stream of
+data (including primitive types) that can be accessed with no or very little
+latency. It is pull-based, can only be used once, lacks time-related operations
+and can perform parallel
+----------------------------------------------------------------------------------------------------
+Index: 1124 <<"chunk_id": 29, "docno": 154>>
+
+is not supported. 'ignore' : Instructs Node.js to ignore the fd in the child.
+While Node.js will always open fds 0, 1, and 2 for the processes it spawns,
+setting the fd to 'ignore' will cause Node.js to open /dev/null and attach it to
+the child's fd. 'inherit' : Pass through the corresponding stdio stream to/from
+the parent process. In the first three positions, this is equivalent to
+process.stdin , process.stdout , and process.stderr , respectively. In any other
+position, equivalent to 'ignore' . <Stream> object: Share a readable or writable
+stream that refers to a tty, file, socket, or a pipe with the child process. The
+stream's underlying file descriptor is duplicated in the child process to the fd
+that corresponds to the index in the stdio array. The stream must have an
+underlying descriptor (file streams do not start until the 'open' event has
+occurred). NOTE: While it is technically possible to pass stdin as a writable or
+stdout / stderr as readable, it is not recommended. Readable and writable
+streams are designed with distinct behaviors, and using them incorrectly (e.g.,
+passing a readable stream where a writable stream is expected) can lead to
+unexpected results or errors. This practice is discouraged as it may result in
+undefined behavior or dropped callbacks if the stream encounters errors. Always
+ensure that stdin is used as readable and stdout / stderr as writable to
+maintain the intended flow of data between the parent and child processes.
+Positive integer: The integer value is interpreted as a file
+----------------------------------------------------------------------------------------------------
+Index: 16240 <<"chunk_id": 1799, "docno": 2234>>
+
+enforce stricter limits but doing so is optional. Because Duplex and Transform
+streams are both Readable and Writable , each maintains two separate internal
+buffers used for reading and writing, allowing each side to operate
+independently of the other while maintaining an appropriate and efficient flow
+of data. For example, net.Socket instances are Duplex streams whose Readable
+side allows consumption of data received from the socket and whose Writable side
+allows writing data to the socket. Because data may be written to the socket at
+a faster or slower rate than data is received, each side should operate (and
+buffer) independently of the other. The mechanics of the internal buffering are
+an internal implementation detail and may be changed at any time. However, for
+certain advanced implementations, the internal buffers can be retrieved using
+writable.writableBuffer or readable.readableBuffer . Use of these undocumented
+properties is discouraged. API for stream consumers # Almost all Node.js
+applications, no matter how simple, use streams in some manner. The following is
+an example of using streams in a Node.js application that implements an HTTP
+server: const http = require ( 'node:http' ) ; const server = http .
+createServer ( ( req , res ) => { // `req` is an http.IncomingMessage, which is
+a readable stream. // `res` is an http.ServerResponse, which is a writable
+stream. let body = '' ; // Get the data as utf8 strings. // If an encoding is
+not set, Buffer objects will be received. req . setEncoding ( 'utf8' ) ; //
+Readable streams
+----------------------------------------------------------------------------------------------------
+Index: 13187 <<"chunk_id": 3, "docno": 2084>>
+
+updated. Security vs. Developer Experience Over 300 volunteers maintain the
+Node.js project. Our processes aim to streamline CI initiation and verification
+of contributions across approximately 100 Jenkins runners spanning multiple
+operating systems and CPU architectures. The existing CI system design
+anticipates potential compromises, recognizing the need to balance security with
+developer convenience. Volunteer Organization As a volunteer-driven
+organization, we rely on people dedicating their time to work on unglamorous
+tasks, such as hardening CI, handling security reports, and assembling releases.
+Even good-faith research against our live systems could significantly disrupt
+our operations. As always, we welcome all sorts of contributions, including
+penetration testing. We ask researchers to give us a heads up on what they are
+attempting to do on live systems and to keep an auditable record of their
+actions through our HackerOne program or by contacting the Node.js Technical
+Steering Committee directly ( [email protected] ). More on that in our
+SECURITY.md file. Node.js Test CI Security Incident – Notice On March 21st, the
+Node.js project received a security report regarding our development
+infrastructure via our bug bounty program . We immediately restricted access
+while implementing corrective actions. The reported issue did not impact the
+Node.js runtime and there is no risk to users of Node.js. No action by Node.js
+users is required. The development infrastructure is expected to be available to
+the community by April 15 or sooner. A full report of this incident will be
+available forthcoming. We appreciate the time investment from our amazing
+volunteers who assisted in this response. Contact
+----------------------------------------------------------------------------------------------------
+Index: 21027 <<"chunk_id": 2, "docno": 3084>>
+
+the control over the concurrent processing that you need without you having to
+take responsibility for the low level details of concurrent programming. How
+does OSGi help? You can fully prevent the synchronous breakdown without OSGi. It
+just makes life so much better that you shouldn't miss out on it. Doing a full
+redeploy and restart of the jvm every time you make a little change wouldn't be
+much fun. And there is another thing that makes the combination of OSGi and
+Messaging very interesting. If an enterprise application grows big you have to
+modularize at some point. Running multiple modules in the same traditional
+server is a recipe for disaster (also called jar hell). In traditional
+architectures people have therefore scaled out prematurely in many cases. This
+makes for a very poor setup. The different nodes have to talk to each other over
+the network, and they can't share resources like cpu and memory. This renders
+the architecture inefficient and severely impacts performance. Not only are you
+wasting cycles on some cores in one server, you are now repeating the same
+inefficiency over multiple nodes. To add insult to injury there is network
+latency adding I/O waits where a normal local method call would have sufficed.
+With OSGi you don't have to take that hit, you can run different bundles in the
+same jvm, so that calls between them are fast as normal method calls, without
+the dreaded jar hell associated with deploying jars of different teams on the
+same classpath. Having an application that
+----------------------------------------------------------------------------------------------------
+Index: 9248 <<"chunk_id": 30, "docno": 1407>>
+
+Notable differences inside a Worker environment are: The process.stdin ,
+process.stdout , and process.stderr streams may be redirected by the parent
+thread. The require('node:worker_threads').isMainThread property is set to false
+. The require('node:worker_threads').parentPort message port is available.
+process.exit() does not stop the whole program, just the single thread, and
+process.abort() is not available. process.chdir() and process methods that set
+group or user ids are not available. process.env is a copy of the parent
+thread's environment variables, unless otherwise specified. Changes to one copy
+are not visible in other threads, and are not visible to native add-ons (unless
+worker.SHARE_ENV is passed as the env option to the Worker constructor). On
+Windows, unlike the main thread, a copy of the environment variables operates in
+a case-sensitive manner. process.title cannot be modified. Signals are not
+delivered through process.on('...') . Execution may stop at any point as a
+result of worker.terminate() being invoked. IPC channels from parent processes
+are not accessible. The trace_events module is not supported. Native add-ons can
+only be loaded from multiple threads if they fulfill certain conditions .
+Creating Worker instances inside of other Worker s is possible. Like Web Workers
+and the node:cluster module , two-way communication can be achieved through
+inter-thread message passing. Internally, a Worker has a built-in pair of
+MessagePort s that are already associated with each other when the Worker is
+created. While the MessagePort object on the parent side is not directly
+exposed, its functionalities are exposed through worker.postMessage() and the
+worker.on('message') event on the Worker object for the parent thread.
+----------------------------------------------------------------------------------------------------
+Index: 10073 <<"chunk_id": 1, "docno": 1449>>
+
+from thread-pool style, long-running task execution to non-blocking, high-volume
+task dispatching. The GitHub repo is here https://github.com/reactor/reactor .
+Reactor, as the name suggests, is heavily influenced by the well-known Reactor
+design pattern . But it is also influenced by other event-driven design
+practices, as well as several awesome JVM-based solutions that have been
+developed over the years. Reactor's goal is to condense these ideas and patterns
+into a simple and reusable foundation for making event-driven programming much
+easier. Reactor’s abstractions give the developer a set of tools to not just
+develop but compose applications in a way that more efficiently uses system
+resources--which is particularly important when running in the cloud--and reduce
+or eliminate the spaghetti of nested callbacks (aptly named “callback hell” )
+that has so far burdened most asynchronous applications. What is Reactor good
+for? While you can make Reactor do a lot of things because of its inherent
+flexibility, it’s really designed to be a foundational framework for
+applications that need high throughput when performing reasonably small chunks
+of stateless, asynchronous processing. The sheer volume of non-human-generated
+data in modern applications can easily overtake a traditional single-threaded,
+blocking design model. From mobile applications that generate streams of
+location information to computerized manufacturing machines that send out vast
+amounts of geometric data to big data applications mining real-time logs to
+generate business metrics: modern data-driven applications demand better
+resource utilization and higher throughput than a traditional imperative,
+blocking application can usually provide. That’s why the Spring XD project (as
+well as several other Spring
+----------------------------------------------------------------------------------------------------
+Index: 11544 <<"chunk_id": 1, "docno": 1761>>
+
+future. - [C++ embedder API](https://nodejs.org/docs/latest/api/embedding.md):
+Node.js provides a number of C++ APIs that can be used to execute JavaScript in
+a Node.js environment from other C++ software. - [Environment
+Variables](https://nodejs.org/docs/latest/api/environment_variables.md):
+Environment variables are variables associated to the environment the Node.js
+process runs in. - [Errors](https://nodejs.org/docs/latest/api/errors.md):
+Applications running in Node.js will generally experience the following
+categories of errors: - [C++
+addons](https://nodejs.org/docs/latest/api/addons.md): _Addons_ are
+dynamically-linked shared objects that can be loaded via the `require()`
+function as ordinary Node.js modules. Addons provide a foreign function
+interface between JavaScript and native code. -
+[Assert](https://nodejs.org/docs/latest/api/assert.md): The `node:assert` module
+provides a set of assertion functions for verifying invariants. - [Asynchronous
+context tracking](https://nodejs.org/docs/latest/api/async_context.md): - [Async
+hooks](https://nodejs.org/docs/latest/api/async_hooks.md): We strongly
+discourage the use of the `async_hooks` API. Other APIs that can cover most of
+its use cases include: - [Buffer](https://nodejs.org/docs/latest/api/buffer.md):
+`Buffer` objects are used to represent a fixed-length sequence of bytes. Many
+Node.js APIs support `Buffer`s. - [Child
+process](https://nodejs.org/docs/latest/api/child_process.md): The
+`node:child_process` module provides the ability to spawn subprocesses in a
+manner that is similar, but not identical, to `popen(3)`. This capability is
+primarily provided by the `child_process.spawn()` function: - [Command-line
+API](https://nodejs.org/docs/latest/api/cli.md): Node.js comes with a variety of
+CLI options. These options expose built-in debugging, multiple ways to execute
+scripts, and other helpful runtime options. -
+[Cluster](https://nodejs.org/docs/latest/api/cluster.md): Clusters of Node.js
+processes can be used to run multiple instances of Node.js that can distribute
+workloads among their application threads. When process isolation is not needed,
+use the `worker_threads` module instead, which allows running multiple
+application threads within a single Node.js instance. -
+[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
+module provides
+----------------------------------------------------------------------------------------------------
+Index: 16528 <<"chunk_id": 2087, "docno": 2234>>
+
+Worker environment are: The process.stdin , process.stdout , and process.stderr
+streams may be redirected by the parent thread. The
+require('node:worker_threads').isMainThread property is set to false . The
+require('node:worker_threads').parentPort message port is available.
+process.exit() does not stop the whole program, just the single thread, and
+process.abort() is not available. process.chdir() and process methods that set
+group or user ids are not available. process.env is a copy of the parent
+thread's environment variables, unless otherwise specified. Changes to one copy
+are not visible in other threads, and are not visible to native add-ons (unless
+worker.SHARE_ENV is passed as the env option to the Worker constructor). On
+Windows, unlike the main thread, a copy of the environment variables operates in
+a case-sensitive manner. process.title cannot be modified. Signals are not
+delivered through process.on('...') . Execution may stop at any point as a
+result of worker.terminate() being invoked. IPC channels from parent processes
+are not accessible. The trace_events module is not supported. Native add-ons can
+only be loaded from multiple threads if they fulfill certain conditions .
+Creating Worker instances inside of other Worker s is possible. Like Web Workers
+and the node:cluster module , two-way communication can be achieved through
+inter-thread message passing. Internally, a Worker has a built-in pair of
+MessagePort s that are already associated with each other when the Worker is
+created. While the MessagePort object on the parent side is not directly
+exposed, its functionalities are exposed through worker.postMessage() and the
+worker.on('message') event on the Worker object for the parent thread. To create
+custom messaging
+----------------------------------------------------------------------------------------------------
+Index: 7333 <<"chunk_id": 2, "docno": 1112>>
+
+the full response or the header. redirected boolean | undefined Indicates
+whether the HTTP response was redirected during the request. This property is
+only available when using the Fetch API using withFetch() When using the default
+XHR Request this property will be undefined responseType ResponseType |
+undefined Indicates the type of the HTTP response, based on how the request was
+made and how the browser handles the response. This corresponds to the type
+property of the Fetch API's Response object, which can indicate values such as:
+'basic' : A same-origin response, allowing full access to the body and headers.
+'cors' : A cross-origin response with CORS enabled, exposing only safe response
+headers. 'opaque' : A cross-origin response made with no-cors , where the
+response body and headers are inaccessible. 'opaqueredirect' : A response
+resulting from a redirect followed in no-cors mode. 'error' : A response
+representing a network error or similar failure. This property is only available
+when using the Fetch-based backend (via withFetch() ). When using Angular's
+(XHR) backend, this value will be undefined . Description A response that
+represents an error or failure, either from a non-successful HTTP status, an
+error while executing the request, or some other failure which occurred during
+the parsing of the response. Any error returned on the Observable response
+stream will be wrapped in an HttpErrorResponse to provide additional context
+about the state of the HTTP layer when the error occurred. The error property
+will contain either a wrapped Error object or the error response returned from
+the server.
+----------------------------------------------------------------------------------------------------
+Index: 16238 <<"chunk_id": 1797, "docno": 2234>>
+
+is so that unexpected 'error' events (due to incorrect stream implementations)
+do not cause unexpected crashes. If this is unwanted behavior then
+options.cleanup should be set to true : await finished (rs , { cleanup : true }
+) ; mjs copy Object mode # All streams created by Node.js APIs operate
+exclusively on strings, <Buffer> , <TypedArray> and <DataView> objects: Strings
+and Buffers are the most common types used with streams. TypedArray and DataView
+lets you handle binary data with types like Int32Array or Uint8Array . When you
+write a TypedArray or DataView to a stream, Node.js processes the raw bytes. It
+is possible, however, for stream implementations to work with other types of
+JavaScript values (with the exception of null , which serves a special purpose
+within streams). Such streams are considered to operate in "object mode". Stream
+instances are switched into object mode using the objectMode option when the
+stream is created. Attempting to switch an existing stream into object mode is
+not safe. Buffering # Both Writable and Readable streams will store data in an
+internal buffer. The amount of data potentially buffered depends on the
+highWaterMark option passed into the stream's constructor. For normal streams,
+the highWaterMark option specifies a total number of bytes . For streams
+operating in object mode, the highWaterMark specifies a total number of objects.
+For streams operating on (but not decoding) strings, the highWaterMark specifies
+a total number of UTF-16 code units. Data is buffered in Readable streams when
+the implementation calls stream.push(chunk) . If the
+----------------------------------------------------------------------------------------------------
+Index: 21067 <<"chunk_id": 2, "docno": 3093>>
+
+this analysis extends that to multiple data sets by increasing numbers of fruits
+to observe performance trends. The measurements are done with the Spring
+benchmarks harness, which is similar to the original one, and the baseline
+results for 10 fruits are similar to the original. The main difference in the
+harness is that the Spring one has a longer warm up time for the running
+application - it gives the JVM time to optimize itself. The numbers reported
+here were collected in a controlled environment on a Linux virtual machine with
+16 vCPUs and 32 GB RAM, running Java 21. The application, database and the load
+generator were all running on the same VM to minimize network variability, but
+in separate containers, constrained to have a fixed amount of CPUs and memory (4
+CPUs and 2GB for the application container unless mentioned otherwise). Results
+Here are the raw data for throughput (TPS) vs number of fruits (N). The larger
+data sets were generated simply by copying the original 10-fruit data set
+multiple times. The number of stores is constant and the number of prices per
+fruit is the same in each case, so the result set size scales linearly with the
+number of fruits. N spring-fruits 0 10 14892 1 20 10941 2 40 7329 3 80 4541 Now
+we do some anaysis and plot the data along with a linear regression of the
+"cycle time" (inverse of throughput) vs number of fruits. Optimizations
+Profiling the Spring sample revealed that the transaction management was adding
+a
+----------------------------------------------------------------------------------------------------
+Index: 3011 <<"chunk_id": 16, "docno": 418>>
+
+version, which doesn’t accept a callback but instead returns a promise that is
+rejected if the pipeline fails. Async Iterators Async iterators are recommended
+as the standard way of interfacing with the Streams API. Compared to all the
+stream primitives in both the Web and Node.js, async iterators are easier to
+understand and use, contributing to fewer bugs and more maintainable code. In
+recent versions of Node.js, async iterators have emerged as a more elegant and
+readable way to interact with streams. Building upon the foundation of events,
+async iterators provide a higher-level abstraction that simplifies stream
+consumption. In Node.js, all readable streams are asynchronous iterables. This
+means you can use the for await...of syntax to loop through the stream's data as
+it becomes available, handling each piece of data with the efficiency and
+simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
+Using async iterators with streams simplifies the handling of asynchronous data
+flows in several ways: Enhanced Readability : The code structure is cleaner and
+more readable, particularly when dealing with multiple asynchronous data
+sources. Error Handling : Async iterators allow straightforward error handling
+using try/catch blocks, akin to regular asynchronous functions. Flow Control :
+They inherently manage backpressure, as the consumer controls the flow by
+awaiting the next piece of data, allowing for more efficient memory usage and
+processing. Async iterators offer a more modern and often more readable way to
+work with readable streams, especially when dealing with asynchronous data
+sources or when you prefer a more sequential, loop-based approach
+----------------------------------------------------------------------------------------------------
+Index: 9815 <<"chunk_id": 0, "docno": 1438>>
+
+REPL | Node.js v26.6.0 Documentation Skip to content Node.js About this
+documentation Usage and example Assertion testing Asynchronous context tracking
+Async hooks Buffer C++ addons C/C++ addons with Node-API C++ embedder API Child
+processes Cluster Command-line options Console Crypto Debugger Deprecated APIs
+Diagnostics Channel DNS Domain Environment Variables Errors Events File system
+FFI Globals HTTP HTTP/2 HTTPS Inspector Internationalization Iterable Streams
+API Modules: CommonJS modules Modules: ECMAScript modules Modules: node:module
+API Modules: Packages Modules: TypeScript Net OS Path Performance hooks
+Permissions Process Punycode Query strings Readline REPL Report Single
+executable applications SQLite Stream String decoder Test runner Timers TLS/SSL
+Trace events TTY UDP/datagram URL Utilities V8 Virtual File System VM WASI Web
+Crypto API Web Streams API Worker threads Zlib Code repository and issue tracker
+Node.js v26.6.0 documentation Node.js v26.6.0 Table of contents REPL Design and
+features Commands and special keys Default evaluation JavaScript expressions
+Global and local scope Accessing core Node.js modules Global uncaught exceptions
+Assignment of the _ (underscore) variable await keyword Reverse-i-search Custom
+evaluation functions Recoverable errors Customizing REPL output Class:
+REPLServer Event: 'exit' Event: 'reset' replServer.defineCommand(keyword, cmd)
+replServer.displayPrompt([preserveCursor]) replServer.clearBufferedCommand()
+replServer.setupHistory(historyConfig, callback) repl.builtinModules
+repl.start([options]) The Node.js REPL Environment variable options Persistent
+history Using the Node.js REPL with advanced line-editors Starting multiple REPL
+instances in the same process Examples Full-featured "terminal" REPL over
+net.Server and net.Socket REPL over curl Index Index About this documentation
+Usage and example Assertion testing Asynchronous context tracking Async hooks
+Buffer C++ addons C/C++ addons with Node-API C++ embedder API Child processes
+Cluster Command-line options Console Crypto Debugger Deprecated APIs
+----------------------------------------------------------------------------------------------------
+Index: 15242 <<"chunk_id": 801, "docno": 2234>>
+
+not be modified or freed. result may be an empty string if the add-on loading
+process fails to establish the add-on's file name during loading. OS # Source
+Code: lib/os.js Stability: 2 - Stable The node:os module provides operating
+system-related utility methods and properties. It can be accessed using: import
+os from 'node:os' ; const os = require ( 'node:os' ) ; javascript copy os.EOL #
+Added in: v0.7.8 Type: <string> The operating system-specific end-of-line
+marker. \n on POSIX \r\n on Windows os.availableParallelism() # Added in:
+v19.4.0, v18.14.0 Returns: <integer> Returns an estimate of the default amount
+of parallelism a program should use. Always returns a value greater than zero.
+This function is a small wrapper about libuv's uv_available_parallelism() .
+os.arch() # Added in: v0.5.0 Returns: <string> Returns the operating system CPU
+architecture for which the Node.js binary was compiled. Possible values are
+'arm' , 'arm64' , 'ia32' , 'loong64' , 'mips' , 'mipsel' , 'ppc64' , 'riscv64' ,
+'s390x' , and 'x64' . The return value is equivalent to process.arch .
+os.constants # Added in: v6.3.0 Type: <Object> Contains commonly used operating
+system-specific constants for error codes, process signals, and so on. The
+specific constants defined are described in OS constants . os.cpus() # Added in:
+v0.3.3 Returns: <Object> [] Returns an array of objects containing information
+about each logical CPU core. The array will be empty if no CPU information is
+available, such as if the /proc file system is unavailable. The properties
+included on each object include: model <string> speed <number> (in MHz)
+----------------------------------------------------------------------------------------------------
+Index: 13865 <<"chunk_id": 3, "docno": 2159>>
+
+process can fork a new worker when a worker encounters an error. For Node.js
+programs that scale to multiple machines, the terminating proxy or service
+registry can take note of the failure, and react accordingly. For example, this
+is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
+) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
+process, but what it does is worse! // Though we've prevented abrupt process
+restarting, we are leaking // a lot of resources if this ever happens. // This
+is no better than process.on('uncaughtException')! console . log ( `error, but
+oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
+. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
+(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
+separating our program into multiple worker processes, we can react more
+appropriately, and handle errors with much greater safety. // Much better! const
+cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
+1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
+than 2 workers, // and perhaps not put the primary and worker in the same file.
+// // It is also possible to get a
+----------------------------------------------------------------------------------------------------
+Index: 3424 <<"chunk_id": 13, "docno": 483>>
+
+Objects without prototype by using Object.create(null) . Freezing the prototype:
+Object.freeze(MyObject.prototype) . Disable the Object.prototype.__proto__
+property using --disable-proto flag. Check that the property exists directly on
+the object, not from the prototype using Object.hasOwn(obj, keyFromObj) . Avoid
+using methods from Object.prototype . Uncontrolled Search Path Element (CWE-427)
+The Node.js threat model considers the file system in the environment accessible
+to Node.js as trusted. As a result, issues that rely solely on controlling files
+in those locations are not considered vulnerabilities in Node.js core. They are,
+however, relevant to the security of your overall deployment and supply chain,
+so you should harden your environment and use the mechanisms below to reduce
+risk. Node.js loads modules following the Module Resolution Algorithm .
+Therefore, it assumes the directory in which a module is requested (require) is
+trusted. By that, it means the following application behavior is expected.
+Assuming the following directory structure: app/ server.js auth.js auth If
+server.js uses require('./auth') it will follow the module resolution algorithm
+and load auth instead of auth.js . Node.js Permission Model Node.js provides a
+permission model that can be used to restrict what a given process is allowed to
+do at runtime. This model complements the Node.js threat model . When enabled
+(for example, using the --permission flag), the permission model lets you
+selectively allow or deny access to sensitive capabilities such as: File system
+reads and writes. Network access (inbound and outbound). Child process creation.
+Use of native addons and other powerful APIs. This can help contain the impact
+of malicious or
+----------------------------------------------------------------------------------------------------
+Index: 17201 <<"chunk_id": 5, "docno": 2254>>
+
+zero. Subsequent requests with the same system prompt will show zero for
+cacheCreationInputTokens and a positive value for cacheReadInputTokens . This is
+how you can verify that caching is working as expected in your application. Use
+this strategy when your system prompt is large (meeting the minimum token
+threshold) and stable, but user questions vary. TOOLS_ONLY Strategy This
+strategy caches tool definitions while processing the system message fresh on
+each request. The use case becomes clear in multi-tenant scenarios where tools
+are shared but system prompts need customization. Consider a SaaS application
+serving multiple organizations: @Service public class MultiTenantAIService {
+private final List<FunctionCallback> sharedTools = List.of( weatherTool, // 500
+tokens calendarTool, // 800 tokens emailTool, // 700 tokens analyticsTool, //
+600 tokens reportingTool, // 900 tokens // ... 15 more tools totaling 5,000+
+tokens ); public String handleRequest(String tenantId, String userQuery) {
+TenantConfig config = tenantRepository.findById(tenantId); // Each tenant
+requires a unique system prompt String systemPrompt = """ You are %s's AI
+assistant. Company values: [custom data] Brand voice: [custom data] Compliance
+requirements: [custom data] """; ChatResponse response = chatModel.call( new
+Prompt( List.of( new SystemMessage(systemPrompt), new UserMessage(userQuery) ),
+AnthropicChatOptions.builder() .model(AnthropicApi.ChatModel.CLAUDE_3_5_SONNET)
+.cacheOptions(AnthropicCacheOptions.builder()
+.strategy(AnthropicCacheStrategy.TOOLS_ONLY) .build())
+.toolCallbacks(sharedTools) .maxTokens(800) .build() ) ); return
+response.getResult().getOutput().getText(); } } Here's what happens: First
+request (any tenant) : Tools cached at 1.25x cost All subsequent requests (all
+tenants) : Tools read from cache at 0.1x cost Each tenant's system prompt :
+Processed fresh at 1.0x cost (by design) All tenants share the same cached tool
+definitions, while each receives their customized system prompt. For
+----------------------------------------------------------------------------------------------------
+Index: 9816 <<"chunk_id": 1, "docno": 1438>>
+
+Asynchronous context tracking Async hooks Buffer C++ addons C/C++ addons with
+Node-API C++ embedder API Child processes Cluster Command-line options Console
+Crypto Debugger Deprecated APIs Diagnostics Channel DNS Domain Environment
+Variables Errors Events File system FFI Globals HTTP HTTP/2 HTTPS Inspector
+Internationalization Iterable Streams API Modules: CommonJS modules Modules:
+ECMAScript modules Modules: node:module API Modules: Packages Modules:
+TypeScript Net OS Path Performance hooks Permissions Process Punycode Query
+strings Readline REPL Report Single executable applications SQLite Stream String
+decoder Test runner Timers TLS/SSL Trace events TTY UDP/datagram URL Utilities
+V8 Virtual File System VM WASI Web Crypto API Web Streams API Worker threads
+Zlib Other versions 26.x 25.x 24.x LTS 23.x 22.x LTS 21.x 20.x 19.x 18.x 17.x
+16.x 15.x 14.x 13.x 12.x 11.x 10.x 9.x 8.x 7.x 6.x 5.x 4.x 0.12.x 0.10.x Options
+View on single page View as JSON Edit on GitHub Table of contents REPL Design
+and features Commands and special keys Default evaluation JavaScript expressions
+Global and local scope Accessing core Node.js modules Global uncaught exceptions
+Assignment of the _ (underscore) variable await keyword Reverse-i-search Custom
+evaluation functions Recoverable errors Customizing REPL output Class:
+REPLServer Event: 'exit' Event: 'reset' replServer.defineCommand(keyword, cmd)
+replServer.displayPrompt([preserveCursor]) replServer.clearBufferedCommand()
+replServer.setupHistory(historyConfig, callback) repl.builtinModules
+repl.start([options]) The Node.js REPL Environment variable options Persistent
+history Using the Node.js REPL with advanced line-editors Starting multiple REPL
+instances in the same process Examples Full-featured "terminal" REPL over
+net.Server and net.Socket REPL over curl REPL # Source Code: lib/repl.js
+Stability: 2 - Stable The node:repl module provides a Read-Eval-Print-Loop
+(REPL) implementation that is available both as
+----------------------------------------------------------------------------------------------------
+Index: 1575 <<"chunk_id": 1, "docno": 194>>
+
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page Other JS
+engines The quest for performance Compilation The V8 JavaScript Engine V8 is the
+name of the JavaScript engine that powers Google Chrome. It's the thing that
+takes our JavaScript and executes it while browsing with Chrome. V8 is the
+JavaScript engine i.e. it parses and executes JavaScript code. The DOM, and the
+other Web Platform APIs (they all makeup runtime environment) are provided by
+the browser. The cool thing is that the JavaScript engine is independent of the
+browser in which it's hosted. This key feature enabled the rise of Node.js. V8
+was chosen to be the engine that powered Node.js back in 2009, and as the
+popularity of Node.js exploded, V8 became the engine that now powers an
+incredible amount of server-side code written in JavaScript. The Node.js
+ecosystem is huge, and thanks to V8, it also powers
 ----------------------------------------------------------------------------------------------------

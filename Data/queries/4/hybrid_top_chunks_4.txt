@@ -1,241 +1,30 @@
-Index: 43989 <<"chunk_id": 1, "docno": 6810>>
+Index: 25693 <<"chunk_id": 2, "docno": 4092>>
 
-defaults as well as rich validation and tool support. Powerful AOP Unification -
-you may apply aspects that weave custom behavior before, after, and around your
-objects concisely with AspectJ while still benefiting from the simplicity of the
-Spring AOP runtime. JSR 220 Java Persistence Archtecture (JPA) - to provide you
-choice in persistence provider implementation. Spring is the first to support
-JPA in both JEE and JSE environments with full portability between the two.
-Asynchronous JMS Messaging - Message-Driven POJOs bring you lightweight
-asynchronous components for JSE environments with the choice of JMS provider.
-JSR-168 Portlets - Spring Portlet MVC delivers a framework for developing JSR
-168 portlets which includes integration with Spring Web Flow for orchestrating
-user interactions. It is important to emphasize that Spring 2.0 provides
-backwards compatability with the Spring 1.x series . Compatability is critically
-important to our user base and we are committed to providing it. Further major
-new features for each of these areas include... Configuration Simplification
-Bean definitions based on XML schema, with out-of-the-box XML namespaces for
-simplifying common configuration tasks Support for extended bean scopes in
-application contexts, with web request and session scopes as main targets Bean
-definition enhancements: lazy loading of bean classes, collection merging, and
-intelligent error messages AOP Simplified AOP configuration based on XML schema
-namespaces Support for AspectJ pointcut expression language and @AspectJ-style
-aspects Support for dependency injection on any object, including fine grained
-domain objects (based on AspectJ) Persistence and JPA Enhanced JDBC support:
-named SQL parameters, generics-based SimpleJdbcTemplate Explicit support
+container at the right time and the objects returned will be managed in the
+Spring container just like any other bean. You can see that dependencies between
+beans can be expressed simply as calls from one bean method to another.
+TransferServiceImpl needs an AccountRepository constructor argument, so simply
+call the accountRepository() method. Savvy Spring users will look at this
+scenario, however, and ask the question "what about bean scoping"? It's a good
+question. As you probably know, all Spring beans have a scope. By default, a
+bean's scope is that of 'singleton', meaning that there will be one and only one
+instance of that bean per Spring container. Glancing at the code above, it seems
+that if we call accountRepository() multiple times, we'll actually create
+multiple instances, but this is not actually the case! When a @Configuration
+class is processed at runtime, it is dynamically subclassed (using CGLIB), and
+the subclass implementations of @Bean methods are enhanced to ensure that
+scoping semantics are respected. As you can see, defining @Bean methods is
+pretty straightforward. Now, let's bootstrap the container and use those
+objects. Take a look at the TransferServiceTest JUnit system test and its
+transfer100Dollars() @Test method. The first thing you'll notice is the use of
+AnnotationConfigApplicationContext . This new ApplicationContext implementation
+has been added in Spring 3 to support instantiation of the Spring container
+using @Configuration classes directly. The context is created with
+AppConfig.class as a constructor parameter, after which we retrieve the
+TransferService and AccountRepository beans by type with the getBean(Class )
+method. The
 ----------------------------------------------------------------------------------------------------
-Index: 52848 <<"chunk_id": 3, "docno": 8466>>
-
-be a bit too confusing for my team to have navigation rules defined in multiple
-places. In the domain of state management, Web Flow introduces several
-conversational scopes that compliment JSF's existing request, session, and
-application scopes. These scopes are Conversation scope - a managed scope that
-lives for the duration of an user dialog Flow scope - a managed scope that lives
-for the duration of a flow executing within a conversation Flash scope - a
-managed scope that lives for the duration of a view participating in a flow
-These scopes are 'managed' because they are cleaned up for you by Web Flow
-automatically. Conversation scope is ideal for storing model state to be
-persisted at the end of a user interaction such as an account registration
-wizard. Flash scope has proven quite useful to users integrating Ajax libraries
-such as Ajax4JSF and ICEFaces where multiple requests from the same view are the
-norm. In this case, flash scope allows model state to be manipulated across
-fine-grained Ajax requests coming from the same page and then automatically
-cleared on the next navigation. Going back to what our leading users are saying:
-Jeremy Grelle: I find that even with the simpler pages in JSF, you oftentimes
-need something to manage the state of your model across multiple requests to the
-page...there are many solutions for this problem in the JSF community
-(Tomahawk's saveState tag, Shale's dialog framework, etc.), but I personally
-find SWF's multiple scopes to be the most robust and elegant solution. The
-Approach
-----------------------------------------------------------------------------------------------------
-Index: 57161 <<"chunk_id": 1, "docno": 9270>>
-
-with singleton="[true | false]" . So in Spring 2.0, this notation was removed
-from the XSD style of configuration and now you see a notation that is more
-clear with scope="[singleton | prototype | ...]" . Spring itself adds three more
-bean scopes; request , session , and globalSession which are related to web
-applications. With the latest snapshots of Spring Web Flow 1.1, we now see bean
-scopes for the three major Web Flow scopes, flash , flow , and conversation .
-<bean id="sale" class="org.springframework.webflow.samples.sellitem.Sale"
-scope="flash"/> <bean id="sale"
-class="org.springframework.webflow.samples.sellitem.Sale" scope="flow"/> <bean
-id="sale" class="org.springframework.webflow.samples.sellitem.Sale"
-scope="conversation"/> To utilize these bean scopes you'll need to leverage the
-a new 1.1 version of the configuration (included in the Web Flow jar) and add a
-single element to your bean definition. <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:flow="http://www.springframework.org/schema/webflow-config"
-xsi:schemaLocation=" http://www.springframework.org/schema/beans
-http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-http://www.springframework.org/schema/webflow-config
-http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.1.xsd">
-<flow:enable-scopes/> <bean id="sale"
-class="org.springframework.webflow.samples.sellitem.Sale" scope="conversation"/>
-</beans> The <enable-scopes/> tag only needs to exist once in a given
-application context and will allow you to use any of the three scopes
-contributed by Spring Web Flow. Scoped Beans and JSF Right now the most
-compelling use of these new scopes is in JSF. By using the scope notation in a
-standard Spring bean definition file instead of the <var/> notation in a flow
-definition, the experience for JSF users is much closer to standard JSF
-behavior. To add this ability to JSF you register the standard Spring JSF
-DelegatingVariableResolver . The other definitions ( FlowNavigationHandler , and
-FlowPhaseListener ) are standard for using JSF with Spring. <?xml
-version="1.0"?>
-----------------------------------------------------------------------------------------------------
-Index: 43588 <<"chunk_id": 2, "docno": 6732>>
-
-JSON (Jackson) and XML (JAXB), a reactive web framework that supports the
-@Controller programming model, and a reactive WebClient . It becomes easy to
-support input and output streaming scenarios for microservices, scatter/gather,
-data ingestion, and so on. Below is a controller that obtains and streams data
-from a remote server in a completely non-blocking and reactive manner:
-@GetMapping("/accounts/{id}/alerts") public Flux<Alert>
-getAccountAlerts(@PathVariable Long id) { return this.repository.getAccount(id)
-.flatMap(account -> this.webClient .perform(get("/alerts/{key}",
-account.getKey())) .extract(bodyStream(Alert.class))); } What is the reactive
-stack that supports this? Spring Web Reactive lives in the new
-spring-web-reactive module next to the existing (and popular!) Spring Web MVC
-that lives in the spring-webmvc module. The two modules share many algorithms
-and mechanisms but cannot actually share any code. This is because Spring Web
-Reactive runs on a Reactive Streams HTTP adapter layer that's fully non-blocking
-and reactive all the way down to the HTTP runtime. So while Spring MVC is built
-for and runs on Servlet containers, Spring Web Reactive runs also on non-Servlet
-runtimes such as on Netty and Undertow Spring Web Reactive vs Spring Web MVC How
-does the Spring Framework team view these two frameworks you might wonder at
-this point and what do we recommend that you use? First and foremost we aim for
-the greatest possible consistency within reason. There is nothing fundamentally
-incompatible between the @Controller programming model and the reactive ways.
-It's all about what happens underneath to support that model so on the surface
-there is no difference except for the full support for reactive types
-----------------------------------------------------------------------------------------------------
-Index: 16862 <<"chunk_id": 5, "docno": 2237>>
-
-The preceding example uses the @GetMapping annotation, which acts as a shortcut
-for @RequestMapping(method = RequestMethod.GET) . We use GET in this case
-because it is convenient for testing. Spring will still reject a GET request
-where the origin doesn’t match the CORS configuration. The browser is not
-required to send a CORS preflight request, but we could use @PostMapping and
-accept some JSON in the body if we wanted to trigger a pre-flight check.
-@RequestParam binds the value of the name query string parameter into the name
-parameter of the greeting() method. This query string parameter is not required
-. If it is absent in the request, the defaultValue of World is used. The
-implementation of the method body creates and returns a new Greeting object,
-with the value of the id attribute based on the next value from the counter and
-the value of the content based on the query parameter or the default value. It
-also formats the given name by using the greeting template . A key difference
-between a traditional MVC controller and the RESTful web service controller
-shown earlier is the way that the HTTP response body is created. Rather than
-relying on a view technology to perform server-side rendering of the greeting
-data to HTML, this RESTful web service controller populates and returns a
-Greeting object. The object data is written directly to the HTTP response as
-JSON. To accomplish this, the @RestController annotation assumes that every
-method inherits the @ResponseBody semantics by default. Therefore, returned
-object data is
-----------------------------------------------------------------------------------------------------
-Index: 24852 <<"chunk_id": 6, "docno": 3360>>
-
-we’re showing an integration between the two technologies. This enables Speed
-Tracer users to see Insight traces seamlessly inserted into their Speed Tracer
-screens, and drill down to specific server-side operations such as JDBC queries.
-The combination of Speed Tracer and Insight is unprecedented, and powerful. For
-the first time, it is possible to see browser and backend servers coordinating
-to show exactly what work a request did from a holistic perspective . What It
-All Means What a difference a few weeks makes! Until the announcement of VMforce
-and today’s announcement, Java developers lacked a PaaS destination to which
-they could easily deploy their applications. This was an important gap that
-threatened to become a danger to the long-term future of Java. I’m delighted
-that VMware/SpringSource is leading the charge to fill this gap. Today’s
-announcement is great news for Spring developers. Spring skills have never been
-more valuable; the reach of the Spring ecosystem continues to grow; Spring’s
-core values continue to guide its evolution; and Spring is placed to grow the
-Java community and lead its charge into cloud computing. Whether you want to
-deploy Java applications in an existing data center, private Java cloud or
-public cloud, Spring is the best programming model. I’m excited, and hope you
-are, too. Get the Spring newsletter Stay connected with the Spring newsletter
-Subscribe Get ahead VMware offers training and certification to turbo-charge
-your progress. Learn more Get support Tanzu Spring offers support and binaries
-for OpenJDK™, Spring, and Apache Tomcat® in one simple subscription.
-----------------------------------------------------------------------------------------------------
-Index: 33698 <<"chunk_id": 7, "docno": 4470>>
-
-bean a candidate for getting autowired into some other bean based on the plain
-type, without any further indications such as a qualifier match? Default is true
-; set this to false for restricted delegates that are supposed to be injectable
-in certain areas but are not meant to get in the way of beans of the same type
-in other places. This is a variation of autowireCandidate() which does not
-disable injection in general, just enforces an additional indication such as a
-qualifier. Since: 6.2 See Also: autowireCandidate() Default: true bootstrap
-Bean.Bootstrap bootstrap The bootstrap mode for this bean: default is the main
-pre-instantiation thread for non-lazy singleton beans and the caller thread for
-prototype beans. Set Bean.Bootstrap.BACKGROUND to allow for instantiating this
-bean on a background thread. For a non-lazy singleton, a background
-pre-instantiation thread can be used then, while still enforcing the completion
-at the end of ConfigurableApplicationContext.refresh() . For a lazy singleton, a
-background pre-instantiation thread can be used as well - with completion
-allowed at a later point, enforcing it when actually accessed. Since: 6.2 See
-Also: Lazy Default: DEFAULT initMethod String initMethod The optional name of a
-method to call on the bean instance during initialization. Not commonly used,
-given that the method may be called programmatically directly within the body of
-a Bean-annotated method. The default value is "" , indicating no init method to
-be called. See Also: InitializingBean ConfigurableApplicationContext.refresh()
-Default: "" destroyMethod String destroyMethod The optional name of a method to
-call on the bean instance upon
-----------------------------------------------------------------------------------------------------
-Index: 4759 <<"chunk_id": 1, "docno": 660>>
-
-transpilation Running TypeScript with a runner Publishing a TypeScript package
-Modules How to use streams Backpressuring in Streams Publishing a package How to
-publish a Node-API package ABI Stability Diagnostics User Journey Memory
-Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
-Tracing garbage collection Live Debugging Overview Using Inspector Poor
-Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
-Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
-code coverage in Node.js Node-API What is Node-API? Getting Started Overview
-Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
-Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
-Special Topics Overview Context Awareness Object and Function References
-AsyncWorker Thread-Safe Functions On this page Why is NODE_ENV considered an
-antipattern? Node.js, the difference between development and production There is
-no difference between development and production in Node.js , i.e., there are no
-specific settings you need to apply to make Node.js work in a production
-configuration. However, a few libraries in the npm registry recognize using the
-NODE_ENV variable and default it to a development setting. Always run your
-Node.js with the NODE_ENV=production set. A popular way of configuring your
-application is by using the twelve factor methodology . Why is NODE_ENV
-considered an antipattern? An environment is a digital platform or a system
-where engineers can build, test, deploy , and manage software products.
-Conventionally, there are four stages or types of environments where our
-application is run: Development Testing Staging Production The fundamental
-problem of NODE_ENV stems
-----------------------------------------------------------------------------------------------------
-Index: 45656 <<"chunk_id": 8, "docno": 7128>>
-
-properties are put together inside the method call. py-amqplib declares the
-entire message and its properties in a slightly different structure, and then
-passes it into basic_publish as one argument. Good thing about the spec is
-knowing that all the important pieces are in both libraries. pika supports
-different waiting mechanisms compared to py-amqplib. py-amqplib has a blocking
-wait, while pika offers both a blocking mechanism as well as one that uses
-Python's asyncore utility for asynchronous operations. We can explore this in
-future blog entries about RabbitMQ and Python. There is a slight difference in
-the method signature of the callback between these two libraries. We need to
-update our brokerage client to handle it suitably. def
-handle_pyamqplib_delivery(self, msg): self.handle(msg.delivery_info["channel"],
-msg.delivery_info["delivery_tag"], msg.body) Compare this with pika's callback
-method signature. def handle_pika_delivery(self, ch, method, header, body):
-self.handle(ch, delivery_tag, body) They are very close. The important parts are
-there. The difference is based on the fact that pika splits up the parts of the
-message while py-amqplib combines it all inside a single class. This is the
-reason there is a decoupling between the callback method and the actual method
-that extracts the body of our message. By extracting the necessary parts, it is
-possible to switch between these two libraries without rewriting our buy/sell
-algorithm. Running things With all this code, we need to run things. It's easy
-to code a runner script and just spin things up.
-######################################## # To run this demo using py-amqplib, #
-uncomment this block, and comment out # the next
-----------------------------------------------------------------------------------------------------
-Index: 28287 <<"chunk_id": 14, "docno": 4124>>
+Index: 21716 <<"chunk_id": 14, "docno": 3228>>
 
 I had to write Javascript for my web application, I had to manage the variable
 names and construct special name-spaced objects in order to store my scoped
@@ -264,86 +53,958 @@ data-ng-controller="childController"> <span>This is a demonstration of
 scopes</span> <div> Parent model: <span
 data-ng-bind="$parent.model.name"></span> </div> <div>
 ----------------------------------------------------------------------------------------------------
-Index: 55002 <<"chunk_id": 6, "docno": 8924>>
+Index: 21961 <<"chunk_id": 10, "docno": 3270>>
 
-all the differences come from the autoconfigurations that we left out, and which
-would not have been conditionally excluded by Spring Boot. Here’s the list
-(assuming that you are using spring-boot-start-webflux with no manual
-exclusions): AutoConfigurationPackages CodecsAutoConfiguration
-JacksonAutoConfiguration JmxAutoConfiguration ProjectInfoAutoConfiguration
-ReactorCoreAutoConfiguration TaskExecutionAutoConfiguration
-TaskSchedulingAutoConfiguration ValidationAutoConfiguration
-HttpMessageConvertersAutoConfiguration RestTemplateAutoConfiguration
-WebClientAutoConfiguration So that’s 12 autoconfigurations that we didn’t need
-(yet anyway) and which led to 56 additional beans in the autoconfigured
-application. They all provide useful features, so we might want to include them
-again one day, but for now let’s assume that we are happy to live without
-whatever they are doing. Note spring-boot-autoconfigure has 122
-autoconfigurations (there are more in spring-boot-actuator-autoconfigure ) and
-the fully leaded autoconfigured sample application above only used 18 of them.
-The computation of which ones to use takes place very early and most of them are
-discarded by Spring Boot before any classes are even loaded. It’s very fast (a
-few milliseconds). Spring Boot Autoconfiguration Imports The ordering issue
-associated with the difference between user configuration (which has to be
-applied first) and autoconfiguration can be addressed partially by using a
-different annotation. Spring Boot provides an annotation for this:
-@ImportAutoConfiguration , which is from spring-boot-autoconfigure but used in
-the test slices features that ship with Spring Boot Test. So you can replace the
-@Import annotation in the examples above with @ImportAutoConfiguration and the
-effect is to defer processing of the autoconfigurations until after all the user
-configurations (e.g. picked up via @ComponentScan or @Import ). We can even go a
-stage further
+or singleton instance matching the given name is found, this method will return
+true whether the named bean definition is concrete or abstract, lazy or eager,
+in scope or not. Therefore, note that a true return value from this method does
+not necessarily indicate that getBean(String) will be able to obtain an instance
+for the same name. Parameters: name - the name of the bean to query Returns:
+whether a bean with the given name is present isSingleton boolean isSingleton (
+String name) throws NoSuchBeanDefinitionException Is this bean a shared
+singleton? That is, will getBean(String) always return the same instance? Note:
+This method returning false does not clearly indicate independent instances. It
+indicates non-singleton instances, which may correspond to a scoped bean as
+well. Use the isPrototype(String) operation to explicitly check for independent
+instances. Translates aliases back to the corresponding canonical bean name.
+Will ask the parent factory if the bean cannot be found in this factory
+instance. Parameters: name - the name of the bean to query Returns: whether this
+bean corresponds to a singleton instance Throws: NoSuchBeanDefinitionException -
+if there is no bean with the given name See Also: getBean(String)
+isPrototype(String) isPrototype boolean isPrototype ( String name) throws
+NoSuchBeanDefinitionException Is this bean a prototype? That is, will
+getBean(String) always return independent instances? Note: This method returning
+false does not clearly indicate a singleton object. It indicates non-independent
+instances, which may correspond to a scoped bean as well. Use the
+isSingleton(String) operation to explicitly check for a shared singleton
+instance. Translates aliases back to the
 ----------------------------------------------------------------------------------------------------
-Index: 32983 <<"chunk_id": 3, "docno": 4334>>
+Index: 10889 <<"chunk_id": 1, "docno": 1617>>
 
-reset between tests, as demonstrated in the following example: @Configuration
-class ProdConfiguration { @Bean MyService customService() { return new
-ProdService(); } } @SpringJUnitConfig class MyServiceIntegrationTests {
-@MockitoSpyBean(reset = MockReset.NONE) MyService customService; @Test void
-test() { //... } } In the above example, the spy will not be reset between
-tests. By default, mocks and spies are reset after a test method runs. Note that
-in order to spy on a bean, an actual instance of the spied class must exist in
-the first place. The Bean Overriding feature supports this special case and
-allows to create the override from the metadata once a bean is instantiated, in
-addition to the more common case of replacing the bean definition. Extending
-with your own implementation The new Bean Overriding in Test support comes in
-the shape of an annotation-based model applicable to fields in your test
-classes. It is extensible and customizable, and the 3 annotations introduced
-above are just the default implementations that we provide out of the box.
-Implementing your own flavor of Bean Overriding is as easy as implementing the
-following: An annotation that is meta-annotated with @BeanOverride which defines
-the BeanOverrideProcessor to use. The BeanOverrideProcessor implementation
-itself. One or more concrete OverrideMetadata implementations provided by the
-processor. The Spring TestContext Framework parses test classes looking for any
-field meta-annotated with @BeanOverride and instantiates the relevant
-BeanOverrideProcessor in order to register an instance of OverrideMetadata . A
-BeanFactoryPostProcessor will then use that information to alter the context,
-registering and replacing bean definitions as defined by
+DependsOn, Primary, Fallback, Order Note that the @Bean annotation does not
+provide attributes for profile, scope, lazy, depends-on, or primary. Rather, it
+should be used in conjunction with @Scope , @Lazy , @DependsOn , and @Primary
+annotations to declare those semantics. For example: @Bean
+@Profile("production") @Scope("prototype") public MyBean myBean() { //
+instantiate and configure MyBean obj return obj; } The semantics of the
+aforementioned annotations match their use at the component class level:
+@Profile allows for selective inclusion of certain beans. @Scope changes the
+bean's scope from singleton to the specified scope. @Lazy only has an actual
+effect in case of the default singleton scope. @DependsOn enforces the creation
+of specific other beans before this bean will be created, in addition to any
+dependencies that the bean expressed through direct references, which is
+typically helpful for singleton startup. @Primary is a mechanism to resolve
+ambiguity at the injection point level if a single target component needs to be
+injected but several beans match by type. @Fallback marks a bean as a fallback
+candidate in such scenarios; if all beans but one among multiple matching
+candidates are marked as fallback, the remaining bean will be selected.
+Additionally, @Bean methods may also declare qualifier annotations and @Order
+values, to be taken into account during injection point resolution just like
+corresponding annotations on the corresponding component classes but potentially
+being very individual per bean definition (in case of multiple definitions with
+the same bean class). Qualifiers narrow the set of candidates after the initial
+type match; order values determine
 ----------------------------------------------------------------------------------------------------
-Index: 4061 <<"chunk_id": 2, "docno": 556>>
+Index: 27440 <<"chunk_id": 2, "docno": 4430>>
 
-all your work on the web - both on the client and on the server, you're in a
-unique position of advantage. What changes is the ecosystem. In the browser,
-most of the time what you are doing is interacting with the DOM, or other Web
-Platform APIs like Cookies. Those do not exist in Node.js, of course. You don't
-have the document , window and all the other objects that are provided by the
-browser. And in the browser, we don't have all the nice APIs that Node.js
-provides through its modules, like the filesystem access functionality. Another
-big difference is that in Node.js you control the environment. Unless you are
-building an open source application that anyone can deploy anywhere, you know
-which version of Node.js you will run the application on. Compared to the
-browser environment, where you don't get the luxury to choose what browser your
-visitors will use, this is very convenient. This means that you can write all
-the modern ES2015+ JavaScript that your Node.js version supports. Since
-JavaScript moves so fast, but browsers can be a bit slow to upgrade, sometimes
-on the web you are stuck with using older JavaScript / ECMAScript releases. You
-can use Babel to transform your code to be ES5-compatible before shipping it to
-the browser, but in Node.js, you won't need that. Another difference is that
-Node.js supports both the CommonJS and ES module systems (since Node.js v12),
-while in the browser, we are starting to see the ES Modules standard being
-implemented.
+compiler can take care of ensuring ambiguity. Beans are configured in Java code,
+using constructors, properties or arbitrary method calls. Note that a call to
+another bean method establishes a dependency from the "book" bean to the "rod"
+bean. But there are key advantages over instantiating objects in Java without
+framework support: for example: Every @Bean is a Spring component and can take
+advantage of all Spring services, such as declarative transaction management
+Every public @Bean method is added to the Spring container, so it's eligible for
+injection into other objects, JMX export and other benefits. It fits smoothly
+into an existing Spring environment. It may be easier to follow what is
+happening by comparing this with XML definitions to achieve the same result,
+which would look as follows: <bean id="rod" class="Person" scope="singleton">
+<constructor-arg>Rod Johnson</constructor-arg> </bean> <bean id="book"
+class="Book" scope="prototype"> <constructor-arg>Expert One-on-One J2EE Design
+and Development</constructor-arg> <property name="author" ref="rod"/> </bean>
+Although it is based on annotations, this Java config mechanism is unique in
+uses of annotations I've seen that annotations are not included in the core
+business logic, but in separate configuration classes. Effectively, it's a DSL
+for configuration. So it retains the non-invasive promise of Spring: you don't
+need to change your Java code to use it. The configuration class is analogous to
+an XML bean definition file, and thus the @Configuration annotation contains
+some similar options to the the <beans> element, such as default autowire or
+lazy init. For example: @Configuration(defaultAutowire = Autowire.BY_TYPE,
+defaultLazy = Lazy.FALSE) public class DataSourceConfiguration extends
+ConfigurationSupport { } The
 ----------------------------------------------------------------------------------------------------
-Index: 27361 <<"chunk_id": 2, "docno": 3957>>
+Index: 11696 <<"chunk_id": 2, "docno": 1807>>
+
+run Neo4j embedded with the web administration tool, and Spring Data</A>. /
+</LI> The Zenika blog is at it again, this time with not one, but two great
+entries into this week's roundup. The first entry provides an overview of Spring
+Data MongoDB and the second entry provides an overview of how to use Spring
+Batch and MongoDB together . Great stuff, and I'll certainly be checking back
+for new content! The JavaRevisted blog has a nice post on how to specify a
+bean's scope in Spring . A few points of clarification: Spring 3.0 does provide
+new scopes (including one of my favorites, the SimpleThreadScope ) , and - while
+this blog introduces the default scopes available - you can easily register new
+scopes using the CustomScopeConfigurer , and filling out the map of custom scope
+instances, like this: @Bean public static CustomScopeConfigurer csc(){
+Map<String,Object> scopes = new HashMap<String,Object>(); scopes.put("thread",
+new SimpleThreadScope()); CustomScopeConfigurer csc = new
+CustomScopeConfigurer(); csc.setScopes(scopes); return csc; } Blogger Angelo
+Zerr has put together an introduction to how to use Spring Virgo (formerly
+Spring DM) and Spring Data JPA and Spring Remoting to build an Eclipse RCP
+application . There are many blogs - and they seem to have have links near the
+top to the previous one preceding it, so simply work backwards to get all of
+them. There are versions of the articles in both French and English. Navin
+Bansal has put together a blog introducing the bean lifecycle for beans managed
+by the Spring container . Get the Spring
+----------------------------------------------------------------------------------------------------
+Index: 21487 <<"chunk_id": 11, "docno": 3189>>
+
+default-request-channel. The outgoing channel, whose id is demoChannel This
+channel is where outgoing messages are placed. An incoming message channel is
+not actually needed as Spring Integration will create a temporary channel for
+reply messages that automatically hooks up with the gateway that the request
+messages came from. This is achieved using a correlation id that is originally
+set by the gateway. The service activator endpoint, whose id is localService
+This component is responsible for invoking a specific method on a specific bean
+when a message appears on the incoming channel. In this case the doSomething
+method on the demoBean service will be invoked with the message contents, which
+is a string as dictated by the parameter on the doSomething method. NOTE: All
+service classes in grails by default result in a singleton service object of
+that class that is indexed in the Spring application context under a camel-cased
+version of the class name. So where the service-activator refers to the
+demoBeanService bean, this is automatically resolved by Grails to the singleton
+instance of the DemoBeanService we created earlier. And that's it, we have a
+complete message passing pipeline that will pass messages through an internal
+queue, strongly decoupling any message provider from the consumers. You'll
+notice that any consumer that creates a message and invokes the gateway does not
+need to know where the message ends up, nor does it even need to know what
+interface that destination endpoint implements. The contract here is the types
+of the messages being passed, which for this simple
+----------------------------------------------------------------------------------------------------
+Index: 6990 <<"chunk_id": 8, "docno": 1042>>
+
+definitions are added, as these conditions are evaluated based on what has been
+processed so far. For this reason, we recommend using only @ConditionalOnBean
+and @ConditionalOnMissingBean annotations on auto-configuration classes (since
+these are guaranteed to load after any user-defined bean definitions have been
+added). @ConditionalOnBean and @ConditionalOnMissingBean do not prevent
+@Configuration classes from being created. The only difference between using
+these conditions at the class level and marking each contained @Bean method with
+the annotation is that the former prevents registration of the @Configuration
+class as a bean if the condition does not match. When declaring a @Bean method,
+provide as much type information as possible in the method’s return type. For
+example, if your bean’s concrete class implements an interface the bean method’s
+return type should be the concrete class and not the interface. Providing as
+much type information as possible in @Bean methods is particularly important
+when using bean conditions as their evaluation can only rely upon to type
+information that is available in the method signature. Property Conditions The
+@ConditionalOnProperty annotation lets configuration be included based on a
+Spring Environment property. Use the prefix and name attributes to specify the
+property that should be checked. By default, any property that exists and is not
+equal to false is matched. There is also a dedicated
+@ConditionalOnBooleanProperty annotation specifically made for boolean
+properties. With both annotations you can also create more advanced checks by
+using the havingValue and matchIfMissing attributes. If multiple names are given
+in the name attribute, all of the properties have to
+----------------------------------------------------------------------------------------------------
+Index: 21952 <<"chunk_id": 1, "docno": 3270>>
+
+instance will be returned depends on the bean factory configuration: the API is
+the same. Since Spring 2.0, further scopes are available depending on the
+concrete application context (for example, "request" and "session" scopes in a
+web environment). The point of this approach is that the BeanFactory is a
+central registry of application components, and centralizes configuration of
+application components (no more do individual objects need to read properties
+files, for example). See chapters 4 and 11 of "Expert One-on-One J2EE Design and
+Development" for a discussion of the benefits of this approach. Note that it is
+generally better to rely on Dependency Injection ("push" configuration) to
+configure application objects through setters or constructors, rather than use
+any form of "pull" configuration like a BeanFactory lookup. Spring's Dependency
+Injection functionality is implemented using this BeanFactory interface and its
+subinterfaces. Normally a BeanFactory will load bean definitions stored in a
+configuration source (such as an XML document), and use the
+org.springframework.beans package to configure the beans. However, an
+implementation could simply return Java objects it creates as necessary directly
+in Java code. There are no constraints on how the definitions could be stored:
+LDAP, RDBMS, XML, properties file, etc. Implementations are encouraged to
+support references amongst beans (Dependency Injection). In contrast to the
+methods in ListableBeanFactory , all of the operations in this interface will
+also check parent factories if this is a HierarchicalBeanFactory . If a bean is
+not found in this factory instance, the immediate parent factory will be asked.
+Beans in this factory instance
+----------------------------------------------------------------------------------------------------
+Index: 17775 <<"chunk_id": 2, "docno": 2383>>
+
+web project in the attached samples. BTW, credits for this idea should go to a
+former colleague of mine (Ezra, thanks!) The second is to use JavaConfig instead
+of XML to define your environment-dependent beans. Where you determine what
+beans to create is then moved from determining what config files to load to your
+JavaConfig class. The last sample combines the previous two to determine what
+JavaConfig class to use, where subclasses that extend a common base
+configuration are created for each environment. This showcases the power of
+having your configuration in an actual class: you can use regular java
+inheritance and polymorphism, which blurs the distinction between bean
+definition inheritance and class inheritance. Other ways could include custom
+FactoryBean -implementations, for example. The samples The samples demonstrate
+the use of a simple service and dao that find a Person's last name by first
+name. In the default case, only two persons are defined (Alef and I). In a
+development environment, we'll use a static dao implementation instead that
+always returns a John Doe . In an acceptance environment, a third person (our
+collegue Arjen) is defined. The integration tests check if the correct behaviour
+is exposed by our application in each environment. There are several ways you
+can check in what environment your application is running: for these samples,
+I've used a system property that is being used by the EnvironmentUtils class.
+Other ways could be to examine the database or a JNDI registry, for example.
+Instead of just zipping up my Eclipse workspace, I've
+----------------------------------------------------------------------------------------------------
+Index: 24940 <<"chunk_id": 3, "docno": 3873>>
+
+all about what happens underneath to support that model so on the surface there
+is no difference except for the full support for reactive types such as Flux and
+Mono and Observable and Single from RxJava both for input and for output. Is
+Spring Web Reactive better than Spring MVC? The greatest value proposition of
+the Spring Framework reactive support and our unique positioning is that we
+don't leave existing applications behind. In Spring 5, traditional Spring MVC
+keeps running on any Servlet 3.1 stack, including Java EE 7 servers. For Spring
+Web Reactive, we support Tomcat, Jetty, Undertow, and Netty without a compromise
+and can also adapt to any Servlet 3.1 container. We plan to continue the synergy
+between Spring MVC and Spring Web Reactive in terms of shared algorithms and
+mechanisms in support of the same programming model on top. Improvement requests
+or bug reports on the Spring MVC side will benefit Spring Web Reactive and vice
+versa. That means you the developer can choose what’s better for your purposes.
+If anyone tells you that synchronous or blocking is evil look the other way.
+It's not and in reality it is a trade-off. Imperative style logic is simple to
+write and simpler to debug. Sure it doesn't scale as well or as efficiently but
+that's where the trade-off comes. There will always be many cases where
+imperative is just fine for the task at hand and others where reactive and
+non-blocking are a must. In a microservices scenario, you may even choose the
+implementation
+----------------------------------------------------------------------------------------------------
+Index: 18638 <<"chunk_id": 8, "docno": 2605>>
+
+using SpEL expressions that retrieve the username and password from the current
+HTTP request. In our test, we will want to configure these request parameters
+via the mock managed by the TestContext framework. Request-scoped Bean Config
+<beans> <bean id="userService" class="com.example.SimpleUserService"
+c:loginAction-ref="loginAction" /> <bean id="loginAction"
+class="com.example.LoginAction" c:username="#{request.getParameter('user')}"
+c:password="#{request.getParameter('pswd')}" scope="request"> <aop:scoped-proxy
+/> </bean> </beans> In RequestScopedBeanTests we inject both the UserService
+(i.e., the subject under test) and the MockHttpServletRequest into our test
+instance. Within our requestScope() test method we set up our test fixture by
+setting request parameters in the provided MockHttpServletRequest . When the
+loginUser() method is invoked on our userService we are assured that the user
+service has access to the request-scoped loginAction for the current
+MockHttpServletRequest (i.e., the one we just set parameters in). We can then
+perform assertions against the results based on the known inputs for the
+username and password. Request-scoped Bean Test
+@RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration
+@WebAppConfiguration public class RequestScopedBeanTests { @Autowired
+UserService userService; @Autowired MockHttpServletRequest request; @Test public
+void requestScope() { request.setParameter("user", "enigma");
+request.setParameter("pswd", "$pr!ng"); LoginResults results =
+userService.loginUser(); // assert results } } The following code snippet is
+similar to the one we saw above for a request-scoped bean; however, this time
+the userService bean has a dependency on a session-scoped userPreferences bean.
+Note that the UserPreferences bean is instantiated using a SpEL expression that
+retrieves the theme from the current HTTP session. In our test, we will need to
+configure a theme in the mock session managed by the TestContext framework.
+Session-scoped Bean Config <beans> <bean id="userService"
+class="com.example.SimpleUserService" c:userPreferences-ref="userPreferences" />
+<bean
+----------------------------------------------------------------------------------------------------
+Index: 10895 <<"chunk_id": 7, "docno": 1617>>
+
+bean a candidate for getting autowired into some other bean based on the plain
+type, without any further indications such as a qualifier match? Default is true
+; set this to false for restricted delegates that are supposed to be injectable
+in certain areas but are not meant to get in the way of beans of the same type
+in other places. This is a variation of autowireCandidate() which does not
+disable injection in general, just enforces an additional indication such as a
+qualifier. Since: 6.2 See Also: autowireCandidate() Default: true bootstrap
+Bean.Bootstrap bootstrap The bootstrap mode for this bean: default is the main
+pre-instantiation thread for non-lazy singleton beans and the caller thread for
+prototype beans. Set Bean.Bootstrap.BACKGROUND to allow for instantiating this
+bean on a background thread. For a non-lazy singleton, a background
+pre-instantiation thread can be used then, while still enforcing the completion
+at the end of ConfigurableApplicationContext.refresh() . For a lazy singleton, a
+background pre-instantiation thread can be used as well - with completion
+allowed at a later point, enforcing it when actually accessed. Since: 6.2 See
+Also: Lazy Default: DEFAULT initMethod String initMethod The optional name of a
+method to call on the bean instance during initialization. Not commonly used,
+given that the method may be called programmatically directly within the body of
+a Bean-annotated method. The default value is "" , indicating no init method to
+be called. See Also: InitializingBean ConfigurableApplicationContext.refresh()
+Default: "" destroyMethod String destroyMethod The optional name of a method to
+call on the bean instance upon
+----------------------------------------------------------------------------------------------------
+Index: 17575 <<"chunk_id": 7, "docno": 2338>>
+
+1. Only path extension taken into account, Accept headers ignored. // 2. Return
+HTML by default when not sure. --> <bean id="cnManager"
+class="org.springframework.web.accept. ContentNegotiationManagerFactoryBean">
+<property name="ignoreAcceptHeader" value="true"/> <property
+name="defaultContentType" value="text/html" /> </bean> The
+ContentNegotiationManager is exactly the same bean I discussed in the previous
+post . The CNVR automatically goes to every other view resolver bean defined to
+Spring and asks it for a View instance corresponding to the view-name returned
+by the controller - in this case accounts/list . Each View 'knows' what sort of
+content it can generate because there is a getContentType() method on it
+(inherited from the View interface). The JSP page is rendered by a JstlView
+(returned by the InternalResourceViewResolver ) and its content-type is
+text/html , whilst the AccountExcelView generates application/vnd.ms-excel . How
+the CNVR is actually configured is delegated to the ContentNegotiationManager
+which is created in turn via the configurer (Java Configuration) or one of
+Spring's many factory beans (XML). The last piece of the puzzle is: how does the
+CNVR know what content-type was requested ? Because the content-negotiation
+strategy tells it what to do: either a URL suffix is recognized, or a URL
+parameter or an Accept header. Exactly the same strategy setup described in the
+previous post , reused by the CNVR. Note that when content-negotiation
+strategies were introduced by Spring 3.0 they only applied to selecting Views.
+Since 3.2 this facility is available across the board (as per my previous post
+). The examples in this post use Spring 3.2 and may be different to
+----------------------------------------------------------------------------------------------------
+Index: 24939 <<"chunk_id": 2, "docno": 3873>>
+
+JSON (Jackson) and XML (JAXB), a reactive web framework that supports the
+@Controller programming model, and a reactive WebClient . It becomes easy to
+support input and output streaming scenarios for microservices, scatter/gather,
+data ingestion, and so on. Below is a controller that obtains and streams data
+from a remote server in a completely non-blocking and reactive manner:
+@GetMapping("/accounts/{id}/alerts") public Flux<Alert>
+getAccountAlerts(@PathVariable Long id) { return this.repository.getAccount(id)
+.flatMap(account -> this.webClient .perform(get("/alerts/{key}",
+account.getKey())) .extract(bodyStream(Alert.class))); } What is the reactive
+stack that supports this? Spring Web Reactive lives in the new
+spring-web-reactive module next to the existing (and popular!) Spring Web MVC
+that lives in the spring-webmvc module. The two modules share many algorithms
+and mechanisms but cannot actually share any code. This is because Spring Web
+Reactive runs on a Reactive Streams HTTP adapter layer that's fully non-blocking
+and reactive all the way down to the HTTP runtime. So while Spring MVC is built
+for and runs on Servlet containers, Spring Web Reactive runs also on non-Servlet
+runtimes such as on Netty and Undertow Spring Web Reactive vs Spring Web MVC How
+does the Spring Framework team view these two frameworks you might wonder at
+this point and what do we recommend that you use? First and foremost we aim for
+the greatest possible consistency within reason. There is nothing fundamentally
+incompatible between the @Controller programming model and the reactive ways.
+It's all about what happens underneath to support that model so on the surface
+there is no difference except for the full support for reactive types
+----------------------------------------------------------------------------------------------------
+Index: 21951 <<"chunk_id": 0, "docno": 3270>>
+
+BeanFactory (Spring Framework 7.0.8 API) Skip navigation links Overview Class
+Use Tree Deprecated Index Search Help Spring Framework
+org.springframework.beans.factory BeanFactory Contents Description Field Summary
+Method Summary Field Details FACTORY_BEAN_PREFIX FACTORY_BEAN_PREFIX_CHAR Method
+Details getBean(String) getBean(String, Class) getBean(String, Object...)
+getBean(Class) getBean(Class, Object...) getBeanProvider(Class)
+getBeanProvider(ResolvableType) getBeanProvider(ParameterizedTypeReference)
+containsBean(String) isSingleton(String) isPrototype(String) isTypeMatch(String,
+ResolvableType) isTypeMatch(String, Class) getType(String) getType(String,
+boolean) getAliases(String) Hide sidebar Show sidebar Interface BeanFactory All
+Known Subinterfaces: ApplicationContext , AutowireCapableBeanFactory ,
+ConfigurableApplicationContext , ConfigurableBeanFactory ,
+ConfigurableListableBeanFactory , ConfigurableWebApplicationContext ,
+HierarchicalBeanFactory , ListableBeanFactory , WebApplicationContext All Known
+Implementing Classes: AbstractApplicationContext ,
+AbstractAutowireCapableBeanFactory , AbstractBeanFactory ,
+AbstractRefreshableApplicationContext ,
+AbstractRefreshableConfigApplicationContext ,
+AbstractRefreshableWebApplicationContext , AbstractXmlApplicationContext ,
+AnnotationConfigApplicationContext , AnnotationConfigWebApplicationContext ,
+ClassPathXmlApplicationContext , DefaultListableBeanFactory ,
+FileSystemXmlApplicationContext , GenericApplicationContext ,
+GenericGroovyApplicationContext , GenericWebApplicationContext ,
+GenericXmlApplicationContext , GroovyWebApplicationContext ,
+SimpleJndiBeanFactory , StaticApplicationContext , StaticListableBeanFactory ,
+StaticWebApplicationContext , XmlWebApplicationContext public interface
+BeanFactory The root interface for accessing a Spring bean container. This is
+the basic client view of a bean container; further interfaces such as
+ListableBeanFactory and ConfigurableBeanFactory are available for specific
+purposes. This interface is implemented by objects that hold a number of bean
+definitions, each uniquely identified by a String name. Depending on the bean
+definition, the factory will return either an independent instance of a
+contained object (the Prototype design pattern), or a single shared instance (a
+superior alternative to the Singleton design pattern, in which the instance is a
+singleton in the scope of the factory). Which type of instance will be returned
+depends on the bean factory configuration: the API is the same. Since Spring
+2.0, further scopes are available depending on the
+----------------------------------------------------------------------------------------------------
+Index: 632 <<"chunk_id": 1, "docno": 97>>
+
+How does React keep track of your app’s component structure? React, and many
+other UI libraries, model UI as a tree. Thinking of your app as a tree is useful
+for understanding the relationship between components. This understanding will
+help you debug future concepts like performance and state management. You will
+learn How React “sees” component structures What a render tree is and what it is
+useful for What a module dependency tree is and what it is useful for Your UI as
+a tree Trees are a relationship model between items. The UI is often represented
+using tree structures. For example, browsers use tree structures to model HTML (
+DOM ) and CSS ( CSSOM ). Mobile platforms also use trees to represent their view
+hierarchy. React creates a UI tree from your components. In this example, the UI
+tree is then used to render to the DOM. Like browsers and mobile platforms,
+React also uses tree structures to manage and model the relationship between
+components in a React app. These trees are useful tools to understand how data
+flows through a React app and how to optimize rendering and app size. The Render
+Tree A major feature of components is the ability to compose components of other
+components. As we nest components , we have the concept of parent and child
+components, where each parent component may itself be a child of another
+component. When we render a React app, we can model this relationship in a tree,
+known as the render tree. Here
+----------------------------------------------------------------------------------------------------
+Index: 18304 <<"chunk_id": 6, "docno": 2524>>
+
+output Message . The following example shows a possible implementation of this
+strategy (also commented out in the example, so uncomment it, restart the app,
+and see the difference). @Bean public CloudEventHeaderEnricher
+cloudEventEnricher() { return messageBuilder ->
+messageBuilder.setSource("http://spring.io/cloudevent")
+.setType("sample").setId("987654"); } Here, you can also see one of the utility
+classes that can assist you with building Cloud Event messages:
+CloudEventMessageBuilder . It is modeled after a standard Spring MessageBuilder
+but with Cloud Event specific setters . However, the main advantage of this
+approach is the separation of concerns. Your business logic (your functional
+code) stays clean. Also, the non-functional code that you still need to write is
+written in a separate place. One other thing . . . The example code assumes that
+you're interested only in the data portion of a Cloud Event and that you want it
+in the form of a POJO. But what if that is not the case? What if you want the
+entire view in a Cloud Event? Or what if you also want Cloud Event data in its
+raw form (that is, byte[] )? As mentioned earlier, the framework gets its
+instructions from the signature of the function. So, by declaring your input and
+output type as Message you're effectively instructing the framework to give you
+the entire Cloud Event (not just its data ). Also, by specifying the generic
+type of Message , you instruct the framework to serve the data portion of a
+Cloud Event as that Java type, essentially requesting it to perform type
+conversion, if
+----------------------------------------------------------------------------------------------------
+Index: 26562 <<"chunk_id": 3, "docno": 4270>>
+
+first letter. For example, the class SecurityService will result in a bean named
+"securityService". AuditReportService will likewise become an
+"auditReportService" bean. Wiring other beans into your services (and all other
+core Grails artifacts) is similarly straightforward: declare a property with the
+same name as the bean you want. For example, say I wanted to use the
+"auditReportService" bean from another service (or maybe a controller). I can
+wire it in like this: class MyService { def auditReportService ... } I'm sure
+you'll agree that was pretty simple. It's an example of Spring's auto wiring.
+Grails will also wire beans by name even if you specify a type for the property.
+Another useful feature of services is that they are transactional by default.
+This makes them a great way of abstracting away data access and building a
+robust architecture for your application. A typical approach is to create
+different "gateways" to your services: an HTML UI, an XML REST interface,
+remoting via RMI, etc. all calling into your services. One final note: I said
+that Grails will instantiate your services as singleton beans, but you can
+change this behaviour on a per-service basis. Simply add a static scope property
+to your service class, like so: class MyService { static scope = "request" ... }
+As you can see, you get a lot of the main benefits of Spring with almost no
+effort when you use services. That's great, but what if you have existing
+classes that you want to turn into beans? Perhaps you have written them
+----------------------------------------------------------------------------------------------------
+Index: 20880 <<"chunk_id": 5, "docno": 3059>>
+
+Spring MVC @Controller programming model --> <mvc:annotation-driven /> </beans>
+Let's examine the contents of this file: You'll note that a few different Spring
+XML namespaces are being used: context , mvc , and the default beans The
+<context:component-scan> declaration ensures the Spring container does component
+scanning, so that any code annotated with @Component subtypes such as
+@Controller is automatically discovered. You'll note that for efficiency, we
+limit (to xyz.sample.baremvc in this case) what part of the package space Spring
+should scan in the classpath The <mvc:annotation-driven> declaration sets up
+Spring MVC's support for routing requests to @Controllers, as well as how some
+things like conversion, formatting and validation are handled (with some
+sensible defaults based on what (libraries) is present in your classpath, and
+the ability to override if needed) The web app is now ready to run. Assuming the
+Servlet container (tc Server in my case) is set to listen on localhost:8080,
+starting the application and then hitting the URL http://localhost:8080/baremvc
+via our browser results in a display of the expected greeting: As trivial as it
+is, running this application involves all the major pieces of a working Spring
+MVC application. Let's walk through the major sequences and component
+interactions: When the web app starts up, the DispatcherServlet is loaded and
+initialized because of the entry in web.xml . The DispatcherServlet loads an
+annotation-based Application Context, which has been configured to scan for
+annotated components via a regular expression specifying the base package(s).
+Annotated components such as the HomeController are detected by the container.
+The
+----------------------------------------------------------------------------------------------------
+Index: 27441 <<"chunk_id": 3, "docno": 4430>>
+
+<beans> element, such as default autowire or lazy init. For example:
+@Configuration(defaultAutowire = Autowire.BY_TYPE, defaultLazy = Lazy.FALSE)
+public class DataSourceConfiguration extends ConfigurationSupport { } The @Bean
+annotation allows options such as scope, and lazy init to be set locally, just
+as with the <bean> element. The default scope is Singleton, as with XML. This
+style of Java configuration has some interesting characteristics. For example:
+References (such as the reference to the "rod" bean in the example) survive
+refactoring; any good IDE provides great tool support. <li>Because
+configurations are Java classes, they can participate in inheritance
+relationships. For example, you could define a superclass that demands some
+abstract @Beans to be implemented in subclasses.</li> <li>It creates a new
+visibility option. An @Bean method can be protected, it which case it benefits
+from the usual characteristics of the Spring component, but is not visible
+externally--that is it not injectable and cannot be obtained by calling
+getBean() on the IoC context.</li> My experience in showing this to people (for
+over a year now) is that they sometimes take a moment to grok it, but usually
+end up quite enthusiastic. This is not intended as a replacement for Spring's
+XML format. Like Spring 2.0 extension namespaces--and use of properties files
+which has been possible since Spring 1.0--it's an additional option. Complex
+applications require multiple types of configuration and Spring aims to provide
+the best overall solution for configuration. We continue to explore additional
+forms of configuration. You will typically mix use of Java and XML
+configuration. You can use any
+----------------------------------------------------------------------------------------------------
+Index: 21257 <<"chunk_id": 12, "docno": 3136>>
+
+in providing insight on request-scoped interactions in our services. However,
+some information provided by metrics and tracing is disjointed. Traces excel at
+showing the relationship between services as well as high-cardinality data about
+a specific request, such as a user ID associated with a request. Distributed
+tracing helps you pinpoint the source of an issue in your distributed system
+quickly. The tradeoff is that at high volumes and strict performance
+requirements, traces need to be sampled to control costs. This means that the
+specific request you are interested in may not be in the sampled tracing data.
+On the other side of the coin, metrics aggregate all measurements and export the
+aggregate at time intervals to define the time series data. All data is included
+in this aggregation and cost does not increase with traffic, so long as best
+practices on tag cardinality are followed. Therefore, a metric measuring the
+maximum latency of something will include the slowest request, and a calculation
+of error rate will be accurate, regardless of any sampling on tracing data.
+Metrics can be used beyond the scope of requests for monitoring memory, CPU
+usage, garbage collection, and caches, to name a few. You will want to use
+metrics for your alerting, SLOs (service-level objectives), and dashboards. In
+the console-availability example, it would be an alert about an SLO violation
+that notifies us about a high error rate for our service. (You don't want to
+stare at dashboards 24/7 to detect issues, do you?) Then, with both metrics and
+traces, we can
+----------------------------------------------------------------------------------------------------
+Index: 27444 <<"chunk_id": 6, "docno": 4430>>
+
+In case you're interested, it treats the configuration object as a factory bean
+and each bean definition is backed by an instance factory method on that object:
+A mechanism that has been available since Spring 1.1. It does a little bytecode
+manipulation on the configuration instance, presently using CGLIB, to make sure
+that repeated calls to singleton scoped @Bean methods always return the same
+object. Get the Spring newsletter Stay connected with the Spring newsletter
+Subscribe Get ahead VMware offers training and certification to turbo-charge
+your progress. Learn more Get support Tanzu Spring offers support and binaries
+for OpenJDK™, Spring, and Apache Tomcat® in one simple subscription. Learn more
+Upcoming events Check out all the upcoming events in the Spring community. View
+all Why Spring Generative AI Microservices Reactive Event Driven Cloud Web
+Applications Serverless Batch Learn Quickstart Guides Courses Get Certified
+Projects Resources Blog Release Calendar Version Mappings Release Highlights
+Security Advisories Community Events Authors Enterprise Long-term Support
+Automated Upgrades Governance and Compliance Modern App Development Thank You
+Copyright © 2005 - 2026 Broadcom. All Rights Reserved. The term "Broadcom"
+refers to Broadcom Inc. and/or its subsidiaries. Terms of Use • Privacy •
+Trademark Guidelines Apache®, Apache Tomcat®, Apache Kafka®, Apache Cassandra™,
+and Apache Geode™ are trademarks or registered trademarks of the Apache Software
+Foundation in the United States and/or other countries. Java™, Java™ SE, Java™
+EE, and OpenJDK™ are trademarks of Oracle and/or its affiliates. Kubernetes® is
+a registered trademark of the Linux Foundation in the United States and other
+countries. Linux® is the
+----------------------------------------------------------------------------------------------------
+Index: 17569 <<"chunk_id": 1, "docno": 2338>>
+
+<bean class="org.springframework.web.servlet.view.
+ContentNegotiatingViewResolver"> <!-- All configuration now done by manager -
+since Spring V3.2 --> <property name="contentNegotiationManager"
+ref="cnManager"/> </bean> <!-- // Setup a simple strategy: // 1. Only path
+extension is taken into account, Accept headers // are ignored. // 2. Return
+HTML by default when not sure. --> <bean id="cnManager"
+class="org.springframework.web.accept. ContentNegotiationManagerFactoryBean">
+<property name="ignoreAcceptHeader" value="true"/> <property
+name="defaultContentType" value="text/html" /> </bean> For every request, a
+@Controller would typically return a logical view name (or Spring MVC will
+determine one, by convention from the incoming URL). The CNVR will consult all
+the other view-resolvers defined in the configuration to see 1) if it has a view
+with the right name and 2) if it has a view that it also generates the right
+content - all Views 'know' what content-type they return. The desired
+content-type is determined in the exact same way discussed in the previous post.
+For the equivalent Java configuration see here . And for an extended
+configuration see here . There is a demo application at Github:
+https://github.com/paulc4/mvc-content-neg-views . For those of you in a hurry,
+that's it in a nutshell. For the rest of you, this post shows how we got to it.
+It discusses the concept of multiple-views in Spring MVC and builds upon that
+idea to define what the CNVR is, how to use it and how it works. It takes the
+same Accounts application from the previous post and builds it up to return
+account information in HTML, as a Spreadsheet, as JSON and in XML. All using
+just views.
+----------------------------------------------------------------------------------------------------
+Index: 24138 <<"chunk_id": 3, "docno": 3687>>
+
+been created, declare it as a normal bean along with the JavaConfiguration post
+processor: <?xml version="1.0" encoding="UTF-8"?> <beans
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"> <bean
+id="config" class="blog.javaconfig.JavaCfg" /> <bean id="processor"
+class="org.springframework.config.java.process.ConfigurationPostProcessor" />
+<bean id="dataSource"
+class="org.springframework.jdbc.datasource.DriverManagerDataSource"> <property
+name="driverClassName" value="${jdbc.driver}" /> <property name="url"
+value="${jdbc.url}" /> <property name="username" value="${jdbc.username}" />
+<property name="password" value="${jdbc.password}" /> </bean> </beans> and you
+are ready to go (if you are running Mark's test, make sure to use the Java
+Configuration xml file). Since a picture is worth a thousands words, see below
+the same setup through SpringIDE : I've used the latest SpringIDE snapshot which
+offers visualization, navigation and also validation for Java Configuration
+annotations (for example the plugin checks that destroyMethodName points to a
+proper method on the bean creation method return type). Hide and seek Java
+Configuration supports most of the XML declaration features, that is you can
+specify scopes, autowire strategies, lazyness, depends-on as well as custom
+metadata at bean level (through @Bean) and as defaults (through @Configuration).
+In 1.0 M2 you even get the @ScopedProxy annotation, a direct replacement for
+<aop:scoped-proxy/>. However, one new feature that Java Configuration offers
+over the traditional XML container is "bean visibility" - the ability to define
+beans which cannot be used outside their configuration. Again, let's look at
+some code: @Configuration public class VisibilityConfiguration { @Bean(scope =
+DefaultScopes.PROTOTYPE) public Object publicBean() { List list = new
+ArrayList(); list.add(hiddenBean()); list.add(secretBean());
+System.out.println("creating public bean"); return list; } @Bean(scope =
+DefaultScopes.SINGLETON) protected Object hiddenBean() {
+System.out.println("creating hidden bean"); return new String("hidden bean"); }
+@Bean(scope = DefaultScopes.PROTOTYPE) private Object
+----------------------------------------------------------------------------------------------------
+Index: 29314 <<"chunk_id": 3, "docno": 4903>>
+
+actual Spring MVC configuration is loaded through the TestContext framework and
+that the request is performed by actually invoking the DispatcherServlet and all
+the same Spring MVC infrastructure that is used at runtime. Also similar to
+existing controller unit tests, you may consider injecting controllers with mock
+services in order to focus on testing the web layer and avoid hitting a database
+for example. So instead of loading actual business and persistence services, you
+can load configuration that creates mocks. For example: @Configuration public
+class MyConfig { @Bean public FooService fooService() { return
+Mockito.mock(FooService.class); } } or in XML configuration: <bean
+class="org.mockito.Mockito" factory-method="mock"> <constructor-arg
+value="org.example.FooService"/> </bean> Given that we're not running in an
+actual servlet container, just how much will and will not work? For the most
+part everything will work just like it does at runtime. You can even register
+Servlet filters, enabling things like Spring Security. Most rendering
+technologies like JSON/XML, Freemarker, Velocity, Thymeleaf, Excel, PDF, etc.
+All of that will work. The only rendering technology excluded is JSPs since
+since that requires a servlet container. For JSPs you can still verify the JSP
+the request was forwarded, what attributes are in the model, whether any
+exception was raised, and so on. Client-side REST Tests What's the idea behind
+client-side REST tests? If you have code using the RestTemplate , you'll
+probably want to test it and to that you can target a running server or mock the
+RestTemplate. The client-side REST test support offers a third alternative,
+which is to use the actual
+----------------------------------------------------------------------------------------------------
+Index: 18446 <<"chunk_id": 13, "docno": 2555>>
+
+clears that context, that context is lost until another signal is scheduled to
+the wrapped Scheduler . Another risk is what we’ve seen in the earlier examples,
+where the subscription happens on some Thread , but requesting the data happens
+on another, which is not in Reactor’s control. DECORATE_QUEUES An evolution over
+the preceding strategy, DECORATE_QUEUES corrects some erroneous scenarios
+(requesting data happens out-of-band or multiple Threads publish data) but not
+all of them. The Hooks.addQueueWrapper plugin is used the way we described
+earlier. One known issue with Queue wrapping is that there is no reliable way of
+cleaning up after the processing of an item. The context is restored upon
+retrieval of an item from a Queue . There is no scope surrounding processing of
+the item that travels through downstream operators. Therefore, this approach is
+also prone to polluting ThreadLocal storage. There have been some recent
+improvements in the draining procedure to limit the impact. MANUAL In this
+strategy, the only thing Sleuth does is to capture the values from ThreadLocal s
+into Reactor’s Context upon subscription as a snapshot. It is up to the user to
+extract that snapshot in relevant places and populate the ThreadLocal s to make
+them available to instrumenting libraries. For supported tracing
+instrumentation, such as with Zipkin and Brave, Sleuth restores the ThreadLocal
+s by using a concept of scoping – the ThreadLocal s are restored for the
+instrumentation and are gone immediately after the snapshot is closed. It is the
+most performant approach, although it requires manual
+----------------------------------------------------------------------------------------------------
+Index: 12556 <<"chunk_id": 3, "docno": 1926>>
+
+of this interface that supports Scala getters and setters. This implementation
+will automatically be detected by Spring, there is no need for additional
+configuration. In practical terms, this means that putting the Spring Scala jar
+on the class path will enable support for Scala properties, and that you can use
+the above XML configuration to wire up the Person class without adding
+@BeanProperty annotations. For more information about wiring up Scala beans in
+Spring XML, refer to the relevant section of the Spring Scala documentation
+wiki. Also take a look at the section on wiring up Scala Collections in Spring
+XML . Wiring up beans in Scala In addition to defining beans in XML, Spring
+Scala offers an alternative that uses Scala classes instead of XML files to
+configure your Spring beans. This approach is similar to using @Configuration in
+Spring Java, except that it is based on functions rather than annotations. To
+create a functional Spring configuration, you simply have to mix in the
+FunctionalConfiguration trait into your configuration class. Beans are defined
+by calling the bean method on the trait and passing on a function that creates
+the bean. Given the Person class shown above, we can wire it up in a functional
+configuration as follows: class PersonConfiguration extends
+FunctionalConfiguration { bean() { new Person("John", "Doe") } } Of course, you
+can also register a bean under a specific name, provide aliases, or set the
+scope: class PersonConfiguration extends FunctionalConfiguration { bean("john",
+aliases = Seq("doe"), scope = BeanDefinition.SCOPE_PROTOTYPE) { new
+Person("John", "Doe") } }
+----------------------------------------------------------------------------------------------------
+Index: 26560 <<"chunk_id": 1, "docno": 4270>>
+
+you can access that raw power and flexibility. A child of Spring You may not be
+aware of this, but when you create a Grails application you are also creating a
+Spring MVC one. Under the hood, Grails creates a variant of Spring MVC's
+DispatcherServlet and configures a bunch of beans to do the heavy lifting. Of
+course, this means that there is a Spring context underpinning your application
+- one that you have access to as you'll see later. Here are some examples of the
+beans you'll find if you look in the Spring context of a typical Grails
+application: grailsApplication - a bean representing the current application and
+its resources pluginManager - the plugin manager, which you can query for
+information about loaded plugins jspViewResolver - a custom MVC view resolver
+for GSPs that falls back to JSPs messageSource - source for localized messages
+localeResolver - how the user's locale is determined annotationHandlerMapping -
+allows the use of the @Controller annotation That's just a few of the many beans
+that Grails creates. In fact, you may be surprised to learn that all your
+application controllers, tag libraries, domain classes and services are also
+beans. In what other areas does Grails depend on Spring? Well, there's data
+binding for a start: Spring does all the physical binding of string data to
+object properties. It's not just the web layer either: GORM uses Spring's
+Hibernate templates for saving and querying domain classes. Perhaps most
+importantly, Grails uses Spring's transaction management. And as I've already
+alluded to,
+----------------------------------------------------------------------------------------------------
+Index: 11370 <<"chunk_id": 3, "docno": 1708>>
+
+by Craig Walls Spring: Prototype Scope, Lookup Methods and JavaConfig by Solomon
+Duskis IoC and Modularization - Spring, OSGi, Guice and more by Solomon Duskis
+Spring Configuration Annotations by Solomon Duskis As I've also said in the
+sessions in Loenen and in Cairo, Spring JavaConfig is not yet done. There are
+still a few details to be fleshed to create a smooth DI language that supports
+all the features that the XML-based DI language also has. This is where (if you
+like) you can help us a lot. Try Spring JavaConfig and tell us what you think!
+Conclusion One other quite important point I tried to get across in my
+presentation yesterday and that's the idea of the Spring container as a
+dependency injection platform, with various DI flavors implemented on top of it.
+The first flavor, has existed for 5 years already (the XML-based approach). The
+second has also been around for quite a while already and now provides the basis
+for the EJB3 SessionBean functionality inside BEA WebLogic version 10 (and is
+also available in the public domain under the name Pitchfork). The last flavor
+that we released is the @Autowired flavor and next up is JavaConfig. Having the
+platform is what counts for us. It'll help us get you an nice experience with
+full backwards-compatibility, whether you're using JavaConfig, @Autowired or our
+XML-based approach (or, all at the same time for that matter). A word on the
+source code and slides In the slides you will see I've included an image of a
+----------------------------------------------------------------------------------------------------
+Index: 20631 <<"chunk_id": 6, "docno": 3000>>
+
+and refresh modules independently, you can reduce the risk of making changes to
+production applications by scoping the change to a smaller unit (the bundle).
+The rest of the application (the other bundles) can remain unchanged. Yes you
+may well have a long change control process meaning that in real terms making
+the change is no quicker, but at least you can now make the change with greater
+certainty that you have not introduced any other unintended differences. Share
+dependencies OSGi's support for versioning makes it practical to install trusted
+versions of enterprise libraries once in the platform and then share them
+between applications. Use just the server facilities you need Since the server
+platform itself is built on top of OSGi in a modular manner you can configure
+the platform to have only the services you need to support the application or
+applications currently running on it. Non-OSGi related benefits What if you
+don't care two hoots about OSGi??? Does the SpringSource Application Platform
+bring any benefits then? Yes it does. I like to think of the SpringSource
+Application Platform this way: Firstly it's a server. A lightweight configurable
+server with a focus on serviceability (see Rob's original post on the platform
+). It has useful features such as per-application separated tracing and log
+files, deadlock detection, failure detection and dump-processing, smart thread
+pools and work stealing etc.. It's a great place to deploy web applications for
+these reasons. Secondly, it's a server that understands Spring-based
+applications. Spring is integrated out of the box, and
+----------------------------------------------------------------------------------------------------
+Index: 18637 <<"chunk_id": 7, "docno": 2605>>
+
+that you need to interact with the web mocks — for example, to set up your test
+fixture or to perform assertions after invoking your web component. The
+following example demonstrates which mocks can be autowired into your test
+instance. Note that the WebApplicationContext and MockServletContext are both
+cached across the test suite; whereas, the other mocks are managed per test
+method by the ServletTestExecutionListener . Injecting Mocks
+@WebAppConfiguration @ContextConfiguration public class WacTests { @Autowired
+WebApplicationContext wac; // cached @Autowired MockServletContext
+servletContext; // cached @Autowired MockHttpSession session; @Autowired
+MockHttpServletRequest request; @Autowired MockHttpServletResponse response;
+@Autowired ServletWebRequest webRequest; //... } Request and Session Scoped
+Beans Request and session scoped beans have been supported by Spring for several
+years now, but it's always been a bit non-trivial to test them. As of Spring 3.2
+it's now a breeze to test your request-scoped and session-scoped beans by
+following these steps: Ensure that a WebApplicationContext is loaded for your
+test by annotating your test class with @WebAppConfiguration . Inject the mock
+request or session into your test instance and prepare your test fixture as
+appropriate. Invoke your web component that you retrieved from the configured
+WebApplicationContext (i.e., via dependency injection). Perform assertions
+against the mocks. The following code snippet displays the XML configuration for
+a login use case. Note that the userService bean has a dependency on a
+request-scoped loginAction bean. Also, the LoginAction is instantiated using
+SpEL expressions that retrieve the username and password from the current HTTP
+request. In our test, we will want to configure these request parameters
+----------------------------------------------------------------------------------------------------
+Index: 18639 <<"chunk_id": 9, "docno": 2605>>
+
+will need to configure a theme in the mock session managed by the TestContext
+framework. Session-scoped Bean Config <beans> <bean id="userService"
+class="com.example.SimpleUserService" c:userPreferences-ref="userPreferences" />
+<bean id="userPreferences" class="com.example.UserPreferences"
+c:theme="#{session.getAttribute('theme')}" scope="session"> <aop:scoped-proxy />
+</bean> </beans> In SessionScopedBeanTests we inject the UserService and the
+MockHttpSession into our test instance. Within our sessionScope() test method we
+set up our test fixture by setting the expected "theme" attribute in the
+provided MockHttpSession . When the processUserPreferences() method is invoked
+on our userService we are assured that the user service has access to the
+session-scoped userPreferences for the current MockHttpSession , and we can
+perform assertions against the results based on the configured theme.
+Session-scoped Bean Test @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration @WebAppConfiguration public class SessionScopedBeanTests {
+@Autowired UserService userService; @Autowired MockHttpSession session; @Test
+public void sessionScope() throws Exception { session.setAttribute("theme",
+"blue"); Results results = userService.processUserPreferences(); // assert
+results } } Application Context Initializers Spring 3.1 introduced the
+ApplicationContextInitializer interface that allows for programmatic
+initialization of a ConfigurableApplicationContext — for example, to register
+property sources or activate bean definition profiles against the Spring
+Environment abstraction. Initializers can be configured in web.xml by specifying
+contextInitializerClasses via a context-param for the ContextLoaderListener and
+via an init-param for the DispatcherServlet . To use context initializers in
+integration tests, simply declare the initializer classes in
+@ContextConfiguration via the new initializers attribute introduced in Spring
+3.2. Inheritance of initializers across a test class hierarchy can be controlled
+via the inheritInitializers attribute which is true by default. Since an
+ApplicationContextInitializer provides a fully programmatic approach to
+initializing an application context, an
+----------------------------------------------------------------------------------------------------
+Index: 10510 <<"chunk_id": 3, "docno": 1497>>
+
+BeanFactory after it has set all bean properties and satisfied BeanFactoryAware
+, ApplicationContextAware etc. This method allows the bean instance to perform
+validation of its overall configuration and final initialization when all bean
+properties have been set. Specified by: afterPropertiesSet in interface
+InitializingBean getObject public @Nullable Map < String , Object > getObject ()
+Description copied from interface: FactoryBean Return an instance (possibly
+shared or independent) of the object managed by this factory. As with a
+BeanFactory , this allows support for both the Singleton and Prototype design
+patterns. If this FactoryBean is not fully initialized yet at the time of the
+call (for example because it is involved in a circular reference), throw a
+corresponding FactoryBeanNotInitializedException . FactoryBeans are allowed to
+return null objects. The bean factory will consider this as a normal value to be
+used and will not throw a FactoryBeanNotInitializedException in this case.
+However, FactoryBean implementations are encouraged to throw
+FactoryBeanNotInitializedException themselves, as appropriate. Specified by:
+getObject in interface FactoryBean < Map < String , Object >> Returns: an
+instance of the bean (can be null ) See Also: FactoryBeanNotInitializedException
+getObjectType public Class <?> getObjectType () Description copied from
+interface: FactoryBean Return the type of object that this FactoryBean creates,
+or null if not known in advance. This allows one to check for specific types of
+beans without instantiating objects, for example on autowiring. In the case of
+implementations that create a singleton object, this method should try to avoid
+singleton creation as far as possible; it should rather estimate the type
+----------------------------------------------------------------------------------------------------
+Index: 29182 <<"chunk_id": 4, "docno": 4872>>
+
+Mojarra version 2.0.3 (recommended version). If you use the Apache MyFaces JSF 2
+implementation for the time being you will need to continue to use the
+"javax.faces.PARTIAL_STATE_SAVING" parameter to disable partial state saving.
+Unfortunately in MyFaces it wasn't as simple to customize how state is where
+state is read from and written to so it will take a little more time. Single
+FacesContext Per Request Part of the changes for partial state saving required
+making sure a single FacesContext instance is used for the duration of a single
+flow request. This is probably a welcome change for JSF users as evidenced by a
+few of your comments in JIRA. To avoid getting a NullPointerException on
+FacesContext you will need to add this FlowExecutionListener:
+<webflow:flow-executor id="flowExecutor"> <webflow:flow-execution-listeners>
+<webflow:listener ref="facesContextListener" />
+</webflow:flow-execution-listeners> </webflow:flow-executor> <bean
+id="facesContextListener"
+class="org.springframework.faces.webflow.FlowFacesContextLifecycleListener"/>
+This is needed regardless of the JSF version used. More JSF 2 Features The only
+features that aren't supported are the ones where Web Flow provides core value
+including navigation and scopes. JSF 2 uses conventions to simplify navigation
+rules, adds conditional navigation, and provides view, flash, and custom scopes.
+You will find that Web Flow continues to provide significant value in both of
+these areas. View parameters is another feature that isn't supported. Web Flow
+does provide a way to access request parameters and to bind them to fields of
+scoped beans. If you however have any good use cases in mind please do provide
+us with feedback. Any other features not already mentioned (composite
+components, JSR-303 validation, system events, etc)
+----------------------------------------------------------------------------------------------------
+Index: 636 <<"chunk_id": 5, "docno": 97>>
+
+modules, not components. Non-component modules, like inspirations.js , are also
+represented in this tree. The render tree only encapsulates components.
+Copyright.js appears under App.js but in the render tree, Copyright , the
+component, appears as a child of InspirationGenerator . This is because
+InspirationGenerator accepts JSX as children props , so it renders Copyright as
+a child component but does not import the module. Dependency trees are useful to
+determine what modules are necessary to run your React app. When building a
+React app for production, there is typically a build step that will bundle all
+the necessary JavaScript to ship to the client. The tool responsible for this is
+called a bundler , and bundlers will use the dependency tree to determine what
+modules should be included. As your app grows, often the bundle size does too.
+Large bundle sizes are expensive for a client to download and run. Large bundle
+sizes can delay the time for your UI to get drawn. Getting a sense of your app’s
+dependency tree may help with debugging these issues. Recap Trees are a common
+way to represent the relationship between entities. They are often used to model
+UI. Render trees represent the nested relationship between React components
+across a single render. With conditional rendering, the render tree may change
+across different renders. With different prop values, components may render
+different children components. Render trees help identify what the top-level and
+leaf components are. Top-level components affect the rendering performance of
+all components beneath them and leaf components are
+----------------------------------------------------------------------------------------------------
+Index: 10890 <<"chunk_id": 2, "docno": 1617>>
+
+definition (in case of multiple definitions with the same bean class).
+Qualifiers narrow the set of candidates after the initial type match; order
+values determine the order of resolved elements in case of collection injection
+points (with several target beans matching by type and qualifier). NOTE: @Order
+values may influence priorities at injection points, but please be aware that
+they do not influence singleton startup order which is an orthogonal concern
+determined by dependency relationships and @DependsOn declarations as mentioned
+above. Also, Priority is not available at this level since it cannot be declared
+on methods; its semantics can be modeled through @Order values in combination
+with @Primary or @Fallback on a single bean per type. @Bean Methods in
+@Configuration Classes Typically, @Bean methods are declared within
+@Configuration classes. In this case, bean methods may reference other @Bean
+methods in the same class by calling them directly . This ensures that
+references between beans are strongly typed and navigable. Such so-called
+'inter-bean references' are guaranteed to respect scoping and AOP semantics,
+just like getBean() lookups would. These are the semantics known from the
+original 'Spring JavaConfig' project which require CGLIB subclassing of each
+such configuration class at runtime. As a consequence, @Configuration classes
+and their factory methods must not be marked as final or private in this mode.
+For example: @Configuration public class AppConfig { @Bean public FooService
+fooService() { return new FooService(fooRepository()); } @Bean public
+FooRepository fooRepository() { return new JdbcFooRepository(dataSource()); } //
+... } @Bean Lite Mode @Bean methods may also be declared within
+----------------------------------------------------------------------------------------------------
+Index: 21546 <<"chunk_id": 4, "docno": 3198>>
+
+File Source stream applications. This processor wraps the HTTP request function
+in a Spring Cloud Stream processor application that simply invokes the function,
+binding the input and output to a message broker destination (a Kafka topic, or
+a Rabbit MQ exchange, for example). Our application, expressed in stream
+definition DSL, looks like: file-source | http-request-processor |
+image-thumbnail-sink where the | represents I/O using a message broker. Here, we
+are using a user-developed sink that uses the file-consumer function to write
+each thumbnail to a file. The sink uses Spring Cloud Function’s declarative
+composition to compose the thumbnail-processor , from the previous example, with
+a header enricher, and finally the standard fileConsumer . So our composed
+function is defined by:
+spring.cloud.function.definition=thumbnailProcessor|filenameEnricher|fileConsumer
+in application.properties . Our composite function definition is conceptually
+and syntactically similar to the above stream definition. But in this case the |
+represents in-process communication. We will explore the ins and outs of the
+File Source in a future post. For now, we will use it to poll a source directory
+and produce messages whenever a new file is added to the directory. In this
+case, we want to process a text file with an image URL per line. We will
+configure the source to produce a message per line, containing the URL in the
+payload. We already know what the HTTP request processor does. The sink
+generates a thumbnail and writes it to a file. The fully configured stream
+definition is: file-source --file.consumer.mode=lines --file.consumer.mode=lines
+--file.supplier.directory= | http-request-processor
+--http.request.url-expression=payload
+--http.request.expected-response-type=byte[]
+--http.request.maximum-buffer-size=2097152| image-thumbnail-sink
+--file.consumer.directory= If we
+----------------------------------------------------------------------------------------------------
+Index: 12751 <<"chunk_id": 2, "docno": 1980>>
 
 service where there is an appreciable delay on the response. The test web
 application simulated this in the Service class. The Servlet used with the
@@ -368,153 +1029,279 @@ performance difference between Tomcat's standard thread pool and a virtual
 thread based executor is contention adding and removing tasks from the thread
 pool's
 ----------------------------------------------------------------------------------------------------
-Index: 3090 <<"chunk_id": 1, "docno": 444>>
+Index: 21715 <<"chunk_id": 13, "docno": 3228>>
 
-they read, like a prop or a state variable, is different from what it was during
-the last render. Sometimes, you also want a mix of both behaviors: an Effect
-that re-runs in response to some values but not others. This page will teach you
-how to do that. You will learn How to choose between an event handler and an
-Effect Why Effects are reactive, and event handlers are not What to do when you
-want a part of your Effect’s code to not be reactive What Effect Events are, and
-how to extract them from your Effects How to read the latest props and state
-from Effects using Effect Events Choosing between event handlers and Effects
-First, let’s recap the difference between event handlers and Effects. Imagine
-you’re implementing a chat room component. Your requirements look like this:
-Your component should automatically connect to the selected chat room. When you
-click the “Send” button, it should send a message to the chat. Let’s say you’ve
-already implemented the code for them, but you’re not sure where to put it.
-Should you use event handlers or Effects? Every time you need to answer this
-question, consider why the code needs to run. Event handlers run in response to
-specific interactions From the user’s perspective, sending a message should
-happen because the particular “Send” button was clicked. The user will get
-rather upset if you send their message at any other time or for any other
-reason. This is why sending a message should be an
+data-ng-click which maps a click on a button to a method name call. There's also
+data-ng-repeat which loops through a JSON array and generates the necessary html
+code to render the same view for each item in the array. Yet with all the logic
+in place, we are still able to validate and view the html template from the
+browser. AngularJS calls all the non-html tags and attributes "directives" and
+the purpose of these directives is to enhance the capabilities of HTML.
+AngularJS also supports both HTML 4 and 5 so if you have templates that are
+still relying on HTML 4 DOCTYPEs, it should still work fine (although the
+validators for HTML 4 will not recognize data-ng-x attributes). One big
+difference between using AngularJS and JSP is the rendering time . If you use
+JSPs, the server renders html content. In contrast, if you use AngularJS, the
+rendering is happening in browser. Therefore, both the templates and JSON
+objects are to be sent to client side. It is worth to notice that AngularJS may
+briefly display the template before running DOM manipulation to generate
+content. For example, if AngularJS has not completed loaded, the date of birth
+in the page will be shown with an empty value before showing the real value.
+Scopes in AngularJS One important concept to grasp in AngularJS is that of
+scopes. In the past, whenever I had to write Javascript for my web application,
+I had to manage the variable names and construct special name-spaced objects in
+order to store
 ----------------------------------------------------------------------------------------------------
-Index: 52854 <<"chunk_id": 9, "docno": 8466>>
+Index: 18206 <<"chunk_id": 6, "docno": 2498>>
 
-errorClass="error"/> </td> </tr> <tr> <td>Item count:</td> <td> <h:inputText
-id="itemCount" value="#{sale.itemCount}" required="true"> <f:validateLongRange
-minimum="1"/> </h:inputText> </td> <td> <h:message for="itemCount"
-errorClass="error"/> </td> </tr> <tr> <td colspan="2" class="buttonBar">
-<h:commandButton type="submit" value="Next" action="submit"/> </td> <td></td>
-</tr> </h:form> </table> </div> </f:view> That's it! You can try out the
-application and see for yourself how Web Flow cares for navigation and
-application controller logic, while JSF UI components care for content rendering
-and data binding and validation behavior. It really is a great fit. Future We
-didn't just get here by accident, we got here by working with clients building
-applications with Spring Web Flow and JSF everyday on our forums and support
-centers. Special thanks go out to Jeremy Grelle, James Clinton, Ed Burns, Craig
-McClanahan, and Colin Sampaleanu for all their contributions in getting the
-Spring Web Flow JSF integration to where it is today - rock solid. Work on
-Spring Web Flow 1.1 has begun, and greater levels of integration is a major
-theme in an exciting roadmap. Notable on the JSF front, we will be adding
-support for the Unified Expression Language (EL) within flow definitions, as
-well as support for leveraging Spring 2.0 as a comprehensive provider of JSF
-managed-beans beans across all scopes - including the conversational scopes
-provided by Spring Web Flow. This work is in addition to new core features that
-will benefit Web Flow users in all environments, such as support for
-conversation scoped persistence contexts. Participate in the 1.1 Roadmap
-discussion on the forums for more information and to get involved! I'd
+we’re showing an integration between the two technologies. This enables Speed
+Tracer users to see Insight traces seamlessly inserted into their Speed Tracer
+screens, and drill down to specific server-side operations such as JDBC queries.
+The combination of Speed Tracer and Insight is unprecedented, and powerful. For
+the first time, it is possible to see browser and backend servers coordinating
+to show exactly what work a request did from a holistic perspective . What It
+All Means What a difference a few weeks makes! Until the announcement of VMforce
+and today’s announcement, Java developers lacked a PaaS destination to which
+they could easily deploy their applications. This was an important gap that
+threatened to become a danger to the long-term future of Java. I’m delighted
+that VMware/SpringSource is leading the charge to fill this gap. Today’s
+announcement is great news for Spring developers. Spring skills have never been
+more valuable; the reach of the Spring ecosystem continues to grow; Spring’s
+core values continue to guide its evolution; and Spring is placed to grow the
+Java community and lead its charge into cloud computing. Whether you want to
+deploy Java applications in an existing data center, private Java cloud or
+public cloud, Spring is the best programming model. I’m excited, and hope you
+are, too. Get the Spring newsletter Stay connected with the Spring newsletter
+Subscribe Get ahead VMware offers training and certification to turbo-charge
+your progress. Learn more Get support Tanzu Spring offers support and binaries
+for OpenJDK™, Spring, and Apache Tomcat® in one simple subscription.
 ----------------------------------------------------------------------------------------------------
-Index: 5520 <<"chunk_id": 4, "docno": 764>>
+Index: 11533 <<"chunk_id": 3, "docno": 1756>>
 
-name parameter is absent in the request, the defaultValue of World is used. The
-implementation of the method body creates and returns a new Greeting object with
-id and content attributes based on the next value from the counter and formats
-the given name by using the greeting template . A key difference between a
-traditional MVC controller and the RESTful web service controller shown earlier
-is the way that the HTTP response body is created. Rather than relying on a view
-technology to perform server-side rendering of the greeting data to HTML, this
-RESTful web service controller populates and returns a Greeting object. The
-object data will be written directly to the HTTP response as JSON. This code
-uses Spring @RestController annotation, which marks the class as a controller
-where every method returns a domain object instead of a view. It is shorthand
-for including both @Controller and @ResponseBody . The Greeting object must be
-converted to JSON. Thanks to Spring’s HTTP message converter support, you need
-not do this conversion manually. Because Jackson is on the classpath, Spring’s
-JacksonJsonHttpMessageConverter is automatically chosen to convert the Greeting
-instance to JSON. Run the Service The Spring Initializr creates an application
-class for you. In this case, you do not need to further modify the class. The
-following listing shows the RestServiceApplication application class (in
-src/main/java/com/example/restservice/RestServiceApplication.java for Java or
-src/main/kotlin/com/example/restservice/RestServiceApplication.kt for Kotlin):
-Java package com.example.restservice; import
-org.springframework.boot.SpringApplication; import
-org.springframework.boot.autoconfigure.SpringBootApplication;
-@SpringBootApplication public class RestServiceApplication { public static void
-main(String[] args) { SpringApplication.run(RestServiceApplication.class, args);
-} } Kotlin package com.example.restservice
+This method allows the bean instance to perform validation of its overall
+configuration and final initialization when all bean properties have been set.
+Specified by: afterPropertiesSet in interface InitializingBean getObject public
+@Nullable Properties getObject () Description copied from interface: FactoryBean
+Return an instance (possibly shared or independent) of the object managed by
+this factory. As with a BeanFactory , this allows support for both the Singleton
+and Prototype design patterns. If this FactoryBean is not fully initialized yet
+at the time of the call (for example because it is involved in a circular
+reference), throw a corresponding FactoryBeanNotInitializedException .
+FactoryBeans are allowed to return null objects. The bean factory will consider
+this as a normal value to be used and will not throw a
+FactoryBeanNotInitializedException in this case. However, FactoryBean
+implementations are encouraged to throw FactoryBeanNotInitializedException
+themselves, as appropriate. Specified by: getObject in interface FactoryBean <
+Properties > Returns: an instance of the bean (can be null ) See Also:
+FactoryBeanNotInitializedException getObjectType public Class <?> getObjectType
+() Description copied from interface: FactoryBean Return the type of object that
+this FactoryBean creates, or null if not known in advance. This allows one to
+check for specific types of beans without instantiating objects, for example on
+autowiring. In the case of implementations that create a singleton object, this
+method should try to avoid singleton creation as far as possible; it should
+rather estimate the type in advance. For prototypes, returning a meaningful type
+here is advisable too. This method can be called before this FactoryBean has
+been fully
 ----------------------------------------------------------------------------------------------------
-Index: 55296 <<"chunk_id": 4, "docno": 8965>>
+Index: 25805 <<"chunk_id": 2, "docno": 4111>>
 
-time in seconds on the y-axis): Testing Functional Applications Spring Cloud
-Function 2.0 also has some utilities for integration testing that will be very
-familiar to Spring Boot users. For example, here is an integration test for the
-HTTP server wrapping the app above: @RunWith(SpringRunner.class)
-@FunctionalSpringBootTest @AutoConfigureWebTestClient public class
-FunctionalTests { @Autowired private WebTestClient client; @Test public void
-words() throws Exception { client.post().uri("/").body(Mono.just("foo"),
-String.class) .exchange().expectStatus().isOk()
-.expectBody(String.class).isEqualTo("FOO"); } } This test is almost identical to
-the one you would write for the @Bean version of the same app - the only
-difference is the @FunctionalSpringBootTest annotation, instead of the regular
-@SpringBootTest . All the other pieces, like the @Autowired WebTestClient , are
-standard Spring Boot features. Functional Bean Definitions in Mainstream Spring
-Boot Applications Spring Boot works just fine with functional bean registrations
-- Spring Cloud Function builds and runs on Spring Boot - but some of the most
-useful features in Spring Boot, the autoconfigurations, are all coded in the
-non-functional style. Most Spring Cloud Function apps have a relatively small
-scope compared to the whole of Spring Boot, so we are able to adapt it to these
-functional bean definitions easily. If you step outside that limited scope, you
-can extend your Spring Cloud Function app by switching back to @Bean style
-configuration, or by using a hybrid approach. It will take a little longer to
-extend the same kind of features to the rest of the Spring Boot ecosystem, but
-it is something we are working on quite actively. Please take Spring Cloud
-Function
+function return function draw(data) { return graph.piechart(data); } } ); The
+AMD format is often used in browser applications, since: it allows variables to
+be scoped inside the factory function (vs. having everything in the window
+global scope) dependencies may not be available synchronously, e.g., they need
+to be fetched via asynchronous network request modules are defined in a
+callback, then run once all dependencies are loaded CommonJS is another
+authoring format , often used in Node.js applications on the server side, but
+also in browser applications. /** * Our module's dependencies and API **/ // we
+fetch the graph module as a dependency var graph = require('graphmodule'); // we
+decorate the `exports` variable to export our function exports.draw = drawFunc;
+/** * API implementation **/ function drawFunc(data) { return
+graph.piechart(data); } You probably spotted some differences with AMD: this
+authoring format can be used in the browser and on the server! thus you can test
+your modules in headless browsers and Node.js unit tests! module definitions
+aren't wrapped in a define What's next? The next version of JavaScript
+(technically called ECMAScript 6) will standardize JavaScript modularity ,
+albeit using a slightly different syntax than either the AMD or commonJS formats
+we've seen above. More, EcmaScript 6 will solve many problems in that space but
+will also make available syntactic sugar to define OO-like classes. Wherever
+you're putting JavaScript to use, be it client or server, consider taking the
+modular approach — for all the same reasons we do in Java. There is a small
+learning
 ----------------------------------------------------------------------------------------------------
-Index: 41259 <<"chunk_id": 5, "docno": 6308>>
+Index: 10891 <<"chunk_id": 3, "docno": 1617>>
 
-or methods that are specific to Dog , even though you're working with a proxy.
-It has to be said, GORM does an amazing job of shielding developers from
-proxies. They only rarely leak through to your application code, particularly
-with more recent versions of Grails. Still, some people will run into issues
-with them so it's useful to be aware what the symptoms are and why they occur. I
-showed in the last example how the behaviour of the session combined with lazy
-loading can produce some interesting results. That combination also lies behind
-a more common error: the org.hibernate.LazyInitializationException . Lazy
-loading and the session As I've already mentioned, when you have a lazily loaded
-relationship Hibernate has to execute an extra query if you then want to
-navigate that relationship at a later date. In the normal course of events this
-isn't a problem (unless you're worried about performance) since Hibernate does
-it transparently. But what happens if you try to access the relationship in a
-different session? Let's say you have loaded the Author instance with ID 1 in a
-controller action and stored it in the HTTP session. At this point, no code has
-touched the books collection. On the next request, the user goes to a URL that
-corresponds to this controller action: class MyController { def index = { if
-(session.author) { render "Author ${session.author.name} has written the books:
-${session.author.books*.title}" else { render "No author in session" } } ... }
-The intention here is that if our HTTP
+new FooService(fooRepository()); } @Bean public FooRepository fooRepository() {
+return new JdbcFooRepository(dataSource()); } // ... } @Bean Lite Mode @Bean
+methods may also be declared within classes that are not annotated with
+@Configuration . If a bean method is declared on a bean that is not annotated
+with @Configuration it is processed in a so-called 'lite' mode. Bean methods in
+lite mode will be treated as plain factory methods by the container (similar to
+factory-method declarations in XML), with scoping and lifecycle callbacks
+properly applied. The containing class remains unmodified in this case, and
+there are no unusual constraints for the containing class or the factory
+methods. In contrast to the semantics for bean methods in @Configuration
+classes, 'inter-bean references' are not supported in lite mode. Instead, when
+one @Bean -method invokes another @Bean -method in lite mode, the invocation is
+a standard Java method invocation; Spring does not intercept the invocation via
+a CGLIB proxy. This is analogous to inter- @Transactional method calls where in
+proxy mode, Spring does not intercept the invocation — Spring does so only in
+AspectJ mode. For example: @Component public class Calculator { public int
+sum(int a, int b) { return a+b; } @Bean public MyBean myBean() { return new
+MyBean(); } } Bootstrapping See the @Configuration javadoc for further details
+including how to bootstrap the container using
+AnnotationConfigApplicationContext and friends. BeanFactoryPostProcessor
+-returning @Bean methods Special consideration must be taken for @Bean methods
+that return Spring BeanFactoryPostProcessor ( BFPP ) types. Because BFPP objects
+must be instantiated very early in the
 ----------------------------------------------------------------------------------------------------
-Index: 41342 <<"chunk_id": 2, "docno": 6316>>
+Index: 26956 <<"chunk_id": 2, "docno": 4337>>
 
-either the publisher or consumer creates the exchange with a given name and then
-makes that name public. How that publication happens depends on the
-circumstances, but one might put it in public API documentation or send it to
-known clients. How are the messages routed from the exchange to the queue? Good
-question. First, the queue has to be attached to the given exchange. Typically,
-a consumer creates a queue and attaches it to an exchange at the same time.
-Second, messages received by the exchange have to be matched to the queue - a
-process called "binding". To understand binding, it's useful to understand the
-structure of an AMQP message: The headers and properties of the message are
-basically key/value pairs. The difference between them is that headers are
-defined by the AMQP specification whereas properties can contain arbitrary,
-application-specific information. The actual message content is just a sequence
-of bytes, so if you want to pass text around in your messages, then you should
-standardise on an encoding. UTF-8 is a good bet. You can specify a content type
-and encoding in the message headers if you want, but that's apparently not
-particularly common. What does this have to do with binding? One of the standard
-headers is called routing-key and it is this that the broker uses to match
-messages to queues. Each queue specifies a "binding key" and if that key matches
-the value of the routing-key header, the queue receives the message. Things are
-slightly complicated by the concept of
+Spring Native 0.11 offers an average of between 20% and 26% footprint reduction
+compared to Spring Native 0.10! The following image shows data points for a few
+sample applications: Faster Startup Startup times are 16% to 35% faster in
+Spring Native 0.11 compared to 0.10 because some processing has moved from
+runtime to build time. There is still room for improvement since we could not
+fine-tune Spring Boot and Spring Framework’s internal architecture in this minor
+version update. Improved Compatibility The AOT engine is also much more accurate
+because it doesn’t try to analyze Spring annotations or the various types to
+replicate what Spring does at runtime. Instead, it forks a new process where it
+creates and introspects an application context at build-time (without starting
+it). That allows use of a subset of what Spring Framework does at runtime and
+works at the bean definition level, which is much more accurate. Runtime
+Flexibility Performing those optimizations at build time means that there is
+less runtime flexibility than with the regular Spring Boot auto-configuration
+model. You can still change the HTTP port or the log level of your application
+when running an already compiled Spring Boot application, but you cannot add new
+beans at runtime by using a profile, for example. That’s why, on the JVM, the
+AOT mode is optional. That’s an optimization that you can use if it fits with
+your needs. On native (which is, by design, much less dynamic at runtime), it is
+mandatory. Also, keep in mind that conditions are evaluated at
+----------------------------------------------------------------------------------------------------
+Index: 22151 <<"chunk_id": 2, "docno": 3315>>
+
+design is quite capable of being extended to accommodate multiple user regions
+in future releases; there is a small and fixed overhead to managing a region—the
+implementation is scalable. Basic initialisation of the user region is
+configurable and entirely independent of the kernel. The implementation of
+regions is completely general—it does not depend upon Spring or Spring DM in any
+way. If required, a user region can be configured with no Spring support at all,
+if that’s what you need. Send in the clones Cloning was described in April by
+Rob in the dm Server Roadmap . Cloning is a way of separating the dependencies
+of two applications that would otherwise either share artefacts which should not
+be shared, or try to share artefacts which cannot be shared. For example,
+sharing bundles with static state may not be desirable, and being able to have a
+copy (clone) of such a bundle means that different applications can use the
+different clones (the application scoping mechanism allows us to have multiple
+copies installed in the framework under distinct names). In another case, when a
+lower-level bundle is pinned by a dependency through a common intermediary
+(which is often part of the Spring Framework), cloning the intermediary allows
+the clone to depend upon a different lover-level bundle, freeing the clone to
+satisfy a transitive constraint the original intermediary could not. In the
+milestone releases of dm Server 2.0 (up to M4) cloning support (both manual and
+automatic) has been available. We have received a lot of feedback and experience
+----------------------------------------------------------------------------------------------------
+Index: 29181 <<"chunk_id": 3, "docno": 4872>>
+
+class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" /> <bean
+id="jsfResourceHandler"
+class="org.springframework.faces.webflow.FacesJsfResourceRequestHandler"/> The
+booking-faces sample in the 2.2.0.M1 release contains the necessary
+configuration. Partial State Saving Partial state saving is arguably one of the
+most important changes in JSF 2 (Facelets only). The way it works is, rather
+than storing the entire component tree state for every view the partial state
+saving algorithm always restores the tree to its initial state and then applies
+and keeps track of what's changed only. This rational is that component tree
+changes are likely to be smaller than the full component tree state thus
+resulting in less memory usage. In Web Flow, the JSF component tree state has
+always been stored in a view-scoped Web Flow variable rather than directly in
+the HTTP session. Unfortunately to achieve that in JSF 1.2, Web Flow had to take
+over the entire state saving algorithm. This is why partial state didn't work
+out of the box in Web Flow 2.1 and had to be disabled through the
+"javax.faces.PARTIAL_STATE_SAVING" context parameter in web.xml. General
+improvements in JSF 2 state saving made it possible to delegate to the standard
+JSF StateManager implementation and plug in a custom ResponseStateManager to
+override only the parts that do the actual reading and writing of component
+state. That is what Web Flow 2.2 does to provide support for partial state
+saving. The change has been tested with Mojarra and in particular Mojarra
+version 2.0.3 (recommended version). If you use the Apache MyFaces JSF 2
+implementation for the time being you will need to continue to use
+----------------------------------------------------------------------------------------------------
+Index: 24140 <<"chunk_id": 5, "docno": 3687>>
+
+secret bean creating public bean creating secret bean creating public bean after
+which should fail with something like:
+org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named
+'hiddenBean' is defined ... The first line in the console shows that secretBean
+and hiddenBean are not defined in the context that we hold. However, the
+following lines, show that the hidden bean is created once (since it is a
+singleton) while secretBean twice, for each publicBean, as it is a prototype. So
+where are the hidden beans then? Inside a child container. The parent container
+( context in our case) is completely unaware of it and thus, of any beans
+declared inside it. Nevertheless, beans declared inside the child context can
+access any beans declared inside the parent but not vice-versa. Public beans
+(such as publicBean) on the other hand, are 'pushed' by Java Configuration
+inside the parent container, but since they are declared in the same
+configuration as the hidden bean, they can reference the 'secret' beans during
+instantiation. Look Ma', no XML! For those who want to ditch XML completely,
+Spring Java Configuration offers the AnnotationApplicationContext which uses
+classes rather then XML files, as you could see from the test case above. While
+my example works,it is not ideal since, without any caching, the application
+context will be created and destroyed for each test. An alternative is to reuse
+the existing AbstractDependencyInjectionSpringContextTests and override the
+context creation appropriately: public class NoXMLTest extends
+AbstractDependencyInjectionSpringContextTests { @Override protected
+ConfigurableApplicationContext createApplicationContext(String[] locations) {
+GenericApplicationContext context = new GenericApplicationContext();
+customizeBeanFactory(context.getDefaultListableBeanFactory()); // use Java
+Configuration annotation-based
+----------------------------------------------------------------------------------------------------
+Index: 12808 <<"chunk_id": 1, "docno": 1990>>
+
+used privately might not require strict authentication, enterprise deployments
+need robust security and permission management for exposed endpoints. This
+challenge is addressed in the newest version of the MCP specification
+(2025-03-26) , which was released last week. It lays the foundation for securing
+communications between Clients and Servers, leveraging the widespread OAuth2
+framework . While we won't do a full review of OAuth2 in this blog post, a quick
+refresher might prove useful. In the draft of the spec, the MCP Server is both a
+Resource Server and an Authorization Server. As a Resource Server, it performs
+authorization checks on incoming requests by checking the Authorization header.
+The header MUST contain an OAuth2 access_token , which is a string representing
+the "permissions" of the Client. That token may be a JSON Web Token (JWT) or an
+opaque string that does not carry information by itself. If the token is missing
+or invalid (malformed, expired, wrong recipient, ...), the Resource Server
+rejects the request. Using those tokens, a typical request might look like: curl
+https://mcp.example.com/sse -H "Authorization: Bearer <a valid access token>" As
+an Authorization Server, the MCP Server must also be able to issue access_token
+s for clients in a secure fashion. Before issuing a token, the Server will
+verify the Client's credentials, and, in some cases, the identity of the user
+trying to access the Server. The Authorization Server will decide the
+characteristics of the token: its expiry, scope, intended audiences, etc. Using
+Spring Security and Spring Authorization Server, we can easily add both
+capabilities
+----------------------------------------------------------------------------------------------------
+Index: 27181 <<"chunk_id": 2, "docno": 4386>>
+
+In 2.0 you may: Weave custom behavior into multiple points of program execution
+using AspectJ's concise pointcut expression language. Receive asynchronous JMS
+messages with transactional and thread-safety guarantees. See it live Develop
+your own Bean Configuration Dialect for your application. Inject objects from
+custom scopes such as "request" and "session" scope in a thread-safe manner.
+Invoke Groovy, Beanshell, and JRuby scripts from your Java application. Schedule
+tasks to run asynchronously with sophisticated threading and pooling options.
+Version 2.0 builds on the foundation set by Spring 1.x. This new release
+delivers major new functionality while preserving backwards compatability as far
+as possible. With over one million downloads since its release in March 2004,
+Spring 1.x made developing sophisticated applications from plain Java Objects
+(POJOs) the de-facto standard. The 2.x series builds on this widely-recognized
+best-practice to deliver new simplification and power while preserving full
+compatiblity with the established Spring 1.x series. Users can expect their
+upgrade to be straightforward; in most cases, simply a matter of replacing the
+1.2.8 JAR files with those included in Spring 2.0. Enjoy, and thank you Spring
+2.0 represents the cumulative effort of many over the last year. From the lead
+developers Juergen, Rob, Rick, and Costin at Interface21 , to our supporting
+partners BEA and Oracle, to the many in the community contributing innovations,
+patches, documentation, bug reports, and tests--there is a lot of blood, sweat,
+and tears here. We truly hope you find this new version as much a joy to use as
+it was for us to build. Enjoy,
 ----------------------------------------------------------------------------------------------------

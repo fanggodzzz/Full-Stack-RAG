@@ -1,466 +1,1235 @@
-Index: 105 <<"chunk_id": 0, "docno": 22>>
+Index: 783 <<"chunk_id": 0, "docno": 115>>
 
-The Request Context — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » The Request Context The Request
-Context ¶ The request context keeps track of the request-level data during a
-request. Rather than passing the request object to each function that runs
-during a request, the request and session proxies are accessed instead. This is
-similar to The Application Context , which keeps track of the application-level
-data independent of a request. A corresponding application context is pushed
-when a request context is pushed. Purpose of the Context ¶ When the Flask
-application handles a request, it creates a Request object based on the
-environment it received from the WSGI server. Because a worker (thread, process,
-or coroutine depending on the server) handles only one request at a time, the
-request data can be considered global to that worker during that request. Flask
-uses the term context local for this. Flask automatically pushes a request
-context when handling a request. View functions, error handlers, and other
-functions that run during a request will have access to the request proxy, which
-points to the request object for the current request. Lifetime of the Context ¶
-When a Flask application begins handling a request, it pushes a request context,
-which also pushes an app context . When the request ends it pops the request
-context then the application context. The context is unique to each thread (or
-other worker type). request cannot be passed to another thread, the other thread
-has
+Render and Commit – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Render and Commit Before your components are displayed on screen, they must be
+rendered by React. Understanding the steps in this process will help you think
+about how your code executes and explain its behavior. You will learn What
+rendering means in React When and why React renders a
 ----------------------------------------------------------------------------------------------------
-Index: 3275 <<"chunk_id": 10, "docno": 457>>
+Index: 1394 <<"chunk_id": 0, "docno": 174>>
 
-be wondering how that object can be global and how Flask manages to still be
-threadsafe. The answer is context locals: Context Locals ¶ Insider Information
-If you want to understand how that works and how you can implement tests with
-context locals, read this section, otherwise just skip it. Certain objects in
-Flask are global objects, but not of the usual kind. These objects are actually
-proxies to objects that are local to a specific context. What a mouthful. But
-that is actually quite easy to understand. Imagine the context being the
-handling thread. A request comes in and the web server decides to spawn a new
-thread (or something else, the underlying object is capable of dealing with
-concurrency systems other than threads). When Flask starts its internal request
-handling it figures out that the current thread is the active context and binds
-the current application and the WSGI environments to that context (thread). It
-does that in an intelligent way so that one application can invoke another
-application without breaking. So what does this mean to you? Basically you can
-completely ignore that this is the case unless you are doing something like unit
-testing. You will notice that code which depends on a request object will
-suddenly break because there is no request object. The solution is creating a
-request object yourself and binding it to the context. The easiest solution for
-unit testing is to use the test_request_context() context manager. In
-combination with the with statement it will bind a test
+Preserving and Resetting State – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Preserving and Resetting State State is isolated between components. React keeps
+track of which state belongs to which component based on their place in the UI
+tree. You can control when to preserve state and when to reset it between
+re-renders. You will learn When React chooses to
 ----------------------------------------------------------------------------------------------------
-Index: 2900 <<"chunk_id": 0, "docno": 419>>
+Index: 1159 <<"chunk_id": 0, "docno": 156>>
 
-The Application Context — Flask Documentation (3.1.x) Navigation index modules |
-next | previous | Flask Documentation (3.1.x) » The Application Context The
-Application Context ¶ The application context keeps track of the
-application-level data during a request, CLI command, or other activity. Rather
-than passing the application around to each function, the current_app and g
-proxies are accessed instead. This is similar to The Request Context , which
-keeps track of request-level data during a request. A corresponding application
-context is pushed when a request context is pushed. Purpose of the Context ¶ The
-Flask application object has attributes, such as config , that are useful to
-access within views and CLI commands . However, importing the app instance
-within the modules in your project is prone to circular import issues. When
-using the app factory pattern or writing reusable blueprints or extensions there
-won’t be an app instance to import at all. Flask solves this issue with the
-application context . Rather than referring to an app directly, you use the
-current_app proxy, which points to the application handling the current
-activity. Flask automatically pushes an application context when handling a
-request. View functions, error handlers, and other functions that run during a
-request will have access to current_app . Flask will also automatically push an
-app context when running CLI commands registered with Flask.cli using
-@app.cli.command() . Lifetime of the Context ¶ The application context is
-created and destroyed as necessary. When a Flask application begins handling a
-request, it pushes an application
+Scaling Up with Reducer and Context – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Scaling Up with Reducer and Context Reducers let you consolidate a component’s
+state update logic. Context lets you pass information deep down to other
+components. You can combine reducers and context together to manage state of a
+complex screen. You will learn How to combine a
 ----------------------------------------------------------------------------------------------------
-Index: 107 <<"chunk_id": 2, "docno": 22>>
+Index: 1975 <<"chunk_id": 0, "docno": 252>>
 
-code not related to testing, it most likely indicates that you should move that
-code into a view function. For information on how to use the request context
-from the interactive Python shell, see Working with the Shell . How the Context
-Works ¶ The Flask.wsgi_app() method is called to handle each request. It manages
-the contexts during the request. Internally, the request and application
-contexts work like stacks. When contexts are pushed, the proxies that depend on
-them are available and point at information from the top item. When the request
-starts, a RequestContext is created and pushed, which creates and pushes an
-AppContext first if a context for that application is not already the top
-context. While these contexts are pushed, the current_app , g , request , and
-session proxies are available to the original thread handling the request. Other
-contexts may be pushed to change the proxies during a request. While this is not
-a common pattern, it can be used in advanced applications to, for example, do
-internal redirects or chain different applications together. After the request
-is dispatched and a response is generated and sent, the request context is
-popped, which then pops the application context. Immediately before they are
-popped, the teardown_request() and teardown_appcontext() functions are executed.
-These execute even if an unhandled exception occurred during dispatch. Callbacks
-and Errors ¶ Flask dispatches a request in multiple stages which can affect the
-request, response, and how errors are handled. The contexts are active during
-all of these stages. A
+Referencing Values with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Referencing Values with Refs When you want a component to “remember” some
+information, but you don’t want that information to trigger new renders , you
+can use a ref . You will learn How to add a ref to your component How to update
+a ref’s value How
 ----------------------------------------------------------------------------------------------------
-Index: 3548 <<"chunk_id": 32, "docno": 493>>
+Index: 1395 <<"chunk_id": 1, "docno": 174>>
 
-accessible from. If it was not configured during init, it is derived from
-static_folder . teardown_appcontext ( f ) ¶ Registers a function to be called
-when the application context is popped. The application context is typically
-popped after the request context for each request, at the end of CLI commands,
-or after a manually pushed context ends. with app . app_context (): ... When the
-with block exits (or ctx.pop() is called), the teardown functions are called
-just before the app context is made inactive. Since a request context typically
-also manages an application context it would also be called when you pop a
-request context. When a teardown function was called because of an unhandled
-exception it will be passed an error object. If an errorhandler() is registered,
-it will handle the exception and the teardown will not receive it. Teardown
-functions must avoid raising exceptions. If they execute code that might fail
-they must surround that code with a try / except block and log any errors. The
-return values of teardown functions are ignored. Changelog Added in version 0.9.
-Parameters : f ( T_teardown ) Return type : T_teardown teardown_request ( f ) ¶
-Register a function to be called when the request context is popped. Typically
-this happens at the end of each request, but contexts may be pushed manually as
-well during testing. with app . test_request_context (): ... When the with block
-exits (or ctx.pop() is called), the teardown functions are called just before
-the request context is made
+in the UI tree. You can control when to preserve state and when to reset it
+between re-renders. You will learn When React chooses to preserve or reset the
+state How to force React to reset component’s state How keys and types affect
+whether the state is preserved State is tied to a position in the render tree
+React builds render trees for the component structure in your UI. When you give
+a component state, you might think the state “lives” inside the component. But
+the state is actually held inside React. React associates each piece of state
+it’s holding with the correct component by where that component sits in the
+render tree. Here, there is only one <Counter /> JSX tag, but it’s rendered at
+two different positions: App.js App.js Reload Clear Fork import { useState }
+from 'react' ; export default function App ( ) { const counter = < Counter /> ;
+return ( < div > { counter } { counter } </ div > ) ; } function Counter ( ) {
+const [ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] =
+useState ( false ) ; let className = 'counter' ; if ( hover ) { className += '
+hover' ; } return ( < div className = { className } onPointerEnter = { ( ) =>
+setHover ( true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > {
+score } </
 ----------------------------------------------------------------------------------------------------
-Index: 2901 <<"chunk_id": 1, "docno": 419>>
+Index: 784 <<"chunk_id": 1, "docno": 115>>
 
-of the Context ¶ The application context is created and destroyed as necessary.
-When a Flask application begins handling a request, it pushes an application
-context and a request context . When the request ends it pops the request
-context then the application context. Typically, an application context will
-have the same lifetime as a request. See The Request Context for more
-information about how the contexts work and the full life cycle of a request.
-Manually Push a Context ¶ If you try to access current_app , or anything that
-uses it, outside an application context, you’ll get this error message:
-RuntimeError: Working outside of application context. This typically means that
-you attempted to use functionality that needed to interface with the current
-application object in some way. To solve this, set up an application context
-with app.app_context(). If you see that error while configuring your
-application, such as when initializing an extension, you can push a context
-manually since you have direct access to the app . Use app_context() in a with
-block, and everything that runs in the block will have access to current_app .
-def create_app (): app = Flask ( __name__ ) with app . app_context (): init_db
-() return app If you see that error somewhere else in your code not related to
-configuring the application, it most likely indicates that you should move that
-code into a view function or CLI command. Storing Data ¶ The application context
-is a good place to store common data during a request
+you think about how your code executes and explain its behavior. You will learn
+What rendering means in React When and why React renders a component The steps
+involved in displaying a component on screen Why rendering does not always
+produce a DOM update Imagine that your components are cooks in the kitchen,
+assembling tasty dishes from ingredients. In this scenario, React is the waiter
+who puts in requests from customers and brings them their orders. This process
+of requesting and serving UI has three steps: Triggering a render (delivering
+the guest’s order to the kitchen) Rendering the component (preparing the order
+in the kitchen) Committing to the DOM (placing the order on the table) Trigger
+Render Commit Illustrated by Rachel Lee Nabors Step 1: Trigger a render There
+are two reasons for a component to render: It’s the component’s initial render.
+The component’s (or one of its ancestors’) state has been updated. Initial
+render When your app starts, you need to trigger the initial render. Frameworks
+and sandboxes sometimes hide this code, but it’s done by calling createRoot with
+the target DOM node, and then calling its render method with your component:
+index.js Image.js index.js Reload Clear Fork import Image from './Image.js' ;
+import { createRoot } from 'react-dom/client' ; const root = createRoot (
+document . getElementById ( 'root' ) ) root . render ( < Image /> ) ; Try
+commenting out the root.render() call and see the component disappear!
+Re-renders when state updates Once the component has been initially rendered,
+you can
 ----------------------------------------------------------------------------------------------------
-Index: 1348 <<"chunk_id": 3, "docno": 204>>
+Index: 978 <<"chunk_id": 0, "docno": 137>>
 
-take the return value of that call and modify it further. From the WSGI server’s
-perspective, there is one WSGI application, the one it calls directly.
-Typically, Flask is the “real” application at the end of the chain of
-middleware. But even Flask can call further WSGI applications, although that’s
-an advanced, uncommon use case. A common middleware you’ll see used with Flask
-is Werkzeug’s ProxyFix , which modifies the request to look like it came
-directly from a client even if it passed through HTTP proxies on the way. There
-are other middleware that can handle serving static files, authentication, etc.
-How a Request is Handled ¶ For us, the interesting part of the steps above is
-when Flask gets called by the WSGI server (or middleware). At that point, it
-will do quite a lot to handle the request and generate the response. At the most
-basic, it will match the URL to a view function, call the view function, and
-pass the return value back to the server. But there are many more parts that you
-can use to customize its behavior. WSGI server calls the Flask object, which
-calls Flask.wsgi_app() . A RequestContext object is created. This converts the
-WSGI environ dict into a Request object. It also creates an AppContext object.
-The app context is pushed, which makes current_app and g available. The
-appcontext_pushed signal is sent. The request context is pushed, which makes
-request and session available. The session is opened, loading any existing
-session data using the app’s session_interface
+State as a Snapshot – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State as a Snapshot State variables might look like regular JavaScript variables
+that you can read and write to. However, state behaves more like a snapshot.
+Setting it does not change the state variable you already have, but instead
+triggers a re-render. You will learn How setting state
 ----------------------------------------------------------------------------------------------------
-Index: 1599 <<"chunk_id": 5, "docno": 238>>
+Index: 432 <<"chunk_id": 4, "docno": 67>>
 
-) assert response . json [ "username" ] == "flask" Running Commands with the CLI
-Runner ¶ Flask provides test_cli_runner() to create a FlaskCliRunner , which
-runs CLI commands in isolation and captures the output in a Result object.
-Flask’s runner extends Click’s runner , see those docs for additional
-information. Use the runner’s invoke() method to call commands in the same way
-they would be called with the flask command from the command line. import click
-@app . cli . command ( "hello" ) @click . option ( "--name" , default = "World"
-) def hello_command ( name ): click . echo ( f "Hello, { name } !" ) def
-test_hello_command ( runner ): result = runner . invoke ( args = "hello" )
-assert "World" in result . output result = runner . invoke ( args = [ "hello" ,
-"--name" , "Flask" ]) assert "Flask" in result . output Tests that depend on an
-Active Context ¶ You may have functions that are called from views or commands,
-that expect an active application context or request context because they access
-request , session , or current_app . Rather than testing them by making a
-request or invoking the command, you can create and activate a context directly.
-Use with app.app_context() to push an application context. For example, database
-extensions usually require an active app context to make queries. def
-test_db_post_model ( app ): with app . app_context (): post = db . session .
-query ( Post ) . get ( 1
+Show more Ready to learn this topic? Read State: A Component’s Memory to learn
+how to remember a value and update it on interaction. Read More Render and
+commit Before your components are displayed on the screen, they must be rendered
+by React. Understanding the steps in this process will help you think about how
+your code executes and explain its behavior. Imagine that your components are
+cooks in the kitchen, assembling tasty dishes from ingredients. In this
+scenario, React is the waiter who puts in requests from customers and brings
+them their orders. This process of requesting and serving UI has three steps:
+Triggering a render (delivering the diner’s order to the kitchen) Rendering the
+component (preparing the order in the kitchen) Committing to the DOM (placing
+the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
+Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
+update. Read More State as a snapshot Unlike regular JavaScript variables, React
+state behaves more like a snapshot. Setting it does not change the state
+variable you already have, but instead triggers a re-render. This can be
+surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
+Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
+helps you avoid subtle bugs. Here is a little chat app. Try to guess what
+happens if you press “Send” first and then change the
 ----------------------------------------------------------------------------------------------------
-Index: 3618 <<"chunk_id": 102, "docno": 493>>
+Index: 1001 <<"chunk_id": 0, "docno": 141>>
 
-given, passes an instance of ScriptInfo that knows how to load the Flask app
-being tested. Parameters : cli ( Any ) – Command object to invoke. Default is
-the app’s cli group. args ( Any ) – List of strings to invoke the command with.
-kwargs ( Any ) Returns : a Result object. Return type : Result Application
-Globals ¶ To share data that is valid for one request only from one function to
-another, a global variable is not good enough because it would break in threaded
-environments. Flask provides you with a special object that ensures it is only
-valid for the active request and that will return different values for each
-request. In a nutshell: it does the right thing, like it does for request and
-session . flask. g ¶ A namespace object that can store data during an
-application context . This is an instance of Flask.app_ctx_globals_class , which
-defaults to ctx._AppCtxGlobals . This is a good place to store resources during
-a request. For example, a before_request function could load a user object from
-a session id, then set g.user to be used in the view function. This is a proxy.
-See Notes On Proxies for more information. Changelog Changed in version 0.10:
-Bound to the application context instead of the request context. class
-flask.ctx. _AppCtxGlobals ¶ A plain object. Used as a namespace for storing data
-during an application context. Creating an app context automatically creates
-this object, which is made available as the g proxy. 'key'
+Queueing a Series of State Updates – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Queueing a Series of State Updates Setting a state variable will queue another
+render. But sometimes you might want to perform multiple operations on the value
+before queueing the next render. To do this, it helps to understand how React
+batches state updates. You will learn
 ----------------------------------------------------------------------------------------------------
-Index: 1671 <<"chunk_id": 0, "docno": 247>>
+Index: 1919 <<"chunk_id": 0, "docno": 244>>
 
-Using SQLite 3 with Flask — Flask Documentation (3.1.x) Navigation index modules
-| next | previous | Flask Documentation (3.1.x) » Patterns for Flask » Using
-SQLite 3 with Flask Using SQLite 3 with Flask ¶ In Flask you can easily
-implement the opening of database connections on demand and closing them when
-the context dies (usually at the end of the request). Here is a simple example
-of how you can use SQLite 3 with Flask: import sqlite3 from flask import g
-DATABASE = '/path/to/database.db' def get_db (): db = getattr ( g , '_database'
-, None ) if db is None : db = g . _database = sqlite3 . connect ( DATABASE )
-return db @app . teardown_appcontext def close_connection ( exception ): db =
-getattr ( g , '_database' , None ) if db is not None : db . close () Now, to use
-the database, the application must either have an active application context
-(which is always true if there is a request in flight) or create an application
-context itself. At that point the get_db function can be used to get the current
-database connection. Whenever the context is destroyed the database connection
-will be terminated. Example: @app . route ( '/' ) def index (): cur = get_db ()
-. cursor () ... Note Please keep in mind that the teardown request and
-appcontext functions are always executed, even if a before-request handler
-failed or was never executed. Because of this we have to make sure here that
+Sharing State Between Components – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Sharing State Between Components Sometimes, you want the state of two components
+to always change together. To do it, remove state from both of them, move it to
+their closest common parent, and then pass it down to them via props. This is
+known as lifting state up,
 ----------------------------------------------------------------------------------------------------
-Index: 3522 <<"chunk_id": 6, "docno": 493>>
+Index: 851 <<"chunk_id": 8, "docno": 123>>
 
-can be called outside a request when the URL adapter is created for an
-application context. Added in version 0.6. Parameters : request ( Request | None
-) Return type : MapAdapter | None update_template_context ( context ) ¶ Update
-the template context with some commonly used variables. This injects request,
-session, config and g into the template context as well as everything template
-context processors want to inject. Note that the as of Flask 0.6, the original
-values in the context will not be overridden if a context processor decides to
-return a value with the same key. Parameters : context ( dict [ str , Any ] ) –
-the context as a dictionary that is updated in place to add extra variables.
-Return type : None make_shell_context ( ) ¶ Returns the shell context for an
-interactive shell for this application. This runs all the registered shell
-context processors. Changelog Added in version 0.11. Return type : dict [ str ,
-Any ] run ( host = None , port = None , debug = None , load_dotenv = True , **
-options ) ¶ Runs the application on a local development server. Do not use run()
-in a production setting. It is not intended to meet security and performance
-requirements for a production server. Instead, see Deploying to Production for
-WSGI server recommendations. If the debug flag is set the server will
-automatically reload for code changes and show a debugger in case an exception
-happened. If you want to run the
+This is inefficient because ProfilePage and its children will first render with
+the stale value, and then render again. It is also complicated because you’d
+need to do this in every component that has some state inside ProfilePage . For
+example, if the comment UI is nested, you’d want to clear out nested comment
+state too. Instead, you can tell React that each user’s profile is conceptually
+a different profile by giving it an explicit key. Split your component in two
+and pass a key attribute from the outer component to the inner one: export
+default function ProfilePage ( { userId } ) { return ( < Profile userId = {
+userId } key = { userId } /> ) ; } function Profile ( { userId } ) { // ✅ This
+and any other state below will reset on key change automatically const [ comment
+, setComment ] = useState ( '' ) ; // ... } Normally, React preserves the state
+when the same component is rendered in the same spot. By passing userId as a key
+to the Profile component, you’re asking React to treat two Profile components
+with different userId as two different components that should not share any
+state. Whenever the key (which you’ve set to userId ) changes, React will
+recreate the DOM and reset the state of the Profile component and all of its
+children. Now the comment field will clear out automatically when navigating
+between profiles. Note that in this example, only the outer ProfilePage
+component is
 ----------------------------------------------------------------------------------------------------
-Index: 955 <<"chunk_id": 6, "docno": 150>>
+Index: 844 <<"chunk_id": 1, "docno": 123>>
 
-will become an error just like the application setup methods. #4571
-before_first_request is deprecated. Run setup code when creating the application
-instead. #4605 Added the View.init_every_request class attribute. If a view
-subclass sets this to False , the view will not create a new instance on every
-request. #2520 . A flask.cli.FlaskGroup Click group can be nested as a
-sub-command in a custom CLI. #3263 Add --app and --debug options to the flask
-CLI, instead of requiring that they are set through environment variables. #2836
-Add --env-file option to the flask CLI. This allows specifying a dotenv file to
-load in addition to .env and .flaskenv . #3108 It is no longer required to
-decorate custom CLI commands on app.cli or blueprint.cli with @with_appcontext ,
-an app context will already be active at that point. #2410
-SessionInterface.get_expiration_time uses a timezone-aware value. #4645 View
-functions can return generators directly instead of wrapping them in a Response
-. #4629 Add stream_template and stream_template_string functions to render a
-template as a stream of pieces. #4629 A new implementation of context
-preservation during debugging and testing. #4666 request , g , and other
-context-locals point to the correct data when running code in the interactive
-debugger console. #2836 Teardown functions are always run at the end of the
-request, even if the context is preserved. They are also run after the preserved
-context is popped. stream_with_context preserves context separately from a with
-client block. It will be cleaned up when response.get_data() or response.close()
-is called. Allow returning a list from
+React and synchronize your components with some external system like a non-React
+widget, network, or the browser DOM. If there is no external system involved
+(for example, if you want to update a component’s state when some props or state
+change), you shouldn’t need an Effect. Removing unnecessary Effects will make
+your code easier to follow, faster to run, and less error-prone. You will learn
+Why and how to remove unnecessary Effects from your components How to cache
+expensive computations without Effects How to reset and adjust component state
+without Effects How to share logic between event handlers Which logic should be
+moved to event handlers How to notify parent components about changes How to
+remove unnecessary Effects There are two common cases in which you don’t need
+Effects: You don’t need Effects to transform data for rendering. For example,
+let’s say you want to filter a list before displaying it. You might feel tempted
+to write an Effect that updates a state variable when the list changes. However,
+this is inefficient. When you update the state, React will first call your
+component functions to calculate what should be on the screen. Then React will
+“commit” these changes to the DOM, updating the screen. Then React will run your
+Effects. If your Effect also immediately updates the state, this restarts the
+whole process from scratch! To avoid the unnecessary render passes, transform
+all the data at the top level of your components. That code will automatically
+re-run whenever your props or state change. You don’t need
 ----------------------------------------------------------------------------------------------------
-Index: 977 <<"chunk_id": 28, "docno": 150>>
+Index: 428 <<"chunk_id": 0, "docno": 67>>
 
-how JSON is handled by Flask or any Flask extension. Removed deprecated internal
-flask.session module alias. Use flask.sessions instead to get the session
-module. This is not to be confused with flask.session the session proxy.
-Templates can now be rendered without request context. The behavior is slightly
-different as the request , session and g objects will not be available and
-blueprint’s context processors are not called. The config object is now
-available to the template as a real global and not through a context processor
-which makes it available even in imported templates by default. Added an option
-to generate non-ascii encoded JSON which should result in less bytes being
-transmitted over the network. It’s disabled by default to not cause confusion
-with existing libraries that might expect flask.json.dumps to return bytes by
-default. flask.g is now stored on the app context instead of the request
-context. flask.g now gained a get() method for not erroring out on non existing
-items. flask.g now can be used with the in operator to see what’s defined and it
-now is iterable and will yield all attributes stored.
-flask.Flask.request_globals_class got renamed to
-flask.Flask.app_ctx_globals_class which is a better name to what it does since
-0.10. request , session and g are now also added as proxies to the template
-context which makes them available in imported templates. One has to be very
-careful with those though because usage outside of macros might cause caching.
-Flask will no longer invoke the wrong error handlers if a proxy exception is
-passed
+Adding Interactivity – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Adding Interactivity
+Some things on the screen update in response to user input. For example,
+clicking an image gallery switches the active image. In React, data that changes
+over time is called state. You can add state to any component, and update it as
+needed. In this chapter, you’ll learn how to
 ----------------------------------------------------------------------------------------------------
-Index: 3554 <<"chunk_id": 38, "docno": 493>>
+Index: 1063 <<"chunk_id": 0, "docno": 150>>
 
-a function returns None or raises a BuildError , it is skipped. Otherwise, its
-return value is returned by url_for . Changelog Added in version 0.9.
-teardown_appcontext_funcs : list [ ft.TeardownCallable ] ¶ A list of functions
-that are called when the application context is destroyed. Since the application
-context is also torn down if the request ends this is the place to store code
-that disconnects from databases. Changelog Added in version 0.9.
-shell_context_processors : list [ ft.ShellContextProcessorCallable ] ¶ A list of
-shell context processor functions that should be run when a shell context is
-created. Changelog Added in version 0.11. blueprints : dict [ str , Blueprint ]
-¶ Maps registered blueprint names to blueprint objects. The dict retains the
-order the blueprints were registered in. Blueprints can be registered multiple
-times, this dict does not track how often they were attached. Changelog Added in
-version 0.7. extensions : dict [ str , t.Any ] ¶ a place where extensions can
-store application specific state. For example this is where an extension could
-store database engines and similar things. The key must match the name of the
-extension module. For example in case of a “Flask-Foo” extension in flask_foo ,
-the key would be 'foo' . Changelog Added in version 0.7. url_map ¶ The Map for
-this instance. You can use this to change the routing converters after the class
-was created but before any routes are connected. Example: from werkzeug.routing
-import BaseConverter class ListConverter ( BaseConverter ): def to_python ( self
-,
+Conditional Rendering – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Conditional Rendering Your components will often need to display different
+things depending on different conditions. In React, you can conditionally render
+JSX using JavaScript syntax like if statements, && , and ? : operators. You will
+learn How to return different JSX depending on a condition How to conditionally
 ----------------------------------------------------------------------------------------------------
-Index: 3533 <<"chunk_id": 17, "docno": 493>>
+Index: 2071 <<"chunk_id": 0, "docno": 267>>
 
-: None Changelog Changed in version 0.9: Added the exc argument.
-do_teardown_appcontext ( exc = _sentinel ) ¶ Called right before the application
-context is popped. When handling a request, the application context is popped
-after the request context. See do_teardown_request() . This calls all functions
-decorated with teardown_appcontext() . Then the appcontext_tearing_down signal
-is sent. This is called by AppContext.pop() . Changelog Added in version 0.9.
-Parameters : exc ( BaseException | None ) Return type : None app_context ( ) ¶
-Create an AppContext . Use as a with block to push the context, which will make
-current_app point at this application. An application context is automatically
-pushed by RequestContext.push() when handling a request, and when running a CLI
-command. Use this to manually create a context outside of these situations. with
-app . app_context (): init_db () See The Application Context . Changelog Added
-in version 0.9. Return type : AppContext request_context ( environ ) ¶ Create a
-RequestContext representing a WSGI environment. Use a with block to push the
-context, which will make request point at this request. See The Request Context
-. Typically you should not call this from your own code. A request context is
-automatically pushed by the wsgi_app() when handling a request. Use
-test_request_context() to create an environment and context instead of this
-method. Parameters : environ ( WSGIEnvironment ) – a WSGI environment Return
-type : RequestContext test_request_context ( * args , ** kwargs ) ¶ Create a
-RequestContext for a WSGI environment created from the given
+Introduction – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React React Compiler Copy page Copy Introduction
+React Compiler is a new build-time tool that automatically optimizes your React
+app. It works with plain JavaScript, and understands the Rules of React , so you
+don’t need to rewrite any code to use it. You will learn What React Compiler
+does Getting started with the compiler Incremental adoption
 ----------------------------------------------------------------------------------------------------
-Index: 2853 <<"chunk_id": 4, "docno": 410>>
+Index: 130 <<"chunk_id": 0, "docno": 16>>
 
-It’s up to you to decide what configuration is appropriate for your extension,
-based on what you need and what you want to support. Configuration should not be
-changed after the application setup phase is complete and the server begins
-handling requests. Configuration is global, any changes to it are not guaranteed
-to be visible to other workers. Data During a Request ¶ When writing a Flask
-application, the g object is used to store information during a request. For
-example the tutorial stores a connection to a SQLite database as g.db .
-Extensions can also use this, with some care. Since g is a single global
-namespace, extensions must use unique names that won’t collide with user data.
-For example, use the extension name as a prefix, or as a namespace. # an
-internal prefix with the extension name g . _hello_user_id = 2 # or an internal
-prefix as a namespace from types import SimpleNamespace g . _hello =
-SimpleNamespace () g . _hello . user_id = 2 The data in g lasts for an
-application context. An application context is active when a request context is,
-or when a CLI command is run. If you’re storing something that should be closed,
-use teardown_appcontext() to ensure that it gets closed when the application
-context ends. If it should only be valid during a request, or would not be used
-in the CLI outside a request, use teardown_request() . Views and Models ¶ Your
-extension views might want to interact with specific models in your
+Managing State – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Managing State
+Intermediate As your application grows, it helps to be more intentional about
+how your state is organized and how the data flows between your components.
+Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
+learn how to structure your state well, how to keep your
 ----------------------------------------------------------------------------------------------------
-Index: 3651 <<"chunk_id": 135, "docno": 493>>
+Index: 73 <<"chunk_id": 0, "docno": 7>>
 
-by a subclass to hook into the matching of the request. Return type : None
-property session : SessionMixin ¶ The session data associated with this request.
-Not available until this context has been pushed. Accessing this property, also
-accessed by the session proxy, sets SessionMixin.accessed . pop ( exc =
-_sentinel ) ¶ Pops the request context and unbinds it by doing that. This will
-also trigger the execution of functions registered by the teardown_request()
-decorator. Changelog Changed in version 0.9: Added the exc argument. Parameters
-: exc ( BaseException | None ) Return type : None flask.globals. request_ctx ¶
-The current RequestContext . If a request context is not active, accessing
-attributes on this proxy will raise a RuntimeError . This is an internal object
-that is essential to how Flask handles requests. Accessing this should not be
-needed in most cases. Most likely you want request and session instead. class
-flask.ctx. AppContext ( app ) ¶ The app context contains application-specific
-information. An app context is created and pushed at the beginning of each
-request if one is not already active. An app context is also pushed when running
-CLI commands. Parameters : app ( Flask ) push ( ) ¶ Binds the app context to the
-current context. Return type : None pop ( exc = _sentinel ) ¶ Pops the app
-context. Parameters : exc ( BaseException | None ) Return type : None
-flask.globals. app_ctx ¶ The current AppContext . If an app context is not
-active, accessing attributes on
+Quick Start – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Quick Start Welcome to the
+React documentation! This page will give you an introduction to 80% of the React
+concepts that you will use on a daily basis. You will learn How to create and
+nest components How to add markup and styles How to display data How to render
+conditions and
 ----------------------------------------------------------------------------------------------------
-Index: 3650 <<"chunk_id": 134, "docno": 493>>
+Index: 681 <<"chunk_id": 0, "docno": 104>>
 
-at the end of the request. It will create the URL adapter and request object for
-the WSGI environment provided. Do not attempt to use this class directly,
-instead use test_request_context() and request_context() to create this object.
-When the request context is popped, it will evaluate all the functions
-registered on the application for teardown execution ( teardown_request() ). The
-request context is automatically popped at the end of the request. When using
-the interactive debugger, the context will be restored so request is still
-accessible. Similarly, the test client can preserve the context after the
-request ends. However, teardown functions may already have closed some resources
-such as database connections. Parameters : app ( Flask ) environ (
-WSGIEnvironment ) request ( Request | None ) session ( SessionMixin | None )
-copy ( ) ¶ Creates a copy of this request context with the same request object.
-This can be used to move a request context to a different greenlet. Because the
-actual request object is the same this cannot be used to move a request context
-to a different thread unless access to the request object is locked. Changelog
-Changed in version 1.1: The current session object is used instead of reloading
-the original data. This prevents flask.session pointing to an out-of-date
-object. Added in version 0.10. Return type : RequestContext match_request ( ) ¶
-Can be overridden by a subclass to hook into the matching of the request. Return
-type : None property session : SessionMixin ¶ The session data associated with
+Passing Props to a Component – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Passing Props to a Component React components use props to communicate with each
+other. Every parent component can pass some information to its child components
+by giving them props. Props might remind you of HTML attributes, but you can
+pass any JavaScript value through them, including
 ----------------------------------------------------------------------------------------------------
-Index: 3620 <<"chunk_id": 104, "docno": 493>>
+Index: 1313 <<"chunk_id": 0, "docno": 166>>
 
-Added in version 0.11. Useful Functions and Classes ¶ flask. current_app ¶ A
-proxy to the application handling the current request. This is useful to access
-the application without needing to import it, or if it can’t be imported, such
-as when using the application factory pattern or in blueprints and extensions.
-This is only available when an application context is pushed. This happens
-automatically during requests and CLI commands. It can be controlled manually
-with app_context() . This is a proxy. See Notes On Proxies for more information.
-flask. has_request_context ( ) ¶ If you have code that wants to test if a
-request context is there or not this function can be used. For instance, you may
-want to take advantage of request information if the request object is
-available, but fail silently if it is unavailable. class User ( db . Model ):
-def __init__ ( self , username , remote_addr = None ): self . username =
-username if remote_addr is None and has_request_context (): remote_addr =
-request . remote_addr self . remote_addr = remote_addr Alternatively you can
-also just test any of the context bound objects (such as request or g ) for
-truthness: class User ( db . Model ): def __init__ ( self , username ,
-remote_addr = None ): self . username = username if remote_addr is None and
-request : remote_addr = request . remote_addr self . remote_addr = remote_addr
-Changelog Added in version 0.7. Return type : bool flask.
-copy_current_request_context ( f ) ¶ Decorate a
+Importing and Exporting Components – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Importing and Exporting Components The magic of components lies in their
+reusability: you can create components that are composed of other components.
+But as you nest more and more components, it often makes sense to start
+splitting them into different files. This lets you keep your files
 ----------------------------------------------------------------------------------------------------
-Index: 987 <<"chunk_id": 38, "docno": 150>>
+Index: 592 <<"chunk_id": 0, "docno": 91>>
 
-do conditional responses builtin. (temporarily) dropped support for zipped
-applications. This was a rarely used feature and led to some confusing behavior.
-Added support for per-package template and static-file directories. Removed
-support for create_jinja_loader which is no longer used in 0.5 due to the
-improved module support. Added a helper function to expose files from any
-directory. Version 0.4 ¶ Released 2010-06-18, codename Rakia Added the ability
-to register application wide error handlers from modules. Flask.after_request
-handlers are now also invoked if the request dies with an exception and an error
-handling page kicks in. Test client has not the ability to preserve the request
-context for a little longer. This can also be used to trigger custom requests
-that do not pop the request stack for testing. Because the Python standard
-library caches loggers, the name of the logger is configurable now to better
-support unittests. Added TESTING switch that can activate unittesting helpers.
-The logger switches to DEBUG mode now if debug is enabled. Version 0.3.1 ¶
-Released 2010-05-28 Fixed a error reporting bug with Config.from_envvar .
-Removed some unused code. Release does no longer include development leftover
-files (.git folder for themes, built documentation in zip and pdf file and some
-.pyc files) Version 0.3 ¶ Released 2010-05-28, codename Schnaps Added support
-for categories for flashed messages. The application now configures a
-logging.Handler and will log request handling exceptions to that logger when not
-in debug mode. This makes it possible to receive mails on server errors for
-example. Added support for context
+Incremental Adoption – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React React Compiler Copy page Copy
+Incremental Adoption React Compiler can be adopted incrementally, allowing you
+to try it on specific parts of your codebase first. This guide shows you how to
+gradually roll out the compiler in existing projects. You will learn Why
+incremental adoption is recommended Using Babel overrides for directory-based
+adoption Using the
+----------------------------------------------------------------------------------------------------
+Index: 2100 <<"chunk_id": 0, "docno": 272>>
+
+React Compiler – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy React Compiler
+Introduction Learn what React Compiler does and how it automatically optimizes
+your React application by handling memoization for you, eliminating the need for
+manual useMemo , useCallback , and React.memo . Installation Get started with
+installing React Compiler and learn how to configure it with your build tools.
+Incremental Adoption
+----------------------------------------------------------------------------------------------------
+Index: 1805 <<"chunk_id": 0, "docno": 229>>
+
+Updating Objects in State – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Updating Objects in State State can hold any kind of JavaScript value, including
+objects. But you shouldn’t change objects that you hold in the React state
+directly. Instead, when you want to update an object, you need to create a new
+one (or make a copy of an
+----------------------------------------------------------------------------------------------------
+Index: 1023 <<"chunk_id": 0, "docno": 146>>
+
+Thinking in React – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Quick Start Copy page Copy Thinking
+in React React can change how you think about the designs you look at and the
+apps you build. When you build a user interface with React, you will first break
+it apart into pieces called components . Then, you will describe the different
+visual states for each
+----------------------------------------------------------------------------------------------------
+Index: 1714 <<"chunk_id": 0, "docno": 214>>
+
+Passing Data Deeply with Context – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Passing Data Deeply with Context Usually, you will pass information from a
+parent component to a child component via props. But passing props can become
+verbose and inconvenient if you have to pass them through many components in the
+middle, or if many components in your app
+----------------------------------------------------------------------------------------------------
+Index: 631 <<"chunk_id": 0, "docno": 97>>
+
+Understanding Your UI as a Tree – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Understanding Your UI as a Tree Your React app is taking shape with many
+components being nested within each other. How does React keep track of your
+app’s component structure? React, and many other UI libraries, model UI as a
+tree. Thinking of your app
+----------------------------------------------------------------------------------------------------
+Index: 1945 <<"chunk_id": 0, "docno": 249>>
+
+Extracting State Logic into a Reducer – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Extracting State Logic into a Reducer Components with many state updates spread
+across many event handlers can get overwhelming. For these cases, you can
+consolidate all the state update logic outside your component in a single
+function, called a reducer. You will learn What a reducer
+----------------------------------------------------------------------------------------------------
+Index: 656 <<"chunk_id": 0, "docno": 101>>
+
+React Developer Tools – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Setup Copy page Copy React Developer
+Tools Use React Developer Tools to inspect React components , edit props and
+state , and identify performance problems. You will learn How to install React
+Developer Tools Browser extension The easiest way to debug websites built with
+React is to install the React Developer Tools browser extension.
+----------------------------------------------------------------------------------------------------
+Index: 712 <<"chunk_id": 0, "docno": 107>>
+
+Updating Arrays in State – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Updating Arrays in State Arrays are mutable in JavaScript, but you should treat
+them as immutable when you store them in state. Just like with objects, when you
+want to update an array stored in state, you need to create a new one (or make a
+copy of
+----------------------------------------------------------------------------------------------------
+Index: 935 <<"chunk_id": 0, "docno": 132>>
+
+Lifecycle of Reactive Effects – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Lifecycle of Reactive Effects Effects have a different lifecycle from
+components. Components may mount, update, or unmount. An Effect can only do two
+things: to start synchronizing something, and later to stop synchronizing it.
+This cycle can happen multiple times if your Effect depends on props and state
+----------------------------------------------------------------------------------------------------
+Index: 1780 <<"chunk_id": 0, "docno": 224>>
+
+Debugging and Troubleshooting – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React React Compiler Copy page Copy
+Debugging and Troubleshooting This guide helps you identify and fix issues when
+using React Compiler. Learn how to debug compilation problems and resolve common
+issues. You will learn The difference between compiler errors and runtime issues
+Common patterns that break compilation Step-by-step debugging workflow
+Understanding Compiler Behavior React Compiler
+----------------------------------------------------------------------------------------------------
+Index: 1326 <<"chunk_id": 0, "docno": 169>>
+
+Choosing the State Structure – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Choosing the State Structure Structuring state well can make a difference
+between a component that is pleasant to modify and debug, and one that is a
+constant source of bugs. Here are some tips you should consider when structuring
+state. You will learn When to use a single
+----------------------------------------------------------------------------------------------------
+Index: 759 <<"chunk_id": 0, "docno": 112>>
+
+Rendering Lists – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Rendering Lists You will often want to display multiple similar components from
+a collection of data. You can use the JavaScript array methods to manipulate an
+array of data. On this page, you’ll use filter() and map() with React to filter
+and transform your array of data into an
+----------------------------------------------------------------------------------------------------
+Index: 1670 <<"chunk_id": 0, "docno": 204>>
+
+Setup – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog GET
+STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Setup React integrates with
+tools like editors, TypeScript, browser extensions, and compilers. This section
+will help you get your environment set up. Editor Setup See our recommended
+editors and learn how to set them up to work with React. Using TypeScript
+TypeScript is a popular way to add type definitions to JavaScript codebases.
+----------------------------------------------------------------------------------------------------
+Index: 887 <<"chunk_id": 0, "docno": 126>>
+
+Writing Markup with JSX – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Writing Markup with JSX JSX is a syntax extension for JavaScript that lets you
+write HTML-like markup inside a JavaScript file. Although there are other ways
+to write components, most React developers prefer the conciseness of JSX, and
+most codebases use it. You will learn Why React
+----------------------------------------------------------------------------------------------------
+Index: 916 <<"chunk_id": 13, "docno": 129>>
+
+reset a component’s state by passing a different key to a component. In this
+example, the Reset button changes the version state variable, which we pass as a
+key to the Form . When the key changes, React re-creates the Form component (and
+all of its children) from scratch, so its state gets reset. Read preserving and
+resetting state to learn more. App.js App.js Reload Clear Fork import { useState
+} from 'react' ; export default function App ( ) { const [ version , setVersion
+] = useState ( 0 ) ; function handleReset ( ) { setVersion ( version + 1 ) ; }
+return ( < > < button onClick = { handleReset } > Reset </ button > < Form key =
+{ version } /> </ > ) ; } function Form ( ) { const [ name , setName ] =
+useState ( 'Taylor' ) ; return ( < > < input value = { name } onChange = { e =>
+setName ( e . target . value ) } /> < p > Hello, { name } . </ p > </ > ) ; }
+Show more Storing information from previous renders Usually, you will update
+state in event handlers. However, in rare cases you might want to adjust state
+in response to rendering — for example, you might want to change a state
+variable when a prop changes. In most cases, you don’t need this: If the value
+you need can be computed entirely from the
+----------------------------------------------------------------------------------------------------
+Index: 326 <<"chunk_id": 0, "docno": 45>>
+
+Describing the UI – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Describing the UI
+React is a JavaScript library for rendering user interfaces (UI). UI is built
+from small units like buttons, text, and images. React lets you combine them
+into reusable, nestable components. From web sites to phone apps, everything on
+the screen can be broken down into components. In this
+----------------------------------------------------------------------------------------------------
+Index: 2007 <<"chunk_id": 0, "docno": 257>>
+
+Editor Setup – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Setup Copy page Copy Editor Setup A properly
+configured editor can make code clearer to read and faster to write. It can even
+help you catch bugs as you write them! If this is your first time setting up an
+editor or you’re looking to tune up your current editor, we have a few
+recommendations.
+----------------------------------------------------------------------------------------------------
+Index: 742 <<"chunk_id": 0, "docno": 110>>
+
+Reacting to Input with State – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Reacting to Input with State React provides a declarative way to manipulate the
+UI. Instead of manipulating individual pieces of the UI directly, you describe
+the different states that your component can be in, and switch between them in
+response to the user input. This is similar
+----------------------------------------------------------------------------------------------------
+Index: 1891 <<"chunk_id": 0, "docno": 239>>
+
+Keeping Components Pure – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Keeping Components Pure Some JavaScript functions are pure. Pure functions only
+perform a calculation and nothing more. By strictly only writing your components
+as pure functions, you can avoid an entire class of baffling bugs and
+unpredictable behavior as your codebase grows. To get these benefits, though,
+there
+----------------------------------------------------------------------------------------------------
+Index: 1743 <<"chunk_id": 0, "docno": 218>>
+
+Responding to Events – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Responding to Events React lets you add event handlers to your JSX. Event
+handlers are your own functions that will be triggered in response to
+interactions like clicking, hovering, focusing form inputs, and so on. You will
+learn Different ways to write an event handler How to pass event
+----------------------------------------------------------------------------------------------------
+Index: 1644 <<"chunk_id": 0, "docno": 202>>
+
+State: A Component's Memory – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State: A Component's Memory Components often need to change what’s on the screen
+as a result of an interaction. Typing into the form should update the input
+field, clicking “next” on an image carousel should change which image is
+displayed, clicking “buy” should put a product in the
+----------------------------------------------------------------------------------------------------
+Index: 812 <<"chunk_id": 0, "docno": 119>>
+
+Using TypeScript – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Setup Copy page Copy Using
+TypeScript TypeScript is a popular way to add type definitions to JavaScript
+codebases. Out of the box, TypeScript supports JSX and you can get full React
+Web support by adding @types/react and @types/react-dom to your project. You
+will learn TypeScript with React Components Examples of typing with Hooks Common
+types
+----------------------------------------------------------------------------------------------------
+Index: 1433 <<"chunk_id": 0, "docno": 179>>
+
+Manipulating the DOM with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Manipulating the DOM with Refs React automatically updates the DOM to match your
+render output, so your components won’t often need to manipulate it. However,
+sometimes you might need access to the DOM elements managed by React—for
+example, to focus a node, scroll to it, or measure
+----------------------------------------------------------------------------------------------------
+Index: 1506 <<"chunk_id": 0, "docno": 187>>
+
+Removing Effect Dependencies – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Removing Effect Dependencies When you write an Effect, the linter will verify
+that you’ve included every reactive value (like props and state) that the Effect
+reads in the list of your Effect’s dependencies. This ensures that your Effect
+remains synchronized with the latest props and state of your component.
+----------------------------------------------------------------------------------------------------
+Index: 282 <<"chunk_id": 0, "docno": 40>>
+
+Add React to an Existing Project – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Add
+React to an Existing Project If you want to add some interactivity to your
+existing project, you don’t have to rewrite it in React. Add React to your
+existing stack, and render interactive React components anywhere. Note You need
+to install Node.js for local development. Although
+----------------------------------------------------------------------------------------------------
+Index: 554 <<"chunk_id": 0, "docno": 84>>
+
+Escape Hatches – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Escape Hatches
+Advanced Some of your components may need to control and synchronize with
+systems outside of React. For example, you might need to focus an input using
+the browser API, play and pause a video player implemented without React, or
+connect and listen to messages from a remote server. In this
+----------------------------------------------------------------------------------------------------
+Index: 1767 <<"chunk_id": 0, "docno": 222>>
+
+Build a React app from Scratch – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Build a
+React app from Scratch If your app has constraints not well-served by existing
+frameworks, you prefer to build your own framework, or you just want to learn
+the basics of a React app, you can build a React app from scratch. Deep Dive
+Consider using
+----------------------------------------------------------------------------------------------------
+Index: 393 <<"chunk_id": 0, "docno": 59>>
+
+Installation – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Installation React has been
+designed from the start for gradual adoption. You can use as little or as much
+React as you need. Whether you want to get a taste of React, add some
+interactivity to an HTML page, or start a complex React-powered app, this
+section will help you get started. Try
+----------------------------------------------------------------------------------------------------
+Index: 2039 <<"chunk_id": 0, "docno": 264>>
+
+Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Separating Events from Effects Event handlers only re-run when you perform the
+same interaction again. Unlike event handlers, Effects re-synchronize if some
+value they read, like a prop or a state variable, is different from what it was
+during the last render. Sometimes, you also want a mix
+----------------------------------------------------------------------------------------------------
+Index: 1557 <<"chunk_id": 0, "docno": 192>>
+
+Your First Component – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Your First Component Components are one of the core concepts of React. They are
+the foundation upon which you build user interfaces (UI), which makes them the
+perfect place to start your React journey! You will learn What a component is
+What role components play in a React
 ----------------------------------------------------------------------------------------------------

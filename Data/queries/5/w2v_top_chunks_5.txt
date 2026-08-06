@@ -1,489 +1,1149 @@
-Index: 2963 <<"chunk_id": 4, "docno": 426>>
+Index: 2480 <<"chunk_id": 13, "docno": 333>>
 
-for any asynchronous I/O or timers and shuts down cleanly if there are not any.
-Starting with libuv 1.45.0 (Node.js 20), timers are run after the poll phase in
-each event loop iteration. In earlier versions, timers were run before polling.
-To preserve backwards compatibility, libuv 1.45.0 still runs timers once before
-entering the event loop . This change can affect the timing of setImmediate()
-callbacks and how they interact with timers in certain scenarios. Phases in
-Detail pending callbacks This phase executes callbacks for some system
-operations such as types of TCP errors. For example if a TCP socket receives
-ECONNREFUSED when attempting to connect, some *nix systems want to wait to
-report the error. This will be queued to execute in the pending callbacks phase.
-poll The poll phase has two main functions: Calculating how long it should block
-and poll for I/O, then Processing events in the poll queue. When the event loop
-enters the poll phase and there are no timers scheduled , one of two things will
-happen: If the poll queue is not empty , the event loop will iterate through its
-queue of callbacks executing them synchronously until either the queue has been
-exhausted, or the system-dependent hard limit is reached. If the poll queue is
-empty , one of two more things will happen: If scripts have been scheduled by
-setImmediate() , the event loop will end the poll phase and continue to the
-check phase to execute those scheduled scripts. If scripts have not been
-scheduled by
+Backpressure will be automatically applied, but note that both the incoming and
+outgoing highWaterMark of the Transform stream may be manipulated and will
+affect the backpressure system. Backpressure Guidelines Since Node.js v0.10 ,
+the Stream class has offered the ability to modify the behavior of the .read()
+or .write() by using the underscore version of these respective functions (
+._read() and ._write() ). There are guidelines documented for implementing
+Readable streams and implementing Writable streams . We will assume you've read
+these over, and the next section will go a little bit more in-depth. Rules to
+Abide By When Implementing Custom Streams The golden rule of streams is to
+always respect backpressure . What constitutes as best practice is
+non-contradictory practice. So long as you are careful to avoid behaviors that
+conflict with internal backpressure support, you can be sure you're following
+good practice. In general, Never .push() if you are not asked. Never call
+.write() after it returns false but wait for 'drain' instead. Streams changes
+between different Node.js versions, and the library you use. Be careful and test
+things. In regards to point 3, an incredibly useful package for building browser
+streams is readable-stream . Rodd Vagg has written a great blog post describing
+the utility of this library. In short, it provides a type of automated graceful
+degradation for Readable streams, and supports older versions of browsers and
+Node.js. Rules specific to Readable Streams So far, we have taken a look at how
+.write() affects backpressure and have focused much on the Writable
 ----------------------------------------------------------------------------------------------------
-Index: 2962 <<"chunk_id": 3, "docno": 426>>
+Index: 14914 <<"chunk_id": 473, "docno": 2234>>
 
-the next phase, and so on. Since any of these operations may schedule more
-operations and new events processed in the poll phase are queued by the kernel,
-poll events can be queued while polling events are being processed. As a result,
-long running callbacks can allow the poll phase to run much longer than a
-timer's threshold. See the timers and poll sections for more details. There is a
-slight discrepancy between the Windows and the Unix/Linux implementation, but
-that's not important for this demonstration. The most important parts are here.
-There are actually seven or eight steps, but the ones we care about — ones that
-Node.js actually uses - are those above. Phases Overview pending callbacks :
-executes I/O callbacks deferred to the next loop iteration. idle, prepare : only
-used internally. poll : retrieve new I/O events; execute I/O related callbacks
-(almost all with the exception of close callbacks, the ones scheduled by timers,
-and setImmediate() ); node will block here when appropriate. check :
-setImmediate() callbacks are invoked here. close callbacks : some close
-callbacks, e.g. socket.on('close', ...) timers : this phase executes callbacks
-scheduled by setTimeout() and setInterval() . Additionally, these callbacks can
-execute before entering the event loop. This sometimes happens for setTimeout(()
-=> ... , 0) outside the I/O loop. Between each run of the event loop, Node.js
-checks if it is waiting for any asynchronous I/O or timers and shuts down
-cleanly if there are not any. Starting with libuv 1.45.0 (Node.js 20), timers
-are run after
+null ) ; }, } ) ; async function run () { const result = await text (
+fromReadable (readable)) ; console . log (result) ; // 'hello world' } run () ;
+javascript copy fromWritable(writable[, options]) # Added in: v26.1.0 Stability:
+1 - Experimental writable <stream.Writable> | <Object> A classic Writable stream
+or any object with write() and on() methods. options <Object> backpressure
+<string> Backpressure policy. Default: 'strict' . 'strict' -- writes are
+rejected when the buffer is full. Catches callers that ignore backpressure.
+'unbounded' -- writes wait for drain when the buffer is full. Recommended for
+use with pipeTo() . 'drop-newest' -- writes are silently discarded when the
+buffer is full. 'drop-oldest' -- not supported . Throws ERR_INVALID_ARG_VALUE .
+Returns: <Object> A stream/iter Writer adapter. Creates a stream/iter Writer
+adapter from a classic Writable stream (or duck-typed equivalent). The adapter
+can be passed to pipeTo() as a destination. Since all writes on a classic
+Writable are fundamentally asynchronous, the synchronous Writer methods (
+writeSync , writevSync , endSync ) always return false or -1 , deferring to the
+async path. The per-write options.signal parameter from the Writer interface is
+also ignored. The result is cached per instance and backpressure policy --
+calling fromWritable() twice with the same stream and backpressure option
+returns the same Writer. For duck-typed streams that do not expose
+writableHighWaterMark , writableLength , or similar properties, sensible
+defaults are used. Object-mode writables (if detectable) are rejected since the
+Writer interface is bytes-only. import { Writable } from 'node:stream' ; import
+{
 ----------------------------------------------------------------------------------------------------
-Index: 2964 <<"chunk_id": 5, "docno": 426>>
+Index: 13840 <<"chunk_id": 32, "docno": 2155>>
 
-event loop will end the poll phase and continue to the check phase to execute
-those scheduled scripts. If scripts have not been scheduled by setImmediate() ,
-the event loop will wait for callbacks to be added to the queue, then execute
-them immediately. Once the poll queue is empty the event loop will check for
-timers whose time thresholds have been reached . If one or more timers are
-ready, the event loop will wrap back to the timers phase to execute those
-timers' callbacks. check This phase allows the event loop to execute callbacks
-immediately after the poll phase has completed. If the poll phase becomes idle
-and scripts have been queued with setImmediate() , the event loop may continue
-to the check phase rather than waiting. setImmediate() is actually a special
-timer that runs in a separate phase of the event loop. It uses a libuv API that
-schedules callbacks to execute after the poll phase has completed. Generally, as
-the code is executed, the event loop will eventually hit the poll phase where it
-will wait for an incoming connection, request, etc. However, if a callback has
-been scheduled with setImmediate() and the poll phase becomes idle, it will end
-and continue to the check phase rather than waiting for poll events. close
-callbacks If a socket or handle is closed abruptly (e.g. socket.destroy() ), the
-'close' event will be emitted in this phase. Otherwise it will be emitted via
-process.nextTick() . timers A timer specifies the threshold after which a
-provided
+run () { const result = await text ( fromReadable (readable)) ; console . log
+(result) ; // 'hello world' } run () ; javascript copy fromWritable(writable[,
+options]) # Added in: v26.1.0 Stability: 1 - Experimental writable
+<stream.Writable> | <Object> A classic Writable stream or any object with
+write() and on() methods. options <Object> backpressure <string> Backpressure
+policy. Default: 'strict' . 'strict' -- writes are rejected when the buffer is
+full. Catches callers that ignore backpressure. 'unbounded' -- writes wait for
+drain when the buffer is full. Recommended for use with pipeTo() . 'drop-newest'
+-- writes are silently discarded when the buffer is full. 'drop-oldest' -- not
+supported . Throws ERR_INVALID_ARG_VALUE . Returns: <Object> A stream/iter
+Writer adapter. Creates a stream/iter Writer adapter from a classic Writable
+stream (or duck-typed equivalent). The adapter can be passed to pipeTo() as a
+destination. Since all writes on a classic Writable are fundamentally
+asynchronous, the synchronous Writer methods ( writeSync , writevSync , endSync
+) always return false or -1 , deferring to the async path. The per-write
+options.signal parameter from the Writer interface is also ignored. The result
+is cached per instance and backpressure policy -- calling fromWritable() twice
+with the same stream and backpressure option returns the same Writer. For
+duck-typed streams that do not expose writableHighWaterMark , writableLength ,
+or similar properties, sensible defaults are used. Object-mode writables (if
+detectable) are rejected since the Writer interface is bytes-only. import {
+Writable } from 'node:stream' ; import { from , fromWritable , pipeTo } from
+'node:stream/iter' ;
 ----------------------------------------------------------------------------------------------------
-Index: 1359 <<"chunk_id": 4, "docno": 206>>
+Index: 3013 <<"chunk_id": 18, "docno": 418>>
 
-variants of the same key, such as PATH and Path . The child_process.spawn()
-method spawns the child process asynchronously, without blocking the Node.js
-event loop. The child_process.spawnSync() function provides equivalent
-functionality in a synchronous manner that blocks the event loop until the
-spawned process either exits or is terminated. For convenience, the
-node:child_process module provides a handful of synchronous and asynchronous
-alternatives to child_process.spawn() and child_process.spawnSync() . Each of
-these alternatives are implemented on top of child_process.spawn() or
-child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
-command within that shell, passing the stdout and stderr to a callback function
-when complete. child_process.execFile() : similar to child_process.exec() except
-that it spawns the command directly without first spawning a shell by default.
-child_process.fork() : spawns a new Node.js process and invokes a specified
-module with an IPC communication channel established that allows sending
-messages between parent and child. child_process.execSync() : a synchronous
-version of child_process.exec() that will block the Node.js event loop.
-child_process.execFileSync() : a synchronous version of child_process.execFile()
-that will block the Node.js event loop. For certain use cases, such as
-automating shell scripts, the synchronous counterparts may be more convenient.
-In many cases, however, the synchronous methods can have significant impact on
-performance due to stalling the event loop while spawned processes complete.
-Asynchronous process creation # The child_process.spawn() , child_process.fork()
-, child_process.exec() , and child_process.execFile() methods all follow the
-idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
-of the methods returns a ChildProcess instance. These objects implement the
-Node.js EventEmitter API,
+true . This allows the stream to work with any JavaScript value, except for null
+, which is used to signal the end of the stream. This means you can push and
+read any value in a readable stream, and write any value in a writable stream.
+CJS ESM const { Readable } = require ( ' node:stream ' ) ; const readable =
+Readable ( { objectMode : true , read () { this . push ( { hello : ' world ' } )
+; this . push ( null ) ; }, } ) ; JavaScript Copy to clipboard When working in
+object mode, it is important to remember that the highWaterMark option refers to
+the number of objects, not bytes. Backpressure When using streams, it is
+important to make sure the producer doesn't overwhelm the consumer. For this,
+the backpressure mechanism is used in all streams in the Node.js API, and
+implementors are responsible for maintaining that behavior. In any scenario
+where the data buffer has exceeded the highWaterMark or the write queue is
+currently busy, .write() will return false . When a false value is returned, the
+backpressure system kicks in. It will pause the incoming Readable stream from
+sending any data and wait until the consumer is ready again. Once the data
+buffer is emptied, a 'drain' event will be emitted to resume the incoming data
+flow. For a deeper understanding of backpressure, check the backpressure guide .
+Streams vs Web streams The stream concept is not exclusive to Node.js.
 ----------------------------------------------------------------------------------------------------
-Index: 31957 <<"chunk_id": 15, "docno": 4244>>
+Index: 2481 <<"chunk_id": 14, "docno": 333>>
 
-Safety notes # The node:ffi module does not track pointer validity, memory
-ownership, or native object lifetimes. In particular: Do not read from or write
-to freed memory. Do not use zero-copy views after the native memory has been
-released. Do not declare incorrect signatures for native symbols. Do not
-unregister callbacks while native code may still call them. Do not call callback
-pointers after library.close() or library.unregisterCallback(pointer) . Assume
-undefined callback behavior can crash the process, produce incorrect output, or
-corrupt memory. Do not assume pointer return values imply ownership; whether the
-caller must free the returned address depends entirely on the native API. As a
-general rule, prefer copied values unless zero-copy access is required, and keep
-callback and pointer lifetimes explicit on the native side.
+Node.js. Rules specific to Readable Streams So far, we have taken a look at how
+.write() affects backpressure and have focused much on the Writable stream.
+Because of Node.js' functionality, data is technically flowing downstream from
+Readable to Writable . However, as we can observe in any transmission of data,
+matter, or energy, the source is just as important as the destination, and the
+Readable stream is vital to how backpressure is handled. Both these processes
+rely on one another to communicate effectively, if the Readable ignores when the
+Writable stream asks for it to stop sending in data, it can be just as
+problematic as when the .write() 's return value is incorrect. So, as well as
+respecting the .write() return, we must also respect the return value of .push()
+used in the ._read() method. If .push() returns a false value, the stream will
+stop reading from the source. Otherwise, it will continue without pause. Here is
+an example of bad practice using .push() : // This is problematic as it
+completely ignores the return value from the push // which may be a signal for
+backpressure from the destination stream! class MyReadable extends Readable {
+_read ( size ) { let chunk ; while ( null !== ( chunk = getNextChunk ())) { this
+. push ( chunk ) ; } } } JavaScript Copy to clipboard Here is an example of good
+practice, where the Readable stream respects backpressure by checking the return
+value of this.push() : class MyReadable extends Readable { _read
 ----------------------------------------------------------------------------------------------------
-Index: 30176 <<"chunk_id": 1412, "docno": 4202>>
+Index: 16240 <<"chunk_id": 1799, "docno": 2234>>
 
-. Each of these alternatives are implemented on top of child_process.spawn() or
-child_process.spawnSync() . child_process.exec() : spawns a shell and runs a
-command within that shell, passing the stdout and stderr to a callback function
-when complete. child_process.execFile() : similar to child_process.exec() except
-that it spawns the command directly without first spawning a shell by default.
-child_process.fork() : spawns a new Node.js process and invokes a specified
-module with an IPC communication channel established that allows sending
-messages between parent and child. child_process.execSync() : a synchronous
-version of child_process.exec() that will block the Node.js event loop.
-child_process.execFileSync() : a synchronous version of child_process.execFile()
-that will block the Node.js event loop. For certain use cases, such as
-automating shell scripts, the synchronous counterparts may be more convenient.
-In many cases, however, the synchronous methods can have significant impact on
-performance due to stalling the event loop while spawned processes complete.
-Asynchronous process creation # The child_process.spawn() , child_process.fork()
-, child_process.exec() , and child_process.execFile() methods all follow the
-idiomatic asynchronous programming pattern typical of other Node.js APIs. Each
-of the methods returns a ChildProcess instance. These objects implement the
-Node.js EventEmitter API, allowing the parent process to register listener
-functions that are called when certain events occur during the life cycle of the
-child process. The child_process.exec() and child_process.execFile() methods
-additionally allow for an optional callback function to be specified that is
-invoked when the child process terminates. Spawning .bat and .cmd files on
-Windows # The importance of the distinction between child_process.exec() and
-child_process.execFile() can vary based
+enforce stricter limits but doing so is optional. Because Duplex and Transform
+streams are both Readable and Writable , each maintains two separate internal
+buffers used for reading and writing, allowing each side to operate
+independently of the other while maintaining an appropriate and efficient flow
+of data. For example, net.Socket instances are Duplex streams whose Readable
+side allows consumption of data received from the socket and whose Writable side
+allows writing data to the socket. Because data may be written to the socket at
+a faster or slower rate than data is received, each side should operate (and
+buffer) independently of the other. The mechanics of the internal buffering are
+an internal implementation detail and may be changed at any time. However, for
+certain advanced implementations, the internal buffers can be retrieved using
+writable.writableBuffer or readable.readableBuffer . Use of these undocumented
+properties is discouraged. API for stream consumers # Almost all Node.js
+applications, no matter how simple, use streams in some manner. The following is
+an example of using streams in a Node.js application that implements an HTTP
+server: const http = require ( 'node:http' ) ; const server = http .
+createServer ( ( req , res ) => { // `req` is an http.IncomingMessage, which is
+a readable stream. // `res` is an http.ServerResponse, which is a writable
+stream. let body = '' ; // Get the data as utf8 strings. // If an encoding is
+not set, Buffer objects will be received. req . setEncoding ( 'utf8' ) ; //
+Readable streams
 ----------------------------------------------------------------------------------------------------
-Index: 15815 <<"chunk_id": 8, "docno": 2107>>
+Index: 14915 <<"chunk_id": 474, "docno": 2234>>
 
-the application is in an undefined state. The hook might have partially
-executed, resources might be leaked, and continuing could cause data corruption.
-Better to crash fast and loud. But stack overflow is different. The error
-doesn't originate in the hook. Instead, it originates in user code. The stack
-just happens to overflow while the hook is on the call stack. The hook itself is
-fine; there's no corrupted state to worry about. The Bug Explained To understand
-the bug, we need to understand how promise hooks work. When you enable
-async_hooks with an init callback, Node.js registers a promise hook with V8.
-This hook is invoked by V8 itself every time a Promise is created, not by
-Node.js JavaScript code. The critical detail is that V8 calls this hook
-synchronously during the Promise constructor, before new Promise() returns to
-your code. The call sequence looks like this: Your code: new Promise() → V8
-Promise constructor → V8 calls promise hook (synchronous, before constructor
-returns) → Node.js promiseInitHook() [JavaScript] → emitInitNative()
-[JavaScript] → Your async_hooks init callback → V8 Promise constructor returns
-Your code continues... This means that async_hooks callbacks don't run in
-isolation. They run on the same call stack as user code. Every new Promise()
-call adds several stack frames for the hook machinery on top of whatever is
-already on the stack. Here's what the stack looks like during deep recursion:
-[bottom of stack] recursive() frame #1 new Promise() V8 promise hook async_hooks
-init callback ← TryCatchScope::kFatal active here recursive() frame #2 new
+sensible defaults are used. Object-mode writables (if detectable) are rejected
+since the Writer interface is bytes-only. import { Writable } from 'node:stream'
+; import { from , fromWritable , pipeTo } from 'node:stream/iter' ; const
+writable = new Writable ( { write ( chunk , encoding , cb ) { console . log
+(chunk . toString ()) ; cb () ; }, } ) ; await pipeTo ( from ( 'hello world' ) ,
+fromWritable (writable , { backpressure : 'unbounded' } )) ; const { Writable }
+= require ( 'node:stream' ) ; const { from , fromWritable , pipeTo } = require (
+'node:stream/iter' ) ; async function run () { const writable = new Writable ( {
+write ( chunk , encoding , cb ) { console . log (chunk . toString ()) ; cb () ;
+}, } ) ; await pipeTo ( from ( 'hello world' ) , fromWritable (writable , {
+backpressure : 'unbounded' } )) ; } run () ; javascript copy toReadable(source[,
+options]) # Added in: v26.1.0 Stability: 1 - Experimental source <AsyncIterable>
+whose chunks must fulfill with <Uint8Array> [] the return value of pull() or
+from() . options <Object> highWaterMark <number> The internal buffer size in
+bytes before backpressure is applied. Default: 65536 (64 KB). signal
+<AbortSignal> An optional signal to abort the readable. Returns:
+<stream.Readable> Creates a byte-mode stream.Readable from the source (the
+native batch format used by the stream/iter API). Each Uint8Array in a yielded
+batch is pushed as a separate chunk into the Readable.
 ----------------------------------------------------------------------------------------------------
-Index: 53421 <<"chunk_id": 0, "docno": 8575>>
+Index: 13841 <<"chunk_id": 33, "docno": 2155>>
 
-Node.js — Node.js 0.12.11 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 0.12.11 (LTS) RV Rod
-Vagg Node.js 0.12.11 (LTS) This release contains security updates. OpenSSL
-1.0.1s fixes some low-severity defects that impact Node.js. See our impact
-assessment for full details. Notable changes: http_parser : Update to
-http-parser 2.3.2 to fix an unintentionally strict limitation of allowable
-header characters. (James M Snell) nodejs/node#5241 domains : Prevent an exit
-due to an exception being thrown rather than emitting an 'uncaughtException'
-event on the process object when no error handler is set on the domain within
-which an error is thrown and an 'uncaughtException' event listener is set on
-process . (Julien Gilli) nodejs/node#3885 Fix an issue where the process would
-not abort in the proper function call if an error is thrown within a domain with
-no error handler and --abort-on-uncaught-exception is used. (Julien Gilli)
-nodejs/node#3885 openssl : Upgrade from 1.0.1r to 1.0.1s (Ben Noordhuis)
-nodejs/node#5509 Fix a double-free defect in parsing malformed DSA keys that may
-potentially be used for DoS or memory corruption attacks. It is likely to be
-very difficult to use this defect for a practical attack and is therefore
-considered low severity for Node.js users. More info is available at
-https://www.openssl.org/news/vulnerabilities.html#2016-0705 Fix a defect that
-can cause memory corruption in certain very rare cases relating to the internal
-BN_hex2bn() and BN_dec2bn() functions. It is believed that Node.js is not
-invoking the code paths that use these functions so practical attacks via
-Node.js
+rejected since the Writer interface is bytes-only. import { Writable } from
+'node:stream' ; import { from , fromWritable , pipeTo } from 'node:stream/iter'
+; const writable = new Writable ( { write ( chunk , encoding , cb ) { console .
+log (chunk . toString ()) ; cb () ; }, } ) ; await pipeTo ( from ( 'hello world'
+) , fromWritable (writable , { backpressure : 'unbounded' } )) ; const {
+Writable } = require ( 'node:stream' ) ; const { from , fromWritable , pipeTo }
+= require ( 'node:stream/iter' ) ; async function run () { const writable = new
+Writable ( { write ( chunk , encoding , cb ) { console . log (chunk . toString
+()) ; cb () ; }, } ) ; await pipeTo ( from ( 'hello world' ) , fromWritable
+(writable , { backpressure : 'unbounded' } )) ; } run () ; javascript copy
+toReadable(source[, options]) # Added in: v26.1.0 Stability: 1 - Experimental
+source <AsyncIterable> whose chunks must fulfill with <Uint8Array> [] the return
+value of pull() or from() . options <Object> highWaterMark <number> The internal
+buffer size in bytes before backpressure is applied. Default: 65536 (64 KB).
+signal <AbortSignal> An optional signal to abort the readable. Returns:
+<stream.Readable> Creates a byte-mode stream.Readable from the source (the
+native batch format used by the stream/iter API). Each Uint8Array in a yielded
+batch is pushed as a separate chunk into the Readable. import {
+createWriteStream } from 'node:fs' ; import {
 ----------------------------------------------------------------------------------------------------
-Index: 15814 <<"chunk_id": 7, "docno": 2107>>
+Index: 2482 <<"chunk_id": 15, "docno": 333>>
 
-resource usage that could be controlled by an attacker. The runtime cannot
-always recover reliably from resource exhaustion after-the-fact. Technical Deep
-Dive How async_hooks Works When you create a Promise, async_hooks fires
-callbacks to track the async context: new Promise() → V8 promise hook triggered
-→ async_hooks init callback runs → Your hook code executes (e.g., APM span
-creation) The Fatal TryCatchScope Node.js wraps async_hooks callbacks in a
-special error handler called TryCatchScope with CatchMode::kFatal : // From
-Node.js internals void EmitAsyncInit ( /* ... */ ) { TryCatchScope try_catch (
-env , TryCatchScope :: CatchMode :: kFatal ) ; // Run async_hooks callback } C++
-Copy to clipboard kFatal means: "If any error occurs here, it's unrecoverable.
-Exit immediately." This behavior is documented and intentional. From the
-async_hooks documentation : If any AsyncHook callbacks throw, the application
-will print the stack trace and exit. The exit path does follow that of an
-uncaught exception, but all 'uncaughtException' listeners are removed, thus
-forcing the process to exit. The reason for this error handling behavior is that
-these callbacks are running at potentially volatile points in an object's
-lifetime, for example during class construction and destruction. Because of
-this, it is deemed necessary to bring down the process quickly in order to
-prevent an unintentional abort in the future. This design makes sense: if your
-APM tool's init callback throws an error, the application is in an undefined
-state. The hook might have partially executed, resources might be leaked, and
-continuing could cause data corruption. Better to
+an example of good practice, where the Readable stream respects backpressure by
+checking the return value of this.push() : class MyReadable extends Readable {
+_read ( size ) { let chunk ; let canPushMore = true; while ( canPushMore && null
+!== ( chunk = getNextChunk ())) { canPushMore = this . push ( chunk ) ; } } }
+JavaScript Copy to clipboard Additionally, from outside the custom stream, there
+are pitfalls to ignoring backpressure. In this counter-example of good practice,
+the application's code forces data through whenever it is available (signaled by
+the 'data' event ): // This ignores the backpressure mechanisms Node.js has set
+in place, // and unconditionally pushes through data, regardless if the //
+destination stream is ready for it or not. readable . on ( ' data ' , data =>
+writable . write ( data )) ; JavaScript Copy to clipboard Here's an example of
+using .push() with a Readable stream. CJS ESM const { Readable } = require ( '
+node:stream ' ) ; // Create a custom Readable stream const myReadableStream =
+new Readable ( { objectMode : true , read ( size ) { // Push some data onto the
+stream this . push ( { message : ' Hello, world! ' } ) ; this . push ( null ) ;
+// Mark the end of the stream }, } ) ; // Consume the stream myReadableStream .
+on ( ' data ' , chunk => { console . log ( chunk ) ; }
 ----------------------------------------------------------------------------------------------------
-Index: 5049 <<"chunk_id": 12, "docno": 704>>
+Index: 16334 <<"chunk_id": 1893, "docno": 2234>>
 
-events fire only for the <dialog> elements. Unlike browser events, they bubble
-in React: onCancel : An Event handler function. Fires when the user tries to
-dismiss the dialog. onCancelCapture : A version of onCancel that fires in the
-capture phase. onClose : An Event handler function. Fires when a dialog has been
-closed. onCloseCapture : A version of onClose that fires in the capture phase.
-These events fire only for the <details> elements. Unlike browser events, they
-bubble in React: onToggle : An Event handler function. Fires when the user
-toggles the details. onToggleCapture : A version of onToggle that fires in the
-capture phase. These events fire for <img> , <iframe> , <object> , <embed> ,
-<link> , and SVG <image> elements. Unlike browser events, they bubble in React:
-onLoad : An Event handler function. Fires when the resource has loaded.
-onLoadCapture : A version of onLoad that fires in the capture phase. onError :
-An Event handler function. Fires when the resource could not be loaded.
-onErrorCapture : A version of onError that fires in the capture phase. These
-events fire for resources like <audio> and <video> . Unlike browser events, they
-bubble in React: onAbort : An Event handler function. Fires when the resource
-has not fully loaded, but not due to an error. onAbortCapture : A version of
-onAbort that fires in the capture phase. onCanPlay : An Event handler function.
-Fires when there’s enough data to start playing, but not enough to play to the
-end without buffering. onCanPlayCapture :
+; } ) . listen ( 1337 ) ; js copy Prior to Node.js 0.10, the incoming message
+data would be simply discarded. However, in Node.js 0.10 and beyond, the socket
+remains paused forever. The workaround in this situation is to call the
+stream.resume() method to begin the flow of data: // Workaround. net .
+createServer ( ( socket ) => { socket . on ( 'end' , () => { socket . end ( 'The
+message was received but was not processed. \n ' ) ; } ) ; // Start the flow of
+data, discarding it. socket . resume () ; } ) . listen ( 1337 ) ; js copy In
+addition to new Readable streams switching into flowing mode, pre-0.10 style
+streams can be wrapped in a Readable class using the readable.wrap() method.
+readable.read(0) # There are some cases where it is necessary to trigger a
+refresh of the underlying readable stream mechanisms, without actually consuming
+any data. In such cases, it is possible to call readable.read(0) , which will
+always return null . If the internal read buffer is below the highWaterMark ,
+and the stream is not currently reading, then calling stream.read(0) will
+trigger a low-level stream._read() call. While most applications will almost
+never need to do this, there are situations within Node.js where this is done,
+particularly in the Readable stream class internals. readable.push('') # Use of
+readable.push('') is not recommended. Pushing a zero-byte <string> , <Buffer> ,
+<TypedArray> or <DataView> to a stream that is not in object
 ----------------------------------------------------------------------------------------------------
-Index: 45848 <<"chunk_id": 0, "docno": 7160>>
+Index: 9538 <<"chunk_id": 11, "docno": 1424>>
 
-Node.js — Node.js 20.0.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 20.0.0 (Current)
-RG Rafael Gonzaga Node.js 20.0.0 (Current) Notable Changes Permission Model
-Node.js now has an experimental feature called the Permission Model. It allows
-developers to restrict access to specific resources during program execution,
-such as file system operations, child process spawning, and worker thread
-creation. The API exists behind a flag --experimental-permission which when
-enabled will restrict access to all available permissions. By using this
-feature, developers can prevent their applications from accessing or modifying
-sensitive data or running potentially harmful code. More information about the
-Permission Model can be found in the Node.js documentation . The Permission
-Model was a contribution by Rafael Gonzaga in #44004 . Custom ESM loader hooks
-run on dedicated thread ESM hooks supplied via loaders (
---experimental-loader=foo.mjs ) now run in a dedicated thread, isolated from the
-main thread. This provides a separate scope for loaders and ensures no
-cross-contamination between loaders and application code. Synchronous
-import.meta.resolve() In alignment with browser behavior, this function now
-returns synchronously. Despite this, user loader resolve hooks can still be
-defined as async functions (or as sync functions, if the author prefers). Even
-when there are async resolve hooks loaded, import.meta.resolve will still return
-synchronously for application code. Contributed by Anna Henningsen, Antoine du
-Hamel, Geoffrey Booth, Guy Bedford, Jacob Smith, and Michaël Zasso in #44710 V8
-11.3 The V8 engine is updated to version 11.3, which is part of Chromium
+, the stream will temporarily stop reading data from the underlying resource
+until the data currently buffered can be consumed (that is, the stream will stop
+calling the internal readable._read() method that is used to fill the read
+buffer). Data is buffered in Writable streams when the writable.write(chunk)
+method is called repeatedly. While the total size of the internal write buffer
+is below the threshold set by highWaterMark , calls to writable.write() will
+return true . Once the size of the internal buffer reaches or exceeds the
+highWaterMark , false will be returned. A key goal of the stream API,
+particularly the stream.pipe() method, is to limit the buffering of data to
+acceptable levels such that sources and destinations of differing speeds will
+not overwhelm the available memory. The highWaterMark option is a threshold, not
+a limit: it dictates the amount of data that a stream buffers before it stops
+asking for more data. It does not enforce a strict memory limitation in general.
+Specific stream implementations may choose to enforce stricter limits but doing
+so is optional. Because Duplex and Transform streams are both Readable and
+Writable , each maintains two separate internal buffers used for reading and
+writing, allowing each side to operate independently of the other while
+maintaining an appropriate and efficient flow of data. For example, net.Socket
+instances are Duplex streams whose Readable side allows consumption of data
+received from the socket and whose Writable side allows writing data to the
+socket. Because data may be written to the socket at a
 ----------------------------------------------------------------------------------------------------
-Index: 1684 <<"chunk_id": 4, "docno": 249>>
+Index: 14892 <<"chunk_id": 451, "docno": 2234>>
 
-be executed on the Event Loop. The Event Loop will also fulfill the non-blocking
-asynchronous requests made by its callbacks, e.g., network I/O. In summary, the
-Event Loop executes the JavaScript callbacks registered for events, and is also
-responsible for fulfilling non-blocking asynchronous requests like network I/O.
-What code runs on the Worker Pool? The Worker Pool of Node.js is implemented in
-libuv ( docs ), which exposes a general task submission API. Node.js uses the
-Worker Pool to handle "expensive" tasks. This includes I/O for which an
-operating system does not provide a non-blocking version, as well as
-particularly CPU-intensive tasks. These are the Node.js module APIs that make
-use of this Worker Pool: I/O-intensive DNS : dns.lookup() , dns.lookupService()
-. File System : All file system APIs except fs.FSWatcher() and those that are
-explicitly synchronous use libuv's threadpool. CPU-intensive Crypto :
-crypto.pbkdf2() , crypto.scrypt() , crypto.randomBytes() , crypto.randomFill() ,
-crypto.generateKeyPair() . Zlib : All zlib APIs except those that are explicitly
-synchronous use libuv's threadpool. In many Node.js applications, these APIs are
-the only sources of tasks for the Worker Pool. Applications and modules that use
-a C++ add-on can submit other tasks to the Worker Pool. For the sake of
-completeness, we note that when you call one of these APIs from a callback on
-the Event Loop, the Event Loop pays some minor setup costs as it enters the
-Node.js C++ bindings for that API and submits a task to the Worker Pool. These
-costs are negligible compared to the overall cost
+} = require ( 'node:stream/iter' ) ; async function run () { const { writer ,
+readable } = push ( { budget : 16384 , backpressure : 'unbounded' , } ) ; const
+consuming = text (readable) ; // Safe -- awaited writes block until the consumer
+reads. for ( const item of dataset) { await writer . write (item) ; } await
+writer . end () ; console . log ( await consuming) ; } run () . catch (console .
+error) ; javascript copy Drop-oldest # Writes never wait. When the slots buffer
+is full, the oldest buffered chunk is evicted to make room for the incoming
+write. The consumer always sees the most recent data. Useful for live feeds,
+telemetry, or any scenario where stale data is less valuable than current data.
+import { push } from 'node:stream/iter' ; // Keep only the most recent ~16 KB of
+readings const { writer , readable } = push ( { budget : 16384 , backpressure :
+'drop-oldest' , } ) ; const { push } = require ( 'node:stream/iter' ) ; // Keep
+only the most recent ~16 KB of readings const { writer , readable } = push ( {
+budget : 16384 , backpressure : 'drop-oldest' , } ) ; javascript copy
+Drop-newest # Writes never wait. When the slots buffer is full, the incoming
+write is silently discarded. The consumer processes what is already buffered
+without being overwhelmed by new data. Useful for rate-limiting or shedding load
+under pressure. import
 ----------------------------------------------------------------------------------------------------
-Index: 16164 <<"chunk_id": 14, "docno": 2160>>
+Index: 13818 <<"chunk_id": 10, "docno": 2155>>
 
-not Node.js vulnerabilities. The root cause is the application's failure to
-establish proper security boundaries between trusted application logic and
-untrusted user input. Build System Attacks Requiring Control of the Build
-Environment (CWE-78, CWE-114, CWE-276) The Node.js build system (e.g., configure
-, configure.py , Makefile , vcbuild.bat ) is designed to run in a trusted build
-environment. The build environment, including environment variables, the file
-system, and locally installed tools, is a trusted element in the Node.js threat
-model. Reports about command injection via environment variables in build
-scripts (e.g., CC , CXX , PKG_CONFIG , RUSTC ), path hijacking in build output
-directories, or file permissions of build artifacts are not considered
-vulnerabilities. These scenarios require the attacker to already have control
-over the build environment, which means the system is already compromised. Build
-scripts are not a security boundary. They are expected to execute tools and
-scripts specified by the environment, and to trust the file system they operate
-on. Unhandled 'error' Events on EventEmitters (CWE-248) EventEmitters that can
-emit 'error' events require the application to attach an 'error' event handler.
-This includes HTTP streams and other Node.js core streams. If the application
-fails to attach an 'error' handler, the EventEmitter will throw an uncaught
-exception, which may crash the process. Crashes resulting from missing 'error'
-handlers are not considered denial-of-service vulnerabilities in Node.js. It is
-the application's responsibility to properly handle errors by attaching
-appropriate 'error' event listeners to EventEmitters that may emit errors.
-Exceptions Thrown by Application Callbacks (CWE-248) Node.js trusts the
+run () { const { writer , readable } = push ( { budget : 16384 , backpressure :
+'unbounded' , } ) ; const consuming = text (readable) ; // Safe -- awaited
+writes block until the consumer reads. for ( const item of dataset) { await
+writer . write (item) ; } await writer . end () ; console . log ( await
+consuming) ; } run () . catch (console . error) ; javascript copy Drop-oldest #
+Writes never wait. When the slots buffer is full, the oldest buffered chunk is
+evicted to make room for the incoming write. The consumer always sees the most
+recent data. Useful for live feeds, telemetry, or any scenario where stale data
+is less valuable than current data. import { push } from 'node:stream/iter' ; //
+Keep only the most recent ~16 KB of readings const { writer , readable } = push
+( { budget : 16384 , backpressure : 'drop-oldest' , } ) ; const { push } =
+require ( 'node:stream/iter' ) ; // Keep only the most recent ~16 KB of readings
+const { writer , readable } = push ( { budget : 16384 , backpressure :
+'drop-oldest' , } ) ; javascript copy Drop-newest # Writes never wait. When the
+slots buffer is full, the incoming write is silently discarded. The consumer
+processes what is already buffered without being overwhelmed by new data. Useful
+for rate-limiting or shedding load under pressure. import { push } from
+'node:stream/iter' ; // Accept up
 ----------------------------------------------------------------------------------------------------
-Index: 4184 <<"chunk_id": 8, "docno": 574>>
+Index: 16310 <<"chunk_id": 1869, "docno": 2234>>
 
-does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
-process that forks workers; cluster.isWorker is true in the forked workers
-themselves. (You may also see cluster.isMaster in older code — it still works,
-but it's a deprecated alias for isPrimary .) Things to watch for Workers are
-separate processes, so they don't share memory . In-memory sessions, caches, or
-rate limiters won't be visible across workers — use an external store like Redis
-for anything that needs to be shared. Always handle a worker's 'exit' event and
-decide whether to restart it; an unhandled crash silently reduces your server's
-capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
-treated as a crash and endlessly respawn workers. In production, most teams use
-a process manager (PM2, systemd, or a container orchestrator) instead of
-hand-rolling restart/reload logic with cluster directly. Choosing between them A
-quick decision guide: Running an external program, or a script in another
-language? → child_process ( spawn / execFile ). Running another Node.js script
-as an isolated process, with structured messaging? → child_process.fork() . Have
-CPU-bound JavaScript blocking your event loop (hashing, image processing, big
-computations)? → worker_threads . Want to use all the CPU cores to handle more
-traffic to your server? → cluster (or a process manager/orchestrator that does
-the equivalent at the infrastructure level). These aren't mutually exclusive. A
-common pattern for something like an image-upload service is to combine all
-three: cluster to spread incoming requests across cores, and worker_threads (or
-child_process ) within each worker to
+operating in object mode, the chunk will not be converted & will be whatever was
+passed to stream.write() . encoding <string> If the chunk is a string, then
+encoding is the character encoding of that string. If chunk is a Buffer , or if
+the stream is operating in object mode, encoding may be ignored. callback
+<Function> Call this function (optionally with an error argument) when
+processing is complete for the supplied chunk. All Writable stream
+implementations must provide a writable._write() and/or writable._writev()
+method to send data to the underlying resource. Transform streams provide their
+own implementation of the writable._write() . This function MUST NOT be called
+by application code directly. It should be implemented by child classes, and
+called by the internal Writable class methods only. The callback function must
+be called synchronously inside of writable._write() or asynchronously (i.e.
+different tick) to signal either that the write completed successfully or failed
+with an error. The first argument passed to the callback must be the Error
+object if the call failed or null if the write succeeded. All calls to
+writable.write() that occur between the time writable._write() is called and the
+callback is called will cause the written data to be buffered. When the callback
+is invoked, the stream might emit a 'drain' event. If a stream implementation is
+capable of processing multiple chunks of data at once, the writable._writev()
+method should be implemented. If the decodeStrings property is explicitly set to
+false in the constructor options, then chunk will remain the same object that is
 ----------------------------------------------------------------------------------------------------
-Index: 1683 <<"chunk_id": 3, "docno": 249>>
+Index: 16239 <<"chunk_id": 1798, "docno": 2234>>
 
-Event Loop (aka the main loop, main thread, event thread, etc.), and a pool of k
-Workers in a Worker Pool (aka the threadpool). If a thread is taking a long time
-to execute a callback (Event Loop) or a task (Worker), we call it "blocked".
-While a thread is blocked working on behalf of one client, it cannot handle
-requests from any other clients. This provides two motivations for blocking
-neither the Event Loop nor the Worker Pool: Performance: If you regularly
-perform heavyweight activity on either type of thread, the throughput
-(requests/second) of your server will suffer. Security: If it is possible that
-for certain input one of your threads might block, a malicious client could
-submit this "evil input", make your threads block, and keep them from working on
-other clients. This would be a Denial of Service attack. A quick review of Node
-Node.js uses the Event-Driven Architecture: it has an Event Loop for
-orchestration and a Worker Pool for expensive tasks. What code runs on the Event
-Loop? When they begin, Node.js applications first complete an initialization
-phase, require 'ing modules and registering callbacks for events. Node.js
-applications then enter the Event Loop, responding to incoming client requests
-by executing the appropriate callback. This callback executes synchronously, and
-may register asynchronous requests to continue processing after it completes.
-The callbacks for these asynchronous requests will also be executed on the Event
-Loop. The Event Loop will also fulfill the non-blocking asynchronous requests
-made by its callbacks, e.g., network I/O. In summary,
+strings, the highWaterMark specifies a total number of UTF-16 code units. Data
+is buffered in Readable streams when the implementation calls stream.push(chunk)
+. If the consumer of the Stream does not call stream.read() , the data will sit
+in the internal queue until it is consumed. Once the total size of the internal
+read buffer reaches the threshold specified by highWaterMark , the stream will
+temporarily stop reading data from the underlying resource until the data
+currently buffered can be consumed (that is, the stream will stop calling the
+internal readable._read() method that is used to fill the read buffer). Data is
+buffered in Writable streams when the writable.write(chunk) method is called
+repeatedly. While the total size of the internal write buffer is below the
+threshold set by highWaterMark , calls to writable.write() will return true .
+Once the size of the internal buffer reaches or exceeds the highWaterMark ,
+false will be returned. A key goal of the stream API, particularly the
+stream.pipe() method, is to limit the buffering of data to acceptable levels
+such that sources and destinations of differing speeds will not overwhelm the
+available memory. The highWaterMark option is a threshold, not a limit: it
+dictates the amount of data that a stream buffers before it stops asking for
+more data. It does not enforce a strict memory limitation in general. Specific
+stream implementations may choose to enforce stricter limits but doing so is
+optional. Because Duplex and Transform streams are both Readable and Writable ,
+each maintains two separate internal buffers
 ----------------------------------------------------------------------------------------------------
-Index: 13010 <<"chunk_id": 10, "docno": 1753>>
+Index: 9544 <<"chunk_id": 17, "docno": 1424>>
 
-code and the stack trace will be printed. This is to avoid infinite recursion.
-Attempting to resume normally after an uncaught exception can be similar to
-pulling out the power cord when upgrading a computer. Nine out of ten times,
-nothing happens. But the tenth time, the system becomes corrupted. The correct
-use of 'uncaughtException' is to perform synchronous cleanup of allocated
-resources (e.g. file descriptors, handles, etc) before shutting down the
-process. It is not safe to resume normal operation after 'uncaughtException' .
-To restart a crashed application in a more reliable way, whether
-'uncaughtException' is emitted or not, an external monitor should be employed in
-a separate process to detect application failures and recover or restart as
-needed. Event: 'uncaughtExceptionMonitor' # Added in: v13.7.0, v12.17.0 err
-<Error> The uncaught exception. origin <string> Indicates if the exception
-originates from an unhandled rejection or from synchronous errors. Can either be
-'uncaughtException' or 'unhandledRejection' . The latter is used when an
-exception happens in a Promise based async context (or if a Promise is rejected)
-and --unhandled-rejections flag set to strict or throw (which is the default)
-and the rejection is not handled, or when a rejection happens during the command
-line entry point's ES module static loading phase. The
-'uncaughtExceptionMonitor' event is emitted before an 'uncaughtException' event
-is emitted or a hook installed via process.setUncaughtExceptionCaptureCallback()
-is called. Installing an 'uncaughtExceptionMonitor' listener does not change the
-behavior once an 'uncaughtException' event is emitted. The process will still
-crash if no 'uncaughtException' listener is installed. import process from
+is called on a Readable stream, removing this Writable from its set of
+destinations. This is also emitted in case this Writable stream emits an error
+when a Readable stream pipes into it. const writer = getWritableStreamSomehow ()
+; const reader = getReadableStreamSomehow () ; writer . on ( 'unpipe' , ( src )
+=> { console . log ( 'Something has stopped piping into the writer.' ) ; assert
+. equal (src , reader) ; } ) ; reader . pipe (writer) ; reader . unpipe (writer)
+; js copy writable.cork() # Added in: v0.11.2 The writable.cork() method forces
+all written data to be buffered in memory. The buffered data will be flushed
+when either the stream.uncork() or stream.end() methods are called. The primary
+intent of writable.cork() is to accommodate a situation in which several small
+chunks are written to the stream in rapid succession. Instead of immediately
+forwarding them to the underlying destination, writable.cork() buffers all the
+chunks until writable.uncork() is called, which will pass them all to
+writable._writev() , if present. This prevents a head-of-line blocking situation
+where data is being buffered while waiting for the first small chunk to be
+processed. However, use of writable.cork() without implementing
+writable._writev() may have an adverse effect on throughput. See also:
+writable.uncork() , writable._writev() . writable.destroy([error]) # Added in:
+v8.0.0 History Version Changes v14.0.0 Work as a no-op on a stream that has
+already been destroyed. error <Error> Optional, an error to emit with 'error'
+event. Returns: <this> Destroy the stream. Optionally emit an 'error' event,
 ----------------------------------------------------------------------------------------------------
-Index: 30448 <<"chunk_id": 1684, "docno": 4202>>
+Index: 16238 <<"chunk_id": 1797, "docno": 2234>>
 
-to a non-function, and could not be called. 7 Internal Exception Handler
-Run-Time Failure : There was an uncaught exception, and the internal fatal
-exception handler function itself threw an error while attempting to handle it.
-This can happen, for example, if an 'uncaughtException' or domain.on('error')
-handler throws an error. 8 : Unused. In previous versions of Node.js, exit code
-8 sometimes indicated an uncaught exception. 9 Invalid Argument : Either an
-unknown option was specified, or an option requiring a value was provided
-without a value. 10 Internal JavaScript Run-Time Failure : The JavaScript source
-code internal in the Node.js bootstrapping process threw an error when the
-bootstrapping function was called. This is extremely rare, and generally can
-only happen during development of Node.js itself. 12 Invalid Debug Argument :
-The --inspect and/or --inspect-brk options were set, but the port number chosen
-was invalid or unavailable. 13 Unsettled Top-Level Await : await was used
-outside of a function in the top-level code, but the passed Promise never
-settled. 14 Snapshot Failure : Node.js was started to build a V8 startup
-snapshot and it failed because certain requirements of the state of the
-application were not met. >128 Signal Exits : If Node.js receives a fatal signal
-such as SIGKILL or SIGHUP , then its exit code will be 128 plus the value of the
-signal code. This is a standard POSIX practice, since exit codes are defined to
-be 7-bit integers, and signal exits set the high-order bit, and then contain the
-value of the
+is so that unexpected 'error' events (due to incorrect stream implementations)
+do not cause unexpected crashes. If this is unwanted behavior then
+options.cleanup should be set to true : await finished (rs , { cleanup : true }
+) ; mjs copy Object mode # All streams created by Node.js APIs operate
+exclusively on strings, <Buffer> , <TypedArray> and <DataView> objects: Strings
+and Buffers are the most common types used with streams. TypedArray and DataView
+lets you handle binary data with types like Int32Array or Uint8Array . When you
+write a TypedArray or DataView to a stream, Node.js processes the raw bytes. It
+is possible, however, for stream implementations to work with other types of
+JavaScript values (with the exception of null , which serves a special purpose
+within streams). Such streams are considered to operate in "object mode". Stream
+instances are switched into object mode using the objectMode option when the
+stream is created. Attempting to switch an existing stream into object mode is
+not safe. Buffering # Both Writable and Readable streams will store data in an
+internal buffer. The amount of data potentially buffered depends on the
+highWaterMark option passed into the stream's constructor. For normal streams,
+the highWaterMark option specifies a total number of bytes . For streams
+operating in object mode, the highWaterMark specifies a total number of objects.
+For streams operating on (but not decoding) strings, the highWaterMark specifies
+a total number of UTF-16 code units. Data is buffered in Readable streams when
+the implementation calls stream.push(chunk) . If the
 ----------------------------------------------------------------------------------------------------
-Index: 13088 <<"chunk_id": 88, "docno": 1753>>
+Index: 9552 <<"chunk_id": 25, "docno": 1424>>
 
-(reserved by Bash for builtin misuse) 3 Internal JavaScript Parse Error : The
-JavaScript source code internal in the Node.js bootstrapping process caused a
-parse error. This is extremely rare, and generally can only happen during
-development of Node.js itself. 4 Internal JavaScript Evaluation Failure : The
-JavaScript source code internal in the Node.js bootstrapping process failed to
-return a function value when evaluated. This is extremely rare, and generally
-can only happen during development of Node.js itself. 5 Fatal Error : There was
-a fatal unrecoverable error in V8. Typically a message will be printed to stderr
-with the prefix FATAL ERROR . 6 Non-function Internal Exception Handler : There
-was an uncaught exception, but the internal fatal exception handler function was
-somehow set to a non-function, and could not be called. 7 Internal Exception
-Handler Run-Time Failure : There was an uncaught exception, and the internal
-fatal exception handler function itself threw an error while attempting to
-handle it. This can happen, for example, if an 'uncaughtException' or
-domain.on('error') handler throws an error. 8 : Unused. In previous versions of
-Node.js, exit code 8 sometimes indicated an uncaught exception. 9 Invalid
-Argument : Either an unknown option was specified, or an option requiring a
-value was provided without a value. 10 Internal JavaScript Run-Time Failure :
-The JavaScript source code internal in the Node.js bootstrapping process threw
-an error when the bootstrapping function was called. This is extremely rare, and
-generally can only happen during development of Node.js itself. 12 Invalid Debug
-Argument :
+source from which data is consumed. Examples of Readable streams include: HTTP
+responses, on the client HTTP requests, on the server fs read streams zlib
+streams crypto streams TCP sockets child process stdout and stderr process.stdin
+All Readable streams implement the interface defined by the stream.Readable
+class. Two reading modes # Readable streams effectively operate in one of two
+modes: flowing and paused. These modes are separate from object mode . A
+Readable stream can be in object mode or not, regardless of whether it is in
+flowing mode or paused mode. In flowing mode, data is read from the underlying
+system automatically and provided to an application as quickly as possible using
+events via the EventEmitter interface. In paused mode, the stream.read() method
+must be called explicitly to read chunks of data from the stream. All Readable
+streams begin in paused mode but can be switched to flowing mode in one of the
+following ways: Adding a 'data' event handler. Calling the stream.resume()
+method. Calling the stream.pipe() method to send the data to a Writable . The
+Readable can switch back to paused mode using one of the following: If there are
+no pipe destinations, by calling the stream.pause() method. If there are pipe
+destinations, by removing all pipe destinations. Multiple pipe destinations may
+be removed by calling the stream.unpipe() method. The important concept to
+remember is that a Readable will not generate data until a mechanism for either
+consuming or ignoring that data is provided. If the consuming mechanism is
+disabled or taken away,
 ----------------------------------------------------------------------------------------------------
-Index: 15811 <<"chunk_id": 4, "docno": 2107>>
+Index: 3003 <<"chunk_id": 8, "docno": 418>>
 
-APM tools need to follow a request as it flows through your application, even
-across async boundaries. When an HTTP request comes in, is processed by
-middleware, queries a database, calls an external API, and finally returns a
-response, the APM needs to correlate all of these operations into a single
-trace. This requires async context tracking. Most modern APM tools use
-AsyncLocalStorage (which is built on async_hooks in versions of Node.js before
-Node 24) to propagate trace context across async operations. The moment you
-require('dd-trace') , require('newrelic') , or initialize OpenTelemetry, your
-application has async_hooks enabled. The irony is notable: the tools you install
-to monitor and debug crashes can make a category of crashes behave differently.
-This is not the fault of the APM tools; they are using Node.js APIs exactly as
-intended. Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere
-While this issue has significant practical impact, we want to be clear about why
-Node.js is treating this fix as a mere mitigation of security vulnerability
-risks at large: Stack Space Exhaustion Behavior Is Not Specified The "Maximum
-call stack size exceeded" error is not part of the ECMAScript specification. The
-specification does not impose any limit and assumes infinite stack space .
-Imposing a limit and throwing a recoverable error are only behaviors that
-JavaScript engines implement with best-effort. Applications and frameworks are
-already at risk when they build a security model on top of these unspecified
-behaviors that are not guaranteed to reproduce consistently, see: CWE-758:
-Reliance on
+in “flow” mode (i.e., using the readable event), the emission is scheduled for
+the nextTick . That’s why we get them all at the end, when the synchronous code
+of the loop is finished. NOTE: You can try to run the code with
+NODE_DEBUG=stream to see that emitReadable is triggered after each push . If we
+want to see readable events called before each smiley, we can wrap push into a
+setImmediate or process.nextTick like this: class MyStream extends Readable {
+#count = 0 ; _read ( size ) { setImmediate ( () => { this . push ( ' :-) ' ) ;
+if ( ++this . #count === 5 ) { return this . push ( null ) ; } } ) ; } }
+JavaScript Copy to clipboard And we’ll get: >> readable event: 1 :- ) >>
+readable event: 2 :- ) >> readable event: 3 :- ) >> readable event: 4 :- ) >>
+readable event: 5 :- ) >> readable event: 6 >> end event Shell Copy to clipboard
+Writable Writable streams are useful for creating files, uploading data, or any
+task that involves sequentially outputting data. While readable streams provide
+the source of data, writable streams in Node.js act as the destination for your
+data. Typical examples of writable streams in the Node.js API are fs.WriteStream
+, process.stdout , and process.stderr . Key Methods and Events in Writable
+Streams .write() : This method is used to write a chunk of data to the stream.
+It handles the data by
 ----------------------------------------------------------------------------------------------------
-Index: 13082 <<"chunk_id": 82, "docno": 1753>>
+Index: 13814 <<"chunk_id": 6, "docno": 2155>>
 
-file descriptor of process.stdout . The value is fixed at 1 . In Worker threads,
-this field does not exist. A note on process I/O # process.stdout and
-process.stderr differ from other Node.js streams in important ways: They are
-used internally by console.log() and console.error() , respectively. Writes may
-be synchronous depending on what the stream is connected to and whether the
-system is Windows or POSIX: Files: synchronous on Windows and POSIX TTYs
-(Terminals): asynchronous on Windows, synchronous on POSIX Pipes (and sockets):
-synchronous on Windows, asynchronous on POSIX These behaviors are partly for
-historical reasons, as changing them would create backward incompatibility, but
-they are also expected by some users. Synchronous writes avoid problems such as
-output written with console.log() or console.error() being unexpectedly
-interleaved, or not written at all if process.exit() is called before an
-asynchronous write completes. See process.exit() for more information. Warning :
-Synchronous writes block the event loop until the write has completed. This can
-be near instantaneous in the case of output to a file, but under high system
-load, pipes that are not being read at the receiving end, or with slow terminals
-or file systems, it's possible for the event loop to be blocked often enough and
-long enough to have severe negative performance impacts. This may not be a
-problem when writing to an interactive terminal session, but consider this
-particularly careful when doing production logging to the process output
-streams. To check if a stream is connected to a TTY context, check the isTTY
-property.
+. decode (c) . toUpperCase () , )) ; }; // Stateful: line splitter const lines =
+{ transform : async function* ( source ) { let partial = '' ; for await ( const
+chunks of source) { if (chunks === null ) { if (partial) yield [ new TextEncoder
+() . encode (partial)] ; continue ; } for ( const chunk of chunks) { const str =
+partial + new TextDecoder () . decode (chunk) ; const parts = str . split ( ' \n
+' ) ; partial = parts . pop () ; for ( const line of parts) { yield [ new
+TextEncoder () . encode ( ` ${ line } \n ` )] ; } } } }, }; js copy Pull vs.
+push # The API supports two models: Pull -- data flows on demand. pull() and
+pullSync() create lazy pipelines that only read from the source when the
+consumer iterates. Push -- data is written explicitly. push() creates a
+writer/readable pair with backpressure. The writer pushes data in; the readable
+is consumed as an async iterable. Backpressure # Pull streams have natural
+backpressure -- the consumer drives the pace, so the source is never read faster
+than the consumer can process. Push streams need explicit backpressure because
+the producer and consumer run independently. The budget and backpressure options
+on push() , broadcast() , and share() control how this works. The two-buffer
+model # Push streams use a two-part buffering system. Think of it like a bucket
+(buffer) being
+----------------------------------------------------------------------------------------------------
+Index: 16313 <<"chunk_id": 1872, "docno": 2234>>
+
+propagated by invoking the callback and passing the error as the first argument.
+Throwing an Error from within these methods or manually emitting an 'error'
+event results in undefined behavior. If a Readable stream pipes into a Writable
+stream when Writable emits an error, the Readable stream will be unpiped. const
+{ Writable } = require ( 'node:stream' ) ; const myWritable = new Writable ( {
+write ( chunk , encoding , callback ) { if (chunk . toString () . indexOf ( 'a'
+) >= 0 ) { callback ( new Error ( 'chunk is invalid' )) ; } else { callback () ;
+} }, } ) ; js copy An example writable stream # The following illustrates a
+rather simplistic (and somewhat pointless) custom Writable stream
+implementation. While this specific Writable stream instance is not of any real
+particular usefulness, the example illustrates each of the required elements of
+a custom Writable stream instance: const { Writable } = require ( 'node:stream'
+) ; class MyWritable extends Writable { _write ( chunk , encoding , callback ) {
+if (chunk . toString () . indexOf ( 'a' ) >= 0 ) { callback ( new Error ( 'chunk
+is invalid' )) ; } else { callback () ; } } } js copy Decoding buffers in a
+writable stream # Decoding buffers is a common task, for instance, when using
+transformers whose input is a string. This is not a trivial process when using
+multi-byte characters encoding, such as UTF-8. The following
+----------------------------------------------------------------------------------------------------
+Index: 9551 <<"chunk_id": 24, "docno": 1424>>
+
+usage will cause poor garbage collector performance and high RSS (which is not
+typically released back to the system, even after the memory is no longer
+required). Since TCP sockets may never drain if the remote peer does not read
+the data, writing a socket that is not draining may lead to a remotely
+exploitable vulnerability. Writing data while the stream is not draining is
+particularly problematic for a Transform , because the Transform streams are
+paused by default until they are piped or a 'data' or 'readable' event handler
+is added. If the data to be written can be generated or fetched on demand, it is
+recommended to encapsulate the logic into a Readable and use stream.pipe() .
+However, if calling write() is preferred, it is possible to respect backpressure
+and avoid memory issues using the 'drain' event: function write ( data , cb ) {
+if ( ! stream . write (data)) { stream . once ( 'drain' , cb) ; } else { process
+. nextTick (cb) ; } } // Wait for cb to be called before doing any other write.
+write ( 'hello' , () => { console . log ( 'Write completed, do more writes now.'
+) ; } ) ; js copy A Writable stream in object mode will always ignore the
+encoding argument. Readable streams # Readable streams are an abstraction for a
+source from which data is consumed. Examples of Readable streams include: HTTP
+responses, on the client HTTP requests, on the server fs read streams zlib
+----------------------------------------------------------------------------------------------------
+Index: 9609 <<"chunk_id": 82, "docno": 1424>>
+
+with an error argument) when processing is complete for the supplied chunk. All
+Writable stream implementations must provide a writable._write() and/or
+writable._writev() method to send data to the underlying resource. Transform
+streams provide their own implementation of the writable._write() . This
+function MUST NOT be called by application code directly. It should be
+implemented by child classes, and called by the internal Writable class methods
+only. The callback function must be called synchronously inside of
+writable._write() or asynchronously (i.e. different tick) to signal either that
+the write completed successfully or failed with an error. The first argument
+passed to the callback must be the Error object if the call failed or null if
+the write succeeded. All calls to writable.write() that occur between the time
+writable._write() is called and the callback is called will cause the written
+data to be buffered. When the callback is invoked, the stream might emit a
+'drain' event. If a stream implementation is capable of processing multiple
+chunks of data at once, the writable._writev() method should be implemented. If
+the decodeStrings property is explicitly set to false in the constructor
+options, then chunk will remain the same object that is passed to .write() , and
+may be a string rather than a Buffer . This is to support implementations that
+have an optimized handling for certain string data encodings. In that case, the
+encoding argument will indicate the character encoding of the string. Otherwise,
+the encoding argument can be safely ignored. The writable._write() method is
+prefixed with an underscore because it
+----------------------------------------------------------------------------------------------------
+Index: 16248 <<"chunk_id": 1807, "docno": 2234>>
+
+can now be a Uint8Array instance. chunk <string> | <Buffer> | <TypedArray> |
+<DataView> | <any> Optional data to write. For streams not operating in object
+mode, chunk must be a <string> , <Buffer> , <TypedArray> or <DataView> . For
+object mode streams, chunk may be any JavaScript value other than null .
+encoding <string> The encoding if chunk is a string callback <Function> Callback
+for when the stream is finished. Returns: <this> Calling the writable.end()
+method signals that no more data will be written to the Writable . The optional
+chunk and encoding arguments allow one final additional chunk of data to be
+written immediately before closing the stream. Calling the stream.write() method
+after calling stream.end() will raise an error. // Write 'hello, ' and then end
+with 'world!'. const fs = require ( 'node:fs' ) ; const file = fs .
+createWriteStream ( 'example.txt' ) ; file . write ( 'hello, ' ) ; file . end (
+'world!' ) ; // Writing more now is not allowed! js copy
+writable.setDefaultEncoding(encoding) # Added in: v0.11.15 History Version
+Changes v6.1.0 This method now returns a reference to writable . encoding
+<string> The new default encoding Returns: <this> The
+writable.setDefaultEncoding() method sets the default encoding for a Writable
+stream. writable.uncork() # Added in: v0.11.2 The writable.uncork() method
+flushes all data buffered since stream.cork() was called. When using
+writable.cork() and writable.uncork() to manage the buffering of writes to a
+stream, defer calls to writable.uncork() using process.nextTick() . Doing so
+allows batching of all writable.write() calls that occur
+----------------------------------------------------------------------------------------------------
+Index: 16307 <<"chunk_id": 1866, "docno": 2234>>
+
+to stream._write() . Other types of data are not converted (i.e. Buffer s are
+not decoded into string s). Setting to false will prevent string s from being
+converted. Default: true . defaultEncoding <string> The default encoding that is
+used when no encoding is specified as an argument to stream.write() . Default:
+'utf8' . objectMode <boolean> Whether or not the stream.write(anyObj) is a valid
+operation. When set, it becomes possible to write JavaScript values other than
+string, <Buffer> , <TypedArray> or <DataView> if supported by the stream
+implementation. Default: false . emitClose <boolean> Whether or not the stream
+should emit 'close' after it has been destroyed. Default: true . write
+<Function> Implementation for the stream._write() method. writev <Function>
+Implementation for the stream._writev() method. destroy <Function>
+Implementation for the stream._destroy() method. final <Function> Implementation
+for the stream._final() method. construct <Function> Implementation for the
+stream._construct() method. autoDestroy <boolean> Whether this stream should
+automatically call .destroy() on itself after ending. Default: true . signal
+<AbortSignal> A signal representing possible cancellation. const { Writable } =
+require ( 'node:stream' ) ; class MyWritable extends Writable { constructor (
+options ) { // Calls the stream.Writable() constructor. super (options) ; // ...
+} } js copy Or, when using pre-ES6 style constructors: const { Writable } =
+require ( 'node:stream' ) ; const util = require ( 'node:util' ) ; function
+MyWritable ( options ) { if ( ! ( this instanceof MyWritable )) return new
+MyWritable (options) ; Writable . call ( this , options) ; } util . inherits
+----------------------------------------------------------------------------------------------------
+Index: 16291 <<"chunk_id": 1850, "docno": 2234>>
+
+which are expected to emit 'close' . v14.0.0 Emitting 'close' before 'end' on a
+Readable stream will cause an ERR_STREAM_PREMATURE_CLOSE error. v14.0.0 Callback
+will be invoked on streams which have already finished before the call to
+finished(stream, cb) . stream <Stream> | <ReadableStream> | <WritableStream> A
+readable and/or writable stream/webstream. options <Object> error <boolean> If
+set to false , then a call to emit('error', err) is not treated as finished.
+Default: true . readable <boolean> When set to false , the callback will be
+called when the stream ends even though the stream might still be readable.
+Default: true . writable <boolean> When set to false , the callback will be
+called when the stream ends even though the stream might still be writable.
+Default: true . signal <AbortSignal> allows aborting the wait for the stream
+finish. The underlying stream will not be aborted if the signal is aborted. The
+callback will get called with an AbortError . All registered listeners added by
+this function will also be removed. callback <Function> A callback function that
+takes an optional error argument. Returns: <Function> A cleanup function which
+removes all registered listeners. A function to get notified when a stream is no
+longer readable, writable or has experienced an error or a premature close
+event. const { finished } = require ( 'node:stream' ) ; const fs = require (
+'node:fs' ) ; const rs = fs . createReadStream ( 'archive.tar' ) ; finished (rs
+, ( err ) => { if (err) { console . error (
+----------------------------------------------------------------------------------------------------
+Index: 9612 <<"chunk_id": 85, "docno": 1424>>
+
+myWritable = new Writable ( { write ( chunk , encoding , callback ) { if (chunk
+. toString () . indexOf ( 'a' ) >= 0 ) { callback ( new Error ( 'chunk is
+invalid' )) ; } else { callback () ; } }, } ) ; js copy An example writable
+stream # The following illustrates a rather simplistic (and somewhat pointless)
+custom Writable stream implementation. While this specific Writable stream
+instance is not of any real particular usefulness, the example illustrates each
+of the required elements of a custom Writable stream instance: const { Writable
+} = require ( 'node:stream' ) ; class MyWritable extends Writable { _write (
+chunk , encoding , callback ) { if (chunk . toString () . indexOf ( 'a' ) >= 0 )
+{ callback ( new Error ( 'chunk is invalid' )) ; } else { callback () ; } } } js
+copy Decoding buffers in a writable stream # Decoding buffers is a common task,
+for instance, when using transformers whose input is a string. This is not a
+trivial process when using multi-byte characters encoding, such as UTF-8. The
+following example shows how to decode multi-byte strings using StringDecoder and
+Writable . const { Writable } = require ( 'node:stream' ) ; const {
+StringDecoder } = require ( 'node:string_decoder' ) ; class StringWritable
+extends Writable { constructor ( options ) { super (options) ; this . _decoder =
+new StringDecoder (options ?. defaultEncoding) ; this . data = '' ;
+----------------------------------------------------------------------------------------------------
+Index: 16253 <<"chunk_id": 1812, "docno": 2234>>
+
+; } } // Wait for cb to be called before doing any other write. write ( 'hello'
+, () => { console . log ( 'Write completed, do more writes now.' ) ; } ) ; js
+copy A Writable stream in object mode will always ignore the encoding argument.
+Readable streams # Readable streams are an abstraction for a source from which
+data is consumed. Examples of Readable streams include: HTTP responses, on the
+client HTTP requests, on the server fs read streams zlib streams crypto streams
+TCP sockets child process stdout and stderr process.stdin All Readable streams
+implement the interface defined by the stream.Readable class. Two reading modes
+# Readable streams effectively operate in one of two modes: flowing and paused.
+These modes are separate from object mode . A Readable stream can be in object
+mode or not, regardless of whether it is in flowing mode or paused mode. In
+flowing mode, data is read from the underlying system automatically and provided
+to an application as quickly as possible using events via the EventEmitter
+interface. In paused mode, the stream.read() method must be called explicitly to
+read chunks of data from the stream. All Readable streams begin in paused mode
+but can be switched to flowing mode in one of the following ways: Adding a
+'data' event handler. Calling the stream.resume() method. Calling the
+stream.pipe() method to send the data to a Writable . The Readable can switch
+back to paused mode using one of the following: If there are no pipe
+----------------------------------------------------------------------------------------------------
+Index: 16245 <<"chunk_id": 1804, "docno": 2234>>
+
+( 'pipe' , ( src ) => { console . log ( 'Something is piping into the writer.' )
+; assert . equal (src , reader) ; } ) ; reader . pipe (writer) ; js copy Event:
+'unpipe' # Added in: v0.9.4 src <stream.Readable> The source stream that unpiped
+this writable The 'unpipe' event is emitted when the stream.unpipe() method is
+called on a Readable stream, removing this Writable from its set of
+destinations. This is also emitted in case this Writable stream emits an error
+when a Readable stream pipes into it. const writer = getWritableStreamSomehow ()
+; const reader = getReadableStreamSomehow () ; writer . on ( 'unpipe' , ( src )
+=> { console . log ( 'Something has stopped piping into the writer.' ) ; assert
+. equal (src , reader) ; } ) ; reader . pipe (writer) ; reader . unpipe (writer)
+; js copy writable.cork() # Added in: v0.11.2 The writable.cork() method forces
+all written data to be buffered in memory. The buffered data will be flushed
+when either the stream.uncork() or stream.end() methods are called. The primary
+intent of writable.cork() is to accommodate a situation in which several small
+chunks are written to the stream in rapid succession. Instead of immediately
+forwarding them to the underlying destination, writable.cork() buffers all the
+chunks until writable.uncork() is called, which will pass them all to
+writable._writev() , if present. This prevents a head-of-line blocking situation
+where data is being buffered while waiting for the first small chunk to be
+processed.
+----------------------------------------------------------------------------------------------------
+Index: 9571 <<"chunk_id": 44, "docno": 1424>>
+
+} console . log (data) ; } print (fs . createReadStream ( 'file' )) . catch
+(console . error) ; js copy If the loop terminates with a break , return , or a
+throw , the stream will be destroyed. In other terms, iterating over a stream
+will consume the stream fully. The stream will be read in chunks of size equal
+to the highWaterMark option. In the code example above, data will be in a single
+chunk if the file has less than 64 KiB of data because no highWaterMark option
+is provided to fs.createReadStream() .
+readable[Symbol.for('Stream.toAsyncStreamable')]() # Added in: v26.1.0
+Stability: 1 - Experimental Returns: <AsyncIterable> An
+AsyncIterable<Uint8Array[]> that yields batched chunks from the stream. When the
+--experimental-stream-iter flag is enabled, Readable streams implement the
+Stream.toAsyncStreamable protocol, enabling efficient consumption by the
+stream/iter API. This provides a batched async iterator that drains the stream's
+internal buffer into Uint8Array[] batches, amortizing the per-chunk Promise
+overhead of the standard Symbol.asyncIterator path. For byte-mode streams,
+chunks are yielded directly as Buffer instances (which are Uint8Array
+subclasses). For object-mode or encoded streams, each chunk is normalized to
+Uint8Array before batching. The returned iterator is tagged as a validated
+source, so from() passes it through without additional normalization. import {
+Readable } from 'node:stream' ; import { text , from } from 'node:stream/iter' ;
+const readable = new Readable ( { read () { this . push ( 'hello' ) ; this .
+push ( null ) ; }, } ) ; // Readable is automatically consumed via
+----------------------------------------------------------------------------------------------------
+Index: 3004 <<"chunk_id": 9, "docno": 418>>
+
+and Events in Writable Streams .write() : This method is used to write a chunk
+of data to the stream. It handles the data by buffering it up to a defined limit
+(highWaterMark), and returns a boolean indicating whether more data can be
+written immediately. .end() : This method signals the end of the data writing
+process. It signals the stream to complete the write operation and potentially
+perform any necessary cleanup. Creating a Writable Here's an example of creating
+a writable stream that converts all incoming data to uppercase before writing it
+to the standard output: CJS ESM const { once } = require ( ' node:events ' ) ;
+const { Writable } = require ( ' node:stream ' ) ; class MyStream extends
+Writable { constructor () { super ( { highWaterMark : 10 /* 10 bytes */ } ) ; }
+_write ( data , encode , cb ) { process . stdout . write ( data . toString () .
+toUpperCase () + ' \n ' , cb ) ; } } async function main () { const stream = new
+MyStream () ; for ( let i = 0 ; i < 10 ; i ++ ) { const waitDrain = ! stream .
+write ( ' hello ' ) ; if ( waitDrain ) { console . log ( ' >> wait drain ' ) ;
+await once ( stream , ' drain ' ) ; } } stream . end ( ' world ' ) ; } //
+----------------------------------------------------------------------------------------------------
+Index: 16263 <<"chunk_id": 1822, "docno": 2234>>
+
+createWriteStream ( 'file.txt.gz' ) ; r . pipe (z) . pipe (w) ; js copy By
+default, stream.end() is called on the destination Writable stream when the
+source Readable stream emits 'end' , so that the destination is no longer
+writable. To disable this default behavior, the end option can be passed as
+false , causing the destination stream to remain open: reader . pipe (writer , {
+end : false } ) ; reader . on ( 'end' , () => { writer . end ( 'Goodbye \n ' ) ;
+} ) ; js copy One important caveat is that if the Readable stream emits an error
+during processing, the Writable destination is not closed automatically. If an
+error occurs, it will be necessary to manually close each stream in order to
+prevent memory leaks. The process.stderr and process.stdout Writable streams are
+never closed until the Node.js process exits, regardless of the specified
+options. readable.read([size]) # Added in: v0.9.4 size <number> Optional
+argument to specify how much data to read. Returns: <string> | <Buffer> | <null>
+| <any> The readable.read() method reads data out of the internal buffer and
+returns it. If no data is available to be read, null is returned. By default,
+the data is returned as a Buffer object unless an encoding has been specified
+using the readable.setEncoding() method or the stream is operating in object
+mode. The optional size argument specifies a specific number of bytes to read.
+If size bytes are not available to be read, null will be
+----------------------------------------------------------------------------------------------------
+Index: 9562 <<"chunk_id": 35, "docno": 1424>>
+
+open: reader . pipe (writer , { end : false } ) ; reader . on ( 'end' , () => {
+writer . end ( 'Goodbye \n ' ) ; } ) ; js copy One important caveat is that if
+the Readable stream emits an error during processing, the Writable destination
+is not closed automatically. If an error occurs, it will be necessary to
+manually close each stream in order to prevent memory leaks. The process.stderr
+and process.stdout Writable streams are never closed until the Node.js process
+exits, regardless of the specified options. readable.read([size]) # Added in:
+v0.9.4 size <number> Optional argument to specify how much data to read.
+Returns: <string> | <Buffer> | <null> | <any> The readable.read() method reads
+data out of the internal buffer and returns it. If no data is available to be
+read, null is returned. By default, the data is returned as a Buffer object
+unless an encoding has been specified using the readable.setEncoding() method or
+the stream is operating in object mode. The optional size argument specifies a
+specific number of bytes to read. If size bytes are not available to be read,
+null will be returned unless the stream has ended, in which case all of the data
+remaining in the internal buffer will be returned. If the size argument is not
+specified, all of the data contained in the internal buffer will be returned.
+The size argument must be less than or equal to 1 GiB. The readable.read()
+method should only be called on Readable
+----------------------------------------------------------------------------------------------------
+Index: 9604 <<"chunk_id": 77, "docno": 1424>>
+
+options. The new stream class must then implement one or more specific methods,
+depending on the type of stream being created, as detailed in the chart below:
+Use-case Class Method(s) to implement Reading only Readable _read() Writing only
+Writable _write() , _writev() , _final() Reading and writing Duplex _read() ,
+_write() , _writev() , _final() Operate on written data, then read the result
+Transform _transform() , _flush() , _final() The implementation code for a
+stream should never call the "public" methods of a stream that are intended for
+use by consumers (as described in the API for stream consumers section). Doing
+so may lead to adverse side effects in application code consuming the stream.
+Avoid overriding public methods such as write() , end() , cork() , uncork() ,
+read() and destroy() , or emitting internal events such as 'error' , 'data' ,
+'end' , 'finish' and 'close' through .emit() . Doing so can break current and
+future stream invariants leading to behavior and/or compatibility issues with
+other streams, stream utilities, and user expectations. Simplified construction
+# Added in: v1.2.0 For many simple cases, it is possible to create a stream
+without relying on inheritance. This can be accomplished by directly creating
+instances of the stream.Writable , stream.Readable , stream.Duplex , or
+stream.Transform objects and passing appropriate methods as constructor options.
+const { Writable } = require ( 'node:stream' ) ; const myWritable = new Writable
+( { construct ( callback ) { // Initialize state and load resources... }, write
+( chunk , encoding , callback
+----------------------------------------------------------------------------------------------------
+Index: 9633 <<"chunk_id": 106, "docno": 1424>>
+
+{ socket . on ( 'end' , () => { socket . end ( 'The message was received but was
+not processed. \n ' ) ; } ) ; // Start the flow of data, discarding it. socket .
+resume () ; } ) . listen ( 1337 ) ; js copy In addition to new Readable streams
+switching into flowing mode, pre-0.10 style streams can be wrapped in a Readable
+class using the readable.wrap() method. readable.read(0) # There are some cases
+where it is necessary to trigger a refresh of the underlying readable stream
+mechanisms, without actually consuming any data. In such cases, it is possible
+to call readable.read(0) , which will always return null . If the internal read
+buffer is below the highWaterMark , and the stream is not currently reading,
+then calling stream.read(0) will trigger a low-level stream._read() call. While
+most applications will almost never need to do this, there are situations within
+Node.js where this is done, particularly in the Readable stream class internals.
+readable.push('') # Use of readable.push('') is not recommended. Pushing a
+zero-byte <string> , <Buffer> , <TypedArray> or <DataView> to a stream that is
+not in object mode has an interesting side effect. Because it is a call to
+readable.push() , the call will end the reading process. However, because the
+argument is an empty string, no data is added to the readable buffer so there is
+nothing for a user to consume. highWaterMark discrepancy after calling
+readable.setEncoding() # The use of readable.setEncoding() will change the
+behavior of
+----------------------------------------------------------------------------------------------------
+Index: 16264 <<"chunk_id": 1823, "docno": 2234>>
+
+mode. The optional size argument specifies a specific number of bytes to read.
+If size bytes are not available to be read, null will be returned unless the
+stream has ended, in which case all of the data remaining in the internal buffer
+will be returned. If the size argument is not specified, all of the data
+contained in the internal buffer will be returned. The size argument must be
+less than or equal to 1 GiB. The readable.read() method should only be called on
+Readable streams operating in paused mode. In flowing mode, readable.read() is
+called automatically until the internal buffer is fully drained. const readable
+= getReadableStreamSomehow () ; // 'readable' may be triggered multiple times as
+data is buffered in readable . on ( 'readable' , () => { let chunk ; console .
+log ( 'Stream is readable (new data received in buffer)' ) ; // Use a loop to
+make sure we read all currently available data while ( null !== (chunk =
+readable . read ())) { console . log ( `Read ${ chunk . length } bytes of
+data...` ) ; } } ) ; // 'end' will be triggered once when there is no more data
+available readable . on ( 'end' , () => { console . log ( 'Reached end of
+stream.' ) ; } ) ; js copy Each call to readable.read() returns a chunk of data
+or null , signifying that there's no more data to read at that moment. These
+chunks aren't automatically
+----------------------------------------------------------------------------------------------------
+Index: 9590 <<"chunk_id": 63, "docno": 1424>>
+
+call to emit('error', err) is not treated as finished. Default: true . readable
+<boolean> When set to false , the callback will be called when the stream ends
+even though the stream might still be readable. Default: true . writable
+<boolean> When set to false , the callback will be called when the stream ends
+even though the stream might still be writable. Default: true . signal
+<AbortSignal> allows aborting the wait for the stream finish. The underlying
+stream will not be aborted if the signal is aborted. The callback will get
+called with an AbortError . All registered listeners added by this function will
+also be removed. callback <Function> A callback function that takes an optional
+error argument. Returns: <Function> A cleanup function which removes all
+registered listeners. A function to get notified when a stream is no longer
+readable, writable or has experienced an error or a premature close event. const
+{ finished } = require ( 'node:stream' ) ; const fs = require ( 'node:fs' ) ;
+const rs = fs . createReadStream ( 'archive.tar' ) ; finished (rs , ( err ) => {
+if (err) { console . error ( 'Stream failed.' , err) ; } else { console . log (
+'Stream is done reading.' ) ; } } ) ; rs . resume () ; // Drain the stream. js
+copy Especially useful in error handling scenarios where a stream is destroyed
+prematurely (like an aborted HTTP request), and will not emit 'end' or 'finish'
+. The finished API
+----------------------------------------------------------------------------------------------------
+Index: 16312 <<"chunk_id": 1871, "docno": 2234>>
+
+should be implemented by child classes, and called by the internal Writable
+class methods only. The writable._writev() method may be implemented in addition
+or alternatively to writable._write() in stream implementations that are capable
+of processing multiple chunks of data at once. If implemented and if there is
+buffered data from previous writes, _writev() will be called instead of _write()
+. The writable._writev() method is prefixed with an underscore because it is
+internal to the class that defines it, and should never be called directly by
+user programs. writable._destroy(err, callback) # Added in: v8.0.0 err <Error> A
+possible error. callback <Function> A callback function that takes an optional
+error argument. The _destroy() method is called by writable.destroy() . It can
+be overridden by child classes but it must not be called directly.
+writable._final(callback) # Added in: v8.0.0 callback <Function> Call this
+function (optionally with an error argument) when finished writing any remaining
+data. The _final() method must not be called directly. It may be implemented by
+child classes, and if so, will be called by the internal Writable class methods
+only. This optional function will be called before the stream closes, delaying
+the 'finish' event until callback is called. This is useful to close resources
+or write buffered data before a stream ends. Errors while writing # Errors
+occurring during the processing of the writable._write() , writable._writev()
+and writable._final() methods must be propagated by invoking the callback and
+passing the error as the first argument. Throwing an Error from within these
+methods or manually emitting an 'error'
+----------------------------------------------------------------------------------------------------
+Index: 2483 <<"chunk_id": 16, "docno": 333>>
+
+) ; // Consume the stream myReadableStream . on ( ' data ' , chunk => { console
+. log ( chunk ) ; } ) ; // Output: // { message: 'Hello, world!' } JavaScript
+Copy to clipboard In this example, we create a custom Readable stream that
+pushes a single object onto the stream using .push() . The ._read() method is
+called when the stream is ready to consume data, and in this case, we
+immediately push some data onto the stream and mark the end of the stream by
+pushing null. We then consume the stream by listening for the 'data' event and
+logging each chunk of data that is pushed onto the stream. In this case, we only
+push a single chunk of data onto the stream, so we only see one log message.
+Rules specific to Writable Streams Recall that a .write() may return true or
+false dependent on some conditions. Luckily for us, when building our own
+Writable stream, the stream state machine will handle our callbacks and
+determine when to handle backpressure and optimize the flow of data for us.
+However, when we want to use a Writable directly, we must respect the .write()
+return value and pay close attention to these conditions: If the write queue is
+busy, .write() will return false. If the data chunk is too large, .write() will
+return false (the limit is indicated by the variable, highWaterMark ). // This
+writable is invalid because of the async nature of JavaScript callbacks. //
+Without a
+----------------------------------------------------------------------------------------------------
+Index: 9605 <<"chunk_id": 78, "docno": 1424>>
+
+myWritable = new Writable ( { construct ( callback ) { // Initialize state and
+load resources... }, write ( chunk , encoding , callback ) { // ... }, destroy
+() { // Free resources... }, } ) ; js copy Implementing a writable stream # The
+stream.Writable class is extended to implement a Writable stream. Custom
+Writable streams must call the new stream.Writable([options]) constructor and
+implement the writable._write() and/or writable._writev() method. new
+stream.Writable([options]) # History Version Changes v22.0.0 bump default
+highWaterMark. v15.5.0 support passing in an AbortSignal. v14.0.0 Change
+autoDestroy option default to true . v11.2.0, v10.16.0 Add autoDestroy option to
+automatically destroy() the stream when it emits 'finish' or errors. v10.0.0 Add
+emitClose option to specify if 'close' is emitted on destroy. options <Object>
+highWaterMark <number> Buffer level when stream.write() starts returning false .
+Default: 65536 (64 KiB), or 16 for objectMode streams. decodeStrings <boolean>
+Whether to encode string s passed to stream.write() to Buffer s (with the
+encoding specified in the stream.write() call) before passing them to
+stream._write() . Other types of data are not converted (i.e. Buffer s are not
+decoded into string s). Setting to false will prevent string s from being
+converted. Default: true . defaultEncoding <string> The default encoding that is
+used when no encoding is specified as an argument to stream.write() . Default:
+'utf8' . objectMode <boolean> Whether or not the stream.write(anyObj) is a valid
+operation. When set, it becomes possible to write JavaScript values other than
+string, <Buffer> , <TypedArray> or <DataView> if supported by the
+----------------------------------------------------------------------------------------------------
+Index: 9611 <<"chunk_id": 84, "docno": 1424>>
+
+writable._writev() method is prefixed with an underscore because it is internal
+to the class that defines it, and should never be called directly by user
+programs. writable._destroy(err, callback) # Added in: v8.0.0 err <Error> A
+possible error. callback <Function> A callback function that takes an optional
+error argument. The _destroy() method is called by writable.destroy() . It can
+be overridden by child classes but it must not be called directly.
+writable._final(callback) # Added in: v8.0.0 callback <Function> Call this
+function (optionally with an error argument) when finished writing any remaining
+data. The _final() method must not be called directly. It may be implemented by
+child classes, and if so, will be called by the internal Writable class methods
+only. This optional function will be called before the stream closes, delaying
+the 'finish' event until callback is called. This is useful to close resources
+or write buffered data before a stream ends. Errors while writing # Errors
+occurring during the processing of the writable._write() , writable._writev()
+and writable._final() methods must be propagated by invoking the callback and
+passing the error as the first argument. Throwing an Error from within these
+methods or manually emitting an 'error' event results in undefined behavior. If
+a Readable stream pipes into a Writable stream when Writable emits an error, the
+Readable stream will be unpiped. const { Writable } = require ( 'node:stream' )
+; const myWritable = new Writable ( { write ( chunk , encoding , callback ) { if
+(chunk . toString () . indexOf ( 'a' )
+----------------------------------------------------------------------------------------------------
+Index: 9620 <<"chunk_id": 93, "docno": 1424>>
+
+buffer. See readable.push('') for more information. Errors while reading #
+Errors occurring during processing of the readable._read() must be propagated
+through the readable.destroy(err) method. Throwing an Error from within
+readable._read() or manually emitting an 'error' event results in undefined
+behavior. const { Readable } = require ( 'node:stream' ) ; const myReadable =
+new Readable ( { read ( size ) { const err = checkSomeErrorCondition () ; if
+(err) { this . destroy (err) ; } else { // Do some work. } }, } ) ; js copy An
+example counting stream # The following is a basic example of a Readable stream
+that emits the numerals from 1 to 1,000,000 in ascending order, and then ends.
+const { Readable } = require ( 'node:stream' ) ; class Counter extends Readable
+{ constructor ( opt ) { super (opt) ; this . _max = 1000000 ; this . _index = 1
+; } _read () { const i = this . _index ++ ; if (i > this . _max) this . push (
+null ) ; else { const str = String (i) ; const buf = Buffer . from (str ,
+'ascii' ) ; this . push (buf) ; } } } js copy Implementing a duplex stream # A
+Duplex stream is one that implements both Readable and Writable , such as a TCP
+socket connection. Because JavaScript does not have support for multiple
+inheritance, the stream.Duplex class is extended to implement a Duplex stream
+(as opposed to extending the stream.Readable
+----------------------------------------------------------------------------------------------------
+Index: 3014 <<"chunk_id": 19, "docno": 418>>
+
+data flow. For a deeper understanding of backpressure, check the backpressure
+guide . Streams vs Web streams The stream concept is not exclusive to Node.js.
+In fact, Node.js has a different implementation of the stream concept called Web
+Streams , which implements the WHATWG Streams Standard . Although the concepts
+behind them are similar, it is important to be aware that they have different
+APIs and are not directly compatible. Web Streams implement the ReadableStream ,
+WritableStream , and TransformStream classes, which are homologous to Node.js's
+Readable , Writable , and Transform streams. Interoperability of streams and Web
+Streams Node.js provides utility functions to convert to/from Web Streams and
+Node.js streams. These functions are implemented as toWeb and fromWeb methods in
+each stream class. The following example in the Duplex class demonstrates how to
+work with both readable and writable streams converted to Web Streams: CJS ESM
+const { Duplex } = require ( ' node:stream ' ) ; const duplex = Duplex ( { read
+() { this . push ( ' world ' ) ; this . push ( null ) ; }, write ( chunk ,
+encoding , callback ) { console . log ( ' writable ' , chunk ) ; callback () ;
+}, } ) ; const { readable , writable } = Duplex . toWeb ( duplex ) ; writable .
+getWriter () . write ( ' hello ' ) ; readable . getReader () . read () . then (
+result => { console . log ( '
+----------------------------------------------------------------------------------------------------
+Index: 16318 <<"chunk_id": 1877, "docno": 2234>>
+
+function MUST NOT be called by application code directly. It should be
+implemented by child classes, and called by the internal Readable class methods
+only. All Readable stream implementations must provide an implementation of the
+readable._read() method to fetch data from the underlying resource. When
+readable._read() is called, if data is available from the resource, the
+implementation should begin pushing that data into the read queue using the
+this.push(dataChunk) method. _read() will be called again after each call to
+this.push(dataChunk) once the stream is ready to accept more data. _read() may
+continue reading from the resource and pushing data until readable.push()
+returns false . Only when _read() is called again after it has stopped should it
+resume pushing additional data into the queue. Once the readable._read() method
+has been called, it will not be called again until more data is pushed through
+the readable.push() method. Empty data such as empty buffers and strings will
+not cause readable._read() to be called. The size argument is advisory. For
+implementations where a "read" is a single operation that returns data can use
+the size argument to determine how much data to fetch. Other implementations may
+ignore this argument and simply provide data whenever it becomes available.
+There is no need to "wait" until size bytes are available before calling
+stream.push(chunk) . The readable._read() method is prefixed with an underscore
+because it is internal to the class that defines it, and should never be called
+directly by user programs. readable._destroy(err, callback) # Added in: v8.0.0
+err <Error> A possible error.
+----------------------------------------------------------------------------------------------------
+Index: 9541 <<"chunk_id": 14, "docno": 1424>>
+
+have no reason to call require('node:stream') . Developers wishing to implement
+new types of streams should refer to the section API for stream implementers .
+Writable streams # Writable streams are an abstraction for a destination to
+which data is written. Examples of Writable streams include: HTTP requests, on
+the client HTTP responses, on the server fs write streams zlib streams crypto
+streams TCP sockets child process stdin process.stdout , process.stderr Some of
+these examples are actually Duplex streams that implement the Writable
+interface. All Writable streams implement the interface defined by the
+stream.Writable class. While specific instances of Writable streams may differ
+in various ways, all Writable streams follow the same fundamental usage pattern
+as illustrated in the example below: const myStream = getWritableStreamSomehow
+() ; myStream . write ( 'some data' ) ; myStream . write ( 'some more data' ) ;
+myStream . end ( 'done writing data' ) ; js copy Class: stream.Writable # Added
+in: v0.9.4 Event: 'close' # Added in: v0.9.4 History Version Changes v10.0.0 Add
+emitClose option to specify if 'close' is emitted on destroy. The 'close' event
+is emitted when the stream and any of its underlying resources (a file
+descriptor, for example) have been closed. The event indicates that no more
+events will be emitted, and no further computation will occur. A Writable stream
+will always emit the 'close' event if it is created with the emitClose option.
+Event: 'drain' # Added in: v0.9.4 If a call to stream.write(chunk) returns false
+, the 'drain' event will be
+----------------------------------------------------------------------------------------------------
+Index: 9606 <<"chunk_id": 79, "docno": 1424>>
+
+is a valid operation. When set, it becomes possible to write JavaScript values
+other than string, <Buffer> , <TypedArray> or <DataView> if supported by the
+stream implementation. Default: false . emitClose <boolean> Whether or not the
+stream should emit 'close' after it has been destroyed. Default: true . write
+<Function> Implementation for the stream._write() method. writev <Function>
+Implementation for the stream._writev() method. destroy <Function>
+Implementation for the stream._destroy() method. final <Function> Implementation
+for the stream._final() method. construct <Function> Implementation for the
+stream._construct() method. autoDestroy <boolean> Whether this stream should
+automatically call .destroy() on itself after ending. Default: true . signal
+<AbortSignal> A signal representing possible cancellation. const { Writable } =
+require ( 'node:stream' ) ; class MyWritable extends Writable { constructor (
+options ) { // Calls the stream.Writable() constructor. super (options) ; // ...
+} } js copy Or, when using pre-ES6 style constructors: const { Writable } =
+require ( 'node:stream' ) ; const util = require ( 'node:util' ) ; function
+MyWritable ( options ) { if ( ! ( this instanceof MyWritable )) return new
+MyWritable (options) ; Writable . call ( this , options) ; } util . inherits
+(MyWritable , Writable) ; js copy Or, using the simplified constructor approach:
+const { Writable } = require ( 'node:stream' ) ; const myWritable = new Writable
+( { write ( chunk , encoding , callback ) { // ... }, writev ( chunks , callback
+) { // ... }, } ) ; js copy Calling abort on the AbortController
+----------------------------------------------------------------------------------------------------
+Index: 16322 <<"chunk_id": 1881, "docno": 2234>>
+
+. _max) this . push ( null ) ; else { const str = String (i) ; const buf =
+Buffer . from (str , 'ascii' ) ; this . push (buf) ; } } } js copy Implementing
+a duplex stream # A Duplex stream is one that implements both Readable and
+Writable , such as a TCP socket connection. Because JavaScript does not have
+support for multiple inheritance, the stream.Duplex class is extended to
+implement a Duplex stream (as opposed to extending the stream.Readable and
+stream.Writable classes). The stream.Duplex class prototypically inherits from
+stream.Readable and parasitically from stream.Writable , but instanceof will
+work properly for both base classes due to overriding Symbol.hasInstance on
+stream.Writable . Custom Duplex streams must call the new
+stream.Duplex([options]) constructor and implement both the readable._read() and
+writable._write() methods. new stream.Duplex(options) # History Version Changes
+v8.4.0 The readableHighWaterMark and writableHighWaterMark options are supported
+now. options <Object> Passed to both Writable and Readable constructors. Also
+has the following fields: allowHalfOpen <boolean> If set to false , then the
+stream will automatically end the writable side when the readable side ends.
+Default: true . readable <boolean> Sets whether the Duplex should be readable.
+Default: true . writable <boolean> Sets whether the Duplex should be writable.
+Default: true . readableObjectMode <boolean> Sets objectMode for readable side
+of the stream. Has no effect if objectMode is true . Default: false .
+writableObjectMode <boolean> Sets objectMode for writable side of the stream.
+Has no effect if objectMode is true . Default: false . readableHighWaterMark
+<number> Sets
+----------------------------------------------------------------------------------------------------
+Index: 9614 <<"chunk_id": 87, "docno": 1424>>
+
+underlying resource. Default: 65536 (64 KiB), or 16 for objectMode streams.
+encoding <string> If specified, then buffers will be decoded to strings using
+the specified encoding. Default: null . objectMode <boolean> Whether this stream
+should behave as a stream of objects. Meaning that stream.read(n) returns a
+single value instead of a Buffer of size n . Default: false . emitClose
+<boolean> Whether or not the stream should emit 'close' after it has been
+destroyed. Default: true . read <Function> Implementation for the stream._read()
+method. destroy <Function> Implementation for the stream._destroy() method.
+construct <Function> Implementation for the stream._construct() method.
+autoDestroy <boolean> Whether this stream should automatically call .destroy()
+on itself after ending. Default: true . signal <AbortSignal> A signal
+representing possible cancellation. const { Readable } = require ( 'node:stream'
+) ; class MyReadable extends Readable { constructor ( options ) { // Calls the
+stream.Readable(options) constructor. super (options) ; // ... } } js copy Or,
+when using pre-ES6 style constructors: const { Readable } = require (
+'node:stream' ) ; const util = require ( 'node:util' ) ; function MyReadable (
+options ) { if ( ! ( this instanceof MyReadable )) return new MyReadable
+(options) ; Readable . call ( this , options) ; } util . inherits (MyReadable ,
+Readable) ; js copy Or, using the simplified constructor approach: const {
+Readable } = require ( 'node:stream' ) ; const myReadable = new Readable ( {
+read ( size ) { // ... }, } ) ; js copy Calling abort on the
+----------------------------------------------------------------------------------------------------
+Index: 9537 <<"chunk_id": 10, "docno": 1424>>
+
+Strings and Buffers are the most common types used with streams. TypedArray and
+DataView lets you handle binary data with types like Int32Array or Uint8Array .
+When you write a TypedArray or DataView to a stream, Node.js processes the raw
+bytes. It is possible, however, for stream implementations to work with other
+types of JavaScript values (with the exception of null , which serves a special
+purpose within streams). Such streams are considered to operate in "object
+mode". Stream instances are switched into object mode using the objectMode
+option when the stream is created. Attempting to switch an existing stream into
+object mode is not safe. Buffering # Both Writable and Readable streams will
+store data in an internal buffer. The amount of data potentially buffered
+depends on the highWaterMark option passed into the stream's constructor. For
+normal streams, the highWaterMark option specifies a total number of bytes . For
+streams operating in object mode, the highWaterMark specifies a total number of
+objects. For streams operating on (but not decoding) strings, the highWaterMark
+specifies a total number of UTF-16 code units. Data is buffered in Readable
+streams when the implementation calls stream.push(chunk) . If the consumer of
+the Stream does not call stream.read() , the data will sit in the internal queue
+until it is consumed. Once the total size of the internal read buffer reaches
+the threshold specified by highWaterMark , the stream will temporarily stop
+reading data from the underlying resource until the data currently buffered can
+be consumed (that is, the stream will
+----------------------------------------------------------------------------------------------------
+Index: 9553 <<"chunk_id": 26, "docno": 1424>>
+
+will not generate data until a mechanism for either consuming or ignoring that
+data is provided. If the consuming mechanism is disabled or taken away, the
+Readable will attempt to stop generating the data. For backward compatibility
+reasons, removing 'data' event handlers will not automatically pause the stream.
+Also, if there are piped destinations, then calling stream.pause() will not
+guarantee that the stream will remain paused once those destinations drain and
+ask for more data. If a Readable is switched into flowing mode and there are no
+consumers available to handle the data, that data will be lost. This can occur,
+for instance, when the readable.resume() method is called without a listener
+attached to the 'data' event, or when a 'data' event handler is removed from the
+stream. Adding a 'readable' event handler automatically makes the stream stop
+flowing, and the data has to be consumed via readable.read() . If the 'readable'
+event handler is removed, then the stream will start flowing again if there is a
+'data' event handler. Three states # The "two modes" of operation for a Readable
+stream are a simplified abstraction for the more complicated internal state
+management that is happening within the Readable stream implementation.
+Specifically, at any given point in time, every Readable is in one of three
+possible states: readable.readableFlowing === null readable.readableFlowing ===
+false readable.readableFlowing === true When readable.readableFlowing is null ,
+no mechanism for consuming the stream's data is provided. Therefore, the stream
+will not generate data. While in this state, attaching a listener for the
 ----------------------------------------------------------------------------------------------------

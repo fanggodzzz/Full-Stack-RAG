@@ -1,7 +1,11 @@
 from datetime import datetime, timezone
 import json
+import re
 from queue import Queue
+import token
 from urllib.parse import urlparse, urlunparse
+
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 META_RAW = "./Data/meta_raw.jsonl"
 CHUNKS = "./Data/chunked.jsonl"
@@ -37,6 +41,7 @@ def import_meta_raw():
                     continue
     except FileNotFoundError:
         print(f"{META_RAW} file not found. Starting with an empty meta_raw.")
+    return meta_raw
 
 def add_meta(docno, title, url, ext):
     meta_raw[docno] = {
@@ -45,7 +50,7 @@ def add_meta(docno, title, url, ext):
         "time": datetime.now(timezone.utc).isoformat(),
         "title": title
     }
-    if (len(meta_raw) % 100) == 0:  # Save every 10 entries
+    if (len(meta_raw) % 100) == 0:  # Save every 100 entries
         save_meta_raw()  # Save the metadata after adding a new entry
 
 def save_meta_raw():
@@ -88,8 +93,8 @@ def load_corpus():
 
     if not corpus:
         corpus = [
-            (
-                chunk.get("title", "").split() + chunk.get("chunk_text", "").split()
+            normalize_text_tokens(
+                chunk.get("chunk_text", "") + " " + chunk.get("chunk_title", "")
             )
             for chunk in chunks
         ]
@@ -185,3 +190,30 @@ def filter_url(normalized_url):
             return False
 
     return True
+
+def _light_stem(word):
+    suffixes = [
+        "ingly",
+        "edly",
+        "ing",
+        "ed",
+        "ly",
+        "ies",
+        "es",
+        "s"
+    ]
+
+    for suffix in suffixes:
+        if word.endswith(suffix) and len(word) > len(suffix) + 2:
+            return word[:-len(suffix)]
+
+    # Only remove plural s in safer cases
+    if word.endswith("s") and not word.endswith(("ss", "us", "is")):
+        if len(word) > 3:
+            return word[:-1]
+
+    return word
+
+def normalize_text_tokens(text):
+    tokens = re.findall(r"[a-zA-Z]+", text.lower())
+    return [_light_stem(token) for token in tokens]

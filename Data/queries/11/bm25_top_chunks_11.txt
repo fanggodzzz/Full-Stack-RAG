@@ -1,484 +1,1352 @@
-Index: 32001 <<"chunk_id": 17, "docno": 4249>>
+Index: 19079 <<"chunk_id": 1, "docno": 2744>>
 
-have a migration in app1 which needs to use models in app2 . We aren’t concerned
-with the details of move_m1 other than the fact it will need to access models
-from both apps. Therefore we’ve added a dependency that specifies the last
-migration of app2 : class Migration ( migrations . Migration ): dependencies = [
-( "app1" , "0001_initial" ), # added dependency to enable using models from app2
-in move_m1 ( "app2" , "0004_foobar" ), ] operations = [ migrations . RunPython (
-move_m1 ), ] More advanced migrations ¶ If you’re interested in the more
-advanced migration operations, or want to be able to write your own, see the
-migration operations reference and the “how-to” on writing migrations .
-Squashing migrations ¶ You are encouraged to make migrations freely and not
-worry about how many you have; the migration code is optimized to deal with
-hundreds at a time without much slowdown. However, eventually you will want to
-move back from having several hundred migrations to just a few, and that’s where
-squashing comes in. Squashing is the act of reducing an existing set of many
-migrations down to one (or sometimes a few) migrations which still represent the
-same changes. Django does this by taking all of your existing migrations,
-extracting their Operation s and putting them all in sequence, and then running
-an optimizer over them to try and reduce the length of the list - for example,
-it knows that CreateModel and DeleteModel cancel each other out, and it
+application's views. ZoneJS does not have any insight into whether application
+state actually changed and so this synchronization is triggered more frequently
+than necessary. Improved Core Web Vitals : ZoneJS brings a fair amount of
+overhead, both in payload size and startup time. Improved debugging experience :
+ZoneJS makes debugging code more difficult. Stack traces are harder to
+understand with ZoneJS. It's also difficult to understand when code breaks as a
+result of being outside the Angular Zone. Better ecosystem compatibility :
+ZoneJS works by patching browser APIs but does not automatically have patches
+for every new browser API. Some APIs, such as async / await , cannot be patched
+effectively and must be downleveled to work with ZoneJS. Sometimes libraries in
+the ecosystem are also incompatible with the way ZoneJS patches the native APIs.
+Removing ZoneJS as a dependency ensures better long-term compatibility by
+removing a source of complexity, monkey patching, and ongoing maintenance.
+Enabling Zoneless in an application Zoneless is the default in Angular v21+ so
+you do not need to do anything to enable it. You should verify that
+provideZoneChangeDetection is not used anywhere to override the default
+configuration. If you are using Angular v20, enable zoneless change detection by
+adding provideZonelessChangeDetection() at bootstrap: standalone bootstrap
+bootstrapApplication (MyApp, {providers: [ provideZonelessChangeDetection ()]});
+NgModule bootstrap platformBrowser (). bootstrapModule (AppModule); @ NgModule
+({ providers: [ provideZonelessChangeDetection ()], }) export class AppModule {}
+Removing ZoneJS Zoneless applications should remove ZoneJS entirely from the
+build to reduce bundle size. ZoneJS is typically loaded via the polyfills option
 ----------------------------------------------------------------------------------------------------
-Index: 32004 <<"chunk_id": 20, "docno": 4249>>
+Index: 19679 <<"chunk_id": 410, "docno": 2775>>
 
-with the problem when asked to create brand new migrations from your models. In
-a future release of Django, squashmigrations will be updated to attempt to
-resolve these errors itself. Once you’ve squashed your migration, you should
-then commit it alongside the migrations it replaces and distribute this change
-to all running instances of your application, making sure that they run migrate
-to store the change in their database. You can then transition the squashed
-migration to a normal migration by: Deleting all the migration files it
-replaces. Updating all migrations that depend on the deleted migrations to
-depend on the squashed migration instead. Removing the replaces attribute in the
-Migration class of the squashed migration (this is how Django tells that it is a
-squashed migration). Note You can squash squashed migrations themselves without
-transitioning to normal migrations, which might be useful for situations where
-every environment has not yet run the original squashed migration set. But in
-general it is better to transition squashed migrations to normal migrations to
-be able to clean up older migration files. Pruning references to deleted
-migrations If it is likely that you may reuse the name of a deleted migration in
-the future, you should remove references to it from Django’s migrations table
-with the migrate --prune option. Changed in Django 6.0: Support for squashing
-squashed migrations was added. Serializing values ¶ Migrations are Python files
-containing the old definitions of your models - thus, to write them, Django must
-take the current state of your models and
+to reduce bundle size. ZoneJS is typically loaded via the `polyfills` option in
+`angular.json`, both in the `build` and `test` targets. Remove `zone.js` and
+`zone.js/testing` from both to remove it from the build. Projects which use an
+explicit `polyfills.ts` file should remove `import 'zone.js';` and `import
+'zone.js/testing';` from the file. After removing ZoneJS from the build, there
+is no longer a need for a `zone.js` dependency either and the package can be
+removed entirely: ```shell npm uninstall zone.js ``` ## Requirements for
+Zoneless compatibility Angular relies on notifications from core APIs in order
+to determine when to run change detection and on which views. These
+notifications include: - `ChangeDetectorRef.markForCheck` (called automatically
+by `AsyncPipe`) - `ComponentRef.setInput` - Updating a signal that's read in a
+template - Bound host or template listeners callbacks - Attaching a view that
+was marked dirty by one of the above ### `OnPush`-compatible components One way
+to ensure that a component is using the correct notification mechanisms from
+above is to use
+[ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onpush).
+The `OnPush` change detection strategy is not required, but it is a recommended
+step towards zoneless compatibility for application components. It is not always
+possible for library components to use `ChangeDetectionStrategy.OnPush`. When a
+library component is a host for user-components which might use
+`ChangeDetectionStrategy.Eager`/`Default`, it cannot use `OnPush` because that
+would prevent the child component from being refreshed if it is not `OnPush`
+compatible and relies on ZoneJS to trigger change detection. Components can use
+the `Default` strategy as long as they notify Angular when change detection
+needs to run
 ----------------------------------------------------------------------------------------------------
-Index: 21594 <<"chunk_id": 23, "docno": 2640>>
+Index: 19080 <<"chunk_id": 2, "docno": 2744>>
 
-database you wish to later apply it on. Note that sqlmigrate doesn’t colorize
-its output. --backwards ¶ Generates the SQL for unapplying the migration. By
-default, the SQL created is for running the migration in the forwards direction.
---database DATABASE ¶ Specifies the database for which to generate the SQL.
-Defaults to default . sqlsequencereset ¶ django-admin sqlsequencereset app_label
-[app_label ...] ¶ Prints the SQL statements for resetting sequences for the
-given app name(s). Sequences are indexes used by some database engines to track
-the next available number for automatically incremented fields. Use this command
-to generate SQL which will fix cases where a sequence is out of sync with its
-automatically incremented field data. --database DATABASE ¶ Specifies the
-database for which to print the SQL. Defaults to default . squashmigrations ¶
-django-admin squashmigrations app_label [start_migration_name] migration_name ¶
-Squashes the migrations for app_label up to and including migration_name down
-into fewer migrations, if possible. The resulting squashed migrations can live
-alongside the unsquashed ones safely. For more information, please read
-Squashing migrations . When start_migration_name is given, Django will only
-include migrations starting from and including this migration. This helps to
-mitigate the squashing limitation of RunPython and
-django.db.migrations.operations.RunSQL migration operations. --no-optimize ¶
-Disables the optimizer when generating a squashed migration. By default, Django
-will try to optimize the operations in your migrations to reduce the size of the
-resulting file. Use this option if this process is failing or creating incorrect
-migrations, though please also file a Django bug report about the behavior, as
+AppModule {} Removing ZoneJS Zoneless applications should remove ZoneJS entirely
+from the build to reduce bundle size. ZoneJS is typically loaded via the
+polyfills option in angular.json , both in the build and test targets. Remove
+zone.js and zone.js/testing from both to remove it from the build. Projects
+which use an explicit polyfills.ts file should remove import 'zone.js'; and
+import 'zone.js/testing'; from the file. After removing ZoneJS from the build,
+there is no longer a need for a zone.js dependency either and the package can be
+removed entirely: npm uninstall zone.js Requirements for Zoneless compatibility
+Angular relies on notifications from core APIs in order to determine when to run
+change detection and on which views. These notifications include:
+ChangeDetectorRef.markForCheck (called automatically by AsyncPipe )
+ComponentRef.setInput Updating a signal that's read in a template Bound host or
+template listeners callbacks Attaching a view that was marked dirty by one of
+the above OnPush -compatible components One way to ensure that a component is
+using the correct notification mechanisms from above is to use
+ChangeDetectionStrategy.OnPush . The OnPush change detection strategy is not
+required, but it is a recommended step towards zoneless compatibility for
+application components. It is not always possible for library components to use
+ChangeDetectionStrategy.OnPush . When a library component is a host for
+user-components which might use ChangeDetectionStrategy.Eager / Default , it
+cannot use OnPush because that would prevent the child component from being
+refreshed if it is not OnPush compatible and relies on ZoneJS to trigger change
+detection. Components can use the Default strategy
 ----------------------------------------------------------------------------------------------------
-Index: 21586 <<"chunk_id": 15, "docno": 2640>>
+Index: 19682 <<"chunk_id": 413, "docno": 2775>>
 
-but no later migrations in the same app are applied. This may involve unapplying
-migrations if you have previously migrated past the named migration. You can use
-a prefix of the migration name, e.g. 0001 , as long as it’s unique for the given
-app name. Use the name zero to migrate all the way back i.e. to revert all
-applied migrations for an app. Warning When unapplying migrations, all dependent
-migrations will also be unapplied, regardless of <app_label> . You can use
---plan to check which migrations will be unapplied. --database DATABASE ¶
-Specifies the database to migrate. Defaults to default . --fake ¶ Marks the
-migrations up to the target one (following the rules above) as applied, but
-without actually running the SQL to change your database schema. This is
-intended for advanced users to manipulate the current migration state directly
-if they’re manually applying changes; be warned that using --fake runs the risk
-of putting the migration state table into a state where manual recovery will be
-needed to make migrations run correctly. --fake-initial ¶ Allows Django to skip
-an app’s initial migration if all database tables with the names of all models
-created by all CreateModel operations in that migration already exist. This
-option is intended for use when first running migrations against a database that
-preexisted the use of migrations. This option does not, however, check for
-matching database schema beyond matching table names and so is only safe to use
-if you are confident that your existing schema matches what
+in zoneless applications Reactive forms model updates (`setValue`, `patchValue`,
+`FormArray.push`, and similar APIs) update form state and emit form observables,
+but they do not automatically schedule component change detection. If a template
+depends on reactive forms state, connect forms observables to a change-detection
+notification (for example `ChangeDetectorRef.markForCheck()`), or reflect the
+data through signals consumed by the template. ## Testing and Debugging ###
+Using Zoneless in `TestBed` `TestBed` uses Zone-based change detection by
+default when `zone.js` is loaded via the `polyfills`. If `zone.js` is not
+present, `TestBed` runs zoneless by default. To force zoneless mode when
+`zone.js` is loaded, add `provideZonelessChangeDetection()`: ```typescript
+TestBed.configureTestingModule({ // Optional: include the provider to force the
+testing environment // uses the same zoneless behavior as a zoneless
+application. providers: [provideZonelessChangeDetection()], }); const fixture =
+TestBed.createComponent(MyComponent); await fixture.whenStable(); ``` To ensure
+tests have the most similar behavior to production code, avoid using
+`fixture.detectChanges()` when possible. This forces change detection to run
+when Angular might otherwise have not scheduled change detection. Tests should
+ensure these notifications are happening and allow Angular to handle when to
+synchronize state rather than manually forcing it to happen in the test. For
+existing test suites, using `fixture.detectChanges()` is a common pattern and it
+is likely not worth the effort of converting these to `await
+fixture.whenStable()`. `TestBed` will still enforce that the fixture's component
+is `OnPush` compatible and throws `ExpressionChangedAfterItHasBeenCheckedError`
+if it finds that template values were updated without a change notification
+(i.e. `fixture.componentInstance.someValue = 'newValue';`). If the component is
+used in production, this issue should be addressed by
 ----------------------------------------------------------------------------------------------------
-Index: 31993 <<"chunk_id": 9, "docno": 4249>>
+Index: 19678 <<"chunk_id": 409, "docno": 2775>>
 
-have one initial migration, but in some cases of complex model interdependencies
-it may have two or more. Initial migrations are marked with an initial = True
-class attribute on the migration class. If an initial class attribute isn’t
-found, a migration will be considered “initial” if it is the first migration in
-the app (i.e. if it has no dependencies on any other migration in the same app).
-When the migrate --fake-initial option is used, these initial migrations are
-treated specially. For an initial migration that creates one or more tables (
-CreateModel operation), Django checks that all of those tables already exist in
-the database and fake-applies the migration if so. Similarly, for an initial
-migration that adds one or more fields ( AddField operation), Django checks that
-all of the respective columns already exist in the database and fake-applies the
-migration if so. Without --fake-initial , initial migrations are treated no
-differently from any other migration. History consistency ¶ As previously
-discussed, you may need to linearize migrations manually when two development
-branches are joined. While editing migration dependencies, you can inadvertently
-create an inconsistent history state where a migration has been applied but some
-of its dependencies haven’t. This is a strong indication that the dependencies
-are incorrect, so Django will refuse to run migrations or make new migrations
-until it’s fixed. When using multiple databases, you can use the allow_migrate()
-method of database routers to control which databases makemigrations checks for
-consistent history. Adding migrations to apps ¶ New apps come
+into whether application state actually changed and so this synchronization is
+triggered more frequently than necessary. - **Improved Core Web Vitals**: ZoneJS
+brings a fair amount of overhead, both in payload size and startup time. -
+**Improved debugging experience**: ZoneJS makes debugging code more difficult.
+Stack traces are harder to understand with ZoneJS. It's also difficult to
+understand when code breaks as a result of being outside the Angular Zone. -
+**Better ecosystem compatibility**: ZoneJS works by patching browser APIs but
+does not automatically have patches for every new browser API. Some APIs, such
+as `async`/`await`, cannot be patched effectively and must be downleveled to
+work with ZoneJS. Sometimes libraries in the ecosystem are also incompatible
+with the way ZoneJS patches the native APIs. Removing ZoneJS as a dependency
+ensures better long-term compatibility by removing a source of complexity,
+monkey patching, and ongoing maintenance. ## Enabling Zoneless in an application
+Zoneless is the default in Angular v21+ so you do not need to do anything to
+enable it. You should verify that `provideZoneChangeDetection` is not used
+anywhere to override the default configuration. If you are using Angular v20,
+enable zoneless change detection by adding `provideZonelessChangeDetection()` at
+bootstrap: ```ts {header: 'standalone bootstrap'} bootstrapApplication(MyApp,
+{providers: [provideZonelessChangeDetection()]}); ``` ```ts {header: 'NgModule
+bootstrap'} platformBrowser().bootstrapModule(AppModule); @NgModule({ providers:
+[provideZonelessChangeDetection()], }) export class AppModule {} ``` ## Removing
+ZoneJS Zoneless applications should remove ZoneJS entirely from the build to
+reduce bundle size. ZoneJS is typically loaded via the `polyfills` option in
+`angular.json`, both in the `build` and `test` targets. Remove `zone.js` and
+`zone.js/testing`
 ----------------------------------------------------------------------------------------------------
-Index: 31990 <<"chunk_id": 6, "docno": 4249>>
+Index: 19078 <<"chunk_id": 0, "docno": 2744>>
 
-dependencies correct will be. Apps without migrations must not have relations (
-ForeignKey , ManyToManyField , etc.) to apps with migrations. Sometimes it may
-work, but it’s not supported. Swappable dependencies ¶ django.db.migrations.
-swappable_dependency ( value ) ¶ The swappable_dependency() function is used in
-migrations to declare “swappable” dependencies on migrations in the app of the
-swapped-in model, currently, on the first migration of this app. As a
-consequence, the swapped-in model should be created in the initial migration.
-The argument value is a string "<app label>.<model>" describing an app label and
-a model name, e.g. "myapp.MyModel" . By using swappable_dependency() , you
-inform the migration framework that the migration relies on another migration
-which sets up a swappable model, allowing for the possibility of substituting
-the model with a different implementation in the future. This is typically used
-for referencing models that are subject to customization or replacement, such as
-the custom user model ( settings.AUTH_USER_MODEL , which defaults to "auth.User"
-) in Django’s authentication system. Migration files ¶ Migrations are stored as
-an on-disk format, referred to here as “migration files”. These files are
-actually normal Python files with an agreed-upon object layout, written in a
-declarative style. A basic migration file looks like this: from django.db import
-migrations , models class Migration ( migrations . Migration ): dependencies =
-[( "migrations" , "0001_initial" )] operations = [ migrations . DeleteModel (
-"Tribble" ), migrations . AddField ( "Author" , "rating" , models . IntegerField
-( default = 0 )), ] What Django looks
+Zoneless • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu Docs Introduction What is Angular?
+Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Performance Overview Loading Performance
+Lazy-loaded routes Deferred loading with @defer Lazy loading services Image
+optimization Server-side rendering Runtime Performance Overview Zoneless Slow
+computations Skipping component subtrees Zone pollution Chrome DevTools
+profiling Best Practices Performance Angular without ZoneJS (Zoneless) On this
+page arrow_upward_alt Back to the top Why use Zoneless? The main advantages to
+removing ZoneJS as a dependency are: Improved performance : ZoneJS uses DOM
+events and async tasks as indicators of when application state might have
+updated and subsequently triggers application synchronization to run change
+detection on the application's views. ZoneJS does not have any insight into
+whether application state actually changed and so this synchronization is
+triggered more frequently than necessary. Improved
 ----------------------------------------------------------------------------------------------------
-Index: 31991 <<"chunk_id": 7, "docno": 4249>>
+Index: 19083 <<"chunk_id": 5, "docno": 2744>>
 
-. DeleteModel ( "Tribble" ), migrations . AddField ( "Author" , "rating" ,
-models . IntegerField ( default = 0 )), ] What Django looks for when it loads a
-migration file (as a Python module) is a subclass of
-django.db.migrations.Migration called Migration . It then inspects this object
-for four attributes, only two of which are used most of the time: dependencies ,
-a list of migrations this one depends on. operations , a list of Operation
-classes that define what this migration does. The operations are the key; they
-are a set of declarative instructions which tell Django what schema changes need
-to be made. Django scans them and builds an in-memory representation of all of
-the schema changes to all apps, and uses this to generate the SQL which makes
-the schema changes. That in-memory structure is also used to work out what the
-differences are between your models and the current state of your migrations;
-Django runs through all the changes, in order, on an in-memory set of models to
-come up with the state of your models last time you ran makemigrations . It then
-uses these models to compare against the ones in your models.py files to work
-out what you have changed. You should rarely, if ever, need to edit migration
-files by hand, but it’s entirely possible to write them manually if you need to.
-Some of the more complex operations are not autodetectable and are only
-available via a hand-written migration, so don’t be scared about editing
+someObservable. pipe ( pendingUntilEvent ()); The framework uses this service
+internally as well to prevent serialization until asynchronous tasks are
+complete. These include, but are not limited to, an ongoing Router navigation
+and an incomplete HttpClient request. Reactive forms in zoneless applications
+Reactive forms model updates ( setValue , patchValue , FormArray.push , and
+similar APIs) update form state and emit form observables, but they do not
+automatically schedule component change detection. If a template depends on
+reactive forms state, connect forms observables to a change-detection
+notification (for example ChangeDetectorRef.markForCheck() ), or reflect the
+data through signals consumed by the template. Testing and Debugging Using
+Zoneless in TestBed TestBed uses Zone-based change detection by default when
+zone.js is loaded via the polyfills . If zone.js is not present, TestBed runs
+zoneless by default. To force zoneless mode when zone.js is loaded, add
+provideZonelessChangeDetection() : TestBed . configureTestingModule ({ //
+Optional : include the provider to force the testing environment // uses the
+same zoneless behavior as a zoneless application. providers: [
+provideZonelessChangeDetection ()], }); const fixture = TestBed .
+createComponent (MyComponent); await fixture. whenStable (); To ensure tests
+have the most similar behavior to production code, avoid using
+fixture.detectChanges() when possible. This forces change detection to run when
+Angular might otherwise have not scheduled change detection. Tests should ensure
+these notifications are happening and allow Angular to handle when to
+synchronize state rather than manually forcing it to happen in the test. For
+existing test suites, using fixture.detectChanges() is a common pattern and it
+is likely
 ----------------------------------------------------------------------------------------------------
-Index: 21585 <<"chunk_id": 14, "docno": 2640>>
+Index: 23727 <<"chunk_id": 0, "docno": 3592>>
 
-along with --verbosity 3 will also show the complete migrations files that would
-be written. --merge ¶ Enables fixing of migration conflicts. --name NAME , -n
-NAME ¶ Allows naming the generated migration(s) instead of using a generated
-name. The name must be a valid Python identifier . --no-header ¶ Generate
-migration files without Django version and timestamp header. --check ¶ Makes
-makemigrations exit with a non-zero status when model changes without migrations
-are detected. Implies --dry-run . --scriptable ¶ Diverts log output and input
-prompts to stderr , writing only paths of generated migration files to stdout .
---update ¶ Merges model changes into the latest migration and optimize the
-resulting operations. The updated migration will have a generated name. In order
-to preserve the previous name, set it using --name . migrate ¶ django-admin
-migrate [app_label] [migration_name] ¶ Synchronizes the database state with the
-current set of models and migrations. Migrations, their relationship with apps
-and more are covered in depth in the migrations documentation . The behavior of
-this command changes depending on the arguments provided: No arguments: All apps
-have all of their migrations run. <app_label> : The specified app has its
-migrations run, up to the most recent migration. This may involve running other
-apps’ migrations too, due to dependencies. <app_label> <migrationname> : Brings
-the database schema to a state where the named migration is applied, but no
-later migrations in the same app are applied. This may involve unapplying
-migrations if you have previously migrated past the named migration. You
+Hierarchical injectors • Angular Skip to main content menu close v22 K Docs
+Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Hierarchical injectors This guide provides in-depth coverage of
+Angular's hierarchical dependency injection system, including resolution rules,
+modifiers, and advanced patterns. NOTE: For basic concepts about injector
+hierarchy and provider scoping, see the defining dependency providers guide . On
+this page arrow_upward_alt Back to the top Types of injector hierarchies Angular
+has two injector hierarchies: Injector hierarchies Details EnvironmentInjector
+hierarchy Configure an EnvironmentInjector in this hierarchy using @Service() or
+providers array in ApplicationConfig . ElementInjector hierarchy Created
+implicitly at each
 ----------------------------------------------------------------------------------------------------
-Index: 32008 <<"chunk_id": 24, "docno": 4249>>
+Index: 23707 <<"chunk_id": 5, "docno": 3589>>
 
-multiple Django versions ¶ If you are the maintainer of a third-party app with
-models, you may need to ship migrations that support multiple Django versions.
-In this case, you should always run makemigrations with the lowest Django
-version you wish to support . The migrations system will maintain
-backwards-compatibility according to the same policy as the rest of Django, so
-migration files generated on Django X.Y should run unchanged on Django X.Y+1.
-The migrations system does not promise forwards-compatibility, however. New
-features may be added, and migration files generated with newer versions of
-Django may not work on older versions. See also The Migrations Operations
-Reference Covers the schema operations API, special operations, and writing your
-own operations. The Writing Migrations “how-to” Explains how to structure and
-write database migrations for different scenarios you might encounter. Previous
-page and next page Using mixins with class-based views Managing files Back to
-Top Additional Information Support Django! Agency Cybersecurity donated to the
-Django Software Foundation to support Django development. Donate today! Contents
-Migrations The Commands Backend Support PostgreSQL MySQL SQLite Workflow Version
-control Transactions Dependencies Swappable dependencies Migration files Custom
-fields Model managers Initial migrations History consistency Adding migrations
-to apps Reversing migrations Historical models Considerations when removing
-model fields Data Migrations Accessing models from other apps More advanced
-migrations Squashing migrations Serializing values Custom serializers Adding a
-deconstruct() method Supporting multiple Django versions Browse Prev: Using
-mixins with class-based views Next: Managing files Table of contents General
-Index Python Module Index You are here: Django 6.0
+component gets its own instance @ Component ({ selector: 'app-isolated' , //
+Creates new instance of `DataStore` rather than using the root-provided
+instance. providers: [DataStore], template: `...` , }) export class Isolated {
+dataStore = inject (DataStore); // Component -specific instance } Injector
+hierarchy in Angular Angular's dependency injection system is hierarchical. When
+a component requests a dependency, Angular starts with that component's injector
+and walks up the tree until it finds a provider for that dependency. Each
+component in your application tree can have its own injector, and these
+injectors form a hierarchy that mirrors your component tree. This hierarchy
+enables: Scoped instances : Different parts of your app can have different
+instances of the same service Override behavior : Child components can override
+providers from parent components Memory efficiency : Services are only
+instantiated where needed In Angular, any element with a component or directive
+can provide values to all of its descendants. platform root SocialApp
+UserProfile FriendList FriendEntry In the example above: SocialApp can provide
+values for UserProfile and FriendList FriendList can provide values for
+injection to FriendEntry , but cannot provide values for injection in
+UserProfile because it's not part of the tree Declaring a provider Think of
+Angular's dependency injection system as a hash map or dictionary. Each provider
+configuration object defines a key-value pair: Key (Provider identifier) : The
+unique identifier you use to request a dependency Value : What Angular should
+return when that token is requested When manually providing dependencies, you
+typically see this shorthand syntax: import {
 ----------------------------------------------------------------------------------------------------
-Index: 21584 <<"chunk_id": 13, "docno": 2640>>
+Index: 19481 <<"chunk_id": 212, "docno": 2775>>
 
-newer. --no-obsolete ¶ Removes obsolete message strings from the .po files.
---keep-pot ¶ Prevents deleting the temporary .pot files generated before
-creating the .po file. This is useful for debugging errors which may prevent the
-final language files from being created. See also See Customizing the
-makemessages command for instructions on how to customize the keywords that
-makemessages passes to xgettext . makemigrations ¶ django-admin makemigrations
-[app_label [app_label ...]] ¶ Creates new migrations based on the changes
-detected to your models. Migrations, their relationship with apps and more are
-covered in depth in the migrations documentation . Providing one or more app
-names as arguments will limit the migrations created to the app(s) specified and
-any dependencies needed (the table at the other end of a ForeignKey , for
-example). To add migrations to an app that doesn’t have a migrations directory,
-run makemigrations with the app’s app_label . --noinput , --no-input ¶
-Suppresses all user prompts. If a suppressed prompt cannot be resolved
-automatically, the command will exit with error code 3. --empty ¶ Outputs an
-empty migration for the specified apps, for manual editing. This is for advanced
-users and should not be used unless you are familiar with the migration format,
-migration operations, and the dependencies between your migrations. --dry-run ¶
-Shows what migrations would be made without actually writing any migrations
-files to disk. Using this option along with --verbosity 3 will also show the
-complete migrations files that would be written. --merge ¶ Enables fixing of
-migration conflicts. --name NAME ,
+form control instance provided by the aliases form array instance. Because form
+array elements are unnamed, you assign the index to the `i` variable and pass it
+to each control to bind it to the `formControlName` input. Each time a new alias
+instance is added, the new form array instance is provided its control based on
+the index. This lets you track each individual control when calculating the
+status and value of the root control. NOTE: In zoneless applications, mutating a
+reactive forms model (for example calling `FormArray.push()`) does not
+automatically schedule component change detection. If your template depends on
+structural model changes such as `aliases.controls`, make sure the component
+notifies Angular to run change detection, for example by bridging a forms
+observable to `ChangeDetectorRef.markForCheck()`: ```ts import
+{ChangeDetectorRef, Component, inject} from '@angular/core'; import
+{takeUntilDestroyed} from '@angular/core/rxjs-interop'; @Component({ /* ... */
+}) export class ProfileEditor { private readonly cdr =
+inject(ChangeDetectorRef); constructor() { this.profileForm.valueChanges
+.pipe(takeUntilDestroyed()) .subscribe(() => this.cdr.markForCheck()); } } ```
+</docs-step> ### Using `FormArrayDirective` for top-level form arrays You can
+bind a `FormArray` directly to a `<form>` element by using the
+`FormArrayDirective`. This is useful when the form does not use a top-level
+`FormGroup`, and the array itself represents the full form model. ```typescript
+import {Component} from '@angular/core'; import {FormArray, FormControl} from
+'@angular/forms'; @Component({ selector: 'form-array-example', template: ` <form
+[formArray]="form"> @for (control of form.controls; track $index) { <input
+[formControlName]="$index" /> } </form> `, }) export class
+FormArrayExampleComponent { controls = [new FormControl('fish'), new
+FormControl('cat'), new FormControl('dog')]; form = new
+FormArray(this.controls); } ``` <docs-step title="Add an alias">
 ----------------------------------------------------------------------------------------------------
-Index: 31999 <<"chunk_id": 15, "docno": 4249>>
+Index: 19401 <<"chunk_id": 132, "docno": 2775>>
 
-but it’s not very hard to write them. Migration files in Django are made up of
-Operations , and the main operation you use for data migrations is RunPython .
-To start, make an empty migration file you can work from (Django will put the
-file in the right place, suggest a name, and add dependencies for you): python
-manage.py makemigrations --empty yourappname Then, open up the file; it should
-look something like this: # Generated by Django A.B on YYYY-MM-DD HH:MM from
-django.db import migrations class Migration ( migrations . Migration ):
-dependencies = [ ( "yourappname" , "0001_initial" ), ] operations = [] Now, all
-you need to do is create a new function and have RunPython use it. RunPython
-expects a callable as its argument which takes two arguments - the first is an
-app registry that has the historical versions of all your models loaded into it
-to match where in your history the migration sits, and the second is a
-SchemaEditor , which you can use to manually effect database schema changes (but
-beware, doing this can confuse the migration autodetector). Let’s write a
-migration that populates our new name field with the combined values of
-first_name and last_name (we’ve come to our senses and realized that not
-everyone has first and last names). All we need to do is use the historical
-model and iterate over the rows: from django.db import migrations def
-combine_names ( apps , schema_editor ): # We can't import the Person model
-directly as it may
+injection context, Angular throws [error NG0203](/errors/NG0203). # Hierarchical
+injectors This guide provides in-depth coverage of Angular's hierarchical
+dependency injection system, including resolution rules, modifiers, and advanced
+patterns. NOTE: For basic concepts about injector hierarchy and provider
+scoping, see the [defining dependency providers
+guide](guide/di/defining-dependency-providers#injector-hierarchy-in-angular). ##
+Types of injector hierarchies Angular has two injector hierarchies: | Injector
+hierarchies | Details | | :------------------------------ |
+:------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| | `EnvironmentInjector` hierarchy | Configure an `EnvironmentInjector` in this
+hierarchy using `@Service()` or `providers` array in `ApplicationConfig`. | |
+`ElementInjector` hierarchy | Created implicitly at each DOM element. An
+`ElementInjector` is empty by default unless you configure it in the `providers`
+property on `@Directive()` or `@Component()`. | For `NgModule` based
+applications, you can provide dependencies with the `ModuleInjector` hierarchy
+using an `@NgModule()` or `@Injectable()` annotation. ### `EnvironmentInjector`
+The `EnvironmentInjector` can be configured in one of two ways by using: - The
+`@Service()` - The `ApplicationConfig` `providers` array Using the `@Service()`
+decorator is preferable to using the `ApplicationConfig` `providers` array. With
+`@Service`, optimization tools can perform tree-shaking, which removes services
+that your application isn't using. This results in smaller bundle sizes.
+Tree-shaking is especially useful for a library because the application which
+uses the library may not have a need to inject it. `EnvironmentInjector` is
+configured by the `ApplicationConfig.providers`. Provide services using
+`@Service()` as follows: ```ts {highlight:[4]} import {Service} from
+'@angular/core'; @Service() // <--provides this service in the root
+EnvironmentInjector export class ItemService { name = 'telephone'; } ``` The
+`@Service()` or `@Injectable()` decorators identify a service class. ###
+ModuleInjector In the case
 ----------------------------------------------------------------------------------------------------
-Index: 21399 <<"chunk_id": 26, "docno": 2621>>
+Index: 22312 <<"chunk_id": 1, "docno": 3346>>
 
-string. This is consistent with other backends. When the
-BaseCommand.leave_locale_alone attribute is False , translations are now
-deactivated instead of forcing the “en-us” locale. In the case your models
-contained non-English strings and you counted on English translations to be
-activated in management commands, this will not happen any longer. It might be
-that new database migrations are generated (once) after migrating to 1.8.
-django.utils.translation.get_language() now returns None instead of
-LANGUAGE_CODE when translations are temporarily deactivated. When a translation
-doesn’t exist for a specific literal, the fallback is now taken from the
-LANGUAGE_CODE language (instead of from the untranslated msgid message). The
-name field of django.contrib.contenttypes.models.ContentType has been removed by
-a migration and replaced by a property. That means it’s not possible to query or
-filter a ContentType by this field any longer. Be careful if you upgrade to
-Django 1.8 and skip Django 1.7. If you run manage.py migrate --fake , this
-migration will be skipped and you’ll see a RuntimeError: Error creating new
-content types. exception because the name column won’t be dropped from the
-database. Use manage.py migrate --fake-initial to fake only the initial
-migration instead. The new migrate --fake-initial option allows faking initial
-migrations. In 1.7, initial migrations were always automatically faked if all
-tables created in an initial migration already existed. An app without
-migrations with a ForeignKey to an app with migrations may now result in a
-foreign key constraint error when migrating the database or running tests. In
-Django 1.7, this could fail silently and result in a missing
+top Loading performance Loading performance determines how quickly your
+application becomes visible and interactive. Slow loading directly impacts Core
+Web Vitals like Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
+Technique What it does When to use it Lazy-loaded routes Defers loading route
+components until navigation, reducing the initial bundle size Applications with
+multiple routes where not all are needed on initial load Deferred loading with
+@defer Splits components into separate bundles that load on demand Components
+not visible on initial render, heavy third-party libraries, below-the-fold
+content Lazy loading services with injectAsync Splits rarely used services into
+separate chunks and loads them on demand Services backed by large libraries or
+infrequently used features Image optimization Prioritizes LCP images, lazy loads
+others, generates responsive srcset attributes Any application that displays
+images Server-side rendering Renders pages on the server for faster first paint
+and better SEO, with hydration to restore interactivity and incremental
+hydration to defer hydrating sections until needed Content-heavy applications,
+pages that need search engine indexing Runtime performance Runtime performance
+determines how responsive your application feels after it loads. Angular's
+change detection system keeps the DOM in sync with your data, and optimizing how
+and when it runs is the primary lever for improving runtime performance.
+Technique What it does When to use it Zoneless change detection Removes ZoneJS
+overhead and triggers change detection only when signals or events indicate a
+change New applications (default in Angular v21+), or existing applications
+ready to migrate Slow computations Identifies and optimizes expensive template
+expressions and lifecycle
 ----------------------------------------------------------------------------------------------------
-Index: 21593 <<"chunk_id": 22, "docno": 2640>>
+Index: 19303 <<"chunk_id": 34, "docno": 2775>>
 
-platform. showmigrations ¶ django-admin showmigrations [app_label [app_label
-...]] ¶ Shows all migrations in a project. You can choose from one of two
-formats: --list , -l ¶ Lists all of the apps Django knows about, the migrations
-available for each app, and whether or not each migration is applied (marked by
-an [X] next to the migration name). For a --verbosity of 2 and above, the
-applied datetimes are also shown. Apps without migrations are also listed, but
-have (no migrations) printed under them. This is the default output format.
---plan , -p ¶ Shows the migration plan Django will follow to apply migrations.
-Like --list , applied migrations are marked by an [X] . For a --verbosity of 2
-and above, all dependencies of a migration will also be shown. app_label s
-arguments limit the output, however, dependencies of provided apps may also be
-included. --database DATABASE ¶ Specifies the database to examine. Defaults to
-default . sqlflush ¶ django-admin sqlflush ¶ Prints the SQL statements that
-would be executed for the flush command. --database DATABASE ¶ Specifies the
-database for which to print the SQL. Defaults to default . sqlmigrate ¶
-django-admin sqlmigrate app_label migration_name ¶ Prints the SQL for the named
-migration. This requires an active database connection, which it will use to
-resolve constraint names; this means you must generate the SQL against a copy of
-the database you wish to later apply it on. Note that sqlmigrate doesn’t
-colorize its output. --backwards ¶ Generates the SQL for unapplying the
-migration. By
+is checked against an `<ng-content>` placeholder, Angular compares against the
+`ngProjectAs` value instead of the element's identity: ```html <!-- Component
+template --> <div class="card-shadow"> <ng-content select="card-title" /> <div
+class="card-divider"></div> <ng-content /> </div> ``` ```html <!-- Using the
+component --> <custom-card> <h3 ngProjectAs="card-title">Hello</h3> <p>Welcome
+to the example</p> </custom-card> ``` ```html <!-- Rendered DOM -->
+<custom-card> <div class="card-shadow"> <h3>Hello</h3> <div
+class="card-divider"></div> <p>Welcome to the example</p> </div> </custom-card>
+``` `ngProjectAs` supports only static values and cannot be bound to dynamic
+expressions. ## Caveats ### Projected content lives in the parent's view Even
+though projected content is _rendered_ inside the receiving component, it is
+still owned by the component that declared it. Angular tracks it as part of the
+parent's view, which has a couple of side effects worth knowing about. **Change
+detection:** Projected content is checked when the _parent_ runs change
+detection. If the receiving component uses `OnPush`, Angular can skip checking
+that component's own template — but it won't skip the projected content, because
+that belongs to the parent. ```html <!-- Parent template (default change
+detection) --> <onpush-wrapper> <!-- Still checked on every parent cycle, OnPush
+doesn't help here --> <expensive-component /> </onpush-wrapper> ``` **Dependency
+injection:** Projected content gets its dependencies from the parent's injector,
+not from the receiving component's `viewProviders`. See [Providers and
+viewProviders](guide/di/hierarchical-dependency-injection) for details. ### Some
+library components don't support projected children Certain components — menus,
+tabs, lists — use `ContentChildren` to find their children and wire up behavior
+like keyboard navigation, focus management, or ARIA attributes. They're written
+assuming they own their children directly,
 ----------------------------------------------------------------------------------------------------
-Index: 18473 <<"chunk_id": 9, "docno": 2438>>
+Index: 19683 <<"chunk_id": 414, "docno": 2775>>
 
-for it to be used (instead of just 'polls' ). When using the PostgreSQL backend,
-the dbshell command can connect to the database using the password from your
-settings file (instead of requiring it to be manually entered). The django
-package may be run as a script, i.e. python -m django , which will behave the
-same as django-admin . Management commands that have the --noinput option now
-also take --no-input as an alias for that option. Migrations ¶ Initial
-migrations are now marked with an initial = True class attribute which allows
-migrate --fake-initial to more easily detect initial migrations. Added support
-for serialization of functools.partial and LazyObject instances. When supplying
-None as a value in MIGRATION_MODULES , Django will consider the app an app
-without migrations. When applying migrations, the “Rendering model states” step
-that’s displayed when running migrate with verbosity 2 or higher now computes
-only the states for the migrations that have already been applied. The model
-states for migrations being applied are generated on demand, drastically
-reducing the amount of required memory. However, this improvement is not
-available when unapplying migrations and therefore still requires the
-precomputation and storage of the intermediate migration states. This
-improvement also requires that Django no longer supports mixed migration plans.
-Mixed plans consist of a list of migrations where some are being applied and
-others are being unapplied. This was never officially supported and never had a
-public API that supports this behavior. The squashmigrations command now
-supports specifying the starting migration from which migrations
+template values were updated without a change notification (i.e.
+`fixture.componentInstance.someValue = 'newValue';`). If the component is used
+in production, this issue should be addressed by updating the component to use
+signals for state or call `ChangeDetectorRef.markForCheck()`. If the component
+is only used as a test wrapper and never used in an application, it is
+acceptable to use `fixture.changeDetectorRef.markForCheck()`. ### Debug-mode
+check to ensure updates are detected Angular also provides an additional tool to
+help verify that an application is making updates to state in a
+zoneless-compatible way. `provideCheckNoChangesConfig({exhaustive: true,
+interval: <milliseconds>})` can be used to periodically check to ensure that no
+bindings have been updated without a notification. Angular throws
+`ExpressionChangedAfterItHasBeenCheckedError` if there is an updated binding
+that would not have refreshed by the zoneless change detection. As an open
+source project, Angular’s daily commits, PRs and momentum is all trackable on
+GitHub. To increase transparency into how this daily work connects to the
+framework’s future, our roadmap brings together the team’s current and future
+planned vision. The following projects are not associated with a particular
+Angular version. We will release them on completion, and they will be part of a
+specific version based on our release schedule, following semantic versioning.
+For example, we release features in the next minor after completion or the next
+major if they include breaking changes. Currently, Angular has three goals for
+the framework: 1. Improve the [AI experience for developers](/ai) 1. Improve the
+[Angular developer experience](#improving-the-angular-developer-experience) 1.
+Improve the framework’s performance Continue reading to learn how we plan to
+deliver
 ----------------------------------------------------------------------------------------------------
-Index: 32003 <<"chunk_id": 19, "docno": 4249>>
+Index: 22313 <<"chunk_id": 2, "docno": 3346>>
 
-remove the old files, commit and do a second release. The command that backs all
-this is squashmigrations - pass it the app label and migration name you want to
-squash up to, and it’ll get to work: $ ./manage.py squashmigrations myapp 0004
-Will squash the following migrations: - 0001_initial - 0002_some_change -
-0003_another_change - 0004_undo_something Do you wish to proceed? [ y/N ] y
-Optimizing... Optimized from 12 operations to 7 operations. Created new squashed
-migration
-/home/andrew/Programs/DjangoTest/test/migrations/0001_squashed_0004_undo_something.py
-You should commit this migration but leave the old ones in place ; the new
-migration will be used for new installs. Once you are sure all instances of the
-codebase have applied the migrations you squashed, you can delete them. Use the
-squashmigrations --squashed-name option if you want to set the name of the
-squashed migration rather than use an autogenerated one. Note that model
-interdependencies in Django can get very complex, and squashing may result in
-migrations that do not run; either mis-optimized (in which case you can try
-again with --no-optimize , though you should also report an issue), or with a
-CircularDependencyError , in which case you can manually resolve it. To manually
-resolve a CircularDependencyError , break out one of the ForeignKeys in the
-circular dependency loop into a separate migration, and move the dependency on
-the other app with it. If you’re unsure, see how makemigrations deals with the
-problem when asked to create brand new migrations from your models. In a future
-release of Django, squashmigrations will be updated to attempt
+indicate a change New applications (default in Angular v21+), or existing
+applications ready to migrate Slow computations Identifies and optimizes
+expensive template expressions and lifecycle hooks Profiling reveals specific
+components causing slow change detection cycles Skipping component subtrees Uses
+OnPush change detection to skip unchanged component trees Applications that need
+finer control over change detection Zone pollution Prevents unnecessary change
+detection caused by third-party libraries or timers Zone-based applications
+where profiling reveals excessive change detection cycles Measuring performance
+Identifying what to optimize is just as important as knowing how to optimize it.
+Angular integrates with browser developer tools to help you find bottlenecks.
+Tool What it does Chrome DevTools profiling Records Angular-specific performance
+data alongside browser profiling, with color-coded flame charts that show
+component rendering, change detection cycles, and lifecycle hooks Angular
+DevTools A browser extension that provides a component tree inspector and a
+profiler for visualizing change detection cycles What to optimize first If you
+are unsure where to start, profile your application first using the Chrome
+DevTools Angular track to identify specific bottlenecks. As a general starting
+point: Slow initial load — Use @defer to split large components out of the main
+bundle, NgOptimizedImage to prioritize above-the-fold images, and server-side
+rendering to deliver content faster. Slow interactions after load — Check
+whether zoneless change detection is enabled, look for slow computations in
+templates or lifecycle hooks, and consider OnPush to reduce unnecessary change
+detection. Social Media Blog X (formerly Twitter) Bluesky YouTube Discord GitHub
+Stack Overflow Community Contribute Code of Conduct Report Issues Google's
 ----------------------------------------------------------------------------------------------------
-Index: 31988 <<"chunk_id": 4, "docno": 4249>>
+Index: 179 <<"chunk_id": 4, "docno": 25>>
 
-accompanying migration at the same time. If you want to give the migration(s) a
-meaningful name instead of a generated one, you can use the makemigrations
---name option: $ python manage.py makemigrations --name changed_my_model
-your_app_label Version control ¶ Because migrations are stored in version
-control, you’ll occasionally come across situations where you and another
-developer have both committed a migration to the same app at the same time,
-resulting in two migrations with the same number. Don’t worry - the numbers are
-just there for developers’ reference, Django just cares that each migration has
-a different name. Migrations specify which other migrations they depend on -
-including earlier migrations in the same app - in the file, so it’s possible to
-detect when there’s two new migrations for the same app that aren’t ordered.
-When this happens, Django will prompt you and give you some options. If it
-thinks it’s safe enough, it will offer to automatically linearize the two
-migrations for you. If not, you’ll have to go in and modify the migrations
-yourself - don’t worry, this isn’t difficult, and is explained more in Migration
-files below. Transactions ¶ On databases that support DDL transactions (SQLite
-and PostgreSQL), all migration operations will run inside a single transaction
-by default. In contrast, if a database doesn’t support DDL transactions (e.g.
-MySQL, Oracle) then all operations will run without a transaction. You can
-prevent a migration from running in a transaction by setting the atomic
-attribute to False . For example: from django.db import migrations class
+Change Detection With Zoneless being stable and default, we set the default
+change detection strategy to OnPush , to follow current best practices. We also
+renamed ChangeDetectionStrategy.Default to ChangeDetectionStrategy.Eager . See
+the RFC discussion for details. Completed in 2026 Signal debugging in Angular
+DevTools We've added better tooling for debugging Signals using Angular
+DevTools. This change includes a new UI for inspecting and debugging signals.
+Completed in 2026 Improve HMR (Hot Module Reload) We're working towards faster
+edit/refresh cycle by enabling hot module replacement. In Angular v19 we shipped
+initial support for CSS and template HMR and in v20 we graduated template HMR to
+stable. We'll continue collecting feedback to make sure we're addressing
+developers' needs before we mark this project as complete. Completed in 2025
+Zoneless Angular In v18 we shipped experimental zoneless support in Angular. It
+enables developers to use the framework without including zone.js in their
+bundle, which improves performance, debugging experience, and interoperability.
+As part of the initial release we also introduced zoneless support to the
+Angular CDK and Angular Material. In v19 we introduced zoneless support in
+server-side rendering, addressed some edge cases, and created a schematic to
+scaffold zoneless projects. We transitioned Google Fonts to zoneless which
+improved performance, developer experience, and allowed us to identify gaps that
+we need to address before moving this feature to developer preview. As of
+Angular v20.2, Zoneless Angular is now stable and includes improvements in error
+handling and server-side rendering. Completed in Q4 2025 Server route
+configuration We're working towards enabling a more
 ----------------------------------------------------------------------------------------------------
-Index: 31985 <<"chunk_id": 1, "docno": 4249>>
+Index: 23702 <<"chunk_id": 0, "docno": 3589>>
 
-responsible for packaging up your model changes into individual migration files
-- analogous to commits - and migrate is responsible for applying those to your
-database. The migration files for each app live in a “migrations” directory
-inside of that app, and are designed to be committed to, and distributed as part
-of, its codebase. You should be making them once on your development machine and
-then running the same migrations on your colleagues’ machines, your staging
-machines, and eventually your production machines. Note It is possible to
-override the name of the package which contains the migrations on a per-app
-basis by modifying the MIGRATION_MODULES setting. Migrations will run the same
-way on the same dataset and produce consistent results, meaning that what you
-see in development and staging is, under the same circumstances, exactly what
-will happen in production. Django will make migrations for any change to your
-models or fields - even options that don’t affect the database - as the only way
-it can reconstruct a field correctly is to have all the changes in the history,
-and you might need those options in some data migrations later on (for example,
-if you’ve set custom validators). Backend Support ¶ Migrations are supported on
-all backends that Django ships with, as well as any third-party backends if they
-have programmed in support for schema alteration (done via the SchemaEditor
-class). However, some databases are more capable than others when it comes to
-schema migrations; some of the caveats are covered below. PostgreSQL ¶
+Defining dependency providers • Angular Skip to main content menu close v22 K
+Docs Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Defining dependency providers Angular provides two ways to make
+services available for injection: Automatic provision - Using providedIn in the
+@Injectable decorator, the @Service decorator, or by providing a factory in the
+InjectionToken configuration Manual provision - Using the providers array in
+components, directives, routes, or application config In the previous guide ,
+you learned how to create services using providedIn: 'root' , which handles most
+common use cases. This guide explores additional patterns for both automatic and
 ----------------------------------------------------------------------------------------------------
-Index: 31987 <<"chunk_id": 3, "docno": 4249>>
+Index: 22406 <<"chunk_id": 0, "docno": 3356>>
 
-run and migrate SQLite in a production environment unless you are very aware of
-the risks and its limitations; the support Django ships with is designed to
-allow developers to use SQLite on their local machines to develop less complex
-Django projects without the need for a full database. Workflow ¶ Django can
-create migrations for you. Make changes to your models - say, add a field and
-remove a model - and then run makemigrations : $ python manage.py makemigrations
-Migrations for 'books' : books/migrations/0003_auto.py: ~ Alter field author on
-book Your models will be scanned and compared to the versions currently
-contained in your migration files, and then a new set of migrations will be
-written out. Make sure to read the output to see what makemigrations thinks you
-have changed - it’s not perfect, and for complex changes it might not be
-detecting what you expect. Once you have your new migration files, you should
-apply them to your database to make sure they work as expected: $ python
-manage.py migrate Operations to perform: Apply all migrations: books Running
-migrations: Applying books.0003_auto... OK Once the migration is applied, commit
-the migration and the models change to your version control system as a single
-commit - that way, when other developers (or your production servers) check out
-the code, they’ll get both the changes to your models and the accompanying
-migration at the same time. If you want to give the migration(s) a meaningful
-name instead of a generated one, you can use the
+Zone pollution • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu Docs Introduction What is Angular?
+Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Performance Overview Loading Performance
+Lazy-loaded routes Deferred loading with @defer Lazy loading services Image
+optimization Server-side rendering Runtime Performance Overview Zoneless Slow
+computations Skipping component subtrees Zone pollution Chrome DevTools
+profiling Best Practices Performance Resolving zone pollution Zone.js is a
+signaling mechanism that Angular uses to detect when an application state might
+have changed. It captures asynchronous operations like setTimeout , network
+requests, and event listeners. Angular schedules change detection based on
+signals from Zone.js. In some cases scheduled tasks or microtasks don’t make any
+changes in the data model, which makes running change detection unnecessary.
+Common examples are: requestAnimationFrame , setTimeout or setInterval Task or
+microtask scheduling by third-party libraries This section
 ----------------------------------------------------------------------------------------------------
-Index: 21587 <<"chunk_id": 16, "docno": 2640>>
+Index: 17453 <<"chunk_id": 5, "docno": 2311>>
 
-for matching database schema beyond matching table names and so is only safe to
-use if you are confident that your existing schema matches what is recorded in
-your initial migration. --plan ¶ Shows the migration operations that will be
-performed for the given migrate command. --run-syncdb ¶ Allows creating tables
-for apps without migrations. While this isn’t recommended, the migrations
-framework is sometimes too slow on large projects with hundreds of models.
---noinput , --no-input ¶ Suppresses all user prompts. An example prompt is
-asking about removing stale content types. --check ¶ Makes migrate exit with a
-non-zero status when unapplied migrations are detected. --prune ¶ Deletes
-nonexistent migrations from the django_migrations table. This is useful when
-migration files replaced by a squashed migration have been removed. See
-Squashing migrations for more details. optimizemigration ¶ django-admin
-optimizemigration app_label migration_name ¶ Optimizes the operations for the
-named migration and overrides the existing file. If the migration contains
-functions that must be manually copied, the command creates a new migration file
-suffixed with _optimized that is meant to replace the named migration. --check ¶
-Makes optimizemigration exit with a non-zero status when a migration can be
-optimized. runserver ¶ django-admin runserver [addrport] ¶ Starts a lightweight
-development web server on the local machine. By default, the server runs on port
-8000 on the IP address 127.0.0.1 . You can pass in an IP address and port number
-explicitly. If you run this script as a user with normal privileges
-(recommended), you might not have access to start
+the name of the created AngularJS wrapper module. You can use it to declare a
+dependency in your main AngularJS module. {@example
+upgrade/static/ts/lite/module.ts region="basic-how-to"} For more details on how
+to use downgradeModule() see Upgrading for Performance . @deprecated Passing
+NgModuleFactory as the downgradeModule function argument is deprecated, please
+pass an NgModule class reference instead. @param moduleOrBootstrapFn
+NgModuleFactory <T> @returns string Usage notes Apart from UpgradeModule , you
+can use the rest of the upgrade/static helpers as usual to build a hybrid
+application. Note that the Angular pieces (e.g. downgraded services) will not be
+available until the downgraded module has been bootstrapped, i.e. by
+instantiating a downgraded component. You cannot use downgradeModule() and
+UpgradeModule in the same hybrid application. Use one or the other. Differences
+with UpgradeModule Besides their different API, there are two important internal
+differences between downgradeModule() and UpgradeModule that affect the behavior
+of hybrid applications: Unlike UpgradeModule , downgradeModule() does not
+bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g.
 ----------------------------------------------------------------------------------------------------
-Index: 31994 <<"chunk_id": 10, "docno": 4249>>
+Index: 19400 <<"chunk_id": 131, "docno": 2775>>
 
-can use the allow_migrate() method of database routers to control which
-databases makemigrations checks for consistent history. Adding migrations to
-apps ¶ New apps come preconfigured to accept migrations, and so you can add
-migrations by running makemigrations once you’ve made some changes. If your app
-already has models and database tables, and doesn’t have migrations yet (for
-example, you created it against a previous Django version), you’ll need to
-convert it to use migrations by running: $ python manage.py makemigrations
-your_app_label This will make a new initial migration for your app. Now, run
-python manage.py migrate --fake-initial , and Django will detect that you have
-an initial migration and that the tables it wants to create already exist, and
-will mark the migration as already applied. (Without the migrate --fake-initial
-flag, the command would error out because the tables it wants to create already
-exist.) Note that this only works given two things: You have not changed your
-models since you made their tables. For migrations to work, you must make the
-initial migration first and then make changes, as Django compares changes
-against migration files, not the database. You have not manually edited your
-database - Django won’t be able to detect that your database doesn’t match your
-models, you’ll just get errors when migrations try to modify those tables.
-Reversing migrations ¶ Migrations can be reversed with migrate by passing the
-number of the previous migration. For example, to reverse migration books.0003 :
-/  $ python manage.py migrate books 0002 Operations to
+already being in one, you can use `runInInjectionContext`. This requires access
+to an injector, such as the `EnvironmentInjector`: ```ts {highlight: [9],
+header:"hero.service.ts"} @Injectable({ providedIn: 'root', }) export class
+HeroService { private environmentInjector = inject(EnvironmentInjector);
+someMethod() { runInInjectionContext(this.environmentInjector, () => {
+inject(SomeService); // Do what you need with the injected service }); } } ```
+Note that [`inject`](/api/core/inject) returns an instance only if the injector
+can resolve the requested token. ## Asserts the context Angular provides the
+`assertInInjectionContext` helper function to verify that the current context is
+an injection context and throw a clear error if it is not. Pass a reference to
+the calling function so the error message points to the correct API entry point.
+This produces a clearer, more actionable message than the default generic
+injection error. ```ts import {ElementRef, assertInInjectionContext, inject}
+from '@angular/core'; export function injectNativeElement<T extends Element>():
+T { assertInInjectionContext(injectNativeElement); return
+inject(ElementRef).nativeElement; } ``` You can then call this helper **from an
+injection context** (constructor, field initializer, provider factory, or code
+executed via `runInInjectionContext`): ```ts import {Component, inject} from
+'@angular/core'; import {injectNativeElement} from './dom-helpers'; @Component({
+/* … */ }) export class PreviewCard { readonly hostEl =
+injectNativeElement<HTMLElement>(); // Field initializer runs in an injection
+context. onAction() { const anotherRef = injectNativeElement<HTMLElement>(); //
+Fails: runs outside an injection context. } } ``` ## Using DI outside of a
+context If you call [`inject`](api/core/inject) or `assertInInjectionContext`
+outside of an injection context, Angular throws [error NG0203](/errors/NG0203).
+# Hierarchical injectors This guide provides in-depth coverage of Angular's
+hierarchical dependency injection system, including resolution rules, modifiers,
+and
+----------------------------------------------------------------------------------------------------
+Index: 23686 <<"chunk_id": 0, "docno": 3585>>
+
+Optimizing injection tokens • Angular Skip to main content menu close v22 K Docs
+Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Optimizing client application size with lightweight injection tokens
+This page provides a conceptual overview of a dependency injection technique
+that is recommended for library developers. Designing your library with
+lightweight injection tokens helps optimize the bundle size of client
+applications that use your library. You can manage the dependency structure
+among your components and injectable services to optimize bundle size by using
+tree-shakable providers. This normally ensures that if a provided component or
+service is never actually used
+----------------------------------------------------------------------------------------------------
+Index: 11735 <<"chunk_id": 2, "docno": 1822>>
+
+means that OnPush components that are not marked for check will not be checked.
+This behavior is the current default behavior in Angular. When running change
+detection on a view tree, views marked for check are refreshed and the flag to
+check it is removed. When Angular checks views a second time to ensure nothing
+has changed, OnPush components will no longer be marked and not be checked.
+@param options { exhaustive: false; } @returns EnvironmentProviders function
+provideCheckNoChangesConfig ( options : { interval ?: number | undefined ;
+exhaustive : true ; }) : EnvironmentProviders ; interval will periodically run
+checkNoChanges on application views. This can be useful in zoneless applications
+to periodically ensure no changes have been made without notifying Angular that
+templates need to be refreshed. The exhaustive option will treat all application
+views as if they were ChangeDetectionStrategy.Eager / Default when verifying no
+expressions have changed. All views attached to ApplicationRef and all the
+descendants of those views will be checked for changes (excluding those subtrees
+which are detached via ChangeDetectorRef.detach() ). This is useful because the
+check that runs after regular change detection does not work for components
+using ChangeDetectionStrategy.OnPush . This check is will surface any existing
+errors hidden by OnPush components. @param options { interval?: number |
+undefined; exhaustive: true; } @returns EnvironmentProviders Description Used to
+disable exhaustive checks when verifying no expressions changed after they were
+checked. This means that OnPush components that are not marked for check will
+not be checked. This behavior is the current default behavior
+----------------------------------------------------------------------------------------------------
+Index: 22407 <<"chunk_id": 1, "docno": 3356>>
+
+data model, which makes running change detection unnecessary. Common examples
+are: requestAnimationFrame , setTimeout or setInterval Task or microtask
+scheduling by third-party libraries This section covers how to identify such
+conditions, and how to run code outside the Angular zone to avoid unnecessary
+change detection calls. On this page arrow_upward_alt Back to the top
+Identifying unnecessary change detection calls You can detect unnecessary change
+detection calls using Angular DevTools. Often they appear as consecutive bars in
+the profiler’s timeline with source setTimeout , setInterval ,
+requestAnimationFrame , or an event handler. When you have limited calls within
+your application of these APIs, the change detection invocation is usually
+caused by a third-party library. In the image above, there is a series of change
+detection calls triggered by event handlers associated with an element. That’s a
+common challenge when using third-party, non-native Angular components, which do
+not alter the default behavior of NgZone . Run tasks outside NgZone In such
+cases, you can instruct Angular to avoid calling change detection for tasks
+scheduled by a given piece of code using NgZone . Run outside of the Zone 1
+import { Component , NgZone , OnInit , inject } from '@angular/core' ; 2 3 @
+Component ( ... ) 4 class AppComponent implements OnInit { 5 private ngZone =
+inject ( NgZone ); 6 7 ngOnInit () { 8 this .ngZone. runOutsideAngular (() =>
+setInterval (pollForUpdates, 500 )); 9 } 10 } The preceding snippet instructs
+Angular to call setInterval outside the Angular Zone and skip running change
+----------------------------------------------------------------------------------------------------
+Index: 22316 <<"chunk_id": 1, "docno": 3347>>
+
+change detection process because Angular runs the computations sequentially. On
+this page arrow_upward_alt Back to the top Identifying slow computations You can
+identify heavy computations with Angular DevTools’ profiler. In the performance
+timeline, click a bar to preview a particular change detection cycle. This
+displays a bar chart, which shows how long the framework spent in change
+detection for each component. When you click a component, you can preview how
+long Angular spent evaluating its template and lifecycle hooks. For example, in
+the preceding screenshot, the second recorded change detection cycle is
+selected. Angular spent over 573 ms on this cycle, with the most time spent in
+the EmployeeListComponent . In the details panel, you can see that Angular spent
+over 297 ms evaluating the template of the EmployeeListComponent . Optimizing
+slow computations Here are several techniques to remove slow computations:
+Optimizing the underlying algorithm . This is the recommended approach. If you
+can speed up the algorithm that is causing the problem, you can speed up the
+entire change detection mechanism. Caching using pure pipes . You can move the
+heavy computation to a pure pipe . Angular reevaluates a pure pipe only if it
+detects that its inputs have changed, compared to the previous time Angular
+called it. Using memoization . Memoization is a similar technique to pure pipes,
+with the difference that pure pipes preserve only the last result from the
+computation where memoization could store multiple results. Avoid
+repaints/reflows in lifecycle hooks . Certain operations cause the browser to
+either synchronously recalculate
+----------------------------------------------------------------------------------------------------
+Index: 23598 <<"chunk_id": 6, "docno": 3561>>
+
+an instance of the ambient type. Create a factory function that returns that
+instance. Add a useFactory provider with that factory function. Use @Inject to
+inject the instance. Here's an illustrative example. // CORRECTED import {
+Inject } from '@angular/core' ; export const WINDOW = new InjectionToken (
+'Window' ); export function _window () { return window; } @ Component ({ …
+providers: [ { provide: WINDOW , useFactory: _window } ] }) export class
+MyComponent { constructor (@ Inject ( WINDOW ) private win : Window ) { … } }
+The Window type in the constructor is no longer a problem for the compiler
+because it uses the @Inject(WINDOW) to generate the injection code. Angular does
+something similar with the DOCUMENT token so you can inject the browser's
+document object (or an abstraction of it, depending upon the platform in which
+the application runs). import { Inject } from '@angular/core' ; import {
+DOCUMENT } from '@angular/common' ; @ Component ({ … }) export class MyComponent
+{ constructor (@ Inject ( DOCUMENT ) private doc : Document ) { … } } Name
+expected HELPFUL: The compiler expected a name in an expression it was
+evaluating. This can happen if you use a number as a property name as in the
+following example. // ERROR provider : [{provide: Foo, useValue: { 0 : 'test'
+}}]; Change the name of the property to something non-numeric. // CORRECTED
+provider : [{provide: Foo, useValue: { '0' : 'test' }}]; Unsupported enum member
+name HELPFUL: Angular couldn't determine
+----------------------------------------------------------------------------------------------------
+Index: 19008 <<"chunk_id": 2, "docno": 2723>>
+
+application. This will work when ZoneJS is not present on the page at all or if
+it exists because something else is using it (either another Angular application
+which uses ZoneJS for scheduling or some other library that relies on ZoneJS).
+This can also be added to the TestBed providers to configure the test
+environment to more closely match production behavior. This will help give
+higher confidence that components are compatible with zoneless change detection.
+ZoneJS uses browser events to trigger change detection. When using this
+provider, Angular will instead use Angular APIs to schedule change detection.
+These APIs include: ChangeDetectorRef.markForCheck ComponentRef.setInput
+updating a signal that is read in a template when bound host or template
+listeners are triggered attaching a view that was marked dirty by one of the
+above removing a view registering a render hook (templates are only refreshed if
+render hooks do one of the above) Usage Notes bootstrapApplication (MyApp,
+{providers: [ provideZonelessChangeDetection (), ]}); Jump to details Social
+Media Blog X (formerly Twitter) Bluesky YouTube Discord GitHub Stack Overflow
+Community Contribute Code of Conduct Report Issues Google's DevLibrary Angular
+Google Developer Experts Resources Press Kit Roadmap Community translations
+Azərbaycanca Español Türkçe Русский 한국어 日本語版 简体中文版 正體中文版 Super-powered by Google
+©2010-2026. Code licensed under an MIT-style License . Documentation licensed
+under CC BY 4.0 . Built by Angular at v22.1.0+sha-6f86d66.
+----------------------------------------------------------------------------------------------------
+Index: 23683 <<"chunk_id": 0, "docno": 3584>>
+
+DI in action • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu Docs Introduction What is Angular?
+Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection DI in action This guide explores additional features of dependency
+injection (DI) in Angular. NOTE: For comprehensive coverage of InjectionToken
+and custom providers, see the defining dependency providers guide . On this page
+arrow_upward_alt Back to the top Inject the component's DOM element Although
+developers generally avoid it, some visual effects and third-party tools require
+you to access the DOM directly. In such cases, you may need to access a
+component's DOM element. Angular exposes the underlying DOM
+----------------------------------------------------------------------------------------------------
+Index: 19081 <<"chunk_id": 3, "docno": 2744>>
+
+child component from being refreshed if it is not OnPush compatible and relies
+on ZoneJS to trigger change detection. Components can use the Default strategy
+as long as they notify Angular when change detection needs to run (calling
+markForCheck , using signals, AsyncPipe , etc.). Being a host for a user
+component means using an API such as ViewContainerRef.createComponent and not
+just hosting a portion of a template from a user component (i.e. content
+projection or using a template ref input). Remove NgZone.onMicrotaskEmpty ,
+NgZone.onUnstable , NgZone.isStable , or NgZone.onStable Applications and
+libraries need to remove uses of NgZone.onMicrotaskEmpty , NgZone.onUnstable ,
+and NgZone.onStable . These observables will never emit when an Application
+enables zoneless change detection. Similarly, NgZone.isStable will always be
+true and should not be used as a condition for code execution. The
+NgZone.onMicrotaskEmpty and NgZone.onStable observables are most often used to
+wait for Angular to complete change detection before performing a task. Instead,
+these can be replaced by afterNextRender if they need to wait for a single
+change detection or afterEveryRender if there is some condition that might span
+several change detection rounds. In other cases, these observables were used
+because they happened to be familiar and have similar timing to what was needed.
+More straightforward or direct DOM APIs can be used instead, such as
+MutationObserver when code needs to wait for certain DOM state (rather than
+waiting for it indirectly through Angular's render hooks). NgZone.run and
+NgZone.runOutsideAngular are compatible with Zoneless NgZone.run and
+NgZone.runOutsideAngular do not need to be removed in
+----------------------------------------------------------------------------------------------------
+Index: 23597 <<"chunk_id": 5, "docno": 3561>>
+
+. For example, you cannot write something like this: // ERROR import {
+configuration } from './configuration' ; // destructured assignment to foo and
+bar const { foo , bar } = configuration; … providers : [ {provide: Foo,
+useValue: foo}, {provide: Bar, useValue: bar}, ] … To correct this error, refer
+to non-destructured values. // CORRECTED import { configuration } from
+'./configuration' ; … providers : [ {provide: Foo, useValue: configuration.foo},
+{provide: Bar, useValue: configuration.bar}, ] … Could not resolve type HELPFUL:
+The compiler encountered a type and can't determine which module exports that
+type. This can happen if you refer to an ambient type. For example, the Window
+type is an ambient type declared in the global .d.ts file. You'll get an error
+if you reference it in the component constructor, which the compiler must
+statically analyze. // ERROR @ Component ({ }) export class MyComponent {
+constructor ( private win : Window ) { … } } TypeScript understands ambient
+types so you don't import them. The Angular compiler does not understand a type
+that you neglect to export or import. In this case, the compiler doesn't
+understand how to inject something with the Window token. Do not refer to
+ambient types in metadata expressions. If you must inject an instance of an
+ambient type, you can finesse the problem in four steps: Create an injection
+token for an instance of the ambient type. Create a factory function that
+returns that instance. Add a useFactory provider with that factory function. Use
+@Inject to
+----------------------------------------------------------------------------------------------------
+Index: 19764 <<"chunk_id": 0, "docno": 2797>>
+
+Dependency Injection • Overview • Angular Skip to main content menu close v22 K
+Docs Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Dependency injection in Angular Dependency Injection (DI) is a design
+pattern you use to organize and share code across your application by supplying
+dependencies to a class instead of creating them inside it. TIP: Check out
+Angular's Essentials before diving into this comprehensive guide. As an
+application grows, developers often need to reuse and share functionality across
+different parts of the codebase. Dependency Injection (DI) helps you achieve
+this by allowing you to provide dependencies to a
+----------------------------------------------------------------------------------------------------
+Index: 20712 <<"chunk_id": 0, "docno": 3020>>
+
+Skipping component subtrees • Angular Skip to main content menu close v22 K Docs
+Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Performance Overview Loading Performance
+Lazy-loaded routes Deferred loading with @defer Lazy loading services Image
+optimization Server-side rendering Runtime Performance Overview Zoneless Slow
+computations Skipping component subtrees Zone pollution Chrome DevTools
+profiling Best Practices Performance Skipping component subtrees JavaScript, by
+default, uses mutable data structures that you can reference from multiple
+different components. Angular runs change detection over your entire component
+tree to make sure that the most up-to-date state of your data structures is
+reflected in the DOM. Change detection is sufficiently fast for most
+applications. However, when an application has an especially large component
+tree, running change detection across the whole application can cause
+performance issues. You can address this by
+----------------------------------------------------------------------------------------------------
+Index: 17450 <<"chunk_id": 2, "docno": 2311>>
+
+how to use downgradeModule() see Upgrading for Performance . @param
+moduleOrBootstrapFn Type <T> | ((extraProviders: StaticProvider []) => Promise<
+NgModuleRef <T>>) @returns string Usage notes Apart from UpgradeModule , you can
+use the rest of the upgrade/static helpers as usual to build a hybrid
+application. Note that the Angular pieces (e.g. downgraded services) will not be
+available until the downgraded module has been bootstrapped, i.e. by
+instantiating a downgraded component. You cannot use downgradeModule() and
+UpgradeModule in the same hybrid application. Use one or the other. Differences
+with UpgradeModule Besides their different API, there are two important internal
+differences between downgradeModule() and UpgradeModule that affect the behavior
+of hybrid applications: Unlike UpgradeModule , downgradeModule() does not
+bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g. when the inputs of a
+downgraded component change). This improves performance, especially in
+change-detection-heavy applications, but leaves it up to the developer to
+manually notify each framework as needed. For a more detailed discussion of the
+differences
+----------------------------------------------------------------------------------------------------
+Index: 23673 <<"chunk_id": 0, "docno": 3581>>
+
+Injection context • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu Docs Introduction What is Angular?
+Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Injection context The dependency injection (DI) system relies on a
+runtime context where the current injector is available. This means that
+injectors only work when you execute code within this context. You have an
+injection context available in the following situations: During construction
+(via the constructor ) of a class instantiated by the DI system, such as an
+@Injectable or @Component . In field initializers of such classes. In the
+factory function specified for useFactory of a Provider or
+----------------------------------------------------------------------------------------------------
+Index: 22315 <<"chunk_id": 0, "docno": 3347>>
+
+Slow computations • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu Docs Introduction What is Angular?
+Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Performance Overview Loading Performance
+Lazy-loaded routes Deferred loading with @defer Lazy loading services Image
+optimization Server-side rendering Runtime Performance Overview Zoneless Slow
+computations Skipping component subtrees Zone pollution Chrome DevTools
+profiling Best Practices Performance Slow computations On every change detection
+cycle, Angular synchronously: Evaluates all template expressions in all
+components, unless specified otherwise, based on that each component's detection
+strategy Executes the ngDoCheck , ngAfterContentChecked , ngAfterViewChecked ,
+and ngOnChanges lifecycle hooks. A single slow computation within a template or
+a lifecycle hook can slow down the entire change detection process because
+Angular runs the computations sequentially. On this page arrow_upward_alt Back
+to the top Identifying slow computations You can identify heavy computations
+----------------------------------------------------------------------------------------------------
+Index: 19680 <<"chunk_id": 411, "docno": 2775>>
+
+relies on ZoneJS to trigger change detection. Components can use the `Default`
+strategy as long as they notify Angular when change detection needs to run
+(calling `markForCheck`, using signals, `AsyncPipe`, etc.). Being a host for a
+user component means using an API such as `ViewContainerRef.createComponent` and
+not just hosting a portion of a template from a user component (i.e. content
+projection or using a template ref input). ### Remove `NgZone.onMicrotaskEmpty`,
+`NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable` Applications and
+libraries need to remove uses of `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`,
+and `NgZone.onStable`. These observables will never emit when an Application
+enables zoneless change detection. Similarly, `NgZone.isStable` will always be
+`true` and should not be used as a condition for code execution. The
+`NgZone.onMicrotaskEmpty` and `NgZone.onStable` observables are most often used
+to wait for Angular to complete change detection before performing a task.
+Instead, these can be replaced by `afterNextRender` if they need to wait for a
+single change detection or `afterEveryRender` if there is some condition that
+might span several change detection rounds. In other cases, these observables
+were used because they happened to be familiar and have similar timing to what
+was needed. More straightforward or direct DOM APIs can be used instead, such as
+`MutationObserver` when code needs to wait for certain DOM state (rather than
+waiting for it indirectly through Angular's render hooks). `NgZone.run` and
+`NgZone.runOutsideAngular` do not need to be removed in order for code to be
+compatible with Zoneless applications. In fact, removing these calls can lead to
+performance regressions for libraries that are used in applications
+----------------------------------------------------------------------------------------------------
+Index: 175 <<"chunk_id": 0, "docno": 25>>
+
+Roadmap • Angular Skip to main content menu close v22 K Docs Tutorials
+Playground Reference more_horiz menu API Roadmap Get involved API Reference CLI
+Reference Error Encyclopedia Extended Diagnostics Versioning and releases
+Version compatibility Update guide Configurations Migrations Angular Roadmap
+Learn how the Angular team is building momentum on the web. As an open source
+project, Angular’s daily commits, PRs and momentum is all trackable on GitHub.
+To increase transparency into how this daily work connects to the framework’s
+future, our roadmap brings together the team’s current and future planned
+vision. The following projects are not associated with a particular Angular
+version. We will release them on completion, and they will be part of a specific
+version based on our release schedule, following semantic versioning. For
+example, we release features in the next minor after completion or the next
+major if they include breaking changes. Currently, Angular has three goals for
+the framework: Improve the AI experience for developers Improve the Angular
+developer experience Improve the framework’s performance Continue reading to
+learn how we plan to deliver these objectives with specific project work. On
+this page arrow_upward_alt Back to the top Explore modern Angular Start
+developing with the latest Angular features from our roadmap. This list
+represents the current status of new features from our roadmap: Available to
+experiment with Web MCP Production ready Signal Forms Resource API httpResource
+Zoneless change detection Linked Signal API Incremental hydration Effect API
+Event replay with SSR Route-level render mode Improving the AI experience for
+Angular Developers Bringing the best
+----------------------------------------------------------------------------------------------------
+Index: 1427 <<"chunk_id": 2, "docno": 177>>
+
+by reading angular.json . onpush_zoneless_migration Analyzes code and provides a
+plan to migrate it to OnPush change detection (prerequisite for zoneless).
+run_target Executes a configured target (e.g., build, test, lint, e2e, deploy).
+search_documentation Searches the official documentation at https://angular.dev
+. Common Workflows These workflows demonstrate how AI assistants coordinate
+different MCP tools to automatically achieve complex developer stories. 1.
+Performance Tuning: Zoneless & OnPush Migration The AI agent optimizes change
+detection performance and migrates components to a zoneless-ready state.
+Discover Workspace : The AI agent calls list_projects to locate components,
+projects, and style/test configurations in the workspace. Schematic
+Modernization (Prerequisite) : The AI agent runs any prerequisite signal
+migrations using standard ng generate commands (e.g., Signal Inputs, Signal
+Queries). Plan Migration : The AI agent calls onpush_zoneless_migration with the
+absolute path of the directory or component file. Apply Changes : The AI agent
+automatically applies the single actionable change returned by the tool to the
+codebase. Verify Changes : The AI agent runs unit tests by calling run_target
+with the target parameter set to "test" . Repeat : The AI agent calls
+onpush_zoneless_migration again to retrieve the next step, repeating until the
+tool indicates the migration is complete. 2. Feature Development & TDD Loop The
+AI agent automates research, implementation, and verification when developing
+new features. API & Syntax Research : The AI agent uses search_documentation to
+look up Angular APIs or syntax rules (e.g., @defer block options). Load Coding
+Standards : The AI agent calls get_best_practices with the workspace path to
+load Angular version-aligned coding
+----------------------------------------------------------------------------------------------------
+Index: 19684 <<"chunk_id": 415, "docno": 2775>>
+
+the [AI experience for developers](/ai) 1. Improve the [Angular developer
+experience](#improving-the-angular-developer-experience) 1. Improve the
+framework’s performance Continue reading to learn how we plan to deliver these
+objectives with specific project work. ## Explore modern Angular Start
+developing with the latest Angular features from our roadmap. This list
+represents the current status of new features from our roadmap: ### Available to
+experiment with - [Web MCP](/ai/webmcp) ### Production ready - [Signal
+Forms](/guide/forms/signals/overview) - [Resource API](/guide/signals/resource)
+- [httpResource](/api/common/http/httpResource) - [Zoneless change
+detection](/guide/zoneless) - [Linked Signal API](/guide/signals/linked-signal)
+- [Incremental hydration](/guide/incremental-hydration) - [Effect
+API](/api/core/effect) - [Event replay with
+SSR](/api/platform-browser/withEventReplay) - [Route-level render
+mode](/guide/ssr) ## Improving the AI experience for Angular Developers ###
+Bringing the best of AI to Angular ## Improving the Angular developer experience
+### Developer velocity ### Improve tooling ## Completed projects # Keeping your
+Angular projects up-to-date Just like Web and the entire web ecosystem, Angular
+is continuously improving. Angular balances continuous improvement with a strong
+focus on stability and making updates straightforward. Keeping your Angular
+application up-to-date enables you to take advantage of leading-edge new
+features, as well as optimizations and bug fixes. This document contains
+information and resources to help you keep your Angular applications and
+libraries up-to-date. For information about our versioning policy and practices
+— including support and deprecation practices, as well as the release schedule —
+see [Angular versioning and releases](reference/releases 'Angular versioning and
+releases'). HELPFUL: If you are currently using AngularJS, see [Upgrading from
+AngularJS](https://angular.io/guide/upgrade 'Upgrading from AngularJS').
+_AngularJS_ is the name for all v1.x versions of Angular. ## Getting notified
+----------------------------------------------------------------------------------------------------
+Index: 22829 <<"chunk_id": 18, "docno": 3385>>
+
+you must add it to the template. Similar to the formGroupName input provided by
+FormGroupNameDirective , formArrayName binds communication from the form array
+instance to the template with FormArrayNameDirective . Add the following
+template HTML after the <div> closing the formGroupName element.
+profile-editor.component.html (aliases form array template) < div formArrayName
+= "aliases" > < h2 >Aliases</ h2 > < button type = "button" (click) =
+"addAlias()" >+ Add another alias</ button > @for ( alias of aliases.controls;
+track $index; let i = $index) { < div > <!-- The repeated alias template --> <
+label for = "alias-{{ i }}" >Alias:</ label > < input id = "alias-{{ i }}" type
+= "text" [ formControlName ] = "i" /> </ div > } </ div > The @for block
+iterates over each form control instance provided by the aliases form array
+instance. Because form array elements are unnamed, you assign the index to the i
+variable and pass it to each control to bind it to the formControlName input.
+Each time a new alias instance is added, the new form array instance is provided
+its control based on the index. This lets you track each individual control when
+calculating the status and value of the root control. NOTE: In zoneless
+applications, mutating a reactive forms model (for example calling
+FormArray.push() ) does not automatically schedule component change detection.
+If your template depends on structural model changes such as aliases.controls ,
+make sure the component notifies Angular to run change detection, for example by
+bridging a forms
+----------------------------------------------------------------------------------------------------
+Index: 20320 <<"chunk_id": 2, "docno": 2918>>
+
+in the providers. Provide your own NgZone instance. zone.js - Use default NgZone
+which requires Zone.js . noop - Use NoopNgZone which does nothing.
+ngZoneEventCoalescing boolean | undefined @deprecated BootstrapOptions is
+deprecated. Use provideZoneChangeDetection instead to configure coalescing.
+Optionally specify coalescing event change detections or not. Consider the
+following case. < div (click) = "doSomething()" > < button (click) =
+"doSomethingElse()" ></ button > </ div > When button is clicked, because of the
+event bubbling, both event handlers will be called and 2 change detections will
+be triggered. We can coalesce such kind of events to only trigger change
+detection only once. By default, this option will be false. So the events will
+not be coalesced and the change detection will be triggered multiple times. And
+if this option be set to true, the change detection will be triggered async by
+scheduling a animation frame. So in the case above, the change detection will
+only be triggered once. ngZoneRunCoalescing boolean | undefined @deprecated
+BootstrapOptions is deprecated. Use provideZoneChangeDetection instead to
+configure coalescing. Optionally specify if NgZone#run() method invocations
+should be coalesced into a single change detection. Consider the following case.
+for ( let i = 0 ; i < 10 ; i ++ ) { ngZone. run (() => { // do something }); }
+This case triggers the change detection multiple times. With ngZoneRunCoalescing
+options, all change detections in an event loop trigger only once. In addition,
+the change detection executes in requestAnimation. Jump to details Social Media
+Blog X (formerly Twitter) Bluesky YouTube
+----------------------------------------------------------------------------------------------------
+Index: 25651 <<"chunk_id": 1, "docno": 4087>>
+
+by allowing you to define a tag whose content is created and controlled by
+JavaScript code. The browser maintains a CustomElementRegistry of defined custom
+elements, which maps an instantiable JavaScript class to an HTML tag. The
+@angular/elements package exports a createCustomElement() API that provides a
+bridge from Angular's component interface and change detection functionality to
+the built-in DOM API. Transforming a component to a custom element makes all the
+required Angular infrastructure available to the browser. Creating a custom
+element is simple and straightforward, and automatically connects your
+component-defined view with change detection and data binding, mapping Angular
+functionality to the corresponding built-in HTML equivalents. On this page
+arrow_upward_alt Back to the top Using custom elements Custom elements bootstrap
+themselves - they start when they are added to the DOM, and are destroyed when
+removed from the DOM. Once a custom element is added to the DOM for any page, it
+looks and behaves like any other HTML element, and does not require any special
+knowledge of Angular terms or usage conventions. To add the @angular/elements
+package to your workspace, run the following command: npm npm install
+@angular/elements yarn yarn add @angular/elements pnpm pnpm add
+@angular/elements bun bun add @angular/elements How it works The
+createCustomElement() function converts a component into a class that can be
+registered with the browser as a custom element. After you register your
+configured class with the browser's custom-element registry, use the new element
+just like a built-in HTML element in content that you add directly into the DOM:
+< my-popup message
+----------------------------------------------------------------------------------------------------
+Index: 19007 <<"chunk_id": 1, "docno": 2723>>
+
+IterableDiffer IterableDifferFactory IterableDiffers KeyValueChangeRecord
+KeyValueChanges KeyValueDiffer KeyValueDifferFactory KeyValueDiffers
+linkedSignal ListenerOptions LOCALE_ID makeEnvironmentProviders makeStateKey
+MAX_ANIMATION_TIMEOUT mergeApplicationConfig MissingTranslationStrategy model
+ModelOptions ModelSignal ModuleWithProviders ng-container ng-content ng-template
+NgIterable NgModule NgModuleFactory NgModuleRef NgZone NgZoneOptions
+NO_ERRORS_SCHEMA numberAttribute OnChanges OnDestroy onIdle OnInit Optional
+output Output outputBinding OutputEmitterRef OutputOptions OutputRef
+OutputRefSubscription PendingTasks Pipe PipeTransform PLATFORM_ID
+PLATFORM_INITIALIZER platformCore PlatformRef Predicate PrefetchTrigger
+PromiseResourceOptions provideAppInitializer provideBrowserGlobalErrorListeners
+provideCheckNoChangesConfig provideEnvironmentInitializer
+provideExperimentalWebMcpTools provideIdleServiceWith provideNgReflectAttributes
+providePlatformInitializer Provider ProviderToken provideStabilityDebugging
+provideZoneChangeDetection provideZonelessChangeDetection Query QueryList
+reflectComponentType Renderer2 RendererFactory2 RendererStyleFlags2
+RendererType2 REQUEST REQUEST_CONTEXT resolveForwardRef resource Resource
+ResourceDependencyError resourceFromSnapshots ResourceLoader
+ResourceLoaderParams ResourceOptions ResourceParamsContext ResourceParamsStatus
+ResourceRef ResourceSnapshot ResourceStatus ResourceStreamingLoader
+ResourceStreamItem RESPONSE_INIT ResponseInit runInInjectionContext Sanitizer
+SchemaMetadata SecurityContext Self Service setTestabilityGetter signal Signal
+SimpleChange SimpleChanges SkipSelf StateKey StaticClassProvider
+StaticClassSansProvider StaticProvider StreamingResourceOptions TemplateRef
+Testability TestabilityRegistry TrackByFunction TransferState TRANSLATIONS
+TRANSLATIONS_FORMAT twoWayBinding Type TypeProvider untracked ValueEqualityFn
+ValueProvider ValueSansProvider Version VERSION viewChild ViewChild viewChildren
+ViewChildren ViewContainerRef ViewEncapsulation ViewRef WebMcpClient
+WebMcpToolDescriptor WebMcpToolExecute WritableResource WritableSignal
+@angular/core provideZonelessChangeDetection function stable since v20.2 code
+Provides change detection without ZoneJS for the application bootstrapped using
+bootstrapApplication . bootstrapApplication Angular without ZoneJS (Zoneless) On
+this page arrow_upward_alt Back to the top API function
+provideZonelessChangeDetection () : EnvironmentProviders ; @returns
+EnvironmentProviders Description Provides change detection without ZoneJS for
+the application bootstrapped using bootstrapApplication . NOTE: Zoneless is
+enabled by default in Angular v21+. Ensure provideZoneChangeDetection is not
+used to override this default. This function allows you to configure the
+application to not use the state/state changes of ZoneJS to schedule change
+detection in the application. This will work when ZoneJS is not present on the
+page at all or if it exists because something else is using it (either
+----------------------------------------------------------------------------------------------------
+Index: 17457 <<"chunk_id": 9, "docno": 2311>>
+
+the behavior of hybrid applications: Unlike UpgradeModule , downgradeModule()
+does not bootstrap the main AngularJS module inside the Angular zone . Unlike
+UpgradeModule , downgradeModule() does not automatically run a $digest() when
+changes are detected in the Angular part of the application. What this means is
+that applications using UpgradeModule will run change detection more frequently
+in order to ensure that both frameworks are properly notified about possible
+changes. This will inevitably result in more change detection runs than
+necessary. downgradeModule() , on the other side, does not try to tie the two
+change detection systems as tightly, restricting the explicit change detection
+runs only to cases where it knows it is necessary (e.g. when the inputs of a
+downgraded component change). This improves performance, especially in
+change-detection-heavy applications, but leaves it up to the developer to
+manually notify each framework as needed. For a more detailed discussion of the
+differences and their implications, see Upgrading for Performance . You can
+manually trigger a change detection run in AngularJS using scope.$apply(...) or
+$rootScope.$digest() . You can manually trigger a change detection run in
+Angular using * ngZone.run(...) . Downgrading multiple modules It is possible to
+downgrade multiple modules and include them in an AngularJS application. In that
+case, each downgraded module will be bootstrapped when an associated downgraded
+component or injectable needs to be instantiated. Things to keep in mind, when
+downgrading multiple modules: Each downgraded component/injectable needs to be
+explicitly associated with a downgraded module. See downgradeComponent() and
+downgradeInjectable() for more details. If you want
+----------------------------------------------------------------------------------------------------
+Index: 23758 <<"chunk_id": 0, "docno": 3594>>
+
+Debugging and troubleshooting DI • Angular Skip to main content menu close v22 K
+Docs Tutorials Playground Reference more_horiz menu Docs Introduction What is
+Angular? Installation Essentials Start coding! 🚀 In-depth Guides Signals Updated
+Components Templates Directives Dependency Injection Updated Routing Forms
+Updated HTTP Client Server-side & hybrid-rendering Testing Angular Aria New
+Internationalization Animations Drag and drop Build with AI Get Started LLM
+prompts and AI IDE setup Agent Skills New Angular CLI MCP Server setup Angular
+AI Tutor Design Patterns WebMCP New Developer Tools Angular CLI Libraries
+DevTools Language Service Best Practices Style Guide Security Accessibility
+Unhandled errors in Angular Performance Keeping up-to-date Developer Events
+Angular v22 Release New Angular v21 Release Extended Ecosystem NgModules Legacy
+Animations Using RxJS with Angular Service Workers & PWAs Web workers Custom
+build pipeline Tailwind Angular Fire Google Maps Google Pay YouTube player
+Angular CDK Angular Material arrow_back Dependency Injection Updated Overview
+Creating and using services Lazy loading services New Defining dependency
+providers Injection context Hierarchical injectors Optimizing injection tokens
+DI in action Debugging and troubleshooting DI New In-depth Guides Dependency
+Injection Debugging and troubleshooting dependency injection Dependency
+injection (DI) issues typically stem from configuration mistakes, scope
+problems, or incorrect usage patterns. This guide helps you identify and resolve
+common DI problems that developers encounter. On this page arrow_upward_alt Back
+to the top Common pitfalls and solutions Services not available where expected
+One of the most common DI issues occurs when you try to inject a service but
+Angular cannot find it in the current injector or any parent
+----------------------------------------------------------------------------------------------------
+Index: 19084 <<"chunk_id": 6, "docno": 2744>>
+
+state rather than manually forcing it to happen in the test. For existing test
+suites, using fixture.detectChanges() is a common pattern and it is likely not
+worth the effort of converting these to await fixture.whenStable() . TestBed
+will still enforce that the fixture's component is OnPush compatible and throws
+ExpressionChangedAfterItHasBeenCheckedError if it finds that template values
+were updated without a change notification (i.e.
+fixture.componentInstance.someValue = 'newValue'; ). If the component is used in
+production, this issue should be addressed by updating the component to use
+signals for state or call ChangeDetectorRef.markForCheck() . If the component is
+only used as a test wrapper and never used in an application, it is acceptable
+to use fixture.changeDetectorRef.markForCheck() . Debug-mode check to ensure
+updates are detected Angular also provides an additional tool to help verify
+that an application is making updates to state in a zoneless-compatible way.
+provideCheckNoChangesConfig({exhaustive: true, interval: <milliseconds>}) can be
+used to periodically check to ensure that no bindings have been updated without
+a notification. Angular throws ExpressionChangedAfterItHasBeenCheckedError if
+there is an updated binding that would not have refreshed by the zoneless change
+detection. Social Media Blog X (formerly Twitter) Bluesky YouTube Discord GitHub
+Stack Overflow Community Contribute Code of Conduct Report Issues Google's
+DevLibrary Angular Google Developer Experts Resources Press Kit Roadmap
+Community translations Azərbaycanca Español Türkçe Русский 한국어 日本語版 简体中文版 正體中文版
+Super-powered by Google ©2010-2026. Code licensed under an MIT-style License .
+Documentation licensed under CC BY 4.0 . Built by Angular at
+v22.1.0+sha-6f86d66.
+----------------------------------------------------------------------------------------------------
+Index: 23778 <<"chunk_id": 20, "docno": 3594>>
+
+errors, see the Angular error reference : Error Code Description NG0204 Can't
+resolve all parameters - missing @Injectable() decorator NG0205 Injector already
+destroyed - accessing services after component destruction NG0207
+EnvironmentProviders in wrong context - using provideHttpClient() in component
+providers Next steps When you encounter DI errors, remember to: Read the error
+message and dependency path carefully Verify basic configuration (decorators,
+providedIn , imports) Check injection context and timing Use DevTools and
+logging to investigate Simplify and isolate the problem For a deeper
+understanding of specific topics on dependency injection, check out:
+Understanding dependency injection - Core DI concepts and patterns Hierarchical
+dependency injection - How the injector hierarchy works Testing with dependency
+injection - Using TestBed and mocking dependencies Social Media Blog X (formerly
+Twitter) Bluesky YouTube Discord GitHub Stack Overflow Community Contribute Code
+of Conduct Report Issues Google's DevLibrary Angular Google Developer Experts
+Resources Press Kit Roadmap Community translations Azərbaycanca Español Türkçe
+Русский 한국어 日本語版 简体中文版 正體中文版 Super-powered by Google ©2010-2026. Code licensed
+under an MIT-style License . Documentation licensed under CC BY 4.0 . Built by
+Angular at v22.1.0+sha-6f86d66.
+----------------------------------------------------------------------------------------------------
+Index: 25664 <<"chunk_id": 4, "docno": 4088>>
+
+can use a required query . @ Component ( /* ... */ ) export class CustomCard {
+header = viewChild . required (CustomCardHeader); body = contentChild . required
+(CustomCardBody); } If a required query does not find a matching result, Angular
+reports an error. Because this guarantees that a result is available, required
+queries do not automatically include undefined in the signal's value type. Query
+locators This first parameter for each query decorator is its locator . Most of
+the time, you want to use a component or directive as your locator. You can
+alternatively specify a string locator corresponding to a template reference
+variable . @ Component ({ /*...*/ template: ` < button #save >Save</ button > <
+button #cancel >Cancel</ button > ` , }) export class ActionBar { saveButton =
+viewChild < ElementRef < HTMLButtonElement >>( 'save' ); } If more than one
+element defines the same template reference variable, the query retrieves the
+first matching element. Angular does not support CSS selectors as query
+locators. Queries and the injector tree TIP: See Dependency Injection for
+background on providers and Angular's injection tree. For more advanced cases,
+you can use any ProviderToken as a locator. This lets you locate elements based
+on component and directive providers. const SUB_ITEM = new InjectionToken <
+string >( 'sub-item' ); @ Component ({ /*...*/ providers: [{provide: SUB_ITEM ,
+useValue: 'special-item' }], }) export class SpecialItem {} @ Component ( /* ...
+*/ ) export class CustomList { subItemType = contentChild ( SUB_ITEM ); } The
+above example
+----------------------------------------------------------------------------------------------------
+Index: 23708 <<"chunk_id": 6, "docno": 3589>>
+
+a dependency Value : What Angular should return when that token is requested
+When manually providing dependencies, you typically see this shorthand syntax:
+import { Component } from '@angular/core' ; import {LocalService} from
+'./local-service' ; @ Component ({ selector: 'app-example' , providers:
+[LocalService], // Service without providedIn }) export class Example {} This is
+actually a shorthand for a more detailed provider configuration: { // This is
+the shorthand version providers : [LocalService], // This is the full version
+providers : [ { provide: LocalService, useClass: LocalService } ] } Provider
+configuration object Every provider configuration object has two primary parts:
+Provider identifier : The unique key that Angular uses to get the dependency
+(set via the provide property) Value : The actual dependency that you want
+Angular to fetch, configured with different keys based on the desired type:
+useClass - Provides a JavaScript class useValue - Provides a static value
+useFactory - Provides a factory function that returns the value useExisting -
+Provides an alias to an existing provider Provider identifiers Provider
+identifiers allow Angular's dependency injection (DI) system to retrieve a
+dependency through a unique ID. You can generate provider identifiers in two
+ways: Class names Injection tokens Class names Class names use the imported
+class directly as the identifier: import { Component } from '@angular/core' ;
+import {LocalService} from './local-service' ; @ Component ({ selector:
+'app-example' , providers: [{provide: LocalService, useClass: LocalService}], })
+export class Example { /* ... */ } The class serves as both the identifier and
+the implementation, which is
+----------------------------------------------------------------------------------------------------
+Index: 25635 <<"chunk_id": 5, "docno": 4084>>
+
+template --> < div class = "card-shadow" > < ng-content select = "card-title" />
+< div class = "card-divider" ></ div > < ng-content /> </ div > <!-- Using the
+component --> < custom-card > < h3 ngProjectAs = "card-title" >Hello</ h3 > < p
+>Welcome to the example</ p > </ custom-card > <!-- Rendered DOM --> <
+custom-card > < div class = "card-shadow" > < h3 >Hello</ h3 > < div class =
+"card-divider" ></ div > < p >Welcome to the example</ p > </ div > </
+custom-card > ngProjectAs supports only static values and cannot be bound to
+dynamic expressions. Caveats Projected content lives in the parent's view Even
+though projected content is rendered inside the receiving component, it is still
+owned by the component that declared it. Angular tracks it as part of the
+parent's view, which has a couple of side effects worth knowing about. Change
+detection: Projected content is checked when the parent runs change detection.
+If the receiving component uses OnPush , Angular can skip checking that
+component's own template — but it won't skip the projected content, because that
+belongs to the parent. <!-- Parent template (default change detection) --> <
+onpush-wrapper > <!-- Still checked on every parent cycle, OnPush doesn't help
+here --> < expensive-component /> </ onpush-wrapper > Dependency injection:
+Projected content gets its dependencies from the parent's injector, not from the
+receiving component's viewProviders . See Providers and viewProviders for
+details. Some library components don't support projected children Certain
+components
+----------------------------------------------------------------------------------------------------
+Index: 19530 <<"chunk_id": 261, "docno": 2775>>
+
+dependency injection Each route has a `providers` property that lets you provide
+dependencies to that route's content via [dependency injection](/guide/di).
+Common scenarios where this can be helpful include applications that have
+different services based on whether the user is an admin or not. ```ts export
+const ROUTES: Route[] = [ { path: 'admin', providers: [AdminService, {provide:
+ADMIN_API_KEY, useValue: '12345'}], children: [ {path: 'users', component:
+AdminUsers}, {path: 'teams', component: AdminTeams}, ], }, // ... other
+application routes that don't // have access to ADMIN_API_KEY or AdminService.
+]; ``` In this code sample, the `admin` path contains a protected data property
+of `ADMIN_API_KEY` that is only available to children within its section. As a
+result, no other paths will be able to access the data provided via
+`ADMIN_API_KEY`. See the [Dependency injection guide](/guide/di) for more
+information about providers and injection in Angular. ## Associating data with
+routes Route data enables you to attach additional information to routes. You
+are able to configure how components behave based on this data. There are two
+ways to work with route data: static data that remains constant, and dynamic
+data that can change based on runtime conditions. ### Static data You can
+associate arbitrary static data with a route via the `data` property in order to
+centralize things like route-specific metadata (e.g., analytics tracking,
+permissions, etc.): ```ts import {Routes} from '@angular/router'; import {Home}
+from './home'; import {About} from './about'; import {Products} from
+'./products'; const routes: Routes = [ { path: 'about', component: About, data:
+{analyticsId: '456'}, }, { path: '', component: Home,
 ----------------------------------------------------------------------------------------------------

@@ -1,376 +1,4 @@
-Index: 3171 <<"chunk_id": 3, "docno": 454>>
-
-signals for received data ( data event) and the stream's completion ( end
-event). Developers can listen to these events and execute custom logic
-accordingly. This event-driven nature makes streams highly efficient for the
-processing of data from external sources. Why use Streams? Streams provide three
-key advantages over other data-handling methods: Memory Efficiency : Streams
-process data incrementally, consuming and processing data in chunks rather than
-loading the entire dataset into memory. This is a major advantage when dealing
-with large datasets, as it significantly reduces memory usage and prevents
-memory-related performance issues. Improved Response Time : Streams allow for
-immediate data processing. When a chunk of data arrives, it can be processed
-without waiting for the entire payload or dataset to be received. This reduces
-latency and improves your application's overall responsiveness. Scalability for
-Real-Time Processing : By handling data in chunks, Node.js streams can
-efficiently handle large amounts of data with limited resources. This
-scalability makes streams ideal for applications that process high volumes of
-data in real time. These advantages make streams a powerful tool for building
-high-performance, scalable Node.js applications, particularly when working with
-large datasets or real-time data processing. Note on performance If your
-application already has all the data readily available in memory, using streams
-might add unnecessary overhead, complexity, and slow down your application.
-Stream history This section is a reference of the history of streams in Node.js.
-Unless you’re working with a codebase written for a Node.js version prior to
-0.11.5 (2013), you will rarely encounter older
-----------------------------------------------------------------------------------------------------
-Index: 3170 <<"chunk_id": 2, "docno": 454>>
-
-large data (e.g., files, network requests…). This is where Node.js streams come
-in. Streams offer a fundamentally different approach, allowing you to process
-data incrementally and optimize memory usage. By handling data in manageable
-chunks, streams empower you to build scalable applications that can efficiently
-tackle even the most daunting datasets. As popularly quoted, “streams are arrays
-over time.” In this guide, we give an overview of the Stream concept, history,
-and API as well as some recommendations on how to use and operate them. What are
-Node.js Streams? Node.js streams offer a powerful abstraction for managing data
-flow in your applications. They excel at processing large datasets, such as
-reading or writing from files and network requests, without compromising
-performance. This approach differs from loading the entire dataset into memory
-at once. Streams process data in chunks, significantly reducing memory usage.
-All streams in Node.js inherit from the EventEmitter class, allowing them to
-emit events at various stages of data processing. These streams can be readable,
-writable, or both, providing flexibility for different data-handling scenarios.
-Event-Driven Architecture Node.js thrives on an event-driven architecture,
-making it ideal for real-time I/O. This means consuming input as soon as it's
-available and sending output as soon as the application generates it. Streams
-seamlessly integrate with this approach, enabling continuous data processing.
-They achieve this by emitting events at key stages. These events include signals
-for received data ( data event) and the stream's completion ( end event).
-Developers can listen to these events and execute custom logic accordingly.
-----------------------------------------------------------------------------------------------------
-Index: 1682 <<"chunk_id": 2, "docno": 249>>
-
-read this guide? If you're writing anything more complicated than a brief
-command-line script, reading this should help you write higher-performance,
-more-secure applications. This document is written with Node.js servers in mind,
-but the concepts apply to complex Node.js applications as well. Where
-OS-specific details vary, this document is Linux-centric. Summary Node.js runs
-JavaScript code in the Event Loop (initialization and callbacks), and offers a
-Worker Pool to handle expensive tasks like file I/O. Node.js scales well,
-sometimes better than more heavyweight approaches like Apache. The secret to the
-scalability of Node.js is that it uses a small number of threads to handle many
-clients. If Node.js can make do with fewer threads, then it can spend more of
-your system's time and memory working on clients rather than on paying space and
-time overheads for threads (memory, context-switching). But because Node.js has
-only a few threads, you must structure your application to use them wisely.
-Here's a good rule of thumb for keeping your Node.js server speedy: Node.js is
-fast when the work associated with each client at any given time is "small" .
-This applies to callbacks on the Event Loop and tasks on the Worker Pool. Why
-should I avoid blocking the Event Loop and the Worker Pool? Node.js uses a small
-number of threads to handle many clients. In Node.js there are two types of
-threads: one Event Loop (aka the main loop, main thread, event thread, etc.),
-and a pool of k Workers in a Worker Pool (aka the threadpool). If
-----------------------------------------------------------------------------------------------------
-Index: 1702 <<"chunk_id": 22, "docno": 249>>
-
-only while it is scheduled. As a result, you should only consider this approach
-after careful analysis. Worker Pool: conclusions Whether you use only the
-Node.js Worker Pool or maintain separate Worker Pool(s), you should optimize the
-Task throughput of your Pool(s). To do this, minimize the variation in Task
-times by using Task partitioning. The risks of npm modules While the Node.js
-core modules offer building blocks for a wide variety of applications, sometimes
-something more is needed. Node.js developers benefit tremendously from the npm
-ecosystem , with hundreds of thousands of modules offering functionality to
-accelerate your development process. Remember, however, that the majority of
-these modules are written by third-party developers and are generally released
-with only best-effort guarantees. A developer using an npm module should be
-concerned about two things, though the latter is frequently forgotten. Does it
-honor its APIs? Might its APIs block the Event Loop or a Worker? Many modules
-make no effort to indicate the cost of their APIs, to the detriment of the
-community. For simple APIs you can estimate the cost of the APIs; the cost of
-string manipulation isn't hard to fathom. But in many cases it's unclear how
-much an API might cost. If you are calling an API that might do something
-expensive, double-check the cost. Ask the developers to document it, or examine
-the source code yourself (and submit a PR documenting the cost). Remember, even
-if the API is asynchronous, you don't know how much time it might spend on a
-----------------------------------------------------------------------------------------------------
-Index: 15811 <<"chunk_id": 4, "docno": 2107>>
-
-APM tools need to follow a request as it flows through your application, even
-across async boundaries. When an HTTP request comes in, is processed by
-middleware, queries a database, calls an external API, and finally returns a
-response, the APM needs to correlate all of these operations into a single
-trace. This requires async context tracking. Most modern APM tools use
-AsyncLocalStorage (which is built on async_hooks in versions of Node.js before
-Node 24) to propagate trace context across async operations. The moment you
-require('dd-trace') , require('newrelic') , or initialize OpenTelemetry, your
-application has async_hooks enabled. The irony is notable: the tools you install
-to monitor and debug crashes can make a category of crashes behave differently.
-This is not the fault of the APM tools; they are using Node.js APIs exactly as
-intended. Why This Is Only a Mitigation, and The Vulnerability Lies Elsewhere
-While this issue has significant practical impact, we want to be clear about why
-Node.js is treating this fix as a mere mitigation of security vulnerability
-risks at large: Stack Space Exhaustion Behavior Is Not Specified The "Maximum
-call stack size exceeded" error is not part of the ECMAScript specification. The
-specification does not impose any limit and assumes infinite stack space .
-Imposing a limit and throwing a recoverable error are only behaviors that
-JavaScript engines implement with best-effort. Applications and frameworks are
-already at risk when they build a security model on top of these unspecified
-behaviors that are not guaranteed to reproduce consistently, see: CWE-758:
-Reliance on
-----------------------------------------------------------------------------------------------------
-Index: 15813 <<"chunk_id": 6, "docno": 2107>>
-
-the event handler will not be caught. Instead, the process will exit with a
-non-zero exit code, and the stack trace will be printed. This is to avoid
-infinite recursion." Trying to invoke the handler after the call stack size is
-exceeded would itself throw. The fact that it works without promise hooks is
-largely coincidental rather than guaranteed behavior. Why We Put It In a
-Security Release Although it is a patch for an unspecified behavior, we chose to
-include it in the security release because of its widespread impact on the
-ecosystem. The prevalence of async_hooks usage by React Server Components,
-Next.js, and APM tools makes it a practical Denial-of-Service vector for many
-applications. Making the unspecified behavior more consistent in Node.js
-improves developer experience and makes error handling more predictable.
-However, it's important to note that we were fortunate to be able to fix this
-particular case. There's no guarantee that similar edge cases involving stack
-overflow and async_hooks can always be addressed. For mission-critical paths
-that must defend against infinite recursion or stack overflow from recursion
-whose depth can be controlled by an attacker, always sanitize the input or
-impose a limit on the depth of recursion by other means . It's worth noting that
-large array allocations can suffer from similar issues, like the recent qs
-vulnerability CVE-2025-15284 showed. It's paramount that developers validate and
-constrain resource usage that could be controlled by an attacker. The runtime
-cannot always recover reliably from resource exhaustion after-the-fact.
-Technical Deep Dive How async_hooks Works
-----------------------------------------------------------------------------------------------------
-Index: 16018 <<"chunk_id": 4, "docno": 2142>>
-
-addressing the use cases of enterWith() . We also discussed that there are
-alternatives to the AsyncLocalStorage data flow. Considering that the current
-AsyncLocalStorage data flow is a key model to APM vendors and OpenTelemetry, it
-is important to prioritize the existing model that has also been widely adopted
-so that the users at large can benefit from the feature being available on the
-Web. Single Executable Applications We were joined remotely by Darshan Sen
-(champion of the SEA initiative). Luke Karrys went through the current
-outstanding feature requests and issues of the SEA (Single Executable
-Application) feature, including: ESM support Injecting CLI flags Sourceless code
-cache JS APIs streamlining toolchain Virtual file system Most of the issues are
-addressable - we spent some time discussing streamlining the toolchain in core,
-which may be possible, but needs investigation into the binary size increase
-from bundling more of postject in core. The most important blocker to the
-progress of the SEA initiative remains the lack of volunteers or funding to gain
-momentum. We discussed setting up a team vs. a working group and how to resume
-more work. Embedding Undici Matteo chaired a session about next steps in
-improving user experience when they need more from Undici. We reviewed the
-issues with existing http builtins, whose status change as legacy was discussed,
-and how to prevent these issues with Undici once users need more powerful
-customizations. For now, exposing the dispatcher configuration from the bundled
-undici would help with most use cases, though it still requires stabilizing
-----------------------------------------------------------------------------------------------------
-Index: 3184 <<"chunk_id": 16, "docno": 454>>
-
-version, which doesn’t accept a callback but instead returns a promise that is
-rejected if the pipeline fails. Async Iterators Async iterators are recommended
-as the standard way of interfacing with the Streams API. Compared to all the
-stream primitives in both the Web and Node.js, async iterators are easier to
-understand and use, contributing to fewer bugs and more maintainable code. In
-recent versions of Node.js, async iterators have emerged as a more elegant and
-readable way to interact with streams. Building upon the foundation of events,
-async iterators provide a higher-level abstraction that simplifies stream
-consumption. In Node.js, all readable streams are asynchronous iterables. This
-means you can use the for await...of syntax to loop through the stream's data as
-it becomes available, handling each piece of data with the efficiency and
-simplicity of asynchronous code. Benefits of Using Async Iterators with Streams
-Using async iterators with streams simplifies the handling of asynchronous data
-flows in several ways: Enhanced Readability : The code structure is cleaner and
-more readable, particularly when dealing with multiple asynchronous data
-sources. Error Handling : Async iterators allow straightforward error handling
-using try/catch blocks, akin to regular asynchronous functions. Flow Control :
-They inherently manage backpressure, as the consumer controls the flow by
-awaiting the next piece of data, allowing for more efficient memory usage and
-processing. Async iterators offer a more modern and often more readable way to
-work with readable streams, especially when dealing with asynchronous data
-sources or when you prefer a more sequential, loop-based approach
-----------------------------------------------------------------------------------------------------
-Index: 40702 <<"chunk_id": 1, "docno": 6211>>
-
-from Virtual Threads if they were built to use blocking I/O facilities such as
-InputStream and synchronous HTTP, database, and message broker clients. Running
-such workloads on Virtual Threads helps reduce the memory footprint compared to
-Platform Threads and in certain situations, Virtual Threads can increase
-concurrency. Higher concurrency can be achieved if the system has additional
-resources necessary for concurrency. Specifically, these are: Available
-connections in a connection pool Sufficient memory to serve the increased load
-Unused CPU time Use of Virtual Threads clearly is not limited to the direct
-reduction of memory footprints or an increase in concurrency. The introduction
-of Virtual Threads also prompts a broader revisit of decisions made for a
-runtime when only Platform Threads were available. Revision of Concurrency
-Utilities Spring Framework’s SimpleAsyncTaskExecutor uses a new Platform Thread
-for each runnable submitted if no ThreadFactory is configured. Such an
-arrangement requires Platform Thread creation resulting in lower throughput and
-higher memory consumption. SimpleAsyncTaskExecutor could be revised to use
-Virtual Threads by default to reduce the memory footprint and increase
-throughput in its default configuration. (In the meantime, a custom TaskExecutor
-variant can be used to the same effect.) Revision of Programming Models Virtual
-Threads can change our perspective on asynchronous programming interfaces. The
-reasons to use asynchronous programming models go away in many cases if we start
-with the assumption that our code runs on Virtual Threads. Virtual Threads are
-much more lightweight to allocate, and the number of threads is no longer a
-primary limitation for scalability. To make
-----------------------------------------------------------------------------------------------------
-Index: 16084 <<"chunk_id": 4, "docno": 2150>>
-
-Jean Burellier ( @sheplu ), aimed to analyze the survey data, identify trends,
-and develop actionable steps to address the findings. The survey covered a wide
-range of topics, including ESM syntax usage, next initiatives, and the overall
-health of the Node.js ecosystem. Survey Overview Jean presented the slides
-outlining the key findings from the Next-10 Survey . The survey received over
-2000 responses, providing a comprehensive view of the Node.js community's
-thoughts and experiences. ESM Syntax Usage One of the main topics discussed was
-the usage of ESM (ECMAScript Modules) syntax in production environments. Key
-points included: Awareness and Adoption : We noted that with over 2000
-responses, most participants should have a good understanding of whether they
-are running ESM in production. However, we also acknowledged that some
-respondents might not actually know whether they are using ESM, as frameworks
-like Next.js transpile ESM to CJS (CommonJS) behind the scenes. Usage Counter
-Proposal : We suggested adding an opt-in usage counter to core that dumps JSON
-files, which could be requested in the survey. This would allow respondents to
-easily sanitize and share their usage data, providing more accurate insights
-into ESM adoption. Visibility and Outreach : We emphasized the need for more
-visibility of the survey to reach a broader audience. Ethan added that it is
-crucial to reach out to the right people to ask relevant questions and gather
-meaningful data. Next Initiatives The discussion also covered potential next
-initiatives for the Node.js project: Failed Participation Example : We shared an
-example
-----------------------------------------------------------------------------------------------------
-Index: 15988 <<"chunk_id": 9, "docno": 2139>>
-
-there are also a few other important factors in play: The attacker needs to work
-with a noisy table with application-specific entries out of their control. It is
-shared by both array-index strings and regular strings hashed by rapidhash, and
-the capacity growth can also be affected by pre-existing entries, making it
-harder for the attacker to predict the exact probe chain consistently. Standard
-operational practices in production servers typically enforce payload size
-limits and rate limits. Without them, the server can already be exposed to
-simpler resource exhaustion attacks. These bound how many collisions an attacker
-can inject per request and how often they can retry. Other common practices like
-load balancing can further complicate the attacker's ability to accumulate
-collisions on the same server. Hash table entries held weakly are subject to
-V8's garbage collection. For example, between requests, internalized strings
-that become unreachable are cleaned, which helps prevent collisions from
-accumulating across requests and limit what an attacker can achieve in each
-payload. If the server allows an attacker to keep unlimited entries alive across
-GC cycles, no hash is strong enough to fix the off-table memory growth and it's
-that unbounded retention path that needs to be fixed. These contributed to the
-evaluation of high attack complexity in CVE-2026-21717 since the extreme
-amplification cannot be consistently reproduced against all Node.js servers,
-e.g., an Express server with its default 100 KB body limit . That said, for
-servers with fewer guardrails or simpler states, a fully deterministic hash
-still makes the attack feasible.
-----------------------------------------------------------------------------------------------------
-Index: 8958 <<"chunk_id": 6, "docno": 1272>>
-
-state to pass to the resume apis. Notable Changes Batching Suspense Boundaries
-for SSR We fixed a behavioral bug where Suspense boundaries would reveal
-differently depending on if they were rendered on the client or when streaming
-from server-side rendering. Starting in 19.2, React will batch reveals of
-server-rendered Suspense boundaries for a short time, to allow more content to
-be revealed together and align with the client-rendered behavior. Previously,
-during streaming server-side rendering, suspense content would immediately
-replace fallbacks. In React 19.2, suspense boundaries are batched for a small
-amount of time, to allow revealing more content together. This fix also prepares
-apps for supporting <ViewTransition> for Suspense during SSR. By revealing more
-content together, animations can run in larger batches of content, and avoid
-chaining animations of content that stream in close together. Note React uses
-heuristics to ensure throttling does not impact core web vitals and search
-ranking. For example, if the total page load time is approaching 2.5s (which is
-the time considered “good” for LCP ), React will stop batching and reveal
-content immediately so that the throttling is not the reason to miss the metric.
-SSR: Web Streams support for Node React 19.2 adds support for Web Streams for
-streaming SSR in Node.js: renderToReadableStream is now available for Node.js
-prerender is now available for Node.js As well as the new resume APIs: resume is
-available for Node.js. resumeAndPrerender is available for Node.js. Pitfall
-Prefer Node Streams for server-side rendering in Node.js In Node.js
-environments, we still highly recommend using the
-----------------------------------------------------------------------------------------------------
-Index: 40704 <<"chunk_id": 3, "docno": 6211>>
-
-be eliminated as it would be no longer required. Mitigating Limitations Our team
-has been experimenting with Virtual Threads since they were called Fibers. Since
-then and still with the release of Java 19, a limitation was prevalent, leading
-to Platform Thread pinning, effectively reducing concurrency when using
-synchronized . The use of synchronized code blocks is not in of itself a
-problem; only when those blocks contain blocking code, generally speaking I/O
-operations. These arrangements can be problematic as carrier Platform Threads
-are a limited resource and Platform Thread pinning can lead to application
-performance degradation when running code on Virtual Threads without careful
-inspection of the workload. In fact, the same blocking code in synchronized
-blocks can lead to performance issues even without Virtual Threads. Spring
-Framework makes a lot of use of synchronized to implement locking, mostly around
-local data structures. Over the years, before Virtual Threads were available, we
-have revised synchronized blocks which might potentially interact with
-third-party resources, removing lock contention in highly concurrent
-applications. So Spring is in pretty good shape already owing to its large
-community and extensive feedback from existing concurrent applications. On the
-path to becoming the best possible citizen in a Virtual Thread scenario, we will
-further revisit synchronized usage in the context of I/O or other blocking code
-to avoid Platform Thread pinning in hot code paths so that your application can
-get the most out of Project Loom. Running Spring Applications on Virtual Threads
-With the most recent versions of Spring Framework, Spring
-----------------------------------------------------------------------------------------------------
-Index: 14889 <<"chunk_id": 1, "docno": 1961>>
-
-keep the Node.js project sustainable in the long run. When it comes to security
-vulnerabilities, managing security releases across four or five active release
-lines has become difficult to sustain in the current Node.js voluntary work
-model. By reducing the number of concurrent release lines, the project can focus
-on better supporting the releases people actually use. Read more about the new
-release schedule in this blog post . New Streams API James Snell presented a
-new, more unified Streams API for the Web and Node.js. Historically, Node.js has
-relied on the highly optimized node:stream . In recent years, Node.js has also
-implemented WHATWG Web Streams to ensure cross-platform compatibility with
-browsers, Deno, Bun, and edge environments (like Cloudflare Workers). However,
-managing two different stream ecosystems has created friction for developers.
-The Web Streams API has significant promise and allocation overhead. It was
-designed primarily for browsers, and when applied to high-throughput backend
-environments, the architectural cost becomes obvious. The proposed New Streams
-API takes advantage of modern JavaScript Async Iteration, treats streams
-natively as async iterables, leaning heavily into async/await and for await...of
-loops, which is how modern developers naturally write code. Handling a filled
-data buffer has historically been a confusing black box. The new API also
-proposes forcing developers to explicitly choose a backpressure strategy when a
-buffer is full. The new stream/iter API has landed in Node.js core and shipped
-in v25.9.0 as an experimental feature. At the summit, we collected feedback on
-the design, compatibility with existing stream APIs, performance implications,
-----------------------------------------------------------------------------------------------------
-Index: 15981 <<"chunk_id": 2, "docno": 2139>>
-
-of V8, when it's used in a browser, DoS issues are not considered
-vulnerabilities because they typically only affect the tab that processes the
-malicious input, and users can simply close the tab. But when it's used in
-event-loop-based server-side runtimes, a single malicious request that manages
-to block the entire event loop for a sustained period of time has a much bigger
-impact. As one of the most widely deployed server-side runtimes, Node.js draws
-extensive scrutiny from security researchers, which helps us find and address
-weak spots like these. Unlike other DoS attack vectors that can be more easily
-mitigated by userland restrictions, HashDoS vulnerabilities are particularly
-tricky because they lurk inside widely used internal data structures and
-well-defined operations trusted by developers. For V8 embedders, this means
-fixes for HashDoS vulnerabilities usually fall on the runtime maintainers, and
-they are a critical part of maintaining the security and reliability of the
-ecosystem. Mitigating HashDoS with seeded hashes The core of HashDoS
-vulnerabilities lies in deterministic hash functions - if the attacker can
-predict the hash values of their inputs, they can craft inputs that reliably
-trigger worst-case performance in the target server. The standard mitigation is
-to mix a seed value into the computation of the hash, and make sure that the
-seed is randomly generated at program initialization . This way, even if the
-attacker knows the hash function, they can't predict the hash values without
-knowing the seed that changes whenever the server restarts, and therefore can't
-craft inputs that will reliably
-----------------------------------------------------------------------------------------------------
-Index: 4178 <<"chunk_id": 2, "docno": 574>>
+Index: 2347 <<"chunk_id": 2, "docno": 313>>
 
 It's a poor fit for two other situations, though: CPU-bound work (image
 resizing, hashing, parsing huge payloads) ties up the single thread and makes
@@ -394,30 +22,528 @@ stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
 spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
 output via a shell Short
 ----------------------------------------------------------------------------------------------------
-Index: 53404 <<"chunk_id": 1, "docno": 8569>>
+Index: 2353 <<"chunk_id": 8, "docno": 313>>
 
-application can keep open to a given host. Proper KeepAlive support means that
-sockets will stay open until they timeout at the configured time, are closed by
-the remote side, or the process exits. Developer's no longer have to make sure
-requests have been pipelined to keep the socket open, or use an alternative
-module to get that support. Developers can also now explicitly flushHeaders to
-ensure time to first byte is low and proxied connections are held open. Cluster
-Now has two modes of operation, the new default is a round robin distribution
-mechanism where the master accepts new connections and distributes them to your
-workers. If you want you can still opt back into the old method where your
-workers are responsible for acception connections. TLS We have the new TLSWrap
-mechanism under the hood, this eliminates quite a few of the hops back and forth
-between JavaScript and our C++ implementations. Added APIs for asynchronous SNI
-callbacks, OCSP stapling, and storage events. Buffer We use a more accurate
-mechanism for allocating memory for buffers now, which means you'll see less
-overhead and impact from holding onto to small slices of Buffers. This reduces
-the amount of memory pressure on the system, which means GC runs are quicker,
-which means Node.js is on CPU less, and thus lower latency for your
-applications. child_process spawnSync / execSync have been added to facilitate
-synchronous child processes, warning your node process won't make forward
-progress while waiting for the child to exit, caveat emptor! Crypto Added APIs
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
 ----------------------------------------------------------------------------------------------------
-Index: 16157 <<"chunk_id": 7, "docno": 2160>>
+Index: 2351 <<"chunk_id": 6, "docno": 313>>
+
+to the same race-condition class of bugs found in traditional multi-threaded
+programming. Things to watch for Worker threads are for CPU-bound work, not I/O
+— a worker still has to wait on I/O just like the main thread would, so spinning
+one up for a database call or a network request adds overhead for no benefit.
+Spinning up a worker has a real cost. For small, frequent tasks, that setup
+overhead can outweigh the benefit — consider a pool of long-lived workers (see
+the workerpool package) instead of creating one per task. Cluster cluster solves
+a different problem: a single Node.js process only uses one CPU core. To take
+advantage of a multi-core machine for a network server, cluster forks multiple
+full copies of your process (each one a child_process under the hood) that all
+listen on the same port. Example: scaling an HTTP server across cores const
+cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
+; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
+isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
+numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
+code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
+(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( `
+----------------------------------------------------------------------------------------------------
+Index: 2346 <<"chunk_id": 1, "docno": 313>>
+
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page The three
+options at a glance Child Process spawn, exec, execFile, and fork streaming a
+long-running command with spawn() talking to another Node.js process with fork()
+Things to watch for Worker Threads offloading CPU-bound work Sharing memory
+Things to watch for Cluster scaling an HTTP server across cores How the workers
+share one port isPrimary / isWorker Things to watch for Choosing between them
+Further reading Comparing Node.js concurrency models Node.js runs your
+JavaScript on a single thread, driven by the event loop . That model is great
+for I/O-bound work — reading files, querying a database, handling HTTP requests
+— because Node hands off the waiting to the operating system and keeps the
+thread free. It's a poor fit for two other situations, though: CPU-bound work
+(image resizing, hashing, parsing huge payloads) ties up the single thread and
+makes your
+----------------------------------------------------------------------------------------------------
+Index: 2202 <<"chunk_id": 1, "docno": 292>>
+
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Multiple loading and unloading
+Instance data Resources Example Cleanup hooks Resources Example Context
+Awareness Node.js has historically run as a single-threaded process. This all
+changed with the introduction of Worker Threads in Node 10. Worker Threads add a
+JavaScript-friendly concurrency abstraction that native add-on developers need
+to be aware of. What this means practically is that your native add-on may be
+loaded and unloaded more than once and its code may be executed concurrently in
+multiple threads. There are specific steps you must take to ensure your native
+add-on code runs correctly. The Worker Thread model specifies that each Worker
+runs completely independently of each other and communicate to the parent Worker
+using a MessagePort object supplied by the parent. This makes the Worker Threads
+essentially isolated from one another. The same is true for your native add-on.
+Each Worker Thread operates within its own
+----------------------------------------------------------------------------------------------------
+Index: 2786 <<"chunk_id": 2, "docno": 378>>
+
+read this guide? If you're writing anything more complicated than a brief
+command-line script, reading this should help you write higher-performance,
+more-secure applications. This document is written with Node.js servers in mind,
+but the concepts apply to complex Node.js applications as well. Where
+OS-specific details vary, this document is Linux-centric. Summary Node.js runs
+JavaScript code in the Event Loop (initialization and callbacks), and offers a
+Worker Pool to handle expensive tasks like file I/O. Node.js scales well,
+sometimes better than more heavyweight approaches like Apache. The secret to the
+scalability of Node.js is that it uses a small number of threads to handle many
+clients. If Node.js can make do with fewer threads, then it can spend more of
+your system's time and memory working on clients rather than on paying space and
+time overheads for threads (memory, context-switching). But because Node.js has
+only a few threads, you must structure your application to use them wisely.
+Here's a good rule of thumb for keeping your Node.js server speedy: Node.js is
+fast when the work associated with each client at any given time is "small" .
+This applies to callbacks on the Event Loop and tasks on the Worker Pool. Why
+should I avoid blocking the Event Loop and the Worker Pool? Node.js uses a small
+number of threads to handle many clients. In Node.js there are two types of
+threads: one Event Loop (aka the main loop, main thread, event thread, etc.),
+and a pool of k Workers in a Worker Pool (aka the threadpool). If
+----------------------------------------------------------------------------------------------------
+Index: 15930 <<"chunk_id": 1489, "docno": 2234>>
+
+guaranteed that the removal from the cluster.workers list happens before the
+last 'disconnect' or 'exit' event is emitted. import cluster from 'node:cluster'
+; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } const cluster = require ( 'node:cluster'
+) ; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } javascript copy Command-line API #
+Node.js comes with a variety of CLI options. These options expose built-in
+debugging, multiple ways to execute scripts, and other helpful runtime options.
+To view this documentation as a manual page in a terminal, run man node .
+Synopsis # node [options] [V8 options] [<program-entry-point> | -e "script" | -]
+[--] [arguments] node inspect [<program-entry-point> | -e "script" |
+<host>:<port>] … node --v8-options Execute without arguments to start the REPL .
+For more info about node inspect , see the debugger documentation. Program entry
+point # The program entry point is a specifier-like string. If the string is not
+an absolute path, it's resolved as a relative path from the current working
+directory. That entry point string is then resolved as if it's been requested by
+require() from the current working directory. If no corresponding file is found,
+an error is thrown. By default, the resolved path is also loaded as if it's been
+requested by require() , unless one of the conditions below apply—then it's
+loaded as if it's been requested
+----------------------------------------------------------------------------------------------------
+Index: 21458 <<"chunk_id": 1, "docno": 3185>>
+
+instance by applying defined custom resources to the cluster. You can
+dynamically configure a spawned SCG instance in a Kubernetes platform to enable
+API route updates for a continuous integration (CI) and continuous delivery (CD)
+pipeline. Furthermore, the SCG for Kubernetes offers commercial API route
+filters for Single Sign-On (SSO) authentication, role-based access control,
+scopes authorization, authorized token relay, client certificate authorization,
+rate limiting, and circuit breaker. SCG instances in a Kubernetes platform run
+with high availability and adjustable settings for memory and vCPU resources
+consumption. Spring Cloud Gateway for Kubernetes is easy to install and use. In
+this blog. I show how to install SCG for Kubernetes in a local development
+environment and show how to create and configure a gateway instance with routes.
+You need to have both Docker and the Helm command-line interface (CLI) tools
+installed. Let us first start by setting up an environment with a local
+Kubernetes cluster. It would be also helpful to configure the cluster with a
+local Docker registry and ingress controller. We can use KinD to create a local
+cluster. You can install KinD from here . First, we spin off a local registry
+(named myregistry ) with port 5000 by using the “registry” docker image as
+follows: $ Docker run -d –restart=always -p “127.0.0.1:5000” –name myregistry
+registry:2 You can use the command below to create a new KinD cluster named
+mycluster . The cluster consists of two nodes, one as a control plane node and
+the other as a workload node with port 80 and 443
+----------------------------------------------------------------------------------------------------
+Index: 3415 <<"chunk_id": 4, "docno": 483>>
+
+Node.js application. Reverse proxies can provide caching, load balancing, IP
+blacklisting, etc. which reduce the probability of a DoS attack being effective.
+Correctly configure the server timeouts, so that connections that are idle or
+where requests are arriving too slowly can be dropped. See the different
+timeouts in http.Server , particularly headersTimeout , requestTimeout , timeout
+, and keepAliveTimeout . Limit the number of open sockets per host and in total.
+See the http docs , particularly agent.maxSockets , agent.maxTotalSockets ,
+agent.maxFreeSockets and server.maxRequestsPerSocket . DNS Rebinding (CWE-346)
+This is an attack that can target Node.js applications being run with the
+debugging inspector enabled using the --inspect switch . Since websites opened
+in a web browser can make WebSocket and HTTP requests, they can target the
+debugging inspector running locally. This is usually prevented by the
+same-origin policy implemented by modern browsers, which forbids scripts from
+reaching resources from different origins (meaning a malicious website cannot
+read data requested from a local IP address). However, through DNS rebinding, an
+attacker can temporarily control the origin for their requests so that they seem
+to originate from a local IP address. This is done by controlling both a website
+and the DNS server used to resolve its IP address. See DNS Rebinding wiki for
+more details. Mitigations Disable inspector on SIGUSR1 signal by attaching a
+process.on(‘SIGUSR1’, …) listener to it. Do not run the inspector protocol in
+production. Exposure of Sensitive Information to an Unauthorized Actor (CWE-552)
+All the files and folders included in the current directory are
+----------------------------------------------------------------------------------------------------
+Index: 29341 <<"chunk_id": 8, "docno": 4906>>
+
+ability to upgrade these libraries dynamically. By understanding the different
+types of beans that an application contains, the Admin Console will provide for
+detailed insight into application internals and allow for dynamic
+reconfiguration of certain application components. To support typical enterprise
+deployment scenarios, the 2.0 version of the Platform will provide explicit
+support for common enterprise middleware components such as Oracle, TIBCO EMS
+and IBM MQSeries. Integration with the Admin Console will allow for connections
+to these middleware providers to be established in minutes rather than hours or
+days. Applications will be able to access these connections using the OSGi
+service registry and Spring DM’s <osgi:reference> . The 2.0 release will
+introduce additional personalities to cover batch, web services and SOA
+applications. Clustering is an important feature for the 2.0 release, with
+cluster-wide Single System Image (SSI) being the critical piece, and
+load-balancing and clustered caching being on the roadmap as well. Using the SSI
+support, administration and deployment operations will be propagated across the
+cluster. Ultimately, we want to support per-module updates across the cluster,
+with full cluster-rollback if the upgrade breaks a deployed application. DMK 2.0
+will include improvements to the concurrency subsystem to support large numbers
+of bundles that change frequently and to support larger numbers of modules with
+more complex interdependencies. Also included will be updates to the
+provisioning subsystem and integrated resource management and monitoring for
+memory, threads, IO and CPU. What next? Please download the Platform and try it
+out. We are keen to hear about your experiences building new
+----------------------------------------------------------------------------------------------------
+Index: 2789 <<"chunk_id": 5, "docno": 378>>
+
+enters the Node.js C++ bindings for that API and submits a task to the Worker
+Pool. These costs are negligible compared to the overall cost of the task, which
+is why the Event Loop is offloading it. When submitting one of these tasks to
+the Worker Pool, Node.js provides a pointer to the corresponding C++ function in
+the Node.js C++ bindings. How does Node.js decide what code to run next?
+Abstractly, the Event Loop and the Worker Pool maintain queues for pending
+events and pending tasks, respectively. In truth, the Event Loop does not
+actually maintain a queue. Instead, it has a collection of file descriptors that
+it asks the operating system to monitor, using a mechanism like epoll (Linux),
+kqueue (OSX), event ports (Solaris), or IOCP (Windows). These file descriptors
+correspond to network sockets, any files it is watching, and so on. When the
+operating system says that one of these file descriptors is ready, the Event
+Loop translates it to the appropriate event and invokes the callback(s)
+associated with that event. You can learn more about this process here . In
+contrast, the Worker Pool uses a real queue whose entries are tasks to be
+processed. A Worker pops a task from this queue and works on it, and when
+finished the Worker raises an "At least one task is finished" event for the
+Event Loop. What does this mean for application design? In a
+one-thread-per-client system like Apache, each pending client is assigned its
+own thread. If a thread handling one client blocks,
+----------------------------------------------------------------------------------------------------
+Index: 27602 <<"chunk_id": 4, "docno": 4464>>
+
+the other in a single thread takes 1000ms, we might see a processing time of
+250ms for a single incoming request at our HTTP service. We should emphasise the
+"might" though: it’s only going to go that fast if there is no contention for
+the processing threads (in both stages, the Tomcat workers, and the application
+scheduler). If you have a server with a large number of cores, very low
+concurrency, i.e. a small number of clients connecting to your application, and
+hardly any chance that two will make a request at the same time, then you will
+probably see close to the theoretical improvement. As soon as there are multiple
+clients trying to connect, they will all be competing for the same 4 threads,
+and the latency will drift up, and could even be worse than that experienced by
+a single client with no background processing. We can improve the latency for
+concurrent clients by creating the scheduler with a larger thread pool, e.g.
+private Scheduler scheduler = Schedulers.newParallel("sub", 16); (16 threads.)
+Now we are using more memory for the threads and their stacks, and we can expect
+to see lower latency for low concurrency, but not necessarily for high
+concurrency if our hardware has fewer than 16 cores. We also do not expect
+higher throughput under load: if there is contention for the threads, there is a
+high cost for managing those resources and that has to be reflected somwehere in
+a metric that matters. If you are interested in more detailed analysis of
+----------------------------------------------------------------------------------------------------
+Index: 13865 <<"chunk_id": 3, "docno": 2159>>
+
+process can fork a new worker when a worker encounters an error. For Node.js
+programs that scale to multiple machines, the terminating proxy or service
+registry can take note of the failure, and react accordingly. For example, this
+is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
+) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
+process, but what it does is worse! // Though we've prevented abrupt process
+restarting, we are leaking // a lot of resources if this ever happens. // This
+is no better than process.on('uncaughtException')! console . log ( `error, but
+oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
+. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
+(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
+separating our program into multiple worker processes, we can react more
+appropriately, and handle errors with much greater safety. // Much better! const
+cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
+1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
+than 2 workers, // and perhaps not put the primary and worker in the same file.
+// // It is also possible to get a
+----------------------------------------------------------------------------------------------------
+Index: 3581 <<"chunk_id": 1, "docno": 514>>
+
+a runner Publishing a TypeScript package Modules How to use streams
+Backpressuring in Streams Publishing a package How to publish a Node-API package
+ABI Stability Diagnostics User Journey Memory Overview Understanding and Tuning
+Memory Using Heap Profiler Using Heap Snapshot Tracing garbage collection Live
+Debugging Overview Using Inspector Poor Performance Overview Using Linux Perf
+Flame Graphs Test Runner Discovering Node.js's test runner Using Node.js's test
+runner Mocking in tests Collecting code coverage in Node.js Node-API What is
+Node-API? Getting Started Overview Pre-requisites Tools Anatomy of a Node-API
+project Your First Project Object Wrap Migrating to Node-API Build Tools
+Overview node-gyp CMake.js node-pre-gyp Special Topics Overview Context
+Awareness Object and Function References AsyncWorker Thread-Safe Functions On
+this page Create the Server Method, URL and Headers Request Body A Quick Thing
+About Errors What We've Got so Far HTTP Status Code Setting Response Headers
+Explicitly Sending Header Data Sending Response Body Another Quick Thing About
+Errors Put It All Together Echo Server Example Anatomy of an HTTP Transaction
+The purpose of this guide is to impart a solid understanding of the process of
+Node.js HTTP handling. We'll assume that you know, in a general sense, how HTTP
+requests work, regardless of language or programming environment. We'll also
+assume a bit of familiarity with Node.js EventEmitters and Streams . If you're
+not quite familiar with them, it's worth taking a quick read through the API
+docs for each of those. Create the Server Any node web server application will
+at some point have to create a web server object.
+----------------------------------------------------------------------------------------------------
+Index: 2800 <<"chunk_id": 16, "docno": 378>>
+
+to do this is using Child Process or Cluster . You should not simply create a
+Child Process for every client. You can receive client requests more quickly
+than you can create and manage children, and your server might become a fork
+bomb . Downside of offloading The downside of the offloading approach is that it
+incurs overhead in the form of communication costs . Only the Event Loop is
+allowed to see the "namespace" (JavaScript state) of your application. From a
+Worker, you cannot manipulate a JavaScript object in the Event Loop's namespace.
+Instead, you have to serialize and deserialize any objects you wish to share.
+Then the Worker can operate on its own copy of these object(s) and return the
+modified object (or a "patch") to the Event Loop. For serialization concerns,
+see the section on JSON DOS. Some suggestions for offloading You may wish to
+distinguish between CPU-intensive and I/O-intensive tasks because they have
+markedly different characteristics. A CPU-intensive task only makes progress
+when its Worker is scheduled, and the Worker must be scheduled onto one of your
+machine's logical cores . If you have 4 logical cores and 5 Workers, one of
+these Workers cannot make progress. As a result, you are paying overhead (memory
+and scheduling costs) for this Worker and getting no return for it.
+I/O-intensive tasks involve querying an external service provider (DNS, file
+system, etc.) and waiting for its response. While a Worker with an I/O-intensive
+task is waiting for its response, it has nothing else to do
+----------------------------------------------------------------------------------------------------
+Index: 2468 <<"chunk_id": 1, "docno": 333>>
+
+TypeScript package Modules How to use streams Backpressuring in Streams
+Publishing a package How to publish a Node-API package ABI Stability Diagnostics
+User Journey Memory Overview Understanding and Tuning Memory Using Heap Profiler
+Using Heap Snapshot Tracing garbage collection Live Debugging Overview Using
+Inspector Poor Performance Overview Using Linux Perf Flame Graphs Test Runner
+Discovering Node.js's test runner Using Node.js's test runner Mocking in tests
+Collecting code coverage in Node.js Node-API What is Node-API? Getting Started
+Overview Pre-requisites Tools Anatomy of a Node-API project Your First Project
+Object Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js
+node-pre-gyp Special Topics Overview Context Awareness Object and Function
+References AsyncWorker Thread-Safe Functions On this page The Problem with Data
+Handling Too Much Data, Too Quickly Excess Drag on Garbage Collection Memory
+Exhaustion How Does Backpressure Resolve These Issues? Lifecycle of .pipe()
+Backpressure Guidelines Rules to Abide By When Implementing Custom Streams Rules
+specific to Readable Streams Rules specific to Writable Streams Conclusion
+Backpressuring in Streams There is a general problem that occurs during data
+handling called backpressure and describes a buildup of data behind a buffer
+during data transfer. When the receiving end of the transfer has complex
+operations, or is slower for whatever reason, there is a tendency for data from
+the incoming source to accumulate, like a clog. To solve this problem, there
+must be a delegation system in place to ensure a smooth flow of data from one
+source to another. Different communities have resolved this issue uniquely to
+their programs, Unix pipes and TCP
+----------------------------------------------------------------------------------------------------
+Index: 14813 <<"chunk_id": 372, "docno": 2234>>
+
+triggered the error, while letting the others finish in their normal time, and
+stop listening for new requests in that worker. In this way, domain usage goes
+hand-in-hand with the cluster module, since the primary process can fork a new
+worker when a worker encounters an error. For Node.js programs that scale to
+multiple machines, the terminating proxy or service registry can take note of
+the failure, and react accordingly. For example, this is not a good idea: // XXX
+WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
+'error' , ( er ) => { // The error won't crash the process, but what it does is
+worse! // Though we've prevented abrupt process restarting, we are leaking // a
+lot of resources if this ever happens. // This is no better than
+process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
+message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
+( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
+copy By using the context of a domain, and the resilience of separating our
+program into multiple worker processes, we can react more appropriately, and
+handle errors with much greater safety. // Much better! const cluster = require
+( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
+----------------------------------------------------------------------------------------------------
+Index: 23546 <<"chunk_id": 4, "docno": 3553>>
+
+server (CORS) Web developers may encounter a cross-origin resource sharing error
+when making a network request to a server other than the application's own host
+server. Browsers forbid such requests unless the server explicitly permits them.
+There isn't anything Angular or the client application can do about these
+errors. The server must be configured to accept the application's requests. Read
+about how to enable CORS for specific servers at enable-cors.org . Production
+optimizations ng build uses the production configuration unless configured
+otherwise. This configuration enables the following build optimization features.
+Features Details Ahead-of-Time (AOT) Compilation Pre-compiles Angular component
+templates. Production mode Optimizes the application for the best runtime
+performance Bundling Concatenates your many application and library files into a
+minimum number of deployed files. Minification Removes excess whitespace,
+comments, and optional tokens. Mangling Renames functions, classes, and
+variables to use shorter, arbitrary identifiers. Dead code elimination Removes
+unreferenced modules and unused code. See ng build for more about CLI build
+options and their effects. Development-only features When you run an application
+locally using ng serve , Angular uses the development configuration at runtime
+which enables: Extra safety checks such as expression-changed-after-checked
+detection. More detailed error messages. Additional debugging utilities such as
+the global ng variable with debugging functions and Angular DevTools support.
+These features are helpful during development, but they require extra code in
+the app, which is undesirable in production. To ensure these features do not
+negatively impact bundle size for end users, Angular CLI removes
+development-only code from the bundle when building for production.
+----------------------------------------------------------------------------------------------------
+Index: 2623 <<"chunk_id": 3, "docno": 354>>
+
+to safely allow remote debugger clients to connect. Local applications have full
+access to the inspector Even if you bind the inspector port to 127.0.0.1 (the
+default), any applications running locally on your machine will have
+unrestricted access. This is by design to allow local debuggers to be able to
+attach conveniently. Browsers, WebSockets and same-origin policy Websites open
+in a web-browser can make WebSocket and HTTP requests under the browser security
+model. An initial HTTP connection is necessary to obtain a unique debugger
+session id. The same-origin-policy prevents websites from being able to make
+this HTTP connection. For additional security against DNS rebinding attacks ,
+Node.js verifies that the 'Host' headers for the connection either specify an IP
+address or localhost precisely. These security policies disallow connecting to a
+remote debug server by specifying the hostname. You can work-around this
+restriction by specifying either the IP address or by using ssh tunnels as
+described below. Inspector Clients A minimal CLI debugger is available with node
+inspect myscript.js . Several commercial and open source tools can also connect
+to the Node.js Inspector. Chrome DevTools 55+, Microsoft Edge Option 1: Use the
+built-in DevTools UI Open chrome://inspect ( edge://inspect in Microsoft Edge)
+in your browser. Click the Configure button and ensure your target host and port
+are listed. Your Node.js application should appear in the Remote Target list.
+Option 2: Connect manually Visit http://localhost:<inspect-port>/json/list . It
+should return a JSON object containing a devtoolsFrontendUrl . Copy the
+devtoolsFrontendUrl value from the response and paste it into your
+----------------------------------------------------------------------------------------------------
+Index: 3839 <<"chunk_id": 2, "docno": 557>>
+
+a database or the filesystem, instead of blocking the thread and wasting CPU
+cycles waiting, Node.js will resume the operations when the response comes back.
+This allows Node.js to handle thousands of concurrent connections with a single
+server without introducing the burden of managing thread concurrency, which
+could be a significant source of bugs. Node.js has a unique advantage because
+millions of frontend developers that write JavaScript for the browser are now
+able to write the server-side code in addition to the client-side code without
+the need to learn a completely different language. In Node.js the new ECMAScript
+standards can be used without problems, as you don't have to wait for all your
+users to update their browsers - you are in charge of deciding which ECMAScript
+version to use by changing the Node.js version, and you can also enable specific
+experimental features by running Node.js with flags. An Example Node.js
+Application The most common example Hello World of Node.js is a web server: CJS
+ESM const { createServer } = require ( ' node:http ' ) ; const hostname = '
+127.0.0.1 ' ; const port = 3000 ; const server = createServer ( ( req , res ) =>
+{ res . statusCode = 200 ; res . setHeader ( ' Content-Type ' , ' text/plain ' )
+; res . end ( ' Hello World ' ) ; } ) ; server . listen ( port , hostname , ()
+=> { console . log ( ` Server running at http:// ${ hostname
+----------------------------------------------------------------------------------------------------
+Index: 24449 <<"chunk_id": 2, "docno": 3763>>
+
+than ones in typical clustered databases. For one, disk storage is shared
+nothing - each cache process owns its disk store eliminating process level
+contentions. Second, the design is tilted to favor memory i.e. there are no
+complex B-Tree data structures on disk; instead we assume complex query
+navigations will always be done through in-memory indexes. Third, the design
+uses rolling append-only log files to avoid disk seeks completely. Finally, the
+design preserves the rebalancing model in GemFire when capacity is increased or
+decreased - the disk data also relocates itself. Improved scale-out capabilities
+: Application deployments using the tiered model (client process embedding a
+local cache talking to a server farm) could see a 2X or more performance gain
+when accessing partitioned data. With 6.5, client processes gain knowledge about
+server side partitions and use it on the fly to direct traffic directly to the
+server with the required data set. Application clients subscribing to events
+using key based register interest or "continuous queries" now have their
+subscriptions registered on all the partitioned nodes. This allows each
+partition to process the subcription filters on the nodes where the data changes
+are applied dramatically reducing messaging traffic between peers unlike in the
+previous releases. The net effect is that more subscriptions can be processed
+and the event delivery latency to clients is also reduced. Colocated
+transactions : If each logical partition were to own the entire transactional
+working set then highly applications can scale linearly if the concurrent
+transaction load is uniformly spread across the data
+----------------------------------------------------------------------------------------------------
+Index: 2790 <<"chunk_id": 6, "docno": 378>>
+
+mean for application design? In a one-thread-per-client system like Apache, each
+pending client is assigned its own thread. If a thread handling one client
+blocks, the operating system will interrupt it and give another client a turn.
+The operating system thus ensures that clients that require a small amount of
+work are not penalized by clients that require more work. Because Node.js
+handles many clients with few threads, if a thread blocks handling one client's
+request, then pending client requests may not get a turn until the thread
+finishes its callback or task. The fair treatment of clients is thus the
+responsibility of your application . This means that you shouldn't do too much
+work for any client in any single callback or task. This is part of why Node.js
+can scale well, but it also means that you are responsible for ensuring fair
+scheduling. The next sections talk about how to ensure fair scheduling for the
+Event Loop and for the Worker Pool. Don't block the Event Loop The Event Loop
+notices each new client connection and orchestrates the generation of a
+response. All incoming requests and outgoing responses pass through the Event
+Loop. This means that if the Event Loop spends too long at any point, all
+current and new clients will not get a turn. You should make sure you never
+block the Event Loop. In other words, each of your JavaScript callbacks should
+complete quickly. This of course also applies to your await 's, your
+Promise.then 's, and so on. A good
+----------------------------------------------------------------------------------------------------
+Index: 27603 <<"chunk_id": 5, "docno": 4464>>
+
+for managing those resources and that has to be reflected somwehere in a metric
+that matters. If you are interested in more detailed analysis of that kind of
+trade off, some detailed analyses of how performance metrics scale under load
+can be found in a blog series by Rob Harrop . Tip Tomcat allocates 100 threads
+for processing HTTP requests by default. That is excessive if we know all the
+processing is going to be on our scheduler thread pool. There is an impedance
+mismatch: the scheduler thread pool can be a bottleneck because it has fewer
+threads than the upstream Tomcat thread pool. This highlights the fact that
+performance tuning can be very hard, and, while you might have control of all
+the configuration, it’s a delicate balance. We can do better than a fixed thread
+pool if we use a scheduler that adjusts its capacity according to demand.
+Reactor has a convenience for that, so if you try the same code with
+Schedulers.elastic() (you can call it anywhere; there is only one instance), you
+will see that under load more threads are created. Reactive all the Way Down The
+bridge from blocking to reactive is a useful pattern, and is easy to implement
+using available technology in Spring MVC (as shown above). The next stage in the
+Reactive journey is to break out of blocking in application threads completely,
+and to do that requires new APIs and new tools. Ultimately we have to be
+Reactive all the way down the stack, including servers and
+----------------------------------------------------------------------------------------------------
+Index: 6039 <<"chunk_id": 7, "docno": 875>>
 
 application mistakes. The behavior cannot be reasonably mitigated through
 standard operational practices (like process recycling). The behavior occurs
@@ -442,52 +568,623 @@ to data encrypted through the Node.js crypto APIs). The file content or other
 I/O that is opened for reading or writing by the use of Node.js APIs (ex: stdin,
 stdout, stderr). In other words, if the data passing through Node.js
 ----------------------------------------------------------------------------------------------------
-Index: 13265 <<"chunk_id": 6, "docno": 1778>>
+Index: 15911 <<"chunk_id": 1470, "docno": 2234>>
 
-code updates with Fast Refresh on large Next.js apps like vercel.com . Advanced
-Tracing As Next.js has grown in adoption over the years, we've found it
-increasingly hard to reproduce reported issues on GitHub, especially related to
-compiler performance and memory usage. This is because most people can't share
-their application code, or when they share the code, the application can't run
-because it requires a database or other setup. To begin to address this, we
-added tracing to the internals of Next.js. These traces are written to a file in
-the .next folder and do not include application code — only the file path, the
-time the compiler took on it, and other timings like individual transforms.
-However, with webpack, we never had a good way to clearly distinguish memory
-usage of the compiler from memory usage of framework or application code, as
-they all run in the same Node.js instance. With Turbopack, we were able to
-design with instrumentation from the beginning. We implemented an
-instrumentation layer in Turbo Engine that allows for collecting timings of each
-individual function. We were able to extend these traces to also keep track of
-the memory allocation, deallocation, and persisted memory across every function.
-This new, advanced tracing gives us all the information needed to investigate
-slowdowns and memory usage deeply; it only requires a trace instead of a full
-codebase. In order to process these new traces, we've implemented a custom trace
-viewer that stays performant regardless of application and trace size. It's a
-trace viewer
+6056 started Worker 5644 started console copy On Windows, it is not yet possible
+to set up a named pipe server in a worker. How it works # The worker processes
+are spawned using the child_process.fork() method, so that they can communicate
+with the parent via IPC and pass server handles back and forth. The cluster
+module supports two methods of distributing incoming connections. The first one
+(and the default one on all platforms except Windows) is the round-robin
+approach, where the primary process listens on a port, accepts new connections
+and distributes them across the workers in a round-robin fashion, with some
+built-in smarts to avoid overloading a worker process. The second approach is
+where the primary process creates the listen socket and sends it to interested
+workers. The workers then accept incoming connections directly. The second
+approach should, in theory, give the best performance. In practice however,
+distribution tends to be very unbalanced due to operating system scheduler
+vagaries. Loads have been observed where over 70% of all connections ended up in
+just two processes, out of a total of eight. Because server.listen() hands off
+most of the work to the primary process, there are three cases where the
+behavior between a normal Node.js process and a cluster worker differs:
+server.listen({fd: 7}) Because the message is passed to the primary, file
+descriptor 7 in the parent will be listened on, and the handle passed to the
+worker, rather than listening to the worker's idea of what the number 7 file
+descriptor references. server.listen(handle) Listening
 ----------------------------------------------------------------------------------------------------
-Index: 16086 <<"chunk_id": 6, "docno": 2150>>
+Index: 3755 <<"chunk_id": 1, "docno": 542>>
 
-data. This could involve promoting the survey through various channels and
-engaging with key stakeholders. Clarify ESM Usage : Ensure that respondents have
-a clear understanding of whether they are using ESM in production. This could
-involve providing guidance on how to determine ESM usage and adding an opt-in
-usage counter to core. Create Working Groups : Establish working groups to
-address specific initiatives, such as a flaky CI working group, to focus on
-improving the reliability of the CI system. Explore Next-Gen HTTP : Investigate
-next-generation HTTP protocols and their implications for the Node.js ecosystem,
-ensuring that the project remains at the forefront of web development
-technologies. Seek Professional Data Analysis : Engage professional data
-analysts to help extract meaningful insights from the survey results, ensuring
-that the data is used effectively to inform decision-making. Document Missed
-Discussions : Ensure that all discussions and insights are comprehensively
-documented, utilizing tools like the Zoom AI tool to capture missed discussions
-and provide a complete record of the session. To know you is to love you.
-Diversifying Node.js Diversity and inclusion are fundamental to the growth and
-success of any open-source community. The Node.js collaboration summit in Dublin
-provided a platform to discuss and address these critical issues. The session on
-diversity, led by Robin Bender Ginn ( @rginn ), focused on understanding the
-current state of diversity within the Node.js collaborator culture and
-identifying actionable steps to foster a more inclusive environment. Current
-State of Diversity Robin began the session by asking three key questions to
+How to use streams Backpressuring in Streams Publishing a package How to publish
+a Node-API package ABI Stability Diagnostics User Journey Memory Overview
+Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot Tracing
+garbage collection Live Debugging Overview Using Inspector Poor Performance
+Overview Using Linux Perf Flame Graphs Test Runner Discovering Node.js's test
+runner Using Node.js's test runner Mocking in tests Collecting code coverage in
+Node.js Node-API What is Node-API? Getting Started Overview Pre-requisites Tools
+Anatomy of a Node-API project Your First Project Object Wrap Migrating to
+Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp Special Topics
+Overview Context Awareness Object and Function References AsyncWorker
+Thread-Safe Functions On this page My application has a poor performance
+Symptoms Debugging Poor Performance In this document you can learn about how to
+profile a Node.js process. My application has a poor performance Symptoms My
+applications latency is high and I have already confirmed that the bottleneck is
+not my dependencies like databases and downstream services. So I suspect that my
+application spends significant time to run code or process information. You are
+satisfied with your application performance in general but would like to
+understand which part of our application can be improved to run faster or more
+efficient. It can be useful when we want to improve the user experience or save
+computation cost. Debugging In this use-case, we are interested in code pieces
+that use more CPU cycles than the others. When we do this locally, we usually
+try to optimize our code. This document provides two simple
+----------------------------------------------------------------------------------------------------
+Index: 20933 <<"chunk_id": 10, "docno": 3070>>
+
+to force the VM to hand back memory to the OS. If you run a test that steadily
+increases the memory footprint of Rabbit you could observe the effect of
+hibernation on idle processes as it reduces the rate of increase of memory use.
+Erlang is a multi-threaded VM which takes advantage of multiple cores. It
+presents green threads to the developer which are called 'processes' because
+unlike threads, they conceptually do not share an address space. Here is an
+interesting confession on the Erlang VM and Processes . Transactions
+Transactions on 10,000 messages can take as along as four minutes to publish. A
+new RabbitMQ feature called Publisher Confirms is more than 100 times faster
+than the same, but transactional, code. If you are not explicitly required to
+implement transactions but do need the verification you might consider this
+option. The Take-Away Here are some final takeaways to help you squeeze the
+greatest performance gains out of your implementation: The new topic routing
+algorithm optimization is 60 times faster at peak Topic binding patterns using
+wildcards '*', which matches a single word, is much faster than '#', which
+matches zero or more words. Wildcard '#' takes longer to process in the routing
+table than '*' Exchange-to-exchange bindings improve decoupling, increase
+topology flexibility, reduce binding churn, and help increase performance
+Exchanges and bindings are very light weight RabbitMQ Publisher Confirms are
+more than 100 times faster than AMQP transactions After a queue is idle for >=10
+seconds it will "hibernate", inducing GC on the queue, resulting
+----------------------------------------------------------------------------------------------------
+Index: 22733 <<"chunk_id": 26, "docno": 3382>>
+
+= content; } public String getId() { return id; } public String getContent() {
+return content; } } Once that is done your application will be loadable in a
+browser. On the command line you can do this $ mvn spring-boot:run
+-Dserver.port=9000 and go to a browser at http://localhost:9000 and you should
+see JSON with a greeting. You can bake in the port change in
+application.properties (in"src/main/resources"): application.properties
+server.port: 9000 If you try loading that resource from the UI (on port 8080) in
+a browser, you will find that it doesn’t work because the browser won’t allow
+the XHR request. CORS Negotiation The browser tries to negotiate with our
+resource server to find out if it is allowed to access it according to the Cross
+Origin Resource Sharing protocol. It’s not an Angular responsibility, so just
+like the cookie contract it will work like this with all JavaScript in the
+browser. The two servers do not declare that they have a common origin, so the
+browser declines to send the request and the UI is broken. To fix that we need
+to support the CORS protocol which involves a "pre-flight" OPTIONS request and
+some headers to list the allowed behaviour of the caller. Spring has
+fine-grained CORS support , so we can just add an annotation to our controller
+mapping, for example: ResourceApplication.java @RequestMapping("/")
+@CrossOrigin(origins="*", maxAge=3600) public Message home() { return new
+Message("Hello World"); } Blithely using origins=* is quick and dirty, and it
+works, but it is not not secure and is not in any
+----------------------------------------------------------------------------------------------------
+Index: 20930 <<"chunk_id": 7, "docno": 3070>>
+
+shared by all agents that connect to it. Then, in its simplest form, as each
+agent comes online it declares a private exchange and queue, and binds its
+exchange to the shared topic exchanges. Our relationships are now expressed by
+exchange-to-exchange mappings which reduces churn rate and decouples agents from
+having to 'know' the server queues. Using this pattern the system is clean,
+decoupled, and scalable. Elastic-Scaling Use Case Let's take the previous
+scenario a step further. We are already using topic pub-sub routing over
+scenario 2: many direct routings. Now let's say the system requirement bumps up
+to scale clusters of our server application in a data center with 50,000 or more
+agents. How can we throttle varying loads? The authenticated client exchange
+routes messages from agent to server. It handles all operations publishing
+messages to singular-consumer queues, including those producing the highest
+frequency of messages. This is a potential bottleneck under the current topology
+with roughly 60,000 messages per minute for 10,000 clients or 86,400,000
+messages per day. This is easily resolvable, RabbitMQ can handle over 1 billion
+messages per day depending on your configuration, for example whether or not you
+are persisting messages. Our server applications are running a RabbitMQ cluster.
+Remember that in a cluster, declaring an exchange causes it to appear on all
+nodes, while declaring a queue creates it on only one of the nodes, so we have
+to configure a solution. Load-Balancing Between Producers and Consumers To
+efficiently handle these potentially very high loads as more client applications
+(Agents)
+----------------------------------------------------------------------------------------------------
+Index: 237 <<"chunk_id": 1, "docno": 31>>
+
+; const server = createServer ( ( req , res ) => { res . statusCode = 200 ; res
+. setHeader ( ' Content-Type ' , ' text/plain ' ) ; res . end ( ' Hello World '
+) ; } ) ; server . listen ( port , hostname , () => { console . log ( ` Server
+running at http:// ${ hostname } : ${ port } / ` ) ; } ) ; JavaScript Copy to
+clipboard This is in contrast to today's more common concurrency model, in which
+OS threads are employed. Thread-based networking is relatively inefficient and
+very difficult to use. Furthermore, users of Node.js are free from worries of
+dead-locking the process, since there are no locks. Almost no function in
+Node.js directly performs I/O, so the process never blocks except when the I/O
+is performed using synchronous methods of Node.js standard library. Because
+nothing blocks, scalable systems are very reasonable to develop in Node.js. If
+some of this language is unfamiliar, there is a full article on Blocking vs.
+Non-Blocking . Node.js is similar in design to, and influenced by, systems like
+Ruby's Event Machine and Python's Twisted . Node.js takes the event model a bit
+further. It presents an event loop as a runtime construct instead of as a
+library. In other systems, there is always a blocking call to start the
+event-loop. Typically, behavior is defined through callbacks at the beginning of
+a script, and at the end a server is started through a
+----------------------------------------------------------------------------------------------------
+Index: 24534 <<"chunk_id": 2, "docno": 3786>>
+
+application, without the need for the network . Even across a fast reliable
+network, round-trip delays can introduce significant latency when loading the
+application. Using a service worker to reduce dependency on the network can
+significantly improve the user experience. On this page arrow_upward_alt Back to
+the top Service workers in Angular Angular applications, as single-page
+applications, are in a prime position to benefit from the advantages of service
+workers. Angular ships with a service worker implementation. Angular developers
+can take advantage of this service worker and benefit from the increased
+reliability and performance it provides, without needing to code against
+low-level APIs. Angular's service worker is designed to optimize the end user
+experience of using an application over a slow or unreliable network connection,
+while also minimizing the risks of serving outdated content. To achieve this,
+the Angular service worker follows these guidelines: Caching an application is
+like installing a native application. The application is cached as one unit, and
+all files update together. A running application continues to run with the same
+version of all files. It does not suddenly start receiving cached files from a
+newer version, which are likely incompatible. When users refresh the
+application, they see the latest fully cached version. New tabs load the latest
+cached code. Updates happen in the background, relatively quickly after changes
+are published. The previous version of the application is served until an update
+is installed and ready. The service worker conserves bandwidth when possible.
+Resources are only downloaded if they've changed. To support these
+----------------------------------------------------------------------------------------------------
+Index: 24539 <<"chunk_id": 1, "docno": 3787>>
+
+and caching of application resources Imagine the Angular service worker as a
+forward cache or a Content Delivery Network (CDN) edge that is installed in the
+end user's web browser. The service worker responds to requests made by the
+Angular application for resources or data from a local cache, without needing to
+wait for the network. Like any cache, it has rules for how content is expired
+and updated. Application versions In the context of an Angular service worker, a
+"version" is a collection of resources that represent a specific build of the
+Angular application. Whenever a new build of the application is deployed, the
+service worker treats that build as a new version of the application. This is
+true even if only a single file is updated. At any given time, the service
+worker might have multiple versions of the application in its cache and it might
+be serving them simultaneously. For more information, see the Application tabs
+section. To preserve application integrity, the Angular service worker groups
+all files into a version together. The files grouped into a version usually
+include HTML, JS, and CSS files. Grouping of these files is essential for
+integrity because HTML, JS, and CSS files frequently refer to each other and
+depend on specific content. For example, an index.html file might have a
+<script> tag that references bundle.js and it might attempt to call a function
+startApp() from within that script. Any time this version of index.html is
+served, the corresponding bundle.js must be served with it. For example,
+----------------------------------------------------------------------------------------------------
+Index: 10425 <<"chunk_id": 18, "docno": 1485>>
+
+already in use): An attempt to bind a server ( net , http , or https ) to a
+local address failed due to another server on the local system already occupying
+that address. ECONNREFUSED (Connection refused): No connection could be made
+because the target machine actively refused it. This usually results from trying
+to connect to a service that is inactive on the foreign host. ECONNRESET
+(Connection reset by peer): A connection was forcibly closed by a peer. This
+normally results from a loss of the connection on the remote socket due to a
+timeout or reboot. Commonly encountered via the http and net modules. EEXIST
+(File exists): An existing file was the target of an operation that required
+that the target not exist. EISDIR (Is a directory): An operation expected a
+file, but the given pathname was a directory. EMFILE (Too many open files in
+system): Maximum number of file descriptors allowable on the system has been
+reached, and requests for another descriptor cannot be fulfilled until at least
+one has been closed. This is encountered when opening many files at once in
+parallel, especially on systems (in particular, macOS) where there is a low file
+descriptor limit for processes. To remedy a low limit, run ulimit -n 2048 in the
+same shell that will run the Node.js process. ENOENT (No such file or
+directory): Commonly raised by fs operations to indicate that a component of the
+specified pathname does not exist. No entity (file or directory) could be found
+by the given path.
+----------------------------------------------------------------------------------------------------
+Index: 2785 <<"chunk_id": 1, "docno": 378>>
+
+transpilation Running TypeScript with a runner Publishing a TypeScript package
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Should you read this guide?
+Summary Why should I avoid blocking the Event Loop and the Worker Pool? A quick
+review of Node What code runs on the Event Loop? What code runs on the Worker
+Pool? How does Node.js decide what code to run next? What does this mean for
+application design? Don't block the Event Loop How careful should you be? REDOS
+Node.js core modules JSON DOS Complex calculations without blocking the Event
+Loop Don't block the Worker Pool Minimizing the variation in Task times Task
+partitioning Avoiding Task partitioning conclusions The risks of npm modules
+Conclusion Don't Block the Event Loop (or the Worker Pool) Should you read this
+guide? If you're writing anything more complicated than a brief command-line
+script, reading this should help you write higher-performance, more-secure
+applications. This document
+----------------------------------------------------------------------------------------------------
+Index: 20928 <<"chunk_id": 5, "docno": 3070>>
+
+RabbitMQ 2.4.0, released March 23, 2011, a new topic routing algorithm
+optimization is available that is 60 times faster at peak than the previous
+topic algorithm. Due to this, one recommendation is to go for less exchanges and
+queues, and more routing because the time increase is now minimal. Performance
+What is Cheap? In terms of memory cost, exchanges and bindings. In Erlang ,
+which RabbitMQ is built on, each node (broker) is a process, as is each queue.
+By default the Erlang VM process limit is set to 1M, which can be raised.
+However, an exchange is not a process for scalability reasons, it is simply a
+row in RabbitMQ's built-in Mnesia database. In a cluster, declaring an exchange
+causes it to appear on all nodes of the cluster, while declaring a queue creates
+it on only one of the nodes. This explains why exchanges survive node restarts
+or creating a node in a cluster, yet queues do not. Be wary of binding churn. In
+strategy number 2, if you create many new queues and their bindings, whenever
+consumers attach you might run into problems. For instance, given exchanges
+E1...En to which many messages are being published, whenever consumer Cm
+connects, it creates bindings from its own queue to all of E1...En which may
+cause problems, depending on the rate of connections. To alleviate binding
+churn, consider exchange-to-exchange bindings, new as of version 2.3.1. Each
+consumer could have its own secondary exchange Ym which must not be auto-delete.
+Then bind all of E1...En to Ym
+----------------------------------------------------------------------------------------------------
+Index: 3110 <<"chunk_id": 1, "docno": 431>>
+
+TypeScript with a runner Publishing a TypeScript package Modules How to use
+streams Backpressuring in Streams Publishing a package How to publish a Node-API
+package ABI Stability Diagnostics User Journey Memory Overview Understanding and
+Tuning Memory Using Heap Profiler Using Heap Snapshot Tracing garbage collection
+Live Debugging Overview Using Inspector Poor Performance Overview Using Linux
+Perf Flame Graphs Test Runner Discovering Node.js's test runner Using Node.js's
+test runner Mocking in tests Collecting code coverage in Node.js Node-API What
+is Node-API? Getting Started Overview Pre-requisites Tools Anatomy of a Node-API
+project Your First Project Object Wrap Migrating to Node-API Build Tools
+Overview node-gyp CMake.js node-pre-gyp Special Topics Overview Context
+Awareness Object and Function References AsyncWorker Thread-Safe Functions On
+this page Differences between Node.js and the Browser Both the browser and
+Node.js use JavaScript as their programming language. Building apps that run in
+the browser is completely different from building a Node.js application. Despite
+the fact that it's always JavaScript, there are some key differences that make
+the experience radically different. From the perspective of a frontend developer
+who extensively uses JavaScript, Node.js apps bring with them a huge advantage:
+the comfort of programming everything - the frontend and the backend - in a
+single language. You have a huge opportunity because we know how hard it is to
+fully, deeply learn a programming language, and by using the same language to
+perform all your work on the web - both on the client and on the server, you're
+in a unique position of advantage. What changes is
+----------------------------------------------------------------------------------------------------
+Index: 27601 <<"chunk_id": 3, "docno": 4464>>
+
+use Spring MVC like this: @RequestMapping("/parallel") public
+CompletableFuture<Result> parallel() { return Flux.range(1, 10) ...
+.doOnSuccess(Result::stop) .toFuture(); } If you read the Javadocs for
+@RequestMapping you will find that a method can return a CompletableFuture
+"which the application uses to produce a return value in a separate thread of
+its own choosing". The separate thread in this case is provided by "scheduler",
+which is a thread pool, so the processing is happening on multiple threads, 4 at
+a time because of the way that flatMap() is called. No Such Thing as a Free
+Lunch The scatter-gather with a background thread is a useful pattern but it
+isn’t perfect — it’s not blocking the caller, but it’s blocking something, so
+it’s just moving the problem around. There are some practical implications. We
+have an HTTP server with (probably) non-blocking IO handlers, passing work back
+to a thread pool, one HTTP request per thread — all of this is happening inside
+a servlet container (e.g. Tomcat). The request is processed asynchronously, so
+the worker thread in Tomcat isn’t blocked, and the thread pool that we created
+in our "scheduler" is processing on up to 4 concurrent threads. We are
+processing 10 back end requests (calls to block() ) so there is a maximum,
+theoretical benefit of using the scheduler of 4 times lower latency. In other
+words, if processing all 10 requests one after the other in a single thread
+takes 1000ms, we might see a processing time of 250ms for a single incoming
+request at our HTTP service.
+----------------------------------------------------------------------------------------------------
+Index: 16531 <<"chunk_id": 2090, "docno": 2234>>
+
+script or module. Must be either an absolute path or a relative path (i.e.
+relative to the current working directory) starting with ./ or ../ , or a WHATWG
+URL object using file: or data: protocol. When using a data: URL , the data is
+interpreted based on MIME type using the ECMAScript module loader . If
+options.eval is true , this is a string containing JavaScript code rather than a
+path. options <Object> argv <any> [] List of arguments which would be
+stringified and appended to process.argv in the worker. This is mostly similar
+to the workerData but the values are available on the global process.argv as if
+they were passed as CLI options to the script. env <Object> If set, specifies
+the initial value of process.env inside the Worker thread. As a special value,
+worker.SHARE_ENV may be used to specify that the parent thread and the child
+thread should share their environment variables; in that case, changes to one
+thread's process.env object affect the other thread as well. Default:
+process.env . eval <boolean> If true and the first argument is a string ,
+interpret the first argument to the constructor as a script that is executed
+once the worker is online. execArgv <string> [] List of node CLI options passed
+to the worker. V8 options (such as --max-old-space-size ) and options that
+affect the process (such as --title ) are not supported. If set, this is
+provided as process.execArgv inside the worker. By default, options are
+inherited from the parent thread. stdin <boolean> If
+----------------------------------------------------------------------------------------------------
+Index: 20931 <<"chunk_id": 8, "docno": 3070>>
+
+so we have to configure a solution. Load-Balancing Between Producers and
+Consumers To efficiently handle these potentially very high loads as more client
+applications (Agents) come online, we can modify this topology in several ways.
+First, an optimization from the above configuration to load-balance messages
+across a Rabbit cluster. We can create one queue for each node in the Rabbit
+cluster. If we have four nodes, for each high-traffic queue we create
+hfq.{0,1,2,3} for that operation. Now each agent can randomly pick a node by a
+number between zero and three, or a more sophisticated round-robin
+implementation, to publish to. With RabbitMQ there are RPC calls or you can use
+the Rabbit management plugin to GET the number of nodes, which you can use in
+your round-robin algorithm. Worker Queues With Round-Robin Dispatching Worker
+Queues, or Task Queues, are generally used to efficiently distribute
+time-consuming tasks among multiple workers and easily parallelise work. In
+addition, this topology applies to eliminating the need to execute
+resource-intensive tasks and having to block until they complete. Running
+several worker queues allows these tasks to be distributed among them. With
+Worker Queues, by default, Rabbit uses a round-robin distribution method,
+sending each message to the next consumer in sequence. Each consumer receives
+roughly the same number of messages. If you declare a queue and spin up 3
+competing consumers, bind them to the exchange, and send 20,000 messages,
+messages zero will route to the first consumer, message one to the second,
+message two to the third and so on. If
+----------------------------------------------------------------------------------------------------
+Index: 9251 <<"chunk_id": 33, "docno": 1407>>
+
+to the Worker's main script or module. Must be either an absolute path or a
+relative path (i.e. relative to the current working directory) starting with ./
+or ../ , or a WHATWG URL object using file: or data: protocol. When using a
+data: URL , the data is interpreted based on MIME type using the ECMAScript
+module loader . If options.eval is true , this is a string containing JavaScript
+code rather than a path. options <Object> argv <any> [] List of arguments which
+would be stringified and appended to process.argv in the worker. This is mostly
+similar to the workerData but the values are available on the global
+process.argv as if they were passed as CLI options to the script. env <Object>
+If set, specifies the initial value of process.env inside the Worker thread. As
+a special value, worker.SHARE_ENV may be used to specify that the parent thread
+and the child thread should share their environment variables; in that case,
+changes to one thread's process.env object affect the other thread as well.
+Default: process.env . eval <boolean> If true and the first argument is a string
+, interpret the first argument to the constructor as a script that is executed
+once the worker is online. execArgv <string> [] List of node CLI options passed
+to the worker. V8 options (such as --max-old-space-size ) and options that
+affect the process (such as --title ) are not supported. If set, this is
+provided as process.execArgv inside the worker. By default, options are
+inherited from the parent
+----------------------------------------------------------------------------------------------------
+Index: 1630 <<"chunk_id": 1, "docno": 199>>
+
+TypeScript package Modules How to use streams Backpressuring in Streams
+Publishing a package How to publish a Node-API package ABI Stability Diagnostics
+User Journey Memory Overview Understanding and Tuning Memory Using Heap Profiler
+Using Heap Snapshot Tracing garbage collection Live Debugging Overview Using
+Inspector Poor Performance Overview Using Linux Perf Flame Graphs Test Runner
+Discovering Node.js's test runner Using Node.js's test runner Mocking in tests
+Collecting code coverage in Node.js Node-API What is Node-API? Getting Started
+Overview Pre-requisites Tools Anatomy of a Node-API project Your First Project
+Object Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js
+node-pre-gyp Special Topics Overview Context Awareness Object and Function
+References AsyncWorker Thread-Safe Functions On this page State management
+Control flow Asynchronous flow control The material in this post is heavily
+inspired by Mixu's Node.js Book . At its core, JavaScript is designed to be
+non-blocking on the "main" thread, this is where views are rendered. You can
+imagine the importance of this in the browser. When the main thread becomes
+blocked it results in the infamous "freezing" that end users dread, and no other
+events can be dispatched resulting in the loss of data acquisition, for example.
+This creates some unique constraints that only a functional style of programming
+can cure. This is where callbacks come in to the picture. However, callbacks can
+become challenging to handle in more complicated procedures. This often results
+in "callback hell" where multiple nested functions with callbacks make the code
+more challenging to read, debug, organize, etc. async1 ( function ( input ,
+----------------------------------------------------------------------------------------------------
+Index: 3807 <<"chunk_id": 1, "docno": 554>>
+
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page How To Using Inspector In a local
+environment, we usually speak about live debugging where we attach a debugger to
+our application and we add breakpoints to suspend the program execution. Then we
+step through the code paths and inspect our heap over the different steps. Using
+the live debugger in production is usually not an option as we have limited
+access to the machine and we cannot interrupt the execution of the application
+as it handles a business-critical workload. How To Debugging Node.js Reading
+Time 1 min read Contribute Edit this page Table of Contents How To Copyright
+OpenJS Foundation and Node.js contributors. All rights reserved. The OpenJS
+Foundation has registered trademarks and uses trademarks. For a list of
+trademarks of the OpenJS Foundation , please see our Trademark Policy and
+Trademark List . Trademarks and logos not indicated on the list of OpenJS
+----------------------------------------------------------------------------------------------------
+Index: 10221 <<"chunk_id": 4, "docno": 1465>>
+
+"keep-alive" , " host " : "example.com" , " accept " : "*/*" } json copy Keys
+are lowercased. Values are not modified. In order to support the full spectrum
+of possible HTTP applications, the Node.js HTTP API is very low-level. It deals
+with stream handling and message parsing only. It parses a message into headers
+and body but it does not parse the actual headers or the body. See
+message.headers for details on how duplicate headers are handled. The raw
+headers as they were received are retained in the rawHeaders property, which is
+an array of [key, value, key2, value2, ...] . For example, the previous message
+header object might have a rawHeaders list like the following: [
+"ConTent-Length" , "123456" , "content-LENGTH" , "123" , "content-type" ,
+"text/plain" , "CONNECTION" , "keep-alive" , "Host" , "example.com" , "accepT" ,
+"*/*" ] json copy Class: http.Agent # Added in: v0.3.4 An Agent is responsible
+for managing connection persistence and reuse for HTTP clients. It maintains a
+queue of pending requests for a given host and port, reusing a single socket
+connection for each until the queue is empty, at which time the socket is either
+destroyed or put into a pool where it is kept to be used again for requests to
+the same host and port. Whether it is destroyed or pooled depends on the
+keepAlive option . Pooled connections have TCP Keep-Alive enabled for them, but
+servers may still close idle connections, in which case they will be removed
+from the pool and
+----------------------------------------------------------------------------------------------------
+Index: 24533 <<"chunk_id": 1, "docno": 3786>>
+
+traditional web deployment model and empower applications to deliver a user
+experience with the reliability and performance on par with code that is written
+to run on your operating system and hardware. Adding a service worker to an
+Angular application is one of the steps for turning an application into a
+Progressive Web App (also known as a PWA). At its simplest, a service worker is
+a script that runs in the web browser and manages caching for an application.
+Service workers function as a network proxy. They intercept all outgoing HTTP
+requests made by the application and can choose how to respond to them. For
+example, they can query a local cache and deliver a cached response if one is
+available. Proxying isn't limited to requests made through programmatic APIs,
+such as fetch ; it also includes resources referenced in HTML and even the
+initial request to index.html . Service worker-based caching is thus completely
+programmable and doesn't rely on server-specified caching headers. Unlike the
+other scripts that make up an application, such as the Angular application
+bundle, the service worker is preserved after the user closes the tab. The next
+time that browser loads the application, the service worker loads first, and can
+intercept every request for resources to load the application. If the service
+worker is designed to do so, it can completely satisfy the loading of the
+application, without the need for the network . Even across a fast reliable
+network, round-trip delays can introduce significant latency when loading the
+application. Using
+----------------------------------------------------------------------------------------------------
+Index: 20932 <<"chunk_id": 9, "docno": 3070>>
+
+send 20,000 messages, messages zero will route to the first consumer, message
+one to the second, message two to the third and so on. If we begin building up a
+backlog of tasks, we can simply add more workers, allowing the system to scale
+easily. Performance Memory Neither option above will necessarily induce high
+load in RabbitMQ. There are no hard limits to the number of exchanges and
+queues, one can create, and running 100,000 queues on one broker is fine. With
+the right tuning and enough RAM you can run well over a million queues. RabbitMQ
+dynamically pushes messages to disk to free up RAM, thus the memory footprint of
+a queue is not dependent on its contents. After a queue is idle for 10 seconds
+or more it will "hibernate" which causes GC on that queue. As a result, the
+amount of memory a queue requires can dramatically shrink. For example, it might
+be possible for 1000 empty, idle queues to take up 10MB of RAM. When they're all
+active (even if empty), they might of course, depending on memory fragmentation,
+consume much more memory. Forcing them back into hibernation to test behavior is
+difficult because the Erlang VM does not hand back memory to the OS immediately.
+You can, however, observe a large process that hibernates and has very
+fragmented memory because the amount reclaimed can be sufficient to force the VM
+to hand back memory to the OS. If you run a test that steadily increases the
+memory footprint of Rabbit you
+----------------------------------------------------------------------------------------------------
+Index: 27609 <<"chunk_id": 11, "docno": 4464>>
+
+concerns, from unfamiliar parts of the stack. Another source of pain is that if
+we ever make a mistake and block in one of our Reactive callbacks, we will be
+holding up all requests on the same thread. With the servlet-based containers
+every request is isolated to a thread, and blocking doesn’t hold up other
+requests because they are be processed on different threads. Blocking all
+requests is still a recipe for trouble, but it only shows up as increased
+latency with roughly a constant factor per request. In the Reactive world,
+blocking a single request can lead to increased latency for all requests, and
+blocking all requests can bring a server to its knees because the extra layers
+of buffers and threads are not there to take up the slack. Conclusion It’s nice
+to be able to control all the moving parts in our asynchronous processing: every
+layer has a thread pool size and a queue. We can make some of those layers
+elastic, and try and adjust them according to how much work they do. But at some
+point it becomes a burden, and we start looking for something simpler, or
+leaner. Analysis of scalability leads to the conclusion that it is often better
+to shed the extra threads, and work with the constraints imposed by the physical
+hardware. This is an example of "mechanical sympathy", as is famously exploited
+by LMAX to great effect in the Disruptor Pattern . We have begun to see the
+power of the Reactive approach, but remember that
+----------------------------------------------------------------------------------------------------
+Index: 25310 <<"chunk_id": 1, "docno": 3984>>
+
+What's new in 2.4 Config File Processing (application properties and YAML files)
+Spring Boot 2.4 has improved the way that application.properties and
+application.yml files are processed. If you only have a simple
+application.properties or application.yml file , your upgrade should be
+seamless. If, however, you’ve have a more complex setup (with profile-specific
+properties, or profile activation properties) you may need to make some changes
+if you want to use the new features. Volume Mounted Config Directory Trees A new
+spring.config.import property can be used to import configuration trees that are
+commonly used with Kubernetes. A configuration tree is an alternative way of
+providing key/value pairs. Each pair is declared in its own file, with the
+filename forming the property key, and the file contents providing the value.
+For a complete example, see the updated reference documentation . Startup
+Endpoint A new startup actuator endpoint is now available that shows information
+about your applications startup. The endpoint can help you identify beans that
+are taking longer than expected to start. This work builds on the application
+startup tracking feature that was recently added to Spring Framwork 5.3. You can
+read more about the feature in the Spring Framework reference documentation .
+Origin Chains The Origin interface has been updated with a new getParent()
+method. This allows us to provide a full origin chain that can show exactly
+where an item originated from. For example, you might use spring.config.import
+in your application.properties to import a second file. The Origin of properties
+loaded from this second file will have
+----------------------------------------------------------------------------------------------------
+Index: 27093 <<"chunk_id": 2, "docno": 4360>>
+
+(32GB SATADOM) Dual 1.6 TB PCIe flash cards (Data Disks) Rackspace Compute V1
+for Zookeeper (a smaller instance type was used, because Zookeeper does not have
+a large footprint) 2vCPUs 3.75GB RAM Boot Device (50 GB High Performance SSD)
+###Network:### All of the tests ran Spring XD on a 10 Gigabit Network with an
+average speed of 1117 MB/s or 8.936 Gbps. We used iperf to determine network
+performance using the following command for the client iperf -c -f Mbytes and
+iperf -s for the server. ###Disk:### All tests that required high performance
+disk writes were implemented on the OnMetal IO data disks. The average disk
+write speed for these devices was approx. ~934 MB/s. The command used to verify
+the disk write speed was dd if=/dev/zero of=/data1/largefile bs=1M count=10000
+conv=fdatasync . The fdatasync on the dd command requires a complete “sync”
+right before it exits, thus verifying data is written completely on the disk
+versus the cache. ##Tools## The two primary tools used to test transports were
+the load-generator source and throughput sink modules that can be found on
+github in the spring-xd-modules project. The load-generator source module
+generates data in-memory and can be configured to send a specific number of
+messages of a certain size. The throughput module is a sink that counts received
+messages and periodically reports the witnessed throughput to the log.
+#Transport Tests# ##Direct Binding Transport## To eliminate network latency, it
+is sometimes desirable to allow co-located, contiguous modules to communicate
+directly, rather than by using the configured remote transport. Spring
+----------------------------------------------------------------------------------------------------
+Index: 3414 <<"chunk_id": 3, "docno": 483>>
+
+Node.js itself, since it's the responsibility of the application code to handle
+it correctly. Ensure that the WebServer handles socket errors properly, for
+instance, when a server is created without an error handler, it will be
+vulnerable to DoS CJS ESM const net = require ( ' node:net ' ) ; const server =
+net . createServer ( function ( socket ) { // socket.on('error', console.error)
+// this prevents the server to crash socket . write ( ' Echo server \r\n ' ) ;
+socket . pipe ( socket ) ; } ) ; server . listen ( 5000 , ' 0.0.0.0 ' ) ;
+JavaScript Copy to clipboard If a bad request is performed the server could
+crash. An example of a DoS attack that is not caused by the request's contents
+is Slowloris . In this attack, HTTP requests are sent slowly and fragmented, one
+fragment at a time. Until the full request is delivered, the server will keep
+resources dedicated to the ongoing request. If enough of these requests are sent
+at the same time, the amount of concurrent connections will soon reach its
+maximum resulting in a denial of service. This is how the attack depends not on
+the request's contents but on the timing and pattern of the requests being sent
+to the server. Mitigations Use a reverse proxy to receive and forward requests
+to the Node.js application. Reverse proxies can provide caching, load balancing,
+IP blacklisting, etc. which reduce the probability of a DoS attack being
+effective. Correctly configure the
+----------------------------------------------------------------------------------------------------
+Index: 6040 <<"chunk_id": 8, "docno": 875>>
+
+is opened for reading or writing by the use of Node.js APIs (ex: stdin, stdout,
+stderr). In other words, if the data passing through Node.js to/from the
+application can trigger actions other than those documented for the APIs, there
+is likely a security vulnerability. Examples of unwanted actions are polluting
+globals, causing an unrecoverable crash, or any other unexpected side effects
+that can lead to a loss of confidentiality, integrity, or availability. For
+example, if trusted input (like secure application code) is correct, then
+untrusted input must not lead to arbitrary JavaScript code execution. Node.js
+trusts everything else . Examples include: The developers and infrastructure
+that run it. The operating system that Node.js is running under and its
+configuration, along with anything under the control of the operating system.
+The deployment network environment for the privacy of traffic and routing
+decisions, including internal networks through which Node.js traffic passes and
+configured HTTP(S) proxy servers. Built-in proxy support is intended to route
+traffic through proxies authorized for the deployment, often because a firewall
+requires one to access external networks. It is not intended to hide traffic
+from network operators or authorities governing the deployment. Untrusted or
+unauthorized proxies, as well as deployment policy or legal compliance controls
+around proxy use, are the responsibility of the deployment operator and are
+outside this threat model. This does not change that data parsed from network
+protocol peers is untrusted as described above. The code it is asked to run,
+including JavaScript, WASM and native code, even if said code is
 ----------------------------------------------------------------------------------------------------

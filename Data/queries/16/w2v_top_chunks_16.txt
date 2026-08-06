@@ -1,495 +1,1173 @@
-Index: 13548 <<"chunk_id": 8, "docno": 1811>>
+Index: 13866 <<"chunk_id": 4, "docno": 2159>>
 
-params mapped from the URL and headers. These can be abused to be different
-values by the Client. They should not be trusted and needs to be re-verified
-each time they are read. E.g. a searchParam should not be used to track things
-like ?isAdmin=true . Just because the user is on /[team]/ doesn't mean that they
-have access to that team, that needs to be verified when reading data. The
-principle is to always re-read access control and cookies() whenever reading
-data. Don't pass it as props or params. Rendering a Server Component should
-never perform side-effects like mutations. This is not unique to Server
-Components. React naturally discourages side-effects even when rendering Client
-Components (outside useEffect), by doing things like double-rendering.
-Additionally, in Next.js there's no way to set cookies or trigger revalidation
-of caches during rendering. This also discourages the use of renders for
-mutations. E.g. searchParams should not be used to perform side-effects like
-saving changes or logging out. Server Actions should be used for this instead.
-This means that the Next.js model never uses GET requests for side-effects when
-used as intended. This helps avoid a large source of CSRF issues. Next.js does
-have support for Custom Route Handlers ( route.tsx ), which can set cookies on
-GET. It's considered an escape hatch and not part of the general model. These
-have to explicitly opt-in to accepting GET requests. There's no catch-all
-handler that might accidentally receive GET requests. If you do decide to create
-a custom GET handler, these might
+than 2 workers, // and perhaps not put the primary and worker in the same file.
+// // It is also possible to get a bit fancier about logging, and // implement
+whatever custom logic is needed to prevent DoS // attacks and other bad
+behavior. // // See the options in the cluster documentation. // // The
+important thing is that the primary does very little, // increasing our
+resilience to unexpected errors. cluster . fork () ; cluster . fork () ; cluster
+. on ( 'disconnect' , ( worker ) => { console . error ( 'disconnect!' ) ;
+cluster . fork () ; } ) ; } else { // the worker // // This is where we put our
+bugs! const domain = require ( 'node:domain' ) ; // See the cluster
+documentation for more details about using // worker processes to serve
+requests. How it works, caveats, etc. const server = require ( 'node:http' ) .
+createServer ( ( req , res ) => { const d = domain . create () ; d . on (
+'error' , ( er ) => { console . error ( `error ${ er . stack } ` ) ; // We're in
+dangerous territory! // By definition, something unexpected occurred, // which
+we probably didn't want. // Anything can happen now! Be very careful! try { //
+Make sure we close down within 30 seconds const killtimer = setTimeout ( () => {
+process . exit ( 1 ) ; }, 30000
 ----------------------------------------------------------------------------------------------------
-Index: 12264 <<"chunk_id": 2, "docno": 1672>>
+Index: 15930 <<"chunk_id": 1489, "docno": 2234>>
 
-into the closure and see the id value should be part of the cache key. You would
-need to manually specify that id is part of your key. If you forget to do so, or
-do it incorrectly, you risk cache collisions or stale data. Closures can capture
-all sorts of local variables. A naive approach could accidentally bake in (or
-omit) variables you didn’t intend to. That can lead to caching the wrong data,
-or it might risk cache poisoning if sensitive info bleeds into the cache key.
-'use cache' gives the compiler enough context to handle closures safely and
-produce cache keys correctly. A runtime-only solution, like cache() , would
-require you to do everything manually—and it’s easy to make mistakes. By
-contrast, a directive can be statically analyzed to reliably handle all your
-dependencies under the hood. How are non-serialized input values handled? We
-have two different types of input values to cache: Serializable : Here,
-“serializable” means an input can be turned into a stable, string-based format
-without losing meaning. While many people think first of JSON.stringify , we
-actually use React’s serialization (e.g., via Server Components) to handle a
-broader range of inputs—including promises, circular data structures, and other
-complex objects. This goes beyond what plain JSON can do. Non-serializable :
-These inputs are not part of the cache key. When we attempt to cache these
-values, we return a server "reference". This reference is then used by Next.js
-to restore back the original value at runtime. Let’s say we remembered
+guaranteed that the removal from the cluster.workers list happens before the
+last 'disconnect' or 'exit' event is emitted. import cluster from 'node:cluster'
+; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } const cluster = require ( 'node:cluster'
+) ; for ( const worker of Object . values (cluster . workers)) { worker . send (
+'big announcement to all workers' ) ; } javascript copy Command-line API #
+Node.js comes with a variety of CLI options. These options expose built-in
+debugging, multiple ways to execute scripts, and other helpful runtime options.
+To view this documentation as a manual page in a terminal, run man node .
+Synopsis # node [options] [V8 options] [<program-entry-point> | -e "script" | -]
+[--] [arguments] node inspect [<program-entry-point> | -e "script" |
+<host>:<port>] … node --v8-options Execute without arguments to start the REPL .
+For more info about node inspect , see the debugger documentation. Program entry
+point # The program entry point is a specifier-like string. If the string is not
+an absolute path, it's resolved as a relative path from the current working
+directory. That entry point string is then resolved as if it's been requested by
+require() from the current working directory. If no corresponding file is found,
+an error is thrown. By default, the resolved path is also loaded as if it's been
+requested by require() , unless one of the conditions below apply—then it's
+loaded as if it's been requested
 ----------------------------------------------------------------------------------------------------
-Index: 7522 <<"chunk_id": 2, "docno": 1033>>
+Index: 2353 <<"chunk_id": 8, "docno": 313>>
 
-created locally in render. When render is kept pure, React can understand how to
-prioritize which updates are most important for the user to see first. This is
-made possible because of render purity: since components don’t have side effects
-in render , React can pause rendering components that aren’t as important to
-update, and only come back to them later when it’s needed. Concretely, this
-means that rendering logic can be run multiple times in a way that allows React
-to give your user a pleasant user experience. However, if your component has an
-untracked side effect – like modifying the value of a global variable during
-render – when React runs your rendering code again, your side effects will be
-triggered in a way that won’t match what you want. This often leads to
-unexpected bugs that can degrade how your users experience your app. You can see
-an example of this in the Keeping Components Pure page . How does React run your
-code? React is declarative: you tell React what to render, and React will figure
-out how best to display it to your user. To do this, React has a few phases
-where it runs your code. You don’t need to know about all of these phases to use
-React well. But at a high level, you should know about what code runs in render
-, and what runs outside of it. Rendering refers to calculating what the next
-version of your UI should look like. After rendering, React takes this
+does it by default.) isPrimary / isWorker cluster.isPrimary is true in the
+process that forks workers; cluster.isWorker is true in the forked workers
+themselves. (You may also see cluster.isMaster in older code — it still works,
+but it's a deprecated alias for isPrimary .) Things to watch for Workers are
+separate processes, so they don't share memory . In-memory sessions, caches, or
+rate limiters won't be visible across workers — use an external store like Redis
+for anything that needs to be shared. Always handle a worker's 'exit' event and
+decide whether to restart it; an unhandled crash silently reduces your server's
+capacity. Check worker.exitedAfterDisconnect so a graceful shutdown doesn't get
+treated as a crash and endlessly respawn workers. In production, most teams use
+a process manager (PM2, systemd, or a container orchestrator) instead of
+hand-rolling restart/reload logic with cluster directly. Choosing between them A
+quick decision guide: Running an external program, or a script in another
+language? → child_process ( spawn / execFile ). Running another Node.js script
+as an isolated process, with structured messaging? → child_process.fork() . Have
+CPU-bound JavaScript blocking your event loop (hashing, image processing, big
+computations)? → worker_threads . Want to use all the CPU cores to handle more
+traffic to your server? → cluster (or a process manager/orchestrator that does
+the equivalent at the infrastructure level). These aren't mutually exclusive. A
+common pattern for something like an image-upload service is to combine all
+three: cluster to spread incoming requests across cores, and worker_threads (or
+child_process ) within each worker to
 ----------------------------------------------------------------------------------------------------
-Index: 12924 <<"chunk_id": 5, "docno": 1741>>
+Index: 2202 <<"chunk_id": 1, "docno": 292>>
 
-static optimization. On the other hand, a product dashboard may benefit from
-being server-side rendering where the data frequently updates. We started
-exploring how we could give users the best of both worlds and be fast by default
-. How could we give users static marketing pages and dynamic server-rendered
-pages? Beginning with Next.js 9, users no longer have to make the choice between
-fully server-rendering or statically exporting their application. Giving you the
-best of both worlds on a per-page basis. Automatic Partial Static Export A
-heuristic was introduced to automatically determine if a page can be prerendered
-to static HTML. This determination is made by whether or not the page has
-blocking data requirements through using getInitialProps . This heuristic allows
-Next.js to emit hybrid applications that contain both server-rendered and
-statically generated pages . The built-in Next.js server ( next start ) and
-programmatic API ( app.getRequestHandler() ) both support this build output
-transparently . There is no configuration or special handling required.
-Statically generated pages are still reactive: Next.js will hydrate your
-application client-side to give it full interactivity. Furthermore, Next.js will
-update your application after hydration if the page relies on query parameters
-in the URL. Next.js will visually inform you if a page will be statically
-generated during development. This visual artifact can be hidden by clicking it.
-Statically generated pages will also be displayed in Next.js' build output: API
-Routes In many cases when building React applications you end up needing some
-kind of backend. Either to retrieve data
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Multiple loading and unloading
+Instance data Resources Example Cleanup hooks Resources Example Context
+Awareness Node.js has historically run as a single-threaded process. This all
+changed with the introduction of Worker Threads in Node 10. Worker Threads add a
+JavaScript-friendly concurrency abstraction that native add-on developers need
+to be aware of. What this means practically is that your native add-on may be
+loaded and unloaded more than once and its code may be executed concurrently in
+multiple threads. There are specific steps you must take to ensure your native
+add-on code runs correctly. The Worker Thread model specifies that each Worker
+runs completely independently of each other and communicate to the parent Worker
+using a MessagePort object supplied by the parent. This makes the Worker Threads
+essentially isolated from one another. The same is true for your native add-on.
+Each Worker Thread operates within its own
 ----------------------------------------------------------------------------------------------------
-Index: 4613 <<"chunk_id": 2, "docno": 638>>
+Index: 15922 <<"chunk_id": 1481, "docno": 2234>>
 
-participate in reconciliation. By letting React call your components, you also
-tell it more about the conceptual structure of your tree. For example, when you
-move from rendering <Feed> to the <Profile> page, React won’t attempt to re-use
-them. React can enhance your user experience. For example, it can let the
-browser do some work between component calls so that re-rendering a large
-component tree doesn’t block the main thread. A better debugging story. If
-components are first-class citizens that the library is aware of, we can build
-rich developer tools for introspection in development. More efficient
-reconciliation. React can decide exactly which components in the tree need
-re-rendering and skip over the ones that don’t. That makes your app faster and
-more snappy. Never pass around Hooks as regular values Hooks should only be
-called inside of components or Hooks. Never pass it around as a regular value.
-Hooks allow you to augment a component with React features. They should always
-be called as a function, and never passed around as a regular value. This
-enables local reasoning , or the ability for developers to understand everything
-a component can do by looking at that component in isolation. Breaking this rule
-will cause React to not automatically optimize your component. Don’t dynamically
-mutate a Hook Hooks should be as “static” as possible. This means you shouldn’t
-dynamically mutate them. For example, this means you shouldn’t write higher
-order Hooks: function ChatInput ( ) { const useDataWithLogging = withLogging (
-useData ) ; // 🔴 Bad:
+is supported now. message <Object> sendHandle <Handle> options <Object> The
+options argument, if present, is an object used to parameterize the sending of
+certain types of handles. options supports the following properties: keepOpen
+<boolean> A value that can be used when passing instances of net.Socket . When
+true , the socket is kept open in the sending process. Default: false . callback
+<Function> Returns: <boolean> Send a message to a worker or primary, optionally
+with a handle. In the primary, this sends a message to a specific worker. It is
+identical to ChildProcess.send() . In a worker, this sends a message to the
+primary. It is identical to process.send() . This example will echo back all
+messages from the primary: if (cluster . isPrimary) { const worker = cluster .
+fork () ; worker . send ( 'hi there' ) ; } else if (cluster . isWorker) {
+process . on ( 'message' , ( msg ) => { process . send (msg) ; } ) ; } js copy
+Event: 'disconnect' # Added in: v0.7.9 worker <cluster.Worker> Emitted after the
+worker IPC channel has disconnected. This can occur when a worker exits
+gracefully, is killed, or is disconnected manually (such as with
+worker.disconnect() ). There may be a delay between the 'disconnect' and 'exit'
+events. These events can be used to detect if the process is stuck in a cleanup
+or if there are long-living connections. cluster . on ( 'disconnect' , ( worker
+) => { console . log ( `The worker # ${
 ----------------------------------------------------------------------------------------------------
-Index: 4957 <<"chunk_id": 21, "docno": 691>>
+Index: 14814 <<"chunk_id": 373, "docno": 2234>>
 
-call it when the component receives new props. It only exists for historical
-reasons and should not be used in any new code. Instead, use one of the
-alternatives: If you need to run a side effect (for example, fetch data, run an
-animation, or reinitialize a subscription) in response to prop changes, move
-that logic to componentDidUpdate instead. If you need to avoid re-computing some
-data only when a prop changes, use a memoization helper instead. If you need to
-“reset” some state when a prop changes, consider either making a component fully
-controlled or fully uncontrolled with a key instead. If you need to “adjust”
-some state when a prop changes, check whether you can compute all the necessary
-information from props alone during rendering. If you can’t, use static
-getDerivedStateFromProps instead. See examples of migrating away from unsafe
-lifecycles. Parameters nextProps : The next props that the component is about to
-receive from its parent component. Compare nextProps to this.props to determine
-what changed. nextContext : The next context that the component is about to
-receive from the closest provider. Compare nextContext to this.context to
-determine what changed. Only available if you specify static contextType .
-Returns UNSAFE_componentWillReceiveProps should not return anything. Caveats
-UNSAFE_componentWillReceiveProps will not get called if the component implements
-static getDerivedStateFromProps or getSnapshotBeforeUpdate . Despite its naming,
-UNSAFE_componentWillReceiveProps does not guarantee that the component will
-receive those props if your app uses modern React features like Suspense . If a
-render attempt is suspended (for example, because the code for
+Much better! const cluster = require ( 'node:cluster' ) ; const PORT = + process
+. env . PORT || 1337 ; if (cluster . isPrimary) { // A more realistic scenario
+would have more than 2 workers, // and perhaps not put the primary and worker in
+the same file. // // It is also possible to get a bit fancier about logging, and
+// implement whatever custom logic is needed to prevent DoS // attacks and other
+bad behavior. // // See the options in the cluster documentation. // // The
+important thing is that the primary does very little, // increasing our
+resilience to unexpected errors. cluster . fork () ; cluster . fork () ; cluster
+. on ( 'disconnect' , ( worker ) => { console . error ( 'disconnect!' ) ;
+cluster . fork () ; } ) ; } else { // the worker // // This is where we put our
+bugs! const domain = require ( 'node:domain' ) ; // See the cluster
+documentation for more details about using // worker processes to serve
+requests. How it works, caveats, etc. const server = require ( 'node:http' ) .
+createServer ( ( req , res ) => { const d = domain . create () ; d . on (
+'error' , ( er ) => { console . error ( `error ${ er . stack } ` ) ; // We're in
+dangerous territory! // By definition, something unexpected occurred, // which
+we probably didn't want. //
 ----------------------------------------------------------------------------------------------------
-Index: 1125 <<"chunk_id": 1, "docno": 168>>
+Index: 16532 <<"chunk_id": 2091, "docno": 2234>>
 
-forwardRef isValidElement PureComponent API Reference Copy page Copy React DOM
-APIs The react-dom package contains methods that are only supported for the web
-applications (which run in the browser DOM environment). They are not supported
-for React Native. APIs These APIs can be imported from your components. They are
-rarely used: createPortal lets you render child components in a different part
-of the DOM tree. flushSync lets you force React to flush a state update and
-update the DOM synchronously. Resource Preloading APIs These APIs can be used to
-make apps faster by pre-loading resources such as scripts, stylesheets, and
-fonts as soon as you know you need them, for example before navigating to
-another page where the resources will be used. React-based frameworks frequently
-handle resource loading for you, so you might not have to call these APIs
-yourself. Consult your framework’s documentation for details. prefetchDNS lets
-you prefetch the IP address of a DNS domain name that you expect to connect to.
-preconnect lets you connect to a server you expect to request resources from,
-even if you don’t know what resources you’ll need yet. preload lets you fetch a
-stylesheet, font, image, or external script that you expect to use.
-preloadModule lets you fetch an ESM module that you expect to use. preinit lets
-you fetch and evaluate an external script or fetch and insert a stylesheet.
-preinitModule lets you fetch and evaluate an ESM module. Entry points The
-react-dom package provides two additional entry points: react-dom/client
-contains APIs to render React components
+are not supported. If set, this is provided as process.execArgv inside the
+worker. By default, options are inherited from the parent thread. stdin
+<boolean> If this is set to true , then worker.stdin provides a writable stream
+whose contents appear as process.stdin inside the Worker. By default, no data is
+provided. stdout <boolean> If this is set to true , then worker.stdout is not
+automatically piped through to process.stdout in the parent. stderr <boolean> If
+this is set to true , then worker.stderr is not automatically piped through to
+process.stderr in the parent. workerData <any> Any JavaScript value that is
+cloned and made available as require('node:worker_threads').workerData . The
+cloning occurs as described in the HTML structured clone algorithm , and an
+error is thrown if the object cannot be cloned (e.g. because it contains
+function s). trackUnmanagedFds <boolean> If this is set to true , then the
+Worker tracks raw file descriptors managed through fs.open() and fs.close() ,
+and closes them when the Worker exits, similar to other resources like network
+sockets or file descriptors managed through the FileHandle API. This option is
+automatically inherited by all nested Worker s. Default: true . transferList
+<Object> [] If one or more MessagePort -like objects are passed in workerData ,
+a transferList is required for those items or
+ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST is thrown. See port.postMessage() for
+more information. resourceLimits <Object> An optional set of resource limits for
+the new JS engine instance. Reaching these limits leads to termination of the
+Worker instance. These limits only affect the JS engine, and
 ----------------------------------------------------------------------------------------------------
-Index: 3993 <<"chunk_id": 5, "docno": 545>>
+Index: 14813 <<"chunk_id": 372, "docno": 2234>>
 
-modules, not components. Non-component modules, like inspirations.js , are also
-represented in this tree. The render tree only encapsulates components.
-Copyright.js appears under App.js but in the render tree, Copyright , the
-component, appears as a child of InspirationGenerator . This is because
-InspirationGenerator accepts JSX as children props , so it renders Copyright as
-a child component but does not import the module. Dependency trees are useful to
-determine what modules are necessary to run your React app. When building a
-React app for production, there is typically a build step that will bundle all
-the necessary JavaScript to ship to the client. The tool responsible for this is
-called a bundler , and bundlers will use the dependency tree to determine what
-modules should be included. As your app grows, often the bundle size does too.
-Large bundle sizes are expensive for a client to download and run. Large bundle
-sizes can delay the time for your UI to get drawn. Getting a sense of your app’s
-dependency tree may help with debugging these issues. Recap Trees are a common
-way to represent the relationship between entities. They are often used to model
-UI. Render trees represent the nested relationship between React components
-across a single render. With conditional rendering, the render tree may change
-across different renders. With different prop values, components may render
-different children components. Render trees help identify what the top-level and
-leaf components are. Top-level components affect the rendering performance of
-all components beneath them and leaf components are
+triggered the error, while letting the others finish in their normal time, and
+stop listening for new requests in that worker. In this way, domain usage goes
+hand-in-hand with the cluster module, since the primary process can fork a new
+worker when a worker encounters an error. For Node.js programs that scale to
+multiple machines, the terminating proxy or service registry can take note of
+the failure, and react accordingly. For example, this is not a good idea: // XXX
+WARNING! BAD IDEA! const d = require ( 'node:domain' ) . create () ; d . on (
+'error' , ( er ) => { // The error won't crash the process, but what it does is
+worse! // Though we've prevented abrupt process restarting, we are leaking // a
+lot of resources if this ever happens. // This is no better than
+process.on('uncaughtException')! console . log ( `error, but oh well ${ er .
+message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' ) . createServer (
+( req , res ) => { handleRequest (req , res) ; } ) . listen (PORT) ; } ) ; js
+copy By using the context of a domain, and the resilience of separating our
+program into multiple worker processes, we can react more appropriately, and
+handle errors with much greater safety. // Much better! const cluster = require
+( 'node:cluster' ) ; const PORT = + process . env . PORT || 1337 ; if (cluster .
 ----------------------------------------------------------------------------------------------------
-Index: 4955 <<"chunk_id": 19, "docno": 691>>
+Index: 15925 <<"chunk_id": 1484, "docno": 2234>>
 
-what changed. Only available if you specify static contextType . Returns Return
-true if you want the component to re-render. That’s the default behavior. Return
-false to tell React that re-rendering can be skipped. Caveats This method only
-exists as a performance optimization. If your component breaks without it, fix
-that first. Consider using PureComponent instead of writing
-shouldComponentUpdate by hand. PureComponent shallowly compares props and state,
-and reduces the chance that you’ll skip a necessary update. We do not recommend
-doing deep equality checks or using JSON.stringify in shouldComponentUpdate . It
-makes performance unpredictable and dependent on the data structure of every
-prop and state. In the best case, you risk introducing multi-second stalls to
-your application, and in the worst case you risk crashing it. Returning false
-does not prevent child components from re-rendering when their state changes.
-Returning false does not guarantee that the component will not re-render. React
-will use the return value as a hint but it may still choose to re-render your
-component if it makes sense to do for other reasons. Note Optimizing class
-components with shouldComponentUpdate is similar to optimizing function
-components with memo . Function components also offer more granular optimization
-with useMemo . UNSAFE_componentWillMount() If you define
-UNSAFE_componentWillMount , React will call it immediately after the constructor
-. It only exists for historical reasons and should not be used in any new code.
-Instead, use one of the alternatives: To initialize state, declare state as a
-class field or set this.state inside the constructor . If
+child_process event: 'message' . Event: 'online' # Added in: v0.7.0 worker
+<cluster.Worker> After forking a new worker, the worker should respond with an
+online message. When the primary receives an online message it will emit this
+event. The difference between 'fork' and 'online' is that fork is emitted when
+the primary forks a worker, and 'online' is emitted when the worker is running.
+cluster . on ( 'online' , ( worker ) => { console . log ( 'Yay, the worker
+responded after it was forked' ) ; } ) ; js copy Event: 'setup' # Added in:
+v0.7.1 settings <Object> Emitted every time .setupPrimary() is called. The
+settings object is the cluster.settings object at the time .setupPrimary() was
+called and is advisory only, since multiple calls to .setupPrimary() can be made
+in a single tick. If accuracy is important, use cluster.settings .
+cluster.disconnect([callback]) # Added in: v0.7.7 callback <Function> Called
+when all workers are disconnected and handles are closed. Calls .disconnect() on
+each worker in cluster.workers . When they are disconnected all internal handles
+will be closed, allowing the primary process to die gracefully if no other event
+is waiting. The method takes an optional callback argument which will be called
+when finished. This can only be called from the primary process.
+cluster.fork([env]) # Added in: v0.6.0 env <Object> Key/value pairs to add to
+worker process environment. Returns: <cluster.Worker> Spawn a new worker
+process. This can only be called from the primary process. cluster.isMaster #
+Added in: v0.8.1 Deprecated in: v16.0.0 Stability: 0 - Deprecated
 ----------------------------------------------------------------------------------------------------
-Index: 9261 <<"chunk_id": 8, "docno": 1321>>
+Index: 9248 <<"chunk_id": 30, "docno": 1407>>
 
-preserve the state of hidden tabs, so the user can switch between them without
-losing their progress. A virtualized list component can prerender additional
-rows above and below the visible window. When opening a modal or popup, the rest
-of the app can be put into “background” mode so that events and updates are
-disabled for everything except the modal. Most React developers will not
-interact with React’s offscreen APIs directly. Instead, offscreen rendering will
-be integrated into things like routers and UI libraries, and then developers who
-use those libraries will automatically benefit without additional work. The idea
-is that you should be able to render any React tree offscreen without changing
-the way you write your components. When a component is rendered offscreen, it
-does not actually mount until the component becomes visible — its effects are
-not fired. For example, if a component uses useEffect to log analytics when it
-appears for the first time, prerendering won’t mess up the accuracy of those
-analytics. Similarly, when a component goes offscreen, its effects are
-unmounted, too. A key feature of offscreen rendering is that you can toggle the
-visibility of a component without losing its state. Since our last update, we’ve
-tested an experimental version of prerendering internally at Meta in our React
-Native apps on Android and iOS, with positive performance results. We’ve also
-improved how offscreen rendering works with Suspense — suspending inside an
-offscreen tree will not trigger Suspense fallbacks. Our remaining work involves
-finalizing the primitives that are exposed to
+Notable differences inside a Worker environment are: The process.stdin ,
+process.stdout , and process.stderr streams may be redirected by the parent
+thread. The require('node:worker_threads').isMainThread property is set to false
+. The require('node:worker_threads').parentPort message port is available.
+process.exit() does not stop the whole program, just the single thread, and
+process.abort() is not available. process.chdir() and process methods that set
+group or user ids are not available. process.env is a copy of the parent
+thread's environment variables, unless otherwise specified. Changes to one copy
+are not visible in other threads, and are not visible to native add-ons (unless
+worker.SHARE_ENV is passed as the env option to the Worker constructor). On
+Windows, unlike the main thread, a copy of the environment variables operates in
+a case-sensitive manner. process.title cannot be modified. Signals are not
+delivered through process.on('...') . Execution may stop at any point as a
+result of worker.terminate() being invoked. IPC channels from parent processes
+are not accessible. The trace_events module is not supported. Native add-ons can
+only be loaded from multiple threads if they fulfill certain conditions .
+Creating Worker instances inside of other Worker s is possible. Like Web Workers
+and the node:cluster module , two-way communication can be achieved through
+inter-thread message passing. Internally, a Worker has a built-in pair of
+MessagePort s that are already associated with each other when the Worker is
+created. While the MessagePort object on the parent side is not directly
+exposed, its functionalities are exposed through worker.postMessage() and the
+worker.on('message') event on the Worker object for the parent thread.
 ----------------------------------------------------------------------------------------------------
-Index: 2911 <<"chunk_id": 4, "docno": 421>>
+Index: 16528 <<"chunk_id": 2087, "docno": 2234>>
 
-is an optimization. Although in some cases React may still need to call your
-component before skipping the children, it shouldn’t affect your code. React
-batches state updates. It updates the screen after all the event handlers have
-run and have called their set functions. This prevents multiple re-renders
-during a single event. In the rare case that you need to force React to update
-the screen earlier, for example to access the DOM, you can use flushSync . The
-set function has a stable identity, so you will often see it omitted from Effect
-dependencies, but including it will not cause the Effect to fire. If the linter
-lets you omit a dependency without errors, it is safe to do. Learn more about
-removing Effect dependencies. Calling the set function during rendering is only
-allowed from within the currently rendering component. React will discard its
-output and immediately attempt to render it again with the new state. This
-pattern is rarely needed, but you can use it to store information from the
-previous renders . See an example below. In Strict Mode, React will call your
-updater function twice in order to help you find accidental impurities. This is
-development-only behavior and does not affect production. If your updater
-function is pure (as it should be), this should not affect the behavior. The
-result from one of the calls will be ignored. Usage Adding state to a component
-Call useState at the top level of your component to declare one or more state
-variables. import
+Worker environment are: The process.stdin , process.stdout , and process.stderr
+streams may be redirected by the parent thread. The
+require('node:worker_threads').isMainThread property is set to false . The
+require('node:worker_threads').parentPort message port is available.
+process.exit() does not stop the whole program, just the single thread, and
+process.abort() is not available. process.chdir() and process methods that set
+group or user ids are not available. process.env is a copy of the parent
+thread's environment variables, unless otherwise specified. Changes to one copy
+are not visible in other threads, and are not visible to native add-ons (unless
+worker.SHARE_ENV is passed as the env option to the Worker constructor). On
+Windows, unlike the main thread, a copy of the environment variables operates in
+a case-sensitive manner. process.title cannot be modified. Signals are not
+delivered through process.on('...') . Execution may stop at any point as a
+result of worker.terminate() being invoked. IPC channels from parent processes
+are not accessible. The trace_events module is not supported. Native add-ons can
+only be loaded from multiple threads if they fulfill certain conditions .
+Creating Worker instances inside of other Worker s is possible. Like Web Workers
+and the node:cluster module , two-way communication can be achieved through
+inter-thread message passing. Internally, a Worker has a built-in pair of
+MessagePort s that are already associated with each other when the Worker is
+created. While the MessagePort object on the parent side is not directly
+exposed, its functionalities are exposed through worker.postMessage() and the
+worker.on('message') event on the Worker object for the parent thread. To create
+custom messaging
 ----------------------------------------------------------------------------------------------------
-Index: 12432 <<"chunk_id": 14, "docno": 1682>>
+Index: 9252 <<"chunk_id": 34, "docno": 1407>>
 
-a custom pages/_error.js it will continue to be used for the 404 page until you
-add pages/404.js . Static 404 page by default When your application doesn't have
-a custom pages/_error.js page Next.js will automatically statically generate the
-404 page and use that when a 404 has to be served. This happens automatically
-and no changes are needed. Custom 404 page using pages/404.js To override the
-default 404 page you can now create a pages/404.js which will still be
-automatically statically optimized at build time. This page is used instead of
-pages/_error.js to render a 404 if your application has one. jsx
-filename="pages/404.js" export default () => This is the 404 page ; 32+ kB
-Smaller Runtime (15 kB+ Gzip) Next.js supports the same browsers as React itself
-, with no required configuration. This includes Internet Explorer 11 (IE11) and
-all popular browsers (Edge, Firefox, Chrome, Safari, Opera, et al). As part of
-this compatibility, we also compile your application to be IE11 compatible: this
-allows you to safely use ES6 + syntax features, Async/Await, Object Rest/Spread
-Properties, and more—all with zero configuration necessary. Part of this
-compilation process also involves transparently injecting the necessary feature
-polyfills (e.g. Array.from or Symbol ). However, these polyfills are only
-necessary for less than 10% of web traffic , in most cases to support IE11.
-Starting in Next.js 9.3, Next.js will automatically load the polyfills needed to
-support legacy browsers, and only loads the polyfills in these legacy browsers.
-In practice, this means 32 kB or more will be
+(such as --title ) are not supported. If set, this is provided as
+process.execArgv inside the worker. By default, options are inherited from the
+parent thread. stdin <boolean> If this is set to true , then worker.stdin
+provides a writable stream whose contents appear as process.stdin inside the
+Worker. By default, no data is provided. stdout <boolean> If this is set to true
+, then worker.stdout is not automatically piped through to process.stdout in the
+parent. stderr <boolean> If this is set to true , then worker.stderr is not
+automatically piped through to process.stderr in the parent. workerData <any>
+Any JavaScript value that is cloned and made available as
+require('node:worker_threads').workerData . The cloning occurs as described in
+the HTML structured clone algorithm , and an error is thrown if the object
+cannot be cloned (e.g. because it contains function s). trackUnmanagedFds
+<boolean> If this is set to true , then the Worker tracks raw file descriptors
+managed through fs.open() and fs.close() , and closes them when the Worker
+exits, similar to other resources like network sockets or file descriptors
+managed through the FileHandle API. This option is automatically inherited by
+all nested Worker s. Default: true . transferList <Object> [] If one or more
+MessagePort -like objects are passed in workerData , a transferList is required
+for those items or ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST is thrown. See
+port.postMessage() for more information. resourceLimits <Object> An optional set
+of resource limits for the new JS engine instance. Reaching these limits leads
+to termination of the Worker instance. These limits only affect
 ----------------------------------------------------------------------------------------------------
-Index: 7938 <<"chunk_id": 2, "docno": 1104>>
+Index: 2347 <<"chunk_id": 2, "docno": 313>>
 
-Refresh tries to preserve local React state in the component you're editing, but
-only if it's safe to do so. Here's a few reasons why you might see local state
-being reset on every edit to a file: Local state is not preserved for class
-components (only function components and Hooks preserve state). The file you're
-editing might have other exports in addition to a React component. Sometimes, a
-file would export the result of calling a higher-order component like
-HOC(WrappedComponent) . If the returned component is a class, its state will be
-reset. Anonymous arrow functions like export default () => ; cause Fast Refresh
-to not preserve local component state. For large codebases you can use our
-name-default-component codemod . As more of your codebase moves to function
-components and Hooks, you can expect state to be preserved in more cases. Tips
-Fast Refresh preserves React local state in function components (and Hooks) by
-default. Sometimes you might want to force the state to be reset, and a
-component to be remounted. For example, this can be handy if you're tweaking an
-animation that only happens on mount. To do this, you can add // @refresh reset
-anywhere in the file you're editing. This directive is local to the file, and
-instructs Fast Refresh to remount components defined in that file on every edit.
-You can put console.log or debugger; into the components you edit during
-development. Remember that imports are case sensitive. Both fast and full
-refresh can fail, when your import doesn't
+It's a poor fit for two other situations, though: CPU-bound work (image
+resizing, hashing, parsing huge payloads) ties up the single thread and makes
+your whole application unresponsive while it runs. Scaling across CPU cores — a
+single Node.js process only ever uses one core for its JavaScript, no matter how
+many cores the machine has. Node.js ships three built-in modules to address
+this: node:child_process , node:worker_threads , and node:cluster . They solve
+overlapping problems in different ways, which is why it's easy to reach for the
+wrong one. This guide compares them side by side and walks through when to use
+each. The three options at a glance Runs Memory Talks via Best for child_process
+Separate process Isolated stdio, or IPC ( fork() ) Running external programs
+worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
+Multiple processes Isolated IPC Scaling a server across cores A useful way to
+tell them apart: cluster is built on top of child_process specifically to solve
+the "scale a server across cores" problem, while worker_threads exists to solve
+the "run CPU-heavy code without blocking" problem without paying the cost of a
+whole new process. Child Process Use child_process when you need to run another
+program — a shell command, a binary, a script in another language — from
+Node.js, or when you want a fully isolated Node.js process that you drive over
+stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
+spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
+output via a shell Short
 ----------------------------------------------------------------------------------------------------
-Index: 11670 <<"chunk_id": 1, "docno": 1607>>
+Index: 2352 <<"chunk_id": 7, "docno": 313>>
 
-JS to be downloaded to start consuming data Static rendering: where we output
-static files that can be served directly without any code execution on the
-server Until now, static exporting in Next.js was very powerful but not
-sufficiently easy to use. It required setting up a manual route map even when no
-custom routes were in use. With Next.js 6, we automatically generate the route
-map for you based on the content of your pages/ directory. If you're not using
-advanced custom routing, you won't have to make any modifications to
-next.config.js . Just run: next build next export For an example, check out this
-website deployed statically to Vercel . The websites source code is available
-too. App Component Next.js offers an extensibility point called _document.js .
-If defined, it lets you override the very top-level document of your
-application, which renders the element. _document.js allows for powerful
-extensibility, but it has some serious limitations. For example, React is not
-able to render or directly on the client side, so _document.js is mostly limited
-to the initial pre-rendering phase. To enable some other powerful use cases,
-we're introducing _app.js , which is the top-level component that wraps the
-outside of each page. Some differences between _document.js and _app.js Let's
-look at some use cases that defining _app.js enables. Page Transitions Page
-transitions example: page-transitions-app-next.vercel.app by Xavier Cazalot (
-Source ) In this example, each page can be independently accessed, pre-rendered
-and lazy-loaded. However, when we transition on the client side, smooth
-animations are possible.
+( worker . exitedAfterDisconnect ) { // A voluntary exit (e.g.
+worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( ` Worker ${ worker . process . pid } died, restarting ` ) ;
+cluster . fork () ; } ) ; } else { http . createServer ( ( req , res ) => { res
+. writeHead ( 200 ) ; res . end ( ' handled by worker ' + process . pid ) ; } )
+. listen ( 3000 ) ; } JavaScript Copy to clipboard The primary process (
+cluster.isPrimary ) forks one worker per core and restarts any worker that exits
+unexpectedly. Each worker ( cluster.isWorker ) runs your normal server code,
+unaware that it's one of several. The worker.exitedAfterDisconnect flag
+distinguishes a voluntary exit (e.g. during a graceful shutdown via
+worker.disconnect() or cluster.disconnect() ) from a crash — without checking
+it, a deliberate shutdown would keep spawning new workers instead of winding
+down. How the workers share one port Rather than relying on an OS-level
+mechanism, the primary process itself distributes incoming connections to its
+workers — by default in a round-robin fashion ( cluster.SCHED_RR ), which is the
+default on every platform except Windows. This is configurable via
+cluster.schedulingPolicy . (You may see older material claim this is done via
+SO_REUSEPORT ; that's not how Node's cluster module does it by default.)
+isPrimary / isWorker cluster.isPrimary is true in the process that forks
+workers; cluster.isWorker is true in the forked workers themselves. (You
 ----------------------------------------------------------------------------------------------------
-Index: 27839 <<"chunk_id": 6, "docno": 4045>>
+Index: 2785 <<"chunk_id": 1, "docno": 378>>
 
-where if you have a component template that does not have valid HTML structure,
-this could result in a DOM mismatch error during hydration. As an example, here
-are some of the most common cases of this issue. <table> without a <tbody> <div>
-inside a <p> <a> inside another <a> If you are uncertain about whether your HTML
-is valid, you can use a syntax validator to check it. NOTE: While the HTML
-standard does not require the <tbody> element inside tables, modern browsers
-automatically create a <tbody> element in tables that do not declare one.
-Because of this inconsistency, always explicitly declare a <tbody> element in
-tables to avoid hydration errors. Preserve Whitespaces Configuration When using
-the hydration feature, we recommend using the default setting of false for
-preserveWhitespaces . If this setting is not in your tsconfig, the value will be
-false and no changes are required. If you choose to enable preserving
-whitespaces by adding preserveWhitespaces: true to your tsconfig, it is possible
-you may encounter issues with hydration. This is not yet a fully supported
-configuration. HELPFUL: Make sure that this setting is set consistently in
-tsconfig.server.json for your server and tsconfig.app.json for your browser
-builds. A mismatched value will cause hydration to break. If you choose to set
-this setting in your tsconfig, we recommend to set it only in tsconfig.app.json
-which by default the tsconfig.server.json will inherit it from. Custom or Noop
-Zone.js are not yet supported Hydration relies on a signal from Zone.js when it
-becomes stable inside an
+transpilation Running TypeScript with a runner Publishing a TypeScript package
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Should you read this guide?
+Summary Why should I avoid blocking the Event Loop and the Worker Pool? A quick
+review of Node What code runs on the Event Loop? What code runs on the Worker
+Pool? How does Node.js decide what code to run next? What does this mean for
+application design? Don't block the Event Loop How careful should you be? REDOS
+Node.js core modules JSON DOS Complex calculations without blocking the Event
+Loop Don't block the Worker Pool Minimizing the variation in Task times Task
+partitioning Avoiding Task partitioning conclusions The risks of npm modules
+Conclusion Don't Block the Event Loop (or the Worker Pool) Should you read this
+guide? If you're writing anything more complicated than a brief command-line
+script, reading this should help you write higher-performance, more-secure
+applications. This document
 ----------------------------------------------------------------------------------------------------
-Index: 19097 <<"chunk_id": 365, "docno": 2483>>
+Index: 2786 <<"chunk_id": 2, "docno": 378>>
 
-Component](/docs/app/api-reference/components/link) no longer requires manually
-adding an `<a>` tag as a child. This behavior was added as an experimental
-option in [version 12.2](https://nextjs.org/blog/next-12-2) and is now the
-default. In Next.js 13, `<Link>` always renders `<a>` and allows you to forward
-props to the underlying tag. For example: ```jsx import Link from 'next/link' //
-Next.js 12: `<a>` has to be nested otherwise it's excluded <Link href="/about">
-<a>About</a> </Link> // Next.js 13: `<Link>` always renders `<a>` under the hood
-<Link href="/about"> About </Link> ``` To upgrade your links to Next.js 13, you
-can use the [`new-link` codemod](/docs/app/guides/upgrading/codemods#new-link).
-### `<Script>` Component The behavior of
-[`next/script`](/docs/app/api-reference/components/script) has been updated to
-support both `pages` and `app`, but some changes need to be made to ensure a
-smooth migration: * Move any `beforeInteractive` scripts you previously included
-in `_document.js` to the root layout file (`app/layout.tsx`). * The experimental
-`worker` strategy does not yet work in `app` and scripts denoted with this
-strategy will either have to be removed or modified to use a different strategy
-(e.g. `lazyOnload`). * `onLoad`, `onReady`, and `onError` handlers will not work
-in Server Components so make sure to move them to a [Client
-Component](/docs/app/getting-started/server-and-client-components) or remove
-them altogether. ### Font Optimization Previously, Next.js helped you optimize
-fonts by [inlining font CSS](/docs/app/api-reference/components/font). Version
-13 introduces the new [`next/font`](/docs/app/api-reference/components/font)
-module which gives you the ability to customize your font loading experience
-while still ensuring great performance and privacy. `next/font` is supported in
-both the `pages` and `app` directories. While [inlining
-CSS](/docs/app/api-reference/components/font) still works in `pages`, it does
-not work
+read this guide? If you're writing anything more complicated than a brief
+command-line script, reading this should help you write higher-performance,
+more-secure applications. This document is written with Node.js servers in mind,
+but the concepts apply to complex Node.js applications as well. Where
+OS-specific details vary, this document is Linux-centric. Summary Node.js runs
+JavaScript code in the Event Loop (initialization and callbacks), and offers a
+Worker Pool to handle expensive tasks like file I/O. Node.js scales well,
+sometimes better than more heavyweight approaches like Apache. The secret to the
+scalability of Node.js is that it uses a small number of threads to handle many
+clients. If Node.js can make do with fewer threads, then it can spend more of
+your system's time and memory working on clients rather than on paying space and
+time overheads for threads (memory, context-switching). But because Node.js has
+only a few threads, you must structure your application to use them wisely.
+Here's a good rule of thumb for keeping your Node.js server speedy: Node.js is
+fast when the work associated with each client at any given time is "small" .
+This applies to callbacks on the Event Loop and tasks on the Worker Pool. Why
+should I avoid blocking the Event Loop and the Worker Pool? Node.js uses a small
+number of threads to handle many clients. In Node.js there are two types of
+threads: one Event Loop (aka the main loop, main thread, event thread, etc.),
+and a pool of k Workers in a Worker Pool (aka the threadpool). If
 ----------------------------------------------------------------------------------------------------
-Index: 3355 <<"chunk_id": 7, "docno": 469>>
+Index: 13865 <<"chunk_id": 3, "docno": 2159>>
 
-secret. Where you can cause side effects While functional programming relies
-heavily on purity, at some point, somewhere, something has to change. That’s
-kind of the point of programming! These changes—updating the screen, starting an
-animation, changing the data—are called side effects. They’re things that happen
-“on the side” , not during rendering. In React, side effects usually belong
-inside event handlers. Event handlers are functions that React runs when you
-perform some action—for example, when you click a button. Even though event
-handlers are defined inside your component, they don’t run during rendering! So
-event handlers don’t need to be pure. If you’ve exhausted all other options and
-can’t find the right event handler for your side effect, you can still attach it
-to your returned JSX with a useEffect call in your component. This tells React
-to execute it later, after rendering, when side effects are allowed. However,
-this approach should be your last resort. When possible, try to express your
-logic with rendering alone. You’ll be surprised how far this can take you! Deep
-Dive Why does React care about purity? Show Details Writing pure functions takes
-some habit and discipline. But it also unlocks marvelous opportunities: Your
-components could run in a different environment—for example, on the server!
-Since they return the same result for the same inputs, one component can serve
-many user requests. You can improve performance by skipping rendering components
-whose inputs have not changed. This is safe because pure functions always return
-the same results, so they are
+process can fork a new worker when a worker encounters an error. For Node.js
+programs that scale to multiple machines, the terminating proxy or service
+registry can take note of the failure, and react accordingly. For example, this
+is not a good idea: // XXX WARNING! BAD IDEA! const d = require ( 'node:domain'
+) . create () ; d . on ( 'error' , ( er ) => { // The error won't crash the
+process, but what it does is worse! // Though we've prevented abrupt process
+restarting, we are leaking // a lot of resources if this ever happens. // This
+is no better than process.on('uncaughtException')! console . log ( `error, but
+oh well ${ er . message } ` ) ; } ) ; d . run ( () => { require ( 'node:http' )
+. createServer ( ( req , res ) => { handleRequest (req , res) ; } ) . listen
+(PORT) ; } ) ; js copy By using the context of a domain, and the resilience of
+separating our program into multiple worker processes, we can react more
+appropriately, and handle errors with much greater safety. // Much better! const
+cluster = require ( 'node:cluster' ) ; const PORT = + process . env . PORT ||
+1337 ; if (cluster . isPrimary) { // A more realistic scenario would have more
+than 2 workers, // and perhaps not put the primary and worker in the same file.
+// // It is also possible to get a
 ----------------------------------------------------------------------------------------------------
-Index: 1892 <<"chunk_id": 3, "docno": 274>>
+Index: 15912 <<"chunk_id": 1471, "docno": 2234>>
 
-Next.js application. Automatic Caching Next.js sets the Cache-Control header of
-public, max-age=31536000, immutable to truly immutable assets. It cannot be
-overridden. These immutable files contain a SHA-hash in the file name, so they
-can be safely cached indefinitely. For example, Static Image Imports . You can
-configure the TTL for images. Incremental Static Regeneration (ISR) sets the
-Cache-Control header of s-maxage: , stale-while-revalidate . This revalidation
-time is defined in your getStaticProps function in seconds. If you set
-revalidate: false , it will default to a one-year cache duration. To leverage
-this at the CDN layer, your CDN/reverse proxy must respect these directives and
-cache-key variability ( CDN Caching ); otherwise, responses may bypass CDN
-caching or serve stale/mismatched variants during client-side navigation.
-Dynamically rendered pages set a Cache-Control header of private, no-cache,
-no-store, max-age=0, must-revalidate to prevent user-specific data from being
-cached. This applies to both the App Router and Pages Router. This also includes
-Draft Mode . Static Assets If you want to host static assets on a different
-domain or CDN, you can use the assetPrefix configuration in next.config.js .
-Next.js will use this asset prefix when retrieving JavaScript or CSS files.
-Separating your assets to a different domain does come with the downside of
-extra time spent on DNS and TLS resolution. Learn more about assetPrefix .
-Configuring Caching By default, generated cache assets will be stored in memory
-(defaults to 50mb) and on disk. On ephemeral compute platforms (common
-serverless setups), local disk is often non-persistent or unavailable, so this
-cache
+on, and the handle passed to the worker, rather than listening to the worker's
+idea of what the number 7 file descriptor references. server.listen(handle)
+Listening on handles explicitly will cause the worker to use the supplied
+handle, rather than talk to the primary process. server.listen(0) Normally, this
+will cause servers to listen on a random port. However, in a cluster, each
+worker will receive the same "random" port each time they do listen(0) . In
+essence, the port is random the first time, but predictable thereafter. To
+listen on a unique port, generate a port number based on the cluster worker ID.
+Node.js does not provide routing logic. It is therefore important to design an
+application such that it does not rely too heavily on in-memory data objects for
+things like sessions and login. Because workers are all separate processes, they
+can be killed or re-spawned depending on a program's needs, without affecting
+other workers. As long as there are some workers still alive, the server will
+continue to accept connections. If no workers are alive, existing connections
+will be dropped and new connections will be refused. Node.js does not
+automatically manage the number of workers, however. It is the application's
+responsibility to manage the worker pool based on its own needs. Although a
+primary use case for the node:cluster module is networking, it can also be used
+for other use cases requiring worker processes. Class: Worker # Added in: v0.7.0
+Extends: <EventEmitter> A Worker object contains all public information and
+method about a worker. In
 ----------------------------------------------------------------------------------------------------
-Index: 20333 <<"chunk_id": 1601, "docno": 2483>>
+Index: 1484 <<"chunk_id": 15, "docno": 184>>
 
-your application client-side to give it full interactivity. One of the main
-benefits of this feature is that optimized pages require no server-side
-computation, and can be instantly streamed to the end-user from multiple CDN
-locations. The result is an *ultra fast* loading experience for your users. ##
-How it works If `getServerSideProps` or `getInitialProps` is present in a page,
-Next.js will switch to render the page on-demand, per-request (meaning
-[Server-Side
-Rendering](/docs/pages/building-your-application/rendering/server-side-rendering)).
-If the above is not the case, Next.js will **statically optimize** your page
-automatically by prerendering the page to static HTML. During prerendering, the
-router's `query` object will be empty since we do not have `query` information
-to provide during this phase. After hydration, Next.js will trigger an update to
-your application to provide the route parameters in the `query` object. The
-cases where the query will be updated after hydration triggering another render
-are: * The page is a
-[dynamic-route](/docs/pages/building-your-application/routing/dynamic-routes). *
-The page has query values in the URL. *
-[Rewrites](/docs/pages/api-reference/config/next-config-js/rewrites) are
-configured in your `next.config.js` since these can have parameters that may
-need to be parsed and provided in the `query`. To be able to distinguish if the
-query is fully updated and ready for use, you can leverage the `isReady` field
-on
-[`next/router`](/docs/pages/api-reference/functions/use-router#router-object). >
-**Good to know**: Parameters added with [dynamic
-routes](/docs/pages/building-your-application/routing/dynamic-routes) to a page
-that's using
-[`getStaticProps`](/docs/pages/building-your-application/data-fetching/get-static-props)
-will always be available inside the `query` object. `next build` will emit
-`.html` files for statically optimized pages. For example, the result for the
-page `pages/about.js` would be: ```bash filename="Terminal"
-.next/server/pages/about.html ``` And
+identical to ChildProcess.send() . In a worker, this sends a message to the
+primary. It is identical to process.send() . This example will echo back all
+messages from the primary: if (cluster . isPrimary) { const worker = cluster .
+fork () ; worker . send ( 'hi there' ) ; } else if (cluster . isWorker) {
+process . on ( 'message' , ( msg ) => { process . send (msg) ; } ) ; } js copy
+Event: 'disconnect' # Added in: v0.7.9 worker <cluster.Worker> Emitted after the
+worker IPC channel has disconnected. This can occur when a worker exits
+gracefully, is killed, or is disconnected manually (such as with
+worker.disconnect() ). There may be a delay between the 'disconnect' and 'exit'
+events. These events can be used to detect if the process is stuck in a cleanup
+or if there are long-living connections. cluster . on ( 'disconnect' , ( worker
+) => { console . log ( `The worker # ${ worker . id } has disconnected` ) ; } )
+; js copy Event: 'exit' # Added in: v0.7.9 worker <cluster.Worker> code <number>
+The exit code, if it exited normally. signal <string> The name of the signal
+(e.g. 'SIGHUP' ) that caused the process to be killed. When any of the workers
+die the cluster module will emit the 'exit' event. This can be used to restart
+the worker by calling .fork() again. cluster . on ( 'exit' , ( worker , code ,
+signal ) => { console .
 ----------------------------------------------------------------------------------------------------
-Index: 5388 <<"chunk_id": 15, "docno": 745>>
+Index: 15917 <<"chunk_id": 1476, "docno": 2234>>
 
-Effects? Show Details Writing fetch calls inside Effects is a popular way to
-fetch data , especially in fully client-side apps. This is, however, a very
-manual approach and it has significant downsides: Effects don’t run on the
-server. This means that the initial server-rendered HTML will only include a
-loading state with no data. The client computer will have to download all
-JavaScript and render your app only to discover that now it needs to load the
-data. This is not very efficient. Fetching directly in Effects makes it easy to
-create “network waterfalls”. You render the parent component, it fetches some
-data, renders the child components, and then they start fetching their data. If
-the network is not very fast, this is significantly slower than fetching all
-data in parallel. Fetching directly in Effects usually means you don’t preload
-or cache data. For example, if the component unmounts and then mounts again, it
-would have to fetch the data again. It’s not very ergonomic. There’s quite a bit
-of boilerplate code involved when writing fetch calls in a way that doesn’t
-suffer from bugs like race conditions. This list of downsides is not specific to
-React. It applies to fetching data on mount with any library. Like with routing,
-data fetching is not trivial to do well, so we recommend the following
-approaches: If you use a framework , use its built-in data fetching mechanism.
-Modern React frameworks have integrated data fetching mechanisms that are
-efficient and don’t suffer from the above pitfalls. Otherwise,
+v0.7.7 History Version Changes v7.3.0 This method now returns a reference to
+worker . Returns: <cluster.Worker> A reference to worker . In a worker, this
+function will close all servers, wait for the 'close' event on those servers,
+and then disconnect the IPC channel. In the primary, an internal message is sent
+to the worker causing it to call .disconnect() on itself. Causes
+.exitedAfterDisconnect to be set. After a server is closed, it will no longer
+accept new connections, but connections may be accepted by any other listening
+worker. Existing connections will be allowed to close as usual. When no more
+connections exist, see server.close() , the IPC channel to the worker will close
+allowing it to die gracefully. The above applies only to server connections,
+client connections are not automatically closed by workers, and disconnect does
+not wait for them to close before exiting. In a worker, process.disconnect
+exists, but it is not this function; it is disconnect() . Because long living
+server connections may block workers from disconnecting, it may be useful to
+send a message, so application specific actions may be taken to close them. It
+also may be useful to implement a timeout, killing a worker if the 'disconnect'
+event has not been emitted after some time. if (cluster . isPrimary) { const
+worker = cluster . fork () ; let timeout ; worker . on ( 'listening' , ( address
+) => { worker . send ( 'shutdown' ) ; worker . disconnect () ; timeout =
+setTimeout ( () =>
+----------------------------------------------------------------------------------------------------
+Index: 29341 <<"chunk_id": 8, "docno": 4906>>
+
+ability to upgrade these libraries dynamically. By understanding the different
+types of beans that an application contains, the Admin Console will provide for
+detailed insight into application internals and allow for dynamic
+reconfiguration of certain application components. To support typical enterprise
+deployment scenarios, the 2.0 version of the Platform will provide explicit
+support for common enterprise middleware components such as Oracle, TIBCO EMS
+and IBM MQSeries. Integration with the Admin Console will allow for connections
+to these middleware providers to be established in minutes rather than hours or
+days. Applications will be able to access these connections using the OSGi
+service registry and Spring DM’s <osgi:reference> . The 2.0 release will
+introduce additional personalities to cover batch, web services and SOA
+applications. Clustering is an important feature for the 2.0 release, with
+cluster-wide Single System Image (SSI) being the critical piece, and
+load-balancing and clustered caching being on the roadmap as well. Using the SSI
+support, administration and deployment operations will be propagated across the
+cluster. Ultimately, we want to support per-module updates across the cluster,
+with full cluster-rollback if the upgrade breaks a deployed application. DMK 2.0
+will include improvements to the concurrency subsystem to support large numbers
+of bundles that change frequently and to support larger numbers of modules with
+more complex interdependencies. Also included will be updates to the
+provisioning subsystem and integrated resource management and monitoring for
+memory, threads, IO and CPU. What next? Please download the Platform and try it
+out. We are keen to hear about your experiences building new
+----------------------------------------------------------------------------------------------------
+Index: 1630 <<"chunk_id": 1, "docno": 199>>
+
+TypeScript package Modules How to use streams Backpressuring in Streams
+Publishing a package How to publish a Node-API package ABI Stability Diagnostics
+User Journey Memory Overview Understanding and Tuning Memory Using Heap Profiler
+Using Heap Snapshot Tracing garbage collection Live Debugging Overview Using
+Inspector Poor Performance Overview Using Linux Perf Flame Graphs Test Runner
+Discovering Node.js's test runner Using Node.js's test runner Mocking in tests
+Collecting code coverage in Node.js Node-API What is Node-API? Getting Started
+Overview Pre-requisites Tools Anatomy of a Node-API project Your First Project
+Object Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js
+node-pre-gyp Special Topics Overview Context Awareness Object and Function
+References AsyncWorker Thread-Safe Functions On this page State management
+Control flow Asynchronous flow control The material in this post is heavily
+inspired by Mixu's Node.js Book . At its core, JavaScript is designed to be
+non-blocking on the "main" thread, this is where views are rendered. You can
+imagine the importance of this in the browser. When the main thread becomes
+blocked it results in the infamous "freezing" that end users dread, and no other
+events can be dispatched resulting in the loss of data acquisition, for example.
+This creates some unique constraints that only a functional style of programming
+can cure. This is where callbacks come in to the picture. However, callbacks can
+become challenging to handle in more complicated procedures. This often results
+in "callback hell" where multiple nested functions with callbacks make the code
+more challenging to read, debug, organize, etc. async1 ( function ( input ,
+----------------------------------------------------------------------------------------------------
+Index: 15909 <<"chunk_id": 1468, "docno": 2234>>
+
+the structure of the passed data. Therefore, this feature requires opting in by
+setting the serialization option to 'advanced' when calling
+child_process.spawn() or child_process.fork() . Cluster # Source Code:
+lib/cluster.js Stability: 2 - Stable Clusters of Node.js processes can be used
+to run multiple instances of Node.js that can distribute workloads among their
+application threads. When process isolation is not needed, use the
+worker_threads module instead, which allows running multiple application threads
+within a single Node.js instance. The cluster module allows easy creation of
+child processes that all share server ports. import cluster from 'node:cluster'
+; import http from 'node:http' ; import { availableParallelism } from 'node:os'
+; import process from 'node:process' ; const numCPUs = availableParallelism () ;
+if (cluster . isPrimary) { console . log ( `Primary ${ process . pid } is
+running` ) ; // Fork workers. for ( let i = 0 ; i < numCPUs ; i ++ ) { cluster .
+fork () ; } cluster . on ( 'exit' , ( worker , code , signal ) => { console .
+log ( `worker ${ worker . process . pid } died` ) ; } ) ; } else { // Workers
+can share any TCP connection // In this case it is an HTTP server http .
+createServer ( ( req , res ) => { res . writeHead ( 200 ) ; res . end ( 'hello
+world \n ' ) ; } ) . listen ( 8000 ) ; console . log ( `Worker ${
+----------------------------------------------------------------------------------------------------
+Index: 6039 <<"chunk_id": 7, "docno": 875>>
+
+application mistakes. The behavior cannot be reasonably mitigated through
+standard operational practices (like process recycling). The behavior occurs
+deterministically under normal usage patterns rather than edge cases. The
+behavior occurs at a rate that would cause practical resource exhaustion within
+a practical timeframe under typical workloads. The attack demonstrates
+asymmetric resource consumption , where the attacker expends significantly fewer
+resources than what's required by the server to process the attack. Attacks
+requiring comparable resources on the attacker's side (which can be mitigated
+through common practices like rate limiting) may not qualify. Node.js does NOT
+trust : Data received from the remote end of inbound network connections that
+are accepted through the use of Node.js APIs and which is transformed/validated
+by Node.js before being passed to the application. This includes: HTTP APIs (all
+flavors) server APIs. The data received from the remote end of outbound network
+connections that are created through the use of Node.js APIs and which is
+transformed/validated by Node.js before being passed to the application except
+with respect to payload length. Node.js trusts that applications make
+connections/requests which will avoid payload sizes that will result in a Denial
+of Service. HTTP APIs (all flavors) client APIs. DNS APIs. Consumers of data
+protected through the use of Node.js APIs (for example, people who have access
+to data encrypted through the Node.js crypto APIs). The file content or other
+I/O that is opened for reading or writing by the use of Node.js APIs (ex: stdin,
+stdout, stderr). In other words, if the data passing through Node.js
+----------------------------------------------------------------------------------------------------
+Index: 2346 <<"chunk_id": 1, "docno": 313>>
+
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page The three
+options at a glance Child Process spawn, exec, execFile, and fork streaming a
+long-running command with spawn() talking to another Node.js process with fork()
+Things to watch for Worker Threads offloading CPU-bound work Sharing memory
+Things to watch for Cluster scaling an HTTP server across cores How the workers
+share one port isPrimary / isWorker Things to watch for Choosing between them
+Further reading Comparing Node.js concurrency models Node.js runs your
+JavaScript on a single thread, driven by the event loop . That model is great
+for I/O-bound work — reading files, querying a database, handling HTTP requests
+— because Node hands off the waiting to the operating system and keeps the
+thread free. It's a poor fit for two other situations, though: CPU-bound work
+(image resizing, hashing, parsing huge payloads) ties up the single thread and
+makes your
+----------------------------------------------------------------------------------------------------
+Index: 1483 <<"chunk_id": 14, "docno": 184>>
+
+, and once disconnected, killing with signal . In the worker, it does it by
+killing the process with signal . The kill() function kills the worker process
+without waiting for a graceful disconnect, it has the same behavior as
+worker.process.kill() . This method is aliased as worker.destroy() for backwards
+compatibility. In a worker, process.kill() exists, but it is not this function;
+it is kill() . worker.process # Added in: v0.7.0 Type: <ChildProcess> All
+workers are created using child_process.fork() , the returned object from this
+function is stored as .process . In a worker, the global process is stored. See:
+Child Process module . Workers will call process.exit(0) if the 'disconnect'
+event occurs on process and .exitedAfterDisconnect is not true . This protects
+against accidental disconnection. worker.send(message[, sendHandle[, options]][,
+callback]) # Added in: v0.7.0 History Version Changes v4.0.0 The callback
+parameter is supported now. message <Object> sendHandle <Handle> options
+<Object> The options argument, if present, is an object used to parameterize the
+sending of certain types of handles. options supports the following properties:
+keepOpen <boolean> A value that can be used when passing instances of net.Socket
+. When true , the socket is kept open in the sending process. Default: false .
+callback <Function> Returns: <boolean> Send a message to a worker or primary,
+optionally with a handle. In the primary, this sends a message to a specific
+worker. It is identical to ChildProcess.send() . In a worker, this sends a
+message to the primary. It is identical to process.send() . This example will
+echo back
+----------------------------------------------------------------------------------------------------
+Index: 1474 <<"chunk_id": 5, "docno": 184>>
+
+unique port, generate a port number based on the cluster worker ID. Node.js does
+not provide routing logic. It is therefore important to design an application
+such that it does not rely too heavily on in-memory data objects for things like
+sessions and login. Because workers are all separate processes, they can be
+killed or re-spawned depending on a program's needs, without affecting other
+workers. As long as there are some workers still alive, the server will continue
+to accept connections. If no workers are alive, existing connections will be
+dropped and new connections will be refused. Node.js does not automatically
+manage the number of workers, however. It is the application's responsibility to
+manage the worker pool based on its own needs. Although a primary use case for
+the node:cluster module is networking, it can also be used for other use cases
+requiring worker processes. Class: Worker # Added in: v0.7.0 Extends:
+<EventEmitter> A Worker object contains all public information and method about
+a worker. In the primary it can be obtained using cluster.workers . In a worker
+it can be obtained using cluster.worker . Event: 'disconnect' # Added in: v0.7.7
+Similar to the cluster.on('disconnect') event, but specific to this worker.
+cluster . fork () . on ( 'disconnect' , () => { // Worker has disconnected } ) ;
+js copy Event: 'error' # Added in: v0.7.3 This event is the same as the one
+provided by child_process.fork() . Within a worker, process.on('error') may also
+be used. Event: 'exit' # Added in: v0.11.2 code <number>
+----------------------------------------------------------------------------------------------------
+Index: 1478 <<"chunk_id": 9, "docno": 184>>
+
+{ cluster . fork () ; } for ( const id in cluster . workers) { cluster .
+workers[id] . on ( 'message' , messageHandler) ; } } else { // Worker processes
+have a http server. http . Server ( ( req , res ) => { res . writeHead ( 200 ) ;
+res . end ( 'hello world \n ' ) ; // Notify primary about the request process .
+send ( { cmd : 'notifyRequest' } ) ; } ) . listen ( 8000 ) ; } javascript copy
+Event: 'online' # Added in: v0.7.0 Similar to the cluster.on('online') event,
+but specific to this worker. cluster . fork () . on ( 'online' , () => { //
+Worker is online } ) ; js copy It is not emitted in the worker.
+worker.disconnect() # Added in: v0.7.7 History Version Changes v7.3.0 This
+method now returns a reference to worker . Returns: <cluster.Worker> A reference
+to worker . In a worker, this function will close all servers, wait for the
+'close' event on those servers, and then disconnect the IPC channel. In the
+primary, an internal message is sent to the worker causing it to call
+.disconnect() on itself. Causes .exitedAfterDisconnect to be set. After a server
+is closed, it will no longer accept new connections, but connections may be
+accepted by any other listening worker. Existing connections will be allowed to
+close as usual. When no more connections exist, see server.close() , the IPC
+channel to the worker will close allowing
+----------------------------------------------------------------------------------------------------
+Index: 2349 <<"chunk_id": 4, "docno": 313>>
+
+)) ; JavaScript Copy to clipboard spawn() streams output as it's produced
+instead of buffering it, which is why it's the right choice for anything
+long-running or with unpredictable output size. Example: talking to another
+Node.js process with fork() parent.js child.js const { fork } = require ( '
+node:child_process ' ) ; const child = fork ( ' ./child.js ' ) ; child . send (
+{ task : ' start ' , data : 42 } ) ; child . on ( ' message ' , result =>
+console . log ( ' Result from child: ' , result )) ; JavaScript Copy to
+clipboard fork() gives you a ready-made, structured-clone-based IPC channel (
+.send() / 'message' ), so you don't have to parse stdout yourself the way you
+would with spawn() . Things to watch for Avoid exec() for anything that could
+produce a large output — use spawn() and stream it instead. Always handle the
+'exit' and 'close' events so you notice failures and clean up resources (open
+file descriptors, temporary files) instead of leaking them. If any part of the
+command comes from user input, prefer execFile() / spawn() with an argument
+array over exec() , which runs through a shell and is vulnerable to shell
+injection if arguments aren't sanitized. Worker Threads worker_threads was added
+to let you run JavaScript in parallel, in threads within the same process,
+specifically to move CPU-bound work off the main thread without blocking it.
+Unlike child_process , workers share the same process — no
+----------------------------------------------------------------------------------------------------
+Index: 6630 <<"chunk_id": 7, "docno": 974>>
+
+upcoming evaluate hook , we think that it could land with the current naming, so
+that it can make at least part of the lives of module customizers easier, even
+though it won't cover all evaluation edges due to JS spec constraints. Bryan
+English introduced a new mechanism to instrument ESM - instead of patching
+module exports externally, which can run into issues with live binding of
+exports that are lazily initialized, patch the exports internally by parsing,
+analysing, and rewriting the AST of the target exports to inject tracing
+channels. This rust-based instrumentation library has now been open-sourced on
+GitHub . We discussed what Node.js core can provide to make instrumentation like
+this more streamlined, and how to integrate AsyncContext with it to improve
+handling of edge cases like constructors with super() . While it's still in
+development and there are still some open issues to solve, hopefully this can be
+a breeding ground for adding official tracing channel support in libraries for
+observability without rewritting the AST in a third-party tool. Previous Trip
+report: Node.js collaboration summit (2026 London) Next Trip report: Node.js
+collaboration summit (2024 Dublin) Last Updated May 22, 2025 Reading Time 8 min
+Contribute Edit this page Table of Contents CI reliability and security
+Lightning talks Experimental WASM Modules Cppgc integration Mentorship Improving
+Collaborator Experience Bring AsyncLocalStorage to the Web Single Executable
+Applications Embedding Undici Node.js integration with Chrome DevTools Next 10
+Survey Module customization & instrumentation v24.19.0 Latest LTS v26.6.0 Latest
+Release Copyright OpenJS Foundation and Node.js contributors. All rights
+----------------------------------------------------------------------------------------------------
+Index: 15927 <<"chunk_id": 1486, "docno": 2234>>
+
+process.execArgv . exec <string> File path to worker file. Default:
+process.argv[1] . args <string> [] String arguments passed to worker. Default:
+process.argv.slice(2) . cwd <string> Current working directory of the worker
+process. Default: undefined (inherits from parent process). serialization
+<string> Specify the kind of serialization used for sending messages between
+processes. Possible values are 'json' and 'advanced' . See Advanced
+serialization for child_process for more details. Default: false . silent
+<boolean> Whether or not to send output to parent's stdio. Default: false .
+stdio <Array> Configures the stdio of forked processes. Because the cluster
+module relies on IPC to function, this configuration must contain an 'ipc'
+entry. When this option is provided, it overrides silent . See
+child_process.spawn() 's stdio . uid <number> Sets the user identity of the
+process. (See setuid(2) .) gid <number> Sets the group identity of the process.
+(See setgid(2) .) inspectPort <number> | <Function> Sets inspector port of
+worker. This can be a number, or a function that takes no arguments and returns
+a number. By default each worker gets its own port, incremented from the
+primary's process.debugPort . windowsHide <boolean> Hide the forked processes
+console window that would normally be created on Windows systems. Default: false
+. After calling .setupPrimary() (or .fork() ) this settings object will contain
+the settings, including the default values. This object is not intended to be
+changed or set manually. cluster.setupMaster([settings]) # Added in: v0.7.1
+Deprecated in: v16.0.0 History Version Changes v6.4.0 The stdio option is
+supported now. Stability: 0 - Deprecated Deprecated alias for
+----------------------------------------------------------------------------------------------------
+Index: 1479 <<"chunk_id": 10, "docno": 184>>
+
+connections will be allowed to close as usual. When no more connections exist,
+see server.close() , the IPC channel to the worker will close allowing it to die
+gracefully. The above applies only to server connections, client connections are
+not automatically closed by workers, and disconnect does not wait for them to
+close before exiting. In a worker, process.disconnect exists, but it is not this
+function; it is disconnect() . Because long living server connections may block
+workers from disconnecting, it may be useful to send a message, so application
+specific actions may be taken to close them. It also may be useful to implement
+a timeout, killing a worker if the 'disconnect' event has not been emitted after
+some time. if (cluster . isPrimary) { const worker = cluster . fork () ; let
+timeout ; worker . on ( 'listening' , ( address ) => { worker . send (
+'shutdown' ) ; worker . disconnect () ; timeout = setTimeout ( () => { worker .
+kill () ; }, 2000 ) ; } ) ; worker . on ( 'disconnect' , () => { clearTimeout
+(timeout) ; } ) ; } else if (cluster . isWorker) { const net = require (
+'node:net' ) ; const server = net . createServer ( ( socket ) => { //
+Connections never end } ) ; server . listen ( 8000 ) ; process . on ( 'message'
+, ( msg ) => { if (msg === 'shutdown' ) { // Initiate graceful close
+----------------------------------------------------------------------------------------------------
+Index: 1487 <<"chunk_id": 18, "docno": 184>>
+
+; js copy Event: 'setup' # Added in: v0.7.1 settings <Object> Emitted every time
+.setupPrimary() is called. The settings object is the cluster.settings object at
+the time .setupPrimary() was called and is advisory only, since multiple calls
+to .setupPrimary() can be made in a single tick. If accuracy is important, use
+cluster.settings . cluster.disconnect([callback]) # Added in: v0.7.7 callback
+<Function> Called when all workers are disconnected and handles are closed.
+Calls .disconnect() on each worker in cluster.workers . When they are
+disconnected all internal handles will be closed, allowing the primary process
+to die gracefully if no other event is waiting. The method takes an optional
+callback argument which will be called when finished. This can only be called
+from the primary process. cluster.fork([env]) # Added in: v0.6.0 env <Object>
+Key/value pairs to add to worker process environment. Returns: <cluster.Worker>
+Spawn a new worker process. This can only be called from the primary process.
+cluster.isMaster # Added in: v0.8.1 Deprecated in: v16.0.0 Stability: 0 -
+Deprecated Deprecated alias for cluster.isPrimary . cluster.isPrimary # Added
+in: v16.0.0 Type: <boolean> True if the process is a primary. This is determined
+by the process.env.NODE_UNIQUE_ID . If process.env.NODE_UNIQUE_ID is undefined,
+then isPrimary is true . cluster.isWorker # Added in: v0.6.0 Type: <boolean>
+True if the process is not a primary (it is the negation of cluster.isPrimary ).
+cluster.schedulingPolicy # Added in: v0.11.2 The scheduling policy, either
+cluster.SCHED_RR for round-robin or cluster.SCHED_NONE to leave it to the
+operating system. This is a global setting and effectively frozen once either
+the first
+----------------------------------------------------------------------------------------------------
+Index: 1475 <<"chunk_id": 6, "docno": 184>>
+
+the same as the one provided by child_process.fork() . Within a worker,
+process.on('error') may also be used. Event: 'exit' # Added in: v0.11.2 code
+<number> The exit code, if it exited normally. signal <string> The name of the
+signal (e.g. 'SIGHUP' ) that caused the process to be killed. Similar to the
+cluster.on('exit') event, but specific to this worker. import cluster from
+'node:cluster' ; if (cluster . isPrimary) { const worker = cluster . fork () ;
+worker . on ( 'exit' , ( code , signal ) => { if (signal) { console . log (
+`worker was killed by signal: ${ signal } ` ) ; } else if (code !== 0 ) {
+console . log ( `worker exited with error code: ${ code } ` ) ; } else { console
+. log ( 'worker success!' ) ; } } ) ; } const cluster = require ( 'node:cluster'
+) ; if (cluster . isPrimary) { const worker = cluster . fork () ; worker . on (
+'exit' , ( code , signal ) => { if (signal) { console . log ( `worker was killed
+by signal: ${ signal } ` ) ; } else if (code !== 0 ) { console . log ( `worker
+exited with error code: ${ code } ` ) ; } else { console . log ( 'worker
+success!' ) ; } } ) ; } javascript copy Event: 'listening' # Added in: v0.7.0
+address <Object> Similar to the cluster.on('listening') event, but specific to
+----------------------------------------------------------------------------------------------------
+Index: 2350 <<"chunk_id": 5, "docno": 313>>
+
+the same process, specifically to move CPU-bound work off the main thread
+without blocking it. Unlike child_process , workers share the same process — no
+OS-level process to spin up, and no fully separate memory space. Worker Threads
+Child Process Context Same process Separate process Memory Shareable via
+SharedArrayBuffer Isolated Startup overhead Low Higher Communication
+postMessage() (fast) stdio or IPC (slower) Example: offloading CPU-bound work
+main.js hash-worker.js const { Worker } = require ( ' node:worker_threads ' ) ;
+const worker = new Worker ( ' ./hash-worker.js ' , { workerData : '
+user-password ' , } ) ; worker . on ( ' message ' , hash => console . log ( '
+Computed hash: ' , hash )) ; worker . on ( ' error ' , err => console . error (
+' Worker failed: ' , err )) ; JavaScript Copy to clipboard Password hashing,
+image/video transforms, encryption, and parsing very large in-memory payloads
+are classic candidates: they're pure CPU work, and running them on the main
+thread would stall every other request Node.js is handling in the meantime.
+Sharing memory Workers can share memory directly using SharedArrayBuffer
+together with the Atomics API for safe concurrent access, instead of copying
+data back and forth with postMessage() . This avoids serialization overhead for
+large buffers, but you're now responsible for coordinating access yourself — it
+opens the door to the same race-condition class of bugs found in traditional
+multi-threaded programming. Things to watch for Worker threads are for CPU-bound
+work, not I/O —
+----------------------------------------------------------------------------------------------------
+Index: 24449 <<"chunk_id": 2, "docno": 3763>>
+
+than ones in typical clustered databases. For one, disk storage is shared
+nothing - each cache process owns its disk store eliminating process level
+contentions. Second, the design is tilted to favor memory i.e. there are no
+complex B-Tree data structures on disk; instead we assume complex query
+navigations will always be done through in-memory indexes. Third, the design
+uses rolling append-only log files to avoid disk seeks completely. Finally, the
+design preserves the rebalancing model in GemFire when capacity is increased or
+decreased - the disk data also relocates itself. Improved scale-out capabilities
+: Application deployments using the tiered model (client process embedding a
+local cache talking to a server farm) could see a 2X or more performance gain
+when accessing partitioned data. With 6.5, client processes gain knowledge about
+server side partitions and use it on the fly to direct traffic directly to the
+server with the required data set. Application clients subscribing to events
+using key based register interest or "continuous queries" now have their
+subscriptions registered on all the partitioned nodes. This allows each
+partition to process the subcription filters on the nodes where the data changes
+are applied dramatically reducing messaging traffic between peers unlike in the
+previous releases. The net effect is that more subscriptions can be processed
+and the event delivery latency to clients is also reduced. Colocated
+transactions : If each logical partition were to own the entire transactional
+working set then highly applications can scale linearly if the concurrent
+transaction load is uniformly spread across the data
+----------------------------------------------------------------------------------------------------
+Index: 24549 <<"chunk_id": 11, "docno": 3787>>
+
+script, safety-worker.js , is also included in the @angular/service-worker npm
+package. When loaded, it un-registers itself from the browser and removes the
+service worker caches. This script can be used as a last resort to get rid of
+unwanted service workers already installed on client pages. CRITICAL: You cannot
+register this worker directly, as old clients with cached state might not see a
+new index.html which installs the different worker script. Instead, you must
+serve the contents of safety-worker.js at the URL of the Service Worker script
+you are trying to unregister. You must continue to do so until you are certain
+all users have successfully unregistered the old worker. For most sites, this
+means that you should serve the safety worker at the old Service Worker URL
+forever. This script can be used to deactivate @angular/service-worker and
+remove the corresponding caches. It also removes any other Service Workers which
+might have been served in the past on your site. Changing your application's
+location IMPORTANT: Service workers don't work behind redirect. You might have
+already encountered the error The script resource is behind a redirect, which is
+disallowed . This can be a problem if you have to change your application's
+location. If you set up a redirect from the old location, such as example.com ,
+to the new location, www.example.com in this example, the worker stops working.
+Also, the redirect won't even trigger for users who are loading the site
+entirely from Service Worker. The old worker, which was registered at
+example.com , tries to
+----------------------------------------------------------------------------------------------------
+Index: 9251 <<"chunk_id": 33, "docno": 1407>>
+
+to the Worker's main script or module. Must be either an absolute path or a
+relative path (i.e. relative to the current working directory) starting with ./
+or ../ , or a WHATWG URL object using file: or data: protocol. When using a
+data: URL , the data is interpreted based on MIME type using the ECMAScript
+module loader . If options.eval is true , this is a string containing JavaScript
+code rather than a path. options <Object> argv <any> [] List of arguments which
+would be stringified and appended to process.argv in the worker. This is mostly
+similar to the workerData but the values are available on the global
+process.argv as if they were passed as CLI options to the script. env <Object>
+If set, specifies the initial value of process.env inside the Worker thread. As
+a special value, worker.SHARE_ENV may be used to specify that the parent thread
+and the child thread should share their environment variables; in that case,
+changes to one thread's process.env object affect the other thread as well.
+Default: process.env . eval <boolean> If true and the first argument is a string
+, interpret the first argument to the constructor as a script that is executed
+once the worker is online. execArgv <string> [] List of node CLI options passed
+to the worker. V8 options (such as --max-old-space-size ) and options that
+affect the process (such as --title ) are not supported. If set, this is
+provided as process.execArgv inside the worker. By default, options are
+inherited from the parent
+----------------------------------------------------------------------------------------------------
+Index: 2210 <<"chunk_id": 9, "docno": 292>>
+
+__filename ) . on ( ' online ' , () => useAddon ( addon , ' Main thread ' ,
+iterations ) ) ; } else { // On the secondary thread we immediately start the
+loop. useAddon ( addon , ' Worker thread ' , iterations ) ; } JavaScript Copy to
+clipboard Cleanup hooks Your native add-on can receive one or more notifications
+from the Node.js runtime engine when the context in which your native-add-on has
+been running is being destroyed. This gives your native add-on the opportunity
+to release any allocated memory before the context is destroyed by the Node.js
+runtime engine. The advantage of this technique is that your native add-on can
+allocate multiple pieces of memory to be associated with the context under which
+your native add-on is running. This can be useful if you need to allocate
+multiple memory buffers from different pieces of code as your native add-on is
+running. The drawback is that if you need to access these allocated buffer you
+are responsible for keeping track of the pointers yourself within the context
+your native add-on is running. Depending upon the architecture of your native
+add-on, this may or may not be an issue. Resources Cleanup on exit of the
+current Node.js instance Node.js documentation for napi_add_env_cleanup_hook and
+napi_remove_env_cleanup_hook . Example Because keeping track of the allocated
+buffers is dependent upon the architecture of the native add-on, this is a
+trivial example showing how the buffers can be allocated and released.
+binding.cc # include < stdlib.h >
+----------------------------------------------------------------------------------------------------
+Index: 2351 <<"chunk_id": 6, "docno": 313>>
+
+to the same race-condition class of bugs found in traditional multi-threaded
+programming. Things to watch for Worker threads are for CPU-bound work, not I/O
+— a worker still has to wait on I/O just like the main thread would, so spinning
+one up for a database call or a network request adds overhead for no benefit.
+Spinning up a worker has a real cost. For small, frequent tasks, that setup
+overhead can outweigh the benefit — consider a pool of long-lived workers (see
+the workerpool package) instead of creating one per task. Cluster cluster solves
+a different problem: a single Node.js process only uses one CPU core. To take
+advantage of a multi-core machine for a network server, cluster forks multiple
+full copies of your process (each one a child_process under the hood) that all
+listen on the same port. Example: scaling an HTTP server across cores const
+cluster = require ( ' node:cluster ' ) ; const http = require ( ' node:http ' )
+; const { availableParallelism } = require ( ' node:os ' ) ; if ( cluster .
+isPrimary ) { const numCPUs = availableParallelism () ; for ( let i = 0 ; i <
+numCPUs ; i ++ ) { cluster . fork () ; } cluster . on ( ' exit ' , ( worker ,
+code , signal ) => { if ( worker . exitedAfterDisconnect ) { // A voluntary exit
+(e.g. worker.disconnect() or cluster.disconnect()) // — don't respawn. return; }
+console . log ( `
+----------------------------------------------------------------------------------------------------
+Index: 16531 <<"chunk_id": 2090, "docno": 2234>>
+
+script or module. Must be either an absolute path or a relative path (i.e.
+relative to the current working directory) starting with ./ or ../ , or a WHATWG
+URL object using file: or data: protocol. When using a data: URL , the data is
+interpreted based on MIME type using the ECMAScript module loader . If
+options.eval is true , this is a string containing JavaScript code rather than a
+path. options <Object> argv <any> [] List of arguments which would be
+stringified and appended to process.argv in the worker. This is mostly similar
+to the workerData but the values are available on the global process.argv as if
+they were passed as CLI options to the script. env <Object> If set, specifies
+the initial value of process.env inside the Worker thread. As a special value,
+worker.SHARE_ENV may be used to specify that the parent thread and the child
+thread should share their environment variables; in that case, changes to one
+thread's process.env object affect the other thread as well. Default:
+process.env . eval <boolean> If true and the first argument is a string ,
+interpret the first argument to the constructor as a script that is executed
+once the worker is online. execArgv <string> [] List of node CLI options passed
+to the worker. V8 options (such as --max-old-space-size ) and options that
+affect the process (such as --title ) are not supported. If set, this is
+provided as process.execArgv inside the worker. By default, options are
+inherited from the parent thread. stdin <boolean> If
+----------------------------------------------------------------------------------------------------
+Index: 10460 <<"chunk_id": 53, "docno": 1485>>
+
+supported or has been disabled in the current environment (for example, when
+running with --jitless ). ERR_WEBASSEMBLY_RESPONSE # Added in: v18.1.0 The
+Response that has been passed to WebAssembly.compileStreaming or to
+WebAssembly.instantiateStreaming is not a valid WebAssembly response.
+ERR_WORKER_HANDLE_NOT_TRANSFERABLE # An attempt was made to transfer a
+net.Socket or net.Server to another thread via a worker_threads postMessage()
+call while it was not in a transferable state, for example because it had
+already started reading or had buffered data.
+ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED # An attempt was made to transfer a
+net.Socket or net.Server to another thread on a platform where moving the
+underlying handle between event loops is not supported (currently Windows).
+ERR_WORKER_INIT_FAILED # The Worker initialization failed.
+ERR_WORKER_INVALID_EXEC_ARGV # The execArgv option passed to the Worker
+constructor contains invalid flags. ERR_WORKER_MESSAGING_ERRORED # Added in:
+v22.5.0 Stability: 1.1 - Active development The destination thread threw an
+error while processing a message sent via postMessageToThread() .
+ERR_WORKER_MESSAGING_FAILED # Added in: v22.5.0 Stability: 1.1 - Active
+development The thread requested in postMessageToThread() is invalid or has no
+workerMessage listener. ERR_WORKER_MESSAGING_SAME_THREAD # Added in: v22.5.0
+Stability: 1.1 - Active development The thread id requested in
+postMessageToThread() is the current thread id. ERR_WORKER_MESSAGING_TIMEOUT #
+Added in: v22.5.0 Stability: 1.1 - Active development Sending a message via
+postMessageToThread() timed out. ERR_WORKER_NOT_RUNNING # An operation failed
+because the Worker instance is not currently running. ERR_WORKER_OUT_OF_MEMORY #
+The Worker instance terminated because it reached its memory limit.
+ERR_WORKER_PATH # The path for the main script of a worker is neither an
+absolute path nor a relative
+----------------------------------------------------------------------------------------------------
+Index: 2701 <<"chunk_id": 1, "docno": 364>>
+
+Publishing a TypeScript package Modules How to use streams Backpressuring in
+Streams Publishing a package How to publish a Node-API package ABI Stability
+Diagnostics User Journey Memory Overview Understanding and Tuning Memory Using
+Heap Profiler Using Heap Snapshot Tracing garbage collection Live Debugging
+Overview Using Inspector Poor Performance Overview Using Linux Perf Flame Graphs
+Test Runner Discovering Node.js's test runner Using Node.js's test runner
+Mocking in tests Collecting code coverage in Node.js Node-API What is Node-API?
+Getting Started Overview Pre-requisites Tools Anatomy of a Node-API project Your
+First Project Object Wrap Migrating to Node-API Build Tools Overview node-gyp
+CMake.js node-pre-gyp Special Topics Overview Context Awareness Object and
+Function References AsyncWorker Thread-Safe Functions On this page What is the
+Event Loop? Event Loop Explained Phases Overview Phases in Detail pending
+callbacks poll check close callbacks timers setImmediate() vs setTimeout()
+process.nextTick Understanding process.nextTick() Why would that be allowed?
+process.nextTick() vs setImmediate() Why use process.nextTick()? The Node.js
+Event Loop What is the Event Loop? The event loop is what allows Node.js to
+perform non-blocking I/O operations — despite the fact that a single JavaScript
+thread is used by default — by offloading operations to the system kernel
+whenever possible. Since most modern kernels are multi-threaded, they can handle
+multiple operations executing in the background. When one of these operations
+completes, the kernel tells Node.js so that the appropriate callback may be
+added to the poll queue to eventually be executed. We'll explain this in further
+detail later in this topic. Event Loop Explained When Node.js starts, it
+initializes the
+----------------------------------------------------------------------------------------------------
+Index: 20931 <<"chunk_id": 8, "docno": 3070>>
+
+so we have to configure a solution. Load-Balancing Between Producers and
+Consumers To efficiently handle these potentially very high loads as more client
+applications (Agents) come online, we can modify this topology in several ways.
+First, an optimization from the above configuration to load-balance messages
+across a Rabbit cluster. We can create one queue for each node in the Rabbit
+cluster. If we have four nodes, for each high-traffic queue we create
+hfq.{0,1,2,3} for that operation. Now each agent can randomly pick a node by a
+number between zero and three, or a more sophisticated round-robin
+implementation, to publish to. With RabbitMQ there are RPC calls or you can use
+the Rabbit management plugin to GET the number of nodes, which you can use in
+your round-robin algorithm. Worker Queues With Round-Robin Dispatching Worker
+Queues, or Task Queues, are generally used to efficiently distribute
+time-consuming tasks among multiple workers and easily parallelise work. In
+addition, this topology applies to eliminating the need to execute
+resource-intensive tasks and having to block until they complete. Running
+several worker queues allows these tasks to be distributed among them. With
+Worker Queues, by default, Rabbit uses a round-robin distribution method,
+sending each message to the next consumer in sequence. Each consumer receives
+roughly the same number of messages. If you declare a queue and spin up 3
+competing consumers, bind them to the exchange, and send 20,000 messages,
+messages zero will route to the first consumer, message one to the second,
+message two to the third and so on. If
+----------------------------------------------------------------------------------------------------
+Index: 15914 <<"chunk_id": 1473, "docno": 2234>>
+
+; } } ) ; } const cluster = require ( 'node:cluster' ) ; if (cluster .
+isPrimary) { const worker = cluster . fork () ; worker . on ( 'exit' , ( code ,
+signal ) => { if (signal) { console . log ( `worker was killed by signal: ${
+signal } ` ) ; } else if (code !== 0 ) { console . log ( `worker exited with
+error code: ${ code } ` ) ; } else { console . log ( 'worker success!' ) ; } } )
+; } javascript copy Event: 'listening' # Added in: v0.7.0 address <Object>
+Similar to the cluster.on('listening') event, but specific to this worker.
+cluster . fork () . on ( 'listening' , ( address ) => { // Worker is listening }
+) ; cluster . fork () . on ( 'listening' , ( address ) => { // Worker is
+listening } ) ; javascript copy It is not emitted in the worker. Event:
+'message' # Added in: v0.7.0 message <Object> handle <undefined> | <Object>
+Similar to the 'message' event of cluster , but specific to this worker. Within
+a worker, process.on('message') may also be used. See process event: 'message' .
+Here is an example using the message system. It keeps a count in the primary
+process of the number of HTTP requests received by the workers: import cluster
+from 'node:cluster' ; import http from 'node:http' ; import {
+availableParallelism } from 'node:os' ; import process from 'node:process' ; if
+(cluster
+----------------------------------------------------------------------------------------------------
+Index: 15911 <<"chunk_id": 1470, "docno": 2234>>
+
+6056 started Worker 5644 started console copy On Windows, it is not yet possible
+to set up a named pipe server in a worker. How it works # The worker processes
+are spawned using the child_process.fork() method, so that they can communicate
+with the parent via IPC and pass server handles back and forth. The cluster
+module supports two methods of distributing incoming connections. The first one
+(and the default one on all platforms except Windows) is the round-robin
+approach, where the primary process listens on a port, accepts new connections
+and distributes them across the workers in a round-robin fashion, with some
+built-in smarts to avoid overloading a worker process. The second approach is
+where the primary process creates the listen socket and sends it to interested
+workers. The workers then accept incoming connections directly. The second
+approach should, in theory, give the best performance. In practice however,
+distribution tends to be very unbalanced due to operating system scheduler
+vagaries. Loads have been observed where over 70% of all connections ended up in
+just two processes, out of a total of eight. Because server.listen() hands off
+most of the work to the primary process, there are three cases where the
+behavior between a normal Node.js process and a cluster worker differs:
+server.listen({fd: 7}) Because the message is passed to the primary, file
+descriptor 7 in the parent will be listened on, and the handle passed to the
+worker, rather than listening to the worker's idea of what the number 7 file
+descriptor references. server.listen(handle) Listening
+----------------------------------------------------------------------------------------------------
+Index: 875 <<"chunk_id": 32, "docno": 123>>
+
+state Caching expensive calculations Resetting all state when a prop changes
+Adjusting some state when a prop changes Sharing logic between event handlers
+Sending a POST request Chains of computations Initializing the application
+Notifying parent components about state changes Passing data to the parent
+Subscribing to an external store Fetching data Recap Challenges
+----------------------------------------------------------------------------------------------------
+Index: 26180 <<"chunk_id": 4, "docno": 4201>>
+
+how the processor API can be used in a binder based application. Instead of
+creating StoreBuilder beans in the application, you can also use the
+StreamsBuilderFactoryBean customizer which we saw in the previous blog , to add
+the state stores programmatically, if that is your preference. Using interactive
+queries to query data from state stores Kafka Streams lets you interactively
+query the data in the state store in real time as live stream processing is
+going on. The binder provides abstractions around this feature to make it easier
+to work with interactive queries. InteractiveQueryService is a basic API that
+the binder provides to work with state store querying. You can usually inject
+this as a bean into your application and then invoke various API methods from
+it. Here is an example: @Autowired private InteractiveQueryService
+interactiveQueryService; … ... ReadOnlyKeyValueStore<Object, Object>
+keyValueStore = interactiveQueryService.getQueryableStoreType("my-store",
+QueryableStoreTypes.keyValueStore()); Then you can invoke various retrieval
+methods from the store and iterate through the result. There are various methods
+that you can invoke from these state stores based on your use case and the type
+of state store that you are using. Please refer to the Kafka Streams
+documentation for interactive queries for these various iteration methods
+available. Interactive Queries over RPC Mechanisms Oftentimes, you want to
+expose the state of your system from state stores over an RPC mechanism. You can
+combine Spring web support for writing powerful REST based applications in this
+manner. Here is a blueprint: @RestController public class Controller {
+@RequestMapping("/song/id") public SongBean song(@RequestParam(value="id") Long
+id) { final ReadOnlyKeyValueStore<Long,
+----------------------------------------------------------------------------------------------------
+Index: 3560 <<"chunk_id": 1, "docno": 509>>
+
+Modules How to use streams Backpressuring in Streams Publishing a package How to
+publish a Node-API package ABI Stability Diagnostics User Journey Memory
+Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
+Tracing garbage collection Live Debugging Overview Using Inspector Poor
+Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
+Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
+code coverage in Node.js Node-API What is Node-API? Getting Started Overview
+Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
+Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
+Special Topics Overview Context Awareness Object and Function References
+AsyncWorker Thread-Safe Functions On this page Understanding process.nextTick()
+As you try to understand the Node.js event loop, one important part of it is
+process.nextTick() . Every time the runtime calls back into JavaScript for an
+event, we call it a tick. When we pass a function to process.nextTick() , we
+schedule it to run immediately after the current call stack completes, before
+the event loop continues and before any other queued tasks or phases are
+processed: process . nextTick ( () => { // do something } ) ; JavaScript Copy to
+clipboard The event loop is busy processing the current function code. When this
+operation ends, the JS engine runs all the functions passed to nextTick calls
+during that operation. It's the way we can tell the JS engine to process a
+function asynchronously (after the current function), but as soon as possible,
+not queue it. Calling setTimeout(() => {},
+----------------------------------------------------------------------------------------------------
+Index: 22240 <<"chunk_id": 8, "docno": 3331>>
+
+REST will help turbocharge your service development. Spring Data REST supports
+both SQL and No-SQL repositories. Having technology that allows you to code
+microservices quickly is only half the battle. Developers are often plagued by
+the numerous delays in getting their code into production platforms. Some of the
+most common obstacles include manual deployments, testing, infrastructure
+provisioning, and service provisioning. Continuous delivery takes aim at
+automating the process of promoting code to production while minimizing risk.
+This allows organizations to make incremental changes to applications, making
+deployment a business decision rather than resource decision. This is quite a
+large topic on it’s own, but I highly recommend Matt Stine’s talk, Developing
+Microservices for PaaS with Spring and Cloud Foundry which does an excellent job
+highlighting the benefits of combining agile engineering practices with the
+automation of Pivotal Cloud Foundry. ##Stateless Applications Rock James points
+out that “sticky sessions and server state are usually one of the best ways to
+kill your performance and resilience. Session state (in the traditional Servlet
+sense) makes it really hard to do Continuous Delivery and scale horizontally”.
+Removing session state from your application can dramatically streamline
+operations, allowing applications to be redeployed, terminated or scaled without
+the fear of losing session data. There are valid use cases for maintaining
+state, such as sharing authentication state, but this state should be persisted
+outside of the application (typically in a high-performance repository like a
+NoSQL, distributed cache, or even in-memory data store). Externalizing
+application state doesn’t have to be an onerous effort and
 ----------------------------------------------------------------------------------------------------

@@ -6,6 +6,9 @@ import os
 from shared import document_queue, filter_url, meta_raw, save_meta_raw, add_meta, META_RAW, normalize_url
 import hashlib
 from Document_processor import html, md, txt
+import dotenv
+
+dotenv.load_dotenv()
 
 SEED_URLS = []
 SOURCES_FILE = "sources.txt"
@@ -14,7 +17,7 @@ ROBOT_FILE = "robots.txt"
 DOCNUM = 0
 RAW = "./Data/raw"
 META_RAW = "./Data/meta_raw.jsonl"
-MAX_DOCS = 10000
+MAX_DOCS = int(os.getenv("max_docs", 1000))  # Default to 1000 if not set in .env
 
 
 robots = {}
@@ -46,6 +49,8 @@ def parse_robots_txt():
             ROBOT_FILE
         )
 
+        # print(f"Fetching robots.txt from {robots_url}...")
+
         try:
             response = requests.get(
                 robots_url,
@@ -56,6 +61,7 @@ def parse_robots_txt():
             rp = RobotFileParser()
             rp.parse(response.text.splitlines())
             robots[domain] = rp
+            # print(domain, "robots.txt parsed successfully.")
         except requests.RequestException as e:
             if domain not in robots:
                 robots[domain] = None
@@ -88,7 +94,7 @@ def process_and_save(response, normalized_url):
         content, links, title = txt.process_txt(raw_content, normalized_url)
         ext = ".txt"
 
-    if content is None or title is None:
+    if content is None or title is None or links is None or ext is None:
         # print(f"Skipping invalid content for URL: {normalized_url}")
         return None, links, False  
 

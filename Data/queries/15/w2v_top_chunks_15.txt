@@ -1,513 +1,1150 @@
-Index: 20093 <<"chunk_id": 1361, "docno": 2483>>
+Index: 6100 <<"chunk_id": 10, "docno": 882>>
 
-application. url: "https://nextjs.org/docs/pages/guides/content-security-policy"
-version: 16.3.0 router: Pages Router --- # Content Security Policy [Content
-Security Policy (CSP)](https://developer.mozilla.org/docs/Web/HTTP/CSP) is
-important to guard your Next.js application against various security threats
-such as cross-site scripting (XSS), clickjacking, and other code injection
-attacks. By using CSP, developers can specify which origins are permissible for
-content sources, scripts, stylesheets, images, fonts, objects, media (audio,
-video), iframes, and more. <details> <summary>Examples</summary> * [Strict
-CSP](https://github.com/vercel/next.js/tree/canary/examples/with-strict-csp)
-</details> ## Nonces A
-[nonce](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/nonce) is
-a unique, random string of characters created for a one-time use. It is used in
-conjunction with CSP to selectively allow certain inline scripts or styles to
-execute, bypassing strict CSP directives. ### Why use a nonce? CSP can block
-both inline and external scripts to prevent attacks. A nonce lets you safely
-allow specific scripts to run—only if they include the matching nonce value. If
-an attacker wanted to load a script into your page, they'd need to guess the
-nonce value. That's why the nonce must be unpredictable and unique for every
-request. ### Adding a nonce with Proxy
-[Proxy](/docs/app/api-reference/file-conventions/proxy) enables you to add
-headers and generate nonces before the page renders. Every time a page is
-viewed, a fresh nonce should be generated. This means that you **must use
-[dynamic rendering](/docs/app/glossary#dynamic-rendering) to add nonces**. For
-example: > **Good to know**: In development, `'unsafe-eval'` is required because
-React uses `eval` to provide enhanced debugging information, such as
-reconstructing server-side error stacks in the browser. `unsafe-eval` is not
-required for production. Neither React nor Next.js use `eval` in production by
-default.
+effects. Instead, React will throw away the new tree completely, wait for the
+asynchronous operation to finish, and then retry rendering again from scratch.
+React will render the retry attempt concurrently, and without blocking the
+browser. Layout Effects with Suspense : When a tree re-suspends and reverts to a
+fallback, React will now clean up layout effects, and then re-create them when
+the content inside the boundary is shown again. This fixes an issue which
+prevented component libraries from correctly measuring layout when used with
+Suspense. New JS Environment Requirements : React now depends on modern browsers
+features including Promise , Symbol , and Object.assign . If you support older
+browsers and devices such as Internet Explorer which do not provide modern
+browser features natively or have non-compliant implementations, consider
+including a global polyfill in your bundled application. Other Notable Changes
+React Components can now render undefined : React no longer warns if you return
+undefined from a component. This makes the allowed component return values
+consistent with values that are allowed in the middle of a component tree. We
+suggest to use a linter to prevent mistakes like forgetting a return statement
+before JSX. In tests, act warnings are now opt-in: If you’re running end-to-end
+tests, the act warnings are unnecessary. We’ve introduced an opt-in mechanism so
+you can enable them only for unit tests where they are useful and beneficial. No
+warning about setState on unmounted components: Previously, React warned about
+memory leaks when you call setState on an unmounted component. This warning was
 ----------------------------------------------------------------------------------------------------
-Index: 7379 <<"chunk_id": 0, "docno": 1006>>
+Index: 907 <<"chunk_id": 4, "docno": 129>>
 
-title: How to set a Content Security Policy (CSP) for your Next.js application
-description: Learn how to set a Content Security Policy (CSP) for your Next.js
-application. url: "https://nextjs.org/docs/app/guides/content-security-policy"
-docs_index: /docs/llms.txt version: 16.3.0 lastUpdated: 2026-03-20
-prerequisites: - "Guides: /docs/app/guides" related: -
-app/api-reference/file-conventions/proxy - app/api-reference/functions/headers
-For an index of all Next.js documentation, see /docs/llms.txt . Content Security
-Policy (CSP) is important to guard your Next.js application against various
-security threats such as cross-site scripting (XSS), clickjacking, and other
-code injection attacks. By using CSP, developers can specify which origins are
-permissible for content sources, scripts, stylesheets, images, fonts, objects,
-media (audio, video), iframes, and more. Examples * Strict CSP Nonces A nonce is
-a unique, random string of characters created for a one-time use. It is used in
-conjunction with CSP to selectively allow certain inline scripts or styles to
-execute, bypassing strict CSP directives. Why use a nonce? CSP can block both
-inline and external scripts to prevent attacks. A nonce lets you safely allow
-specific scripts to run—only if they include the matching nonce value. If an
-attacker wanted to load a script into your page, they'd need to guess the nonce
-value. That's why the nonce must be unpredictable and unique for every request.
-Adding a nonce with Proxy Proxy enables you to add headers and generate nonces
-before the page renders. Every time a page is viewed, a fresh nonce should be
-generated. This means that you must use dynamic rendering to add nonces . For
-example: Good to know : In development,
+is an optimization. Although in some cases React may still need to call your
+component before skipping the children, it shouldn’t affect your code. React
+batches state updates. It updates the screen after all the event handlers have
+run and have called their set functions. This prevents multiple re-renders
+during a single event. In the rare case that you need to force React to update
+the screen earlier, for example to access the DOM, you can use flushSync . The
+set function has a stable identity, so you will often see it omitted from Effect
+dependencies, but including it will not cause the Effect to fire. If the linter
+lets you omit a dependency without errors, it is safe to do. Learn more about
+removing Effect dependencies. Calling the set function during rendering is only
+allowed from within the currently rendering component. React will discard its
+output and immediately attempt to render it again with the new state. This
+pattern is rarely needed, but you can use it to store information from the
+previous renders . See an example below. In Strict Mode, React will call your
+updater function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your updater
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. Usage Adding state to a component
+Call useState at the top level of your component to declare one or more state
+variables. import
 ----------------------------------------------------------------------------------------------------
-Index: 8530 <<"chunk_id": 5, "docno": 1201>>
+Index: 5913 <<"chunk_id": 2, "docno": 857>>
 
-would cache Next.js responses by using the pathname as the cache key, ignoring
-search parameters, and respecting standard Cache-Control headers. No need to
-understand Vary , inspect custom headers, or program edge logic. What changes
-for interception routes Under the current scheme, next-url contributes to the
-_rsc hash, so dropping it causes cache misses. Under the pathname-based scheme,
-interception variability would be encoded in a search parameter (not the
-pathname): If a CDN preserves search params, interception works correctly. If a
-CDN drops search params, interception is not supported. It would gracefully
-degrade to the non-intercepted page, client-side navigations won't break. This
-makes interception route support an opt-in CDN capability rather than a
-requirement. Current status This direction extends patterns that are already
-operational in the codebase (segment prefetch paths, output: 'export' mode). It
-is in active design. CDN Feature Compatibility For a full table showing the
-infrastructure primitives available on every major CDN (edge compute, key-value
-storage, blob storage, PPR resuming), see Deploying to Platforms . Related
-guides and references. Deploying to Platforms Understand which Next.js features
-require specific platform capabilities and how to choose the right deployment
-target. Self-Hosting Learn how to self-host your Next.js application on a
-Node.js server, Docker image, or static HTML files (static exports). Streaming
-Learn how streaming works in Next.js and how to use it to progressively render
-UI as data becomes available. assetPrefix Learn how to use the assetPrefix
-config option to configure your CDN. For a semantic overview of all
-documentation, see /docs/sitemap.md For an index of
+developers to know how concurrency works under the hood. However, Concurrent
+React is more important than a typical implementation detail — it’s a
+foundational update to React’s core rendering model. So while it’s not super
+important to know how concurrency works, it may be worth knowing what it is at a
+high level. A key property of Concurrent React is that rendering is
+interruptible. When you first upgrade to React 18, before adding any concurrent
+features, updates are rendered the same as in previous versions of React — in a
+single, uninterrupted, synchronous transaction. With synchronous rendering, once
+an update starts rendering, nothing can interrupt it until the user can see the
+result on screen. In a concurrent render, this is not always the case. React may
+start rendering an update, pause in the middle, then continue later. It may even
+abandon an in-progress render altogether. React guarantees that the UI will
+appear consistent even if a render is interrupted. To do this, it waits to
+perform DOM mutations until the end, once the entire tree has been evaluated.
+With this capability, React can prepare new screens in the background without
+blocking the main thread. This means the UI can respond immediately to user
+input even if it’s in the middle of a large rendering task, creating a fluid
+user experience. Another example is reusable state. Concurrent React can remove
+sections of the UI from the screen, then add them back later while reusing the
+previous state. For example, when a user tabs away from a
 ----------------------------------------------------------------------------------------------------
-Index: 7382 <<"chunk_id": 3, "docno": 1006>>
+Index: 4261 <<"chunk_id": 19, "docno": 628>>
 
-present in the request. Static pages are generated at build time, when no
-request or response headers exist—so no nonce can be injected. Here’s how nonce
-support works in a dynamically rendered page: Proxy generates a nonce : Your
-proxy creates a unique nonce for the request, adds it to your
-Content-Security-Policy header, and also sets it in a custom x-nonce header.
-Next.js extracts the nonce : During rendering, Next.js parses the
-Content-Security-Policy header and extracts the nonce using the 'nonce-{value}'
-pattern. Nonce is applied automatically : Next.js attaches the nonce to:
-Framework scripts (React, Next.js runtime) Page-specific JavaScript bundles
-Inline styles and scripts generated by Next.js Any
+what changed. Only available if you specify static contextType . Returns Return
+true if you want the component to re-render. That’s the default behavior. Return
+false to tell React that re-rendering can be skipped. Caveats This method only
+exists as a performance optimization. If your component breaks without it, fix
+that first. Consider using PureComponent instead of writing
+shouldComponentUpdate by hand. PureComponent shallowly compares props and state,
+and reduces the chance that you’ll skip a necessary update. We do not recommend
+doing deep equality checks or using JSON.stringify in shouldComponentUpdate . It
+makes performance unpredictable and dependent on the data structure of every
+prop and state. In the best case, you risk introducing multi-second stalls to
+your application, and in the worst case you risk crashing it. Returning false
+does not prevent child components from re-rendering when their state changes.
+Returning false does not guarantee that the component will not re-render. React
+will use the return value as a hint but it may still choose to re-render your
+component if it makes sense to do for other reasons. Note Optimizing class
+components with shouldComponentUpdate is similar to optimizing function
+components with memo . Function components also offer more granular optimization
+with useMemo . UNSAFE_componentWillMount() If you define
+UNSAFE_componentWillMount , React will call it immediately after the constructor
+. It only exists for historical reasons and should not be used in any new code.
+Instead, use one of the alternatives: To initialize state, declare state as a
+class field or set this.state inside the constructor . If
 ----------------------------------------------------------------------------------------------------
-Index: 19863 <<"chunk_id": 1131, "docno": 2483>>
+Index: 6096 <<"chunk_id": 6, "docno": 882>>
 
-{ deploymentId: 'my-deployment-id', } ``` You can also set the deployment ID
-using the `NEXT_DEPLOYMENT_ID` environment variable: ```bash
-NEXT_DEPLOYMENT_ID=my-deployment-id next build ``` > **Good to know:** If both
-are set, the `deploymentId` value in `next.config.js` takes precedence over the
-`NEXT_DEPLOYMENT_ID` environment variable. ## How it works When a `deploymentId`
-is configured, Next.js: 1. Appends `?dpl=<deploymentId>` to static asset URLs
-(JavaScript, CSS, images) 2. Adds an `x-deployment-id` header to client-side
-navigation requests 3. Adds an `x-nextjs-deployment-id` header to navigation
-responses 4. Injects a `data-dpl-id` attribute on the `<html>` element 5.
-Includes the `deploymentId` in the [`'use cache'` cache
-key](/docs/app/api-reference/directives/use-cache#cache-keys), invalidating
-cache entries when the deployment ID changes When the client detects a mismatch
-between its deployment ID and the server's (via the response header), it
-triggers a hard navigation (full page reload) instead of a client-side
-navigation. This ensures users always receive assets and Server Functions from a
-consistent deployment version. > **Good to know:** Next.js does not read the
-`?dpl=` query parameter on incoming requests. The query parameter is for cache
-busting (ensuring browsers and CDNs fetch fresh assets), not for routing. If you
-need version-aware routing, consult your hosting provider or CDN's documentation
-for implementing deployment-based routing. ## Use cases ### Rolling deployments
-During a rolling deployment, some server instances may be running the new
-version while others are still running the old version. Without a deployment ID,
-users might receive a mix of old and new assets, causing errors. Setting a
-consistent `deploymentId` per deployment ensures: * Clients always request
-assets from a matching
+support concurrent rendering for use cases specific to their use case in areas
+like styles, and external stores. To support React 18, some libraries may need
+to switch to one of the following APIs: useSyncExternalStore is a new Hook that
+allows external stores to support concurrent reads by forcing updates to the
+store to be synchronous. This new API is recommended for any library that
+integrates with state external to React. For more information, see the
+useSyncExternalStore overview post and useSyncExternalStore API details .
+useInsertionEffect is a new Hook that allows CSS-in-JS libraries to address
+performance issues of injecting styles in render. Unless you’ve already built a
+CSS-in-JS library we don’t expect you to ever use this. This Hook will run after
+the DOM is mutated, but before layout effects read the new layout. This solves
+an issue that already exists in React 17 and below, but is even more important
+in React 18 because React yields to the browser during concurrent rendering,
+giving it a chance to recalculate layout. For more information, see the Library
+Upgrade Guide for <style> . React 18 also introduces new APIs for concurrent
+rendering such as startTransition , useDeferredValue and useId , which we share
+more about in the release post . Updates to Strict Mode In the future, we’d like
+to add a feature that allows React to add and remove sections of the UI while
+preserving state. For example, when a user tabs away from a screen and back,
+React should be able to immediately show the previous
 ----------------------------------------------------------------------------------------------------
-Index: 20761 <<"chunk_id": 1, "docno": 2501>>
+Index: 4567 <<"chunk_id": 4, "docno": 665>>
 
-will need to follow this upgrade guide to update your Middleware. Breaking
-changes No Nested Middleware No Response Body Cookies API Revamped New
-User-Agent Helper No More Page Match Data Executing Middleware on Internal
-Next.js Requests No Nested Middleware Summary of changes Define a single
-Middleware file next to your pages folder No need to prefix the file with an
-underscore A custom matcher can be used to define matching routes using an
-exported config object Explanation Previously, you could create a _middleware.ts
-file under the pages directory at any level. Middleware execution was based on
-the file path where it was created. Based on customer feedback, we have replaced
-this API with a single root Middleware, which provides the following
-improvements: Faster execution with lower latency : With nested Middleware, a
-single request could invoke multiple Middleware functions. A single Middleware
-means a single function execution, which is more efficient. Less expensive :
-Middleware usage is billed per invocation. Using nested Middleware, a single
-request could invoke multiple Middleware functions, meaning multiple Middleware
-charges per request. A single Middleware means a single invocation per request
-and is more cost effective. Middleware can conveniently filter on things besides
-routes : With nested Middleware, the Middleware files were located in the pages
-directory and Middleware was executed based on request paths. By moving to a
-single root Middleware, you can still execute code based on request paths, but
-you can now more conveniently execute Middleware based on other conditions, like
-cookies or the presence of a request
+and effects phases: Mount - A corresponding subtree of component renders or
+effects was mounted. Unmount - A corresponding subtree of component renders or
+effects was unmounted. Reconnect - Similar to Mount, but limited to cases when
+<Activity> is used. Disconnect - Similar to Unmount, but limited to cases when
+<Activity> is used. Changed props In development builds, when you click on a
+component render entry, you can inspect potential changes in props. You can use
+this information to identify unnecessary renders. Server Server Requests The
+Server Requests track visualized all Promises that eventually end up in a React
+Server Component. This includes any async operations like calling fetch or async
+Node.js file operations. React will try to combine Promises that are started
+from inside third-party code into a single span representing the the duration of
+the entire operation blocking 1st party code. For example, a third party library
+method called getUser that calls fetch internally multiple times will be
+represented as a single span called getUser , instead of showing multiple fetch
+spans. Clicking on spans will show you a stack trace of where the Promise was
+created as well as a view of the value that the Promise resolved to, if
+available. Rejected Promises are displayed as red with their rejected value.
+Server Components The Server Components tracks visualize the durations of React
+Server Components Promises they awaited. Timings are displayed as a flamegraph,
+where each entry represents the duration of the corresponding component render
+and all its descendant children components. If you await
 ----------------------------------------------------------------------------------------------------
-Index: 6346 <<"chunk_id": 4, "docno": 828>>
+Index: 5914 <<"chunk_id": 3, "docno": 857>>
 
-Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
-Signals Listening to signals Defining and sending signals Disconnecting signals
-System check framework Writing your own checks External packages Localflavor
-Comments Formtools Asynchronous support Async views Async safety Async adapter
-functions Django’s Tasks framework Background Task fundamentals Configuring a
-Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
-data and databases How to provide initial data for models How to integrate
-Django with a legacy database How to create custom model fields How to create
-database migrations How to write custom lookups Templates and output How to
-create CSV output How to create PDF files How to override templates How to
-implement a custom template backend How to create custom template tags and
-filters Project configuration and management How to manage static files (e.g.
-images, JavaScript, CSS) How to configure and use logging How to manage error
-reporting How to delete a Django application Installing, deploying and upgrading
-How to upgrade Django to a newer version How to install Django on Windows How to
-deploy Django How to deploy static files Other guides How to authenticate using
-REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
-protection How to write a custom storage class How to create custom django-admin
-commands How to customize the shell command Django FAQ FAQ: General Why does
-this project exist? What does “Django” mean, and how do you pronounce it? Is
-Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
-does Django
+of the UI from the screen, then add them back later while reusing the previous
+state. For example, when a user tabs away from a screen and back, React should
+be able to restore the previous screen in the same state it was in before. In an
+upcoming minor, we’re planning to add a new component called <Offscreen> that
+implements this pattern. Similarly, you’ll be able to use Offscreen to prepare
+new UI in the background so that it’s ready before the user reveals it.
+Concurrent rendering is a powerful new tool in React and most of our new
+features are built to take advantage of it, including Suspense, transitions, and
+streaming server rendering. But React 18 is just the beginning of what we aim to
+build on this new foundation. Gradually Adopting Concurrent Features
+Technically, concurrent rendering is a breaking change. Because concurrent
+rendering is interruptible, components behave slightly differently when it is
+enabled. In our testing, we’ve upgraded thousands of components to React 18.
+What we’ve found is that nearly all existing components “just work” with
+concurrent rendering, without any changes. However, some of them may require
+some additional migration effort. Although the changes are usually small, you’ll
+still have the ability to make them at your own pace. The new rendering behavior
+in React 18 is only enabled in the parts of your app that use new features. The
+overall upgrade strategy is to get your application running on React 18 without
+breaking existing code. Then you can gradually start adding concurrent features
 ----------------------------------------------------------------------------------------------------
-Index: 8526 <<"chunk_id": 1, "docno": 1201>>
+Index: 1899 <<"chunk_id": 8, "docno": 239>>
 
-Next.js server cache, then call your CDN purge API for the affected keys
-(including both HTML and RSC variants). Static assets Static assets (JavaScript,
-CSS, images, fonts) served from /_next/static/ include content hashes in their
-filenames and have a 1 year max-age and immutable directive: public,
-max-age=31536000, immutable You can use assetPrefix to serve static assets from
-a different domain or CDN origin. Static prefetches (PPR-enabled routes) When a
-route has Partial Prerendering enabled and the next-router-prefetch header is
-set (indicating a static prefetch), the response is deterministic: it returns
-the same prerendered content regardless of the client's router state. The
-next-router-state-tree header is not parsed for these requests, so it does not
-affect the response. For PPR-enabled routes, a CDN can cache static prefetch
-responses if it: Includes the _rsc search parameter in the cache key (to
-distinguish prefetch variants from HTML responses). Respects the Cache-Control
-headers Next.js sets on the response. Good to know: For routes without PPR, the
-next-router-state-tree header is read during prefetch requests to determine
-which segments to include, which increases cache vary as it passes the current
-router state. When Cache Components is enabled, segment-level prefetches already
-use pathname-based routes (for example, /page.segments/_tree.segment.rsc ), and
-CDNs can cache these with standard pathname-based cache keys. Where CDN Caching
-Is Challenging App Router responses can vary based on several custom request
-headers. Next.js sets a Vary header on responses to signal this to CDNs: rsc —
-whether the request should return a React Server Components (RSC) payload
-instead of HTML next-router-state-tree —
+improve performance by skipping rendering components whose inputs have not
+changed. This is safe because pure functions always return the same results, so
+they are safe to cache. If some data changes in the middle of rendering a deep
+component tree, React can restart rendering without wasting time to finish the
+outdated render. Purity makes it safe to stop calculating at any time. Every new
+React feature we’re building takes advantage of purity. From data fetching to
+animations to performance, keeping components pure unlocks the power of the
+React paradigm. Recap A component must be pure, meaning: It minds its own
+business. It should not change any objects or variables that existed before
+rendering. Same inputs, same output. Given the same inputs, a component should
+always return the same JSX. Rendering can happen at any time, so components
+should not depend on each others’ rendering sequence. You should not mutate any
+of the inputs that your components use for rendering. That includes props,
+state, and context. To update the screen, “set” state instead of mutating
+preexisting objects. Strive to express your component’s logic in the JSX you
+return. When you need to “change things”, you’ll usually want to do it in an
+event handler. As a last resort, you can useEffect . Writing pure functions
+takes a bit of practice, but it unlocks the power of React’s paradigm. Try out
+some challenges 1 . Fix a broken clock 2 . Fix a broken profile 3 . Fix a broken
+story tray Challenge 1 of 3 :
 ----------------------------------------------------------------------------------------------------
-Index: 40761 <<"chunk_id": 21, "docno": 6218>>
+Index: 5923 <<"chunk_id": 12, "docno": 857>>
 
-example of how to subclass FileField to support a particular type of file, as it
-incorporates all of the techniques described above. Cache file attributes
-wherever possible. Since files may be stored in remote storage systems,
-retrieving them may cost extra time, or even money, that isn’t always necessary.
-Once a file is retrieved to obtain some data about its content, cache as much of
-that data as possible to reduce the number of times the file must be retrieved
-on subsequent calls for that information. Previous page and next page How to
-integrate Django with a legacy database How to create database migrations Back
-to Top Additional Information Support Django! Nowack & Olson, PLLC donated to
-the Django Software Foundation to support Django development. Donate today!
-Contents How to create custom model fields Introduction Our example object
-Background theory Database storage What does a field class do? Writing a field
-subclass Field deconstruction Field attributes not affecting database column
-definition Changing a custom field’s base class Documenting your custom field
-Useful methods Custom database types Converting values to Python objects
-Converting Python objects to query values Converting query values to database
-values Preprocessing values before saving Specifying the form field for a model
-field Emulating built-in field types Converting field data for serialization
-Some general advice Writing a FileField subclass A few suggestions Browse Prev:
-How to integrate Django with a legacy database Next: How to create database
-migrations Table of contents General Index Python Module Index You are here:
-Django dev documentation How-to guides
+re-rendering a non-urgent part of the tree. It is similar to debouncing, but has
+a few advantages compared to it. There is no fixed time delay, so React will
+attempt the deferred render right after the first render is reflected on the
+screen. The deferred render is interruptible and doesn’t block user input. See
+docs here . useSyncExternalStore useSyncExternalStore is a new Hook that allows
+external stores to support concurrent reads by forcing updates to the store to
+be synchronous. It removes the need for useEffect when implementing
+subscriptions to external data sources, and is recommended for any library that
+integrates with state external to React. See docs here . Note
+useSyncExternalStore is intended to be used by libraries, not application code.
+useInsertionEffect useInsertionEffect is a new Hook that allows CSS-in-JS
+libraries to address performance issues of injecting styles in render. Unless
+you’ve already built a CSS-in-JS library we don’t expect you to ever use this.
+This Hook will run after the DOM is mutated, but before layout effects read the
+new layout. This solves an issue that already exists in React 17 and below, but
+is even more important in React 18 because React yields to the browser during
+concurrent rendering, giving it a chance to recalculate layout. See docs here .
+Note useInsertionEffect is intended to be used by libraries, not application
+code. How to Upgrade See How to Upgrade to React 18 for step-by-step
+instructions and a full list of breaking and notable changes. Changelog React
+Add useTransition and useDeferredValue to separate urgent
 ----------------------------------------------------------------------------------------------------
-Index: 16074 <<"chunk_id": 3, "docno": 2149>>
+Index: 6029 <<"chunk_id": 4, "docno": 874>>
 
-SQL – entire statements, or just custom WHERE clauses as custom parameters to
-API calls. URL design ¶ Loose coupling ¶ URLs in a Django app should not be
-coupled to the underlying Python code. Tying URLs to Python function names is a
-Bad And Ugly Thing. Along these lines, the Django URL system should allow URLs
-for the same app to be different in different contexts. For example, one site
-may put stories at /stories/ , while another may use /news/ . Infinite
-flexibility ¶ URLs should be as flexible as possible. Any conceivable URL design
-should be allowed. Encourage best practices ¶ The framework should make it just
-as easy (or even easier) for a developer to design pretty URLs than ugly ones.
-File extensions in web-page URLs should be avoided. Vignette-style commas in
-URLs deserve severe punishment. Definitive URLs ¶ Technically, foo.com/bar and
-foo.com/bar/ are two different URLs, and search-engine robots (and some web
-traffic-analyzing tools) would treat them as separate pages. Django should make
-an effort to “normalize” URLs so that search-engine robots don’t get confused.
-This is the reasoning behind the APPEND_SLASH setting. Template system ¶
-Separate logic from presentation ¶ We see a template system as a tool that
-controls presentation and presentation-related logic – and that’s it. The
-template system shouldn’t support functionality that goes beyond this basic
-goal. Discourage redundancy ¶ The majority of dynamic websites use some sort of
-common sitewide design – a common header, footer, navigation bar, etc. The
-Django template system should make it
+like: Instant transitions. Some routing frameworks already prefetch data to
+speed up subsequent navigations, like when hovering over a link. With Offscreen,
+they’ll also be able to prerender the next screen in the background. Reusable
+state. Similarly, when navigating between routes or tabs, you can use Offscreen
+to preserve the state of the previous screen so you can switch back and pick up
+where you left off. Virtualized list rendering. When displaying large lists of
+items, virtualized list frameworks will prerender more rows than are currently
+visible. You can use Offscreen to prerender the hidden rows at a lower priority
+than the visible items in the list. Backgrounded content. We’re also exploring a
+related feature for deprioritizing content in the background without hiding it,
+like when displaying a modal overlay. Transition Tracing Currently, React has
+two profiling tools. The original Profiler shows an overview of all the commits
+in a profiling session. For each commit, it also shows all components that
+rendered and the amount of time it took for them to render. We also have a beta
+version of a Timeline Profiler introduced in React 18 that shows when components
+schedule updates and when React works on these updates. Both of these profilers
+help developers identify performance problems in their code. We’ve realized that
+developers don’t find knowing about individual slow commits or components out of
+context that useful. It’s more useful to know about what actually causes the
+slow commits. And that developers want to be able to track specific interactions
+(eg a button
 ----------------------------------------------------------------------------------------------------
-Index: 8527 <<"chunk_id": 2, "docno": 1201>>
+Index: 1003 <<"chunk_id": 2, "docno": 141>>
 
-on responses to signal this to CDNs: rsc — whether the request should return a
-React Server Components (RSC) payload instead of HTML next-router-state-tree —
-the client's current router state, used for targeted segment updates during
-dynamic navigations next-router-prefetch — whether this is a prefetch request
-next-router-segment-prefetch — the specific segment being prefetched next-url —
-added only for routes that use interception routes , carries the URL being
-intercepted Good to know: proxy.js (previously Middleware) should run before the
-CDN cache so it remains the source of truth for auth, redirects, and rewrites.
-If your deployment places proxy.js behind the CDN, configure the cache layer to
-bypass caching for routes that depend on proxy.js decisions. Many CDNs don't
-support Vary without additional configuration. Next.js addresses this with the
-_rsc search parameter: a hash of the relevant request header values that acts as
-a cache-key, ensuring different response variants get different cache keys. This
-ensures correct responses even on CDNs that ignore Vary . Handling Headers at
-the CDN What you can safely ignore These headers can be omitted in specific
-cases without causing protocol errors. The server still returns a parseable
-response, but it may be larger or less targeted to the specific navigation:
-next-router-state-tree : when omitted on non-prefetch RSC requests, the server
-returns a full payload instead of a targeted segment update.
-next-router-segment-prefetch : when omitted on prefetch requests, the server
-falls back to a broader prefetch payload instead of a segment-specific one.
-next-url : used for interception routes to vary the response based
+at play here. React waits until all code in the event handlers has run before
+processing your state updates. This is why the re-render only happens after all
+these setNumber() calls. This might remind you of a waiter taking an order at
+the restaurant. A waiter doesn’t run to the kitchen at the mention of your first
+dish! Instead, they let you finish your order, let you make changes to it, and
+even take orders from other people at the table. Illustrated by Rachel Lee
+Nabors This lets you update multiple state variables—even from multiple
+components—without triggering too many re-renders. But this also means that the
+UI won’t be updated until after your event handler, and any code in it,
+completes. This behavior, also known as batching, makes your React app run much
+faster. It also avoids dealing with confusing “half-finished” renders where only
+some of the variables have been updated. React does not batch across multiple
+intentional events like clicks —each click is handled separately. Rest assured
+that React only does batching when it’s generally safe to do. This ensures that,
+for example, if the first button click disables a form, the second click would
+not submit it again. Updating the same state multiple times before the next
+render It is an uncommon use case, but if you would like to update the same
+state variable multiple times before the next render, instead of passing the
+next state value like setNumber(number + 1) , you can pass a function that
+calculates the next state based
 ----------------------------------------------------------------------------------------------------
-Index: 36505 <<"chunk_id": 9, "docno": 5248>>
+Index: 432 <<"chunk_id": 4, "docno": 67>>
 
-For example, if your site runs on example.com , you would want to serve uploaded
-content (the MEDIA_URL setting) from something like usercontent-example.com .
-It’s not sufficient to serve content from a subdomain like
-usercontent.example.com . Beyond this, applications may choose to define a list
-of allowable file extensions for user uploaded files and configure the web
-server to only serve such files. Form Submissions ¶ Form submissions containing
-files are not limited by DATA_UPLOAD_MAX_MEMORY_SIZE . Under ASGI, the entire
-request may be spooled to disk before any file size validation is performed. It
-is strongly advised that you limit the maximum request body size in your web
-server configuration to prevent denial of service (DOS) attacks. Content
-Security Policy ¶ Content Security Policy (CSP) is a browser security mechanism
-that helps protect web applications against attacks such as cross-site scripting
-(XSS) and other content injection attacks. CSP allows web applications to define
-which sources of content are trusted, instructing the browser to load, execute,
-or render resources only from those sources. This effectively creates an
-allowlist of content origins, reducing the risk of malicious code execution. Key
-benefits of enabling CSP include: Mitigating XSS attacks by blocking inline
-scripts and restricting external script loading. Controlling which external
-resources (e.g., images, fonts, stylesheets) can be loaded. Preventing unwanted
-framing of your site to protect against clickjacking. Reporting violations to a
-specified endpoint, enabling monitoring and debugging. For configuration
-instructions, see the Using CSP documentation, and refer to the CSP overview for
-details on directives and settings.
+Show more Ready to learn this topic? Read State: A Component’s Memory to learn
+how to remember a value and update it on interaction. Read More Render and
+commit Before your components are displayed on the screen, they must be rendered
+by React. Understanding the steps in this process will help you think about how
+your code executes and explain its behavior. Imagine that your components are
+cooks in the kitchen, assembling tasty dishes from ingredients. In this
+scenario, React is the waiter who puts in requests from customers and brings
+them their orders. This process of requesting and serving UI has three steps:
+Triggering a render (delivering the diner’s order to the kitchen) Rendering the
+component (preparing the order in the kitchen) Committing to the DOM (placing
+the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
+Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
+update. Read More State as a snapshot Unlike regular JavaScript variables, React
+state behaves more like a snapshot. Setting it does not change the state
+variable you already have, but instead triggers a re-render. This can be
+surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
+Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
+helps you avoid subtle bugs. Here is a little chat app. Try to guess what
+happens if you press “Send” first and then change the
 ----------------------------------------------------------------------------------------------------
-Index: 7753 <<"chunk_id": 1, "docno": 1073>>
+Index: 1820 <<"chunk_id": 15, "docno": 229>>
 
-Pages Router on-demand ISR APIs (for example res.revalidate() and the
-x-prerender-revalidate flow) are still supported and use the server cache
-handler ( cacheHandler , singular). The cacheHandlers option (plural) is for
-'use cache' directives. What Gets Revalidated When a route is revalidated,
-Next.js regenerates both the HTML response and the RSC payload (React Server
-Components payload) from the same React component tree. Both artifacts are
-stored together in the same cache entry. This consistency matters because the
-RSC payload is used for client-side navigations. Browser navigations and
-client-side navigations should hold the same content. What happens if they get
-out of sync If a platform's cache serves HTML from one render and an RSC payload
-from a different render, users may see stale or mismatched content during
-client-side navigation. The primary mitigation is to cache HTML and RSC
-responses together with the same TTL and invalidation policy, and to respect the
-Vary header that Next.js sets. See CDN Caching for details. A separate but
-related problem is cross-deployment skew : during rolling deployments, a client
-built with deploy A may receive responses from a server running deploy B.
-deploymentId mitigates this: when the client detects a different deployment ID
-from the server, it triggers a hard navigation to fetch consistent content. Tag
-System Architecture Next.js uses a tag-based system to track which cached
-content needs to be invalidated. There are two types of tags: Explicit tags
-Explicit tags are set by the developer using cacheTag() inside a use cache
-function, or via next: { tags: [...]
+on. Simpler Implementation: Because React does not rely on mutation, it does not
+need to do anything special with your objects. It does not need to hijack their
+properties, always wrap them into Proxies, or do other work at initialization as
+many “reactive” solutions do. This is also why React lets you put any object
+into state—no matter how large—without additional performance or correctness
+pitfalls. In practice, you can often “get away” with mutating state in React,
+but we strongly advise you not to do that so that you can use new React features
+developed with this approach in mind. Future contributors and perhaps even your
+future self will thank you! Recap Treat all state in React as immutable. When
+you store objects in state, mutating them will not trigger renders and will
+change the state in previous render “snapshots”. Instead of mutating an object,
+create a new version of it, and trigger a re-render by setting state to it. You
+can use the {...obj, something: 'newValue'} object spread syntax to create
+copies of objects. Spread syntax is shallow: it only copies one level deep. To
+update a nested object, you need to create copies all the way up from the place
+you’re updating. To reduce repetitive copying code, use Immer. Try out some
+challenges 1 . Fix incorrect state updates 2 . Find and fix the mutation 3 .
+Update an object with Immer Challenge 1 of 3 : Fix incorrect state updates This
+form has a few bugs. Click the button that increases the
 ----------------------------------------------------------------------------------------------------
-Index: 19004 <<"chunk_id": 272, "docno": 2483>>
+Index: 2292 <<"chunk_id": 1, "docno": 310>>
 
-navigation. The primary mitigation is to cache HTML and RSC responses together
-with the same TTL and invalidation policy, and to respect the [`Vary`
-header](/docs/app/guides/cdn-caching) that Next.js sets. See [CDN
-Caching](/docs/app/guides/cdn-caching) for details. A separate but related
-problem is **cross-deployment skew**: during rolling deployments, a client built
-with deploy A may receive responses from a server running deploy B.
-[`deploymentId`](/docs/app/api-reference/config/next-config-js/deploymentId)
-mitigates this: when the client detects a different deployment ID from the
-server, it triggers a hard navigation to fetch consistent content. ## Tag System
-Architecture Next.js uses a tag-based system to track which cached content needs
-to be invalidated. There are two types of tags: ### Explicit tags Explicit tags
-are set by the developer using
-[`cacheTag()`](/docs/app/api-reference/functions/cacheTag) inside a `use cache`
-function, or via `next: { tags: [...] }` on a `fetch` call. When
-[`revalidateTag('my-tag',
-'max')`](/docs/app/api-reference/functions/revalidateTag) is called, all cache
-entries with that tag are invalidated. ### Soft tags Soft tags are automatically
-generated by Next.js based on the route path, prefixed with `_N_T_`. For
-example, the route `/blog/hello` generates soft tags like `_N_T_/layout`,
-`_N_T_/blog/layout`, `_N_T_/blog/hello/layout`, and `_N_T_/blog/hello`. Each
-segment in the path gets a layout tag, plus the leaf route itself. Soft tags
-enable [`revalidatePath()`](/docs/app/api-reference/functions/revalidatePath) to
-work through the same tag-based system. When `revalidatePath('/blog/hello')` is
-called, it invalidates cache entries associated with that path's leaf route tag
-and its ancestor layout soft tags (for example `_N_T_/layout`,
-`_N_T_/blog/layout`, `_N_T_/blog/hello/layout`, and `_N_T_/blog/hello`). In the
-[cache handler
-API](/docs/app/api-reference/config/next-config-js/cacheHandlers), soft tags are
-passed to the `get()` method as the `softTags` parameter. Your handler should
-check whether any soft
+forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
+React APIs In addition to Hooks and Components , the react package exports a few
+other APIs that are useful for defining components. This page lists all the
+remaining modern React APIs. createContext lets you define and provide context
+to the child components. Used with useContext . lazy lets you defer loading a
+component’s code until it’s rendered for the first time. memo lets your
+component skip re-renders with same props. Used with useMemo and useCallback .
+startTransition lets you mark a state update as non-urgent. Similar to
+useTransition . act lets you wrap renders and interactions in tests to ensure
+updates have processed before making assertions. Resource APIs Resources can be
+accessed by a component without having them as part of their state. For example,
+a component can read a message from a Promise or read styling information from a
+context. To read a value from a resource, use this API: use lets you read the
+value of a resource like a Promise or context . function MessageComponent ( {
+messagePromise } ) { const message = use ( messagePromise ) ; const theme = use
+( ThemeContext ) ; // ... } Previous <ViewTransition> Next act Copyright © Meta
+Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start
+Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
 ----------------------------------------------------------------------------------------------------
-Index: 22576 <<"chunk_id": 8, "docno": 2814>>
+Index: 1539 <<"chunk_id": 33, "docno": 187>>
 
-writing your own template tags and filters: Always return strings from a
-template tag’s render() method and from template filters. Use force_str() in
-preference to smart_str() in these places. Tag rendering and filter calls occur
-as the template is being rendered, so there is no advantage to postponing the
-conversion of lazy translation objects into strings. It’s easier to work solely
-with strings at that point. Files ¶ If you intend to allow users to upload
-files, you must ensure that the environment used to run Django is configured to
-work with non-ASCII file names. If your environment isn’t configured correctly,
-you’ll encounter UnicodeEncodeError exceptions when saving files with file names
-or content that contains non-ASCII characters. Filesystem support for UTF-8 file
-names varies and might depend on the environment. Check your current
-configuration in an interactive Python shell by running: import sys sys .
-getfilesystemencoding () This should output “UTF-8”. The LANG environment
-variable is responsible for setting the expected encoding on Unix platforms.
-Consult the documentation for your operating system and application server for
-the appropriate syntax and location to set this variable. See the How to use
-Django with Apache and mod_wsgi for examples. In your development environment,
-you might need to add a setting to your ~.bashrc analogous to: export LANG =
-"en_US.UTF-8" Form submission ¶ HTML form submission is a tricky area. There’s
-no guarantee that the submission will include encoding information, which means
-the framework might have to guess at the encoding of submitted data. Django
-adopts a “lazy” approach
+State Escape Hatches API Reference React APIs React DOM APIs Community Code of
+Conduct Meet the Team Docs Contributors Acknowledgements More Blog React Native
+Privacy Terms On this page Overview Dependencies should match the code To remove
+a dependency, prove that it’s not a dependency To change the dependencies,
+change the code Removing unnecessary dependencies Should this code move to an
+event handler? Is your Effect doing several unrelated things? Are you reading
+some state to calculate the next state? Do you want to read a value without
+“reacting” to its changes? Does some reactive value change unintentionally?
+Recap Challenges
 ----------------------------------------------------------------------------------------------------
-Index: 20508 <<"chunk_id": 1776, "docno": 2483>>
+Index: 980 <<"chunk_id": 2, "docno": 137>>
 
-
-[`crossOrigin="use-credentials"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin#use-credentials).
---- title: deploymentId description: Configure a deployment identifier used for
-version skew protection and cache busting. url:
-"https://nextjs.org/docs/pages/api-reference/config/next-config-js/deploymentId"
-version: 16.3.0 router: Pages Router --- # deploymentId The `deploymentId`
-option allows you to set an identifier for your deployment. This identifier is
-used for [version skew](/docs/app/guides/self-hosting#version-skew) protection
-and cache busting during rolling deployments. ```js filename="next.config.js"
-module.exports = { deploymentId: 'my-deployment-id', } ``` You can also set the
-deployment ID using the `NEXT_DEPLOYMENT_ID` environment variable: ```bash
-NEXT_DEPLOYMENT_ID=my-deployment-id next build ``` > **Good to know:** If both
-are set, the `deploymentId` value in `next.config.js` takes precedence over the
-`NEXT_DEPLOYMENT_ID` environment variable. ## How it works When a `deploymentId`
-is configured, Next.js: 1. Appends `?dpl=<deploymentId>` to static asset URLs
-(JavaScript, CSS, images) 2. Adds an `x-deployment-id` header to client-side
-navigation requests 3. Adds an `x-nextjs-deployment-id` header to navigation
-responses 4. Injects a `data-dpl-id` attribute on the `<html>` element 5.
-Includes the `deploymentId` in the [`'use cache'` cache
-key](/docs/app/api-reference/directives/use-cache#cache-keys), invalidating
-cache entries when the deployment ID changes When the client detects a mismatch
-between its deployment ID and the server's (via the response header), it
-triggers a hard navigation (full page reload) instead of a client-side
-navigation. This ensures users always receive assets from a consistent
-deployment version. > **Good to know:** Next.js does not read the `?dpl=` query
-parameter on incoming requests. The query parameter is for cache busting
-(ensuring browsers and CDNs fetch fresh assets), not for routing. If you need
-version-aware routing, consult your hosting provider or CDN's documentation for
-implementing deployment-based routing. ## Use cases ###
+{ message } onChange = { e => setMessage ( e . target . value ) } /> < button
+type = "submit" > Send </ button > </ form > ) ; } function sendMessage (
+message ) { // ... } Show more Here’s what happens when you click the button:
+The onSubmit event handler executes. setIsSent(true) sets isSent to true and
+queues a new render. React re-renders the component according to the new isSent
+value. Let’s take a closer look at the relationship between state and rendering.
+Rendering takes a snapshot in time “Rendering” means that React is calling your
+component, which is a function. The JSX you return from that function is like a
+snapshot of the UI in time. Its props, event handlers, and local variables were
+all calculated using its state at the time of the render. Unlike a photograph or
+a movie frame, the UI “snapshot” you return is interactive. It includes logic
+like event handlers that specify what happens in response to inputs. React
+updates the screen to match this snapshot and connects the event handlers. As a
+result, pressing a button will trigger the click handler from your JSX. When
+React re-renders a component: React calls your function again. Your function
+returns a new JSX snapshot. React then updates the screen to match the snapshot
+your function returned. React executing the function Calculating the snapshot
+Updating the DOM tree Illustrated by Rachel Lee Nabors As a component’s memory,
+state is not like a regular variable that disappears
 ----------------------------------------------------------------------------------------------------
-Index: 33597 <<"chunk_id": 30, "docno": 4450>>
+Index: 1644 <<"chunk_id": 0, "docno": 202>>
 
-a man-in-the-middle attack. Your Django website may sit behind a proxy cache ,
-such as Squid Web Proxy Cache ( http://www.squid-cache.org/ ), that caches pages
-for performance. In this case, each request first would be handled by the proxy,
-and it would be passed to your application only if needed. Your web browser
-caches pages, too. If a web page sends out the appropriate headers, your browser
-will use the local cached copy for subsequent requests to that page, without
-even contacting the web page again to see whether it has changed. Downstream
-caching is a nice efficiency boost, but there’s a danger to it: Many web pages’
-contents differ based on authentication and a host of other variables, and cache
-systems that blindly save pages based purely on URLs could expose incorrect or
-sensitive data to subsequent visitors to those pages. For example, if you
-operate a web email system, then the contents of the “inbox” page depend on
-which user is logged in. If an ISP blindly cached your site, then the first user
-who logged in through that ISP would have their user-specific inbox page cached
-for subsequent visitors to the site. That’s not cool. Fortunately, HTTP provides
-a solution to this problem. A number of HTTP headers exist to instruct
-downstream caches to differ their cache contents depending on designated
-variables, and to tell caching mechanisms not to cache particular pages. We’ll
-look at some of these headers in the sections that follow. Using Vary headers ¶
-The Vary header defines which
+State: A Component's Memory – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State: A Component's Memory Components often need to change what’s on the screen
+as a result of an interaction. Typing into the form should update the input
+field, clicking “next” on an image carousel should change which image is
+displayed, clicking “buy” should put a product in the
 ----------------------------------------------------------------------------------------------------
-Index: 16076 <<"chunk_id": 5, "docno": 2149>>
+Index: 1559 <<"chunk_id": 2, "docno": 192>>
 
-functionality, such as branching and looping, that is essential for making
-presentation-related decisions. The Django Template Language (DTL) aims to avoid
-advanced logic. Safety and security ¶ The template system, out of the box,
-should forbid the inclusion of malicious code – such as commands that delete
-database records. This is another reason the template system doesn’t allow
-arbitrary Python code. Extensibility ¶ The template system should recognize that
-advanced template authors may want to extend its technology. This is the
-philosophy behind custom template tags and filters. Views ¶ Simplicity ¶ Writing
-a view should be as simple as writing a Python function. Developers shouldn’t
-have to instantiate a class when a function will do. Use request objects ¶ Views
-should have access to a request object – an object that stores metadata about
-the current request. The object should be passed directly to a view function,
-rather than the view function having to access the request data from a global
-variable. This makes it light, clean and easy to test views by passing in “fake”
-request objects. Loose coupling ¶ A view shouldn’t care about which template
-system the developer uses – or even whether a template system is used at all.
-Differentiate between GET and POST ¶ GET and POST are distinct; developers
-should explicitly use one or the other. The framework should make it easy to
-distinguish between GET and POST data. Cache Framework ¶ The core goals of
-Django’s cache framework are: Less code ¶ A cache should be as fast
+the documentation page you’re reading is made out of React components: <
+PageLayout > < NavigationHeader > < SearchBar /> < Link to = "/docs" > Docs </
+Link > </ NavigationHeader > < Sidebar /> < PageContent > < TableOfContents /> <
+DocumentationText /> </ PageContent > </ PageLayout > As your project grows, you
+will notice that many of your designs can be composed by reusing components you
+already wrote, speeding up your development. Our table of contents above could
+be added to any screen with <TableOfContents /> ! You can even jumpstart your
+project with the thousands of components shared by the React open source
+community like Chakra UI and Material UI. Defining a component Traditionally
+when creating web pages, web developers marked up their content and then added
+interaction by sprinkling on some JavaScript. This worked great when interaction
+was a nice-to-have on the web. Now it is expected for many sites and all apps.
+React puts interactivity first while still using the same technology: a React
+component is a JavaScript function that you can sprinkle with markup . Here’s
+what that looks like (you can edit the example below): App.js App.js Reload
+Clear Fork export default function Profile ( ) { return ( < img src =
+"https://react.dev/images/docs/scientists/MK3eW3Am.jpg" alt = "Katherine
+Johnson" /> ) } And here’s how to build a component: Step 1: Export the
+component The export default prefix is a standard JavaScript syntax (not
+specific to React). It lets you mark the main function in a file so
 ----------------------------------------------------------------------------------------------------
-Index: 8529 <<"chunk_id": 4, "docno": 1201>>
+Index: 4259 <<"chunk_id": 17, "docno": 628>>
 
-a 307 redirect to the URL with the correct hash. This behavior can be disabled
-by setting experimental.validateRSCRequestHeaders to false . CDNs should follow
-this redirect. Platforms that compute the hash upstream can rewrite requests to
-include the correct _rsc before forwarding to avoid an extra round trip. Good to
-know: Today, next-url is included in the _rsc hash even during static
-prefetches. This means you cannot safely ignore it under the current scheme
-without potentially getting cache misses. The pathname-based direction described
-below resolves this gap. Direction: Pathname-Based Cache Keying The Next.js team
-is working on moving all cache-affecting inputs into the URL pathname,
-eliminating the need for Vary on custom headers and removing the _rsc search
-parameter. This resolves the CDN caching challenges described above. How it
-works The approach extends the routing scheme that output: 'export' and segment
-prefetches already use today. File extensions in the pathname identify the
-response type: Full page RSC : /my/page.rsc returns the RSC payload for the
-entire page Segment RSC : /my/page.segments/path/to/segment.segment.rsc returns
-the RSC payload for a specific segment Under this model: The pathname determines
-the cache key. Anything in the pathname affects which response variant is
-returned. Search parameters can be safely dropped without affecting returned
-responses. Standard HTTP cache headers ( Cache-Control , max-age , etc.) are
-respected as usual. No Vary support needed from the CDN. A CDN would cache
-Next.js responses by using the pathname as the cache key, ignoring search
-parameters, and respecting standard Cache-Control headers. No need to understand
-Vary
+updater function in a queue and re-render your component. During the next
+render, React will calculate the next state by applying all of the queued
+updaters to the previous state. optional callback : If specified, React will
+call the callback you’ve provided after the update is committed. Returns
+setState does not return anything. Caveats Think of setState as a request rather
+than an immediate command to update the component. When multiple components
+update their state in response to an event, React will batch their updates and
+re-render them together in a single pass at the end of the event. In the rare
+case that you need to force a particular state update to be applied
+synchronously, you may wrap it in flushSync , but this may hurt performance.
+setState does not update this.state immediately. This makes reading this.state
+right after calling setState a potential pitfall. Instead, use
+componentDidUpdate or the setState callback argument, either of which are
+guaranteed to fire after the update has been applied. If you need to set the
+state based on the previous state, you can pass a function to nextState as
+described above. Note Calling setState in class components is similar to calling
+a set function in function components. See how to migrate.
+shouldComponentUpdate(nextProps, nextState, nextContext) If you define
+shouldComponentUpdate , React will call it to determine whether a re-render can
+be skipped. If you are confident you want to write it by hand, you may compare
+this.props with nextProps and this.state with nextState and return false to tell
+React the
 ----------------------------------------------------------------------------------------------------
-Index: 1499 <<"chunk_id": 0, "docno": 220>>
+Index: 27843 <<"chunk_id": 2, "docno": 4499>>
 
-Installation — Flask Documentation (3.1.x) Navigation index modules | next |
-previous | Flask Documentation (3.1.x) » Installation Installation ¶ Python
-Version ¶ We recommend using the latest version of Python. Flask supports Python
-3.9 and newer. Dependencies ¶ These distributions will be installed
-automatically when installing Flask. Werkzeug implements WSGI, the standard
-Python interface between applications and servers. Jinja is a template language
-that renders the pages your application serves. MarkupSafe comes with Jinja. It
-escapes untrusted input when rendering templates to avoid injection attacks.
-ItsDangerous securely signs data to ensure its integrity. This is used to
-protect Flask’s session cookie. Click is a framework for writing command line
-applications. It provides the flask command and allows adding custom management
-commands. Blinker provides support for Signals . Optional dependencies ¶ These
-distributions will not be installed automatically. Flask will detect and use
-them if you install them. python-dotenv enables support for Environment
-Variables From dotenv when running flask commands. Watchdog provides a faster,
-more efficient reloader for the development server. greenlet ¶ You may choose to
-use Async with Gevent with your application. In this case, greenlet>=1.0 is
-required. When using PyPy, PyPy>=7.3.7 is required. These are not minimum
-supported versions, they only indicate the first versions that added necessary
-features. You should use the latest versions of each. Virtual environments ¶ Use
-a virtual environment to manage the dependencies for your project, both in
-development and in production. What problem does a virtual environment solve?
-The more Python projects you have, the more likely
+well with in-memory databases like H2 or HSQLDB, requiring a data source was a
+strong constraint for many users of our community who used to use the Map-based
+repository without any additional dependency. In this release, we introduce a
+JobRepository implementation that does not use or store batch meta-data in any
+form (not even in-memory). It is a "NoOp" implementation that throws away batch
+meta-data and does not interact with any resource (hence the name "resourceless
+job repository", which is named after the "resourceless transaction manager").
+This implementation is intended for use-cases where restartability is not
+required and where the execution context is not involved in any way (like
+sharing data between steps through the execution context, or partitioned steps
+where partitions meta-data is shared between the manager and workers through the
+execution context, etc). This implementation is suitable for one-time jobs
+executed in their own JVM. It works with transactional steps (configured with a
+DataSourceTransactionManager for instance) as well as non-transactional steps
+(configured with a ResourcelessTransactionManager ). The implementation is not
+thread-safe and should not be used in any concurrent environment. Composite item
+reader implementation Similar to the CompositeItemProcessor and
+CompositeItemWriter , we introduce a new CompositeItemReader implementation that
+is designed to read data sequentially from several sources having the same
+format. This is useful when data is spread over different resources and writing
+a custom reader is not an option. A CompositeItemReader works like other
+composite artifacts, by delegating the reading operation to regular item readers
+in order. Here is a quick example showing
+----------------------------------------------------------------------------------------------------
+Index: 1819 <<"chunk_id": 14, "docno": 229>>
+
+single component as much as you like. Immer is a great way to keep the update
+handlers concise, especially if there’s nesting in your state, and copying
+objects leads to repetitive code. Deep Dive Why is mutating state not
+recommended in React? Show Details There are a few reasons: Debugging: If you
+use console.log and don’t mutate state, your past logs won’t get clobbered by
+the more recent state changes. So you can clearly see how state has changed
+between renders. Optimizations: Common React optimization strategies rely on
+skipping work if previous props or state are the same as the next ones. If you
+never mutate state, it is very fast to check whether there were any changes. If
+prevObj === obj , you can be sure that nothing could have changed inside of it.
+New Features: The new React features we’re building rely on state being treated
+like a snapshot. If you’re mutating past versions of state, that may prevent you
+from using the new features. Requirement Changes: Some application features,
+like implementing Undo/Redo, showing a history of changes, or letting the user
+reset a form to earlier values, are easier to do when nothing is mutated. This
+is because you can keep past copies of state in memory, and reuse them when
+appropriate. If you start with a mutative approach, features like this can be
+difficult to add later on. Simpler Implementation: Because React does not rely
+on mutation, it does not need to do anything special with your objects. It does
+not need
+----------------------------------------------------------------------------------------------------
+Index: 1714 <<"chunk_id": 0, "docno": 214>>
+
+Passing Data Deeply with Context – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Passing Data Deeply with Context Usually, you will pass information from a
+parent component to a child component via props. But passing props can become
+verbose and inconvenient if you have to pass them through many components in the
+middle, or if many components in your app
+----------------------------------------------------------------------------------------------------
+Index: 5922 <<"chunk_id": 11, "docno": 857>>
+
+Effects are created . With Strict Mode in React 18, React will simulate
+unmounting and remounting the component in development mode: * React mounts the
+component . * Layout effects are created . * Effects are created . * React
+simulates unmounting the component . * Layout effects are destroyed . * Effects
+are destroyed . * React simulates mounting the component with the previous state
+. * Layout effects are created . * Effects are created . See docs for ensuring
+reusable state here . New Hooks useId useId is a new Hook for generating unique
+IDs on both the client and server, while avoiding hydration mismatches. It is
+primarily useful for component libraries integrating with accessibility APIs
+that require unique IDs. This solves an issue that already exists in React 17
+and below, but it’s even more important in React 18 because of how the new
+streaming server renderer delivers HTML out-of-order. See docs here . Note useId
+is not for generating keys in a list . Keys should be generated from your data.
+useTransition useTransition and startTransition let you mark some state updates
+as not urgent. Other state updates are considered urgent by default. React will
+allow urgent state updates (for example, updating a text input) to interrupt
+non-urgent state updates (for example, rendering a list of search results). See
+docs here . useDeferredValue useDeferredValue lets you defer re-rendering a
+non-urgent part of the tree. It is similar to debouncing, but has a few
+advantages compared to it. There is no fixed time
+----------------------------------------------------------------------------------------------------
+Index: 4181 <<"chunk_id": 3, "docno": 616>>
+
+performing that update as blocking. Specifically, for every Transition update,
+React will call getSnapshot a second time just before applying changes to the
+DOM. If it returns a different value than when it was called originally, React
+will restart the update from scratch, this time applying it as a blocking
+update, to ensure that every component on screen is reflecting the same version
+of the store. It’s not recommended to suspend a render based on a store value
+returned by useSyncExternalStore . The reason is that mutations to the external
+store cannot be marked as non-blocking Transition updates , so they will trigger
+the nearest Suspense fallback , replacing already-rendered content on screen
+with a loading spinner, which typically makes a poor UX. For example, the
+following are discouraged: const LazyProductDetailPage = lazy ( ( ) => import (
+'./ProductDetailPage.js' ) ) ; function ShoppingApp ( ) { const
+selectedProductId = useSyncExternalStore ( ... ) ; // ❌ Calling `use` with a
+Promise dependent on `selectedProductId` const data = use ( fetchItem (
+selectedProductId ) ) // ❌ Conditionally rendering a lazy component based on
+`selectedProductId` return selectedProductId != null ? < LazyProductDetailPage
+/> : < FeaturedProducts /> ; } Usage Subscribing to an external store Most of
+your React components will only read data from their props, state, and context.
+However, sometimes a component needs to read some data from some store outside
+of React that changes over time. This includes: Third-party state management
+libraries that hold state outside of React. Browser APIs that expose
+----------------------------------------------------------------------------------------------------
+Index: 3463 <<"chunk_id": 2, "docno": 491>>
+
+updates from a click, React may flush those before flushing the updates inside
+the callback. Usage Flushing updates for third-party integrations When
+integrating with third-party code such as browser APIs or UI libraries, it may
+be necessary to force React to flush updates. Use flushSync to force React to
+flush any state updates inside the callback synchronously: flushSync ( ( ) => {
+setSomething(123) ; } ) ; // By this line, the DOM is updated. This ensures
+that, by the time the next line of code runs, React has already updated the DOM.
+Using flushSync is uncommon, and using it often can significantly hurt the
+performance of your app. If your app only uses React APIs, and does not
+integrate with third-party libraries, flushSync should be unnecessary. However,
+it can be helpful for integrating with third-party code like browser APIs. Some
+browser APIs expect results inside of callbacks to be written to the DOM
+synchronously, by the end of the callback, so the browser can do something with
+the rendered DOM. In most cases, React handles this for you automatically. But
+in some cases it may be necessary to force a synchronous update. For example,
+the browser onbeforeprint API allows you to change the page immediately before
+the print dialog opens. This is useful for applying custom print styles that
+allow the document to display better for printing. In the example below, you use
+flushSync inside of the onbeforeprint callback to immediately “flush” the React
+state to the DOM. Then, by the time the print
+----------------------------------------------------------------------------------------------------
+Index: 4566 <<"chunk_id": 3, "docno": 665>>
+
+and this is when React runs hooks like useEffect . One known exception is user
+interactions, like clicks, or other discrete events. In this scenario, this
+phase could run before the paint. Learn more about renders and commits .
+Cascading updates Cascading updates is one of the patterns for performance
+regressions. If an update was scheduled during a render pass, React could
+discard completed work and start a new pass. In development builds, React can
+show you which Component scheduled a new update. This includes both general
+updates and cascading ones. You can see the enhanced stack trace by clicking on
+the “Cascading update” entry, which should also display the name of the method
+that scheduled an update. Learn more about Effects . Components The Components
+track visualizes the durations of React components. They are displayed as a
+flamegraph, where each entry represents the duration of the corresponding
+component render and all its descendant children components. Similar to render
+durations, effect durations are also represented as a flamegraph, but with a
+different color scheme that aligns with the corresponding phase on the Scheduler
+track. Note Unlike renders, not all effects are shown on the Components track by
+default. To maintain performance and prevent UI clutter, React will only display
+those effects, which had a duration of 0.05ms or longer, or triggered an update.
+Additional events may be displayed during the render and effects phases: Mount -
+A corresponding subtree of component renders or effects was mounted. Unmount - A
+corresponding subtree of component renders or effects
+----------------------------------------------------------------------------------------------------
+Index: 6866 <<"chunk_id": 13, "docno": 1020>>
+
+is sent after the context has been refreshed but before any application and
+command-line runners have been called. An AvailabilityChangeEvent is sent right
+after with LivenessState.CORRECT to indicate that the application is considered
+as live. An ApplicationReadyEvent is sent after any application and command-line
+runners have been called. An AvailabilityChangeEvent is sent right after with
+ReadinessState.ACCEPTING_TRAFFIC to indicate that the application is ready to
+service requests. An ApplicationFailedEvent is sent if there is an exception on
+startup. The above list only includes SpringApplicationEvent s that are tied to
+a SpringApplication . In addition to these, the following events are also
+published after ApplicationPreparedEvent and before ApplicationStartedEvent : A
+WebServerInitializedEvent is sent after the WebServer is ready.
+ServletWebServerInitializedEvent and ReactiveWebServerInitializedEvent are the
+servlet and reactive variants respectively. A ContextRefreshedEvent is sent when
+an ApplicationContext is refreshed. You often need not use application events,
+but it can be handy to know that they exist. Internally, Spring Boot uses events
+to handle a variety of tasks. Event listeners should not run potentially lengthy
+tasks as they execute in the same thread by default. Consider using application
+and command-line runners instead. Application events are sent by using Spring
+Framework’s event publishing mechanism. Part of this mechanism ensures that an
+event published to the listeners in a child context is also published to the
+listeners in any ancestor contexts. As a result of this, if your application
+uses a hierarchy of SpringApplication instances, a listener may receive multiple
+instances of the same type of application event. To allow your listener to
+----------------------------------------------------------------------------------------------------
+Index: 2222 <<"chunk_id": 6, "docno": 294>>
+
+in two steps: First, React re-renders with the new query ( "ab" ) but with the
+old deferredQuery (still "a" ). The deferredQuery value, which you pass to the
+result list, is deferred: it “lags behind” the query value. In the background,
+React tries to re-render with both query and deferredQuery updated to "ab" . If
+this re-render completes, React will show it on the screen. However, if it
+suspends (the results for "ab" have not loaded yet), React will abandon this
+rendering attempt, and retry this re-render again after the data has loaded. The
+user will keep seeing the stale deferred value until the data is ready. The
+deferred “background” rendering is interruptible. For example, if you type into
+the input again, React will abandon it and restart with the new value. React
+will always use the latest provided value. Note that there is still a network
+request per each keystroke. What’s being deferred here is displaying results
+(until they’re ready), not the network requests themselves. Even if the user
+continues typing, responses for each keystroke get cached, so pressing Backspace
+is instant and doesn’t fetch again. Indicating that the content is stale In the
+example above, there is no indication that the result list for the latest query
+is still loading. This can be confusing to the user if the new results take a
+while to load. To make it more obvious to the user that the result list does not
+match the latest query, you can add a visual indication when the stale
+----------------------------------------------------------------------------------------------------
+Index: 23816 <<"chunk_id": 1, "docno": 3605>>
+
+is now complete). Metrics MessageChannel , MessageSource and MessageHandler
+metrics can now be enabled independently of JMX. File Scanner A new directory
+scanner is available to more efficiently scan directory hierarchies by reacting
+to file system events rather than scanning the whole tree on every poll.
+(Requires Java 7) Event Channel Adapters The event channel adapters now support
+the new POJO ApplicationEvent support in Spring Framework 4.2. Process Barrier A
+new component has been introduced allowing an integration flow to be suspended
+until some asynchronous event occurs. ( Sample app coming soon where we wait for
+RabbitMQ publisher confirms before returning an HTTP response). Last Modified
+File List Filter A common problem with polling directories is if the file
+producer creates the file "in-place"; the file can be picked up while it is
+still being written. It is generally recommended to create the file with a
+temporary name and rename it when it is complete. If that cannot be done,
+however, this new filter prevents a file from being processed until it hasn't
+been modified for some time period. Codec A codec abstraction (including a Kryo
+implementation) has been introduced as an alternative to java serialization. JMS
+Shared Subscriptions JMS 2.0 shared subscriptions are now supported by the
+namespace, simplifying configuration when using XML. (S)FTP improvements Inbound
+channel adapters can now use an expression for the remote directory. SOAP Action
+Propagation It is now easier to implement a web service proxy using Spring
+Integration. Previous Milestones A reminder of features already announced that
+were in the
+----------------------------------------------------------------------------------------------------
+Index: 18946 <<"chunk_id": 2, "docno": 2701>>
+
+while a navigation is executing. After a navigation completes, the router writes
+an object containing this value together with a navigationId to history.state .
+The value is written when location.go() or location.replaceState() is called
+before activating this route. Note that history.state does not pass an object
+equality test because the router adds the navigationId on each navigation. info
+unknown Use this to convey transient information about this particular
+navigation, such as how it happened. In this way, it's different from the
+persisted value state that will be set to history.state . This object is
+assigned directly to the Router's current Navigation (it is not copied or
+cloned), so it should be mutated with caution. One example of how this might be
+used is to trigger different single-page navigation animations depending on how
+a certain route was reached. For example, consider a photo gallery app, where
+you can reach the same photo URL and state via various routes: Clicking on it in
+a gallery view Clicking "next" or "previous" when viewing another photo in the
+album Etc. Each of these wants a different animation at navigate time. This
+information doesn't make sense to store in the persistent URL or history entry
+state, but it's still important to communicate from the rest of the application,
+into the router. This information could be used in coordination with the View
+Transitions feature and the onViewTransitionCreated callback. The information
+might be used in the callback to set classes on the document in order to control
+the transition animations and remove the
+----------------------------------------------------------------------------------------------------
+Index: 3077 <<"chunk_id": 2, "docno": 430>>
+
+; // ... } See more examples below. Parameters setup : The function with your
+Effect’s logic. Your setup function may also optionally return a cleanup
+function. When your component commits , React will run your setup function.
+After every commit with changed dependencies, React will first run the cleanup
+function (if you provided it) with the old values, and then run your setup
+function with the new values. After your component is removed from the DOM,
+React will run your cleanup function. optional dependencies : The list of all
+reactive values referenced inside of the setup code. Reactive values include
+props, state, and all the variables and functions declared directly inside your
+component body. If your linter is configured for React , it will verify that
+every reactive value is correctly specified as a dependency. The list of
+dependencies must have a constant number of items and be written inline like
+[dep1, dep2, dep3] . React will compare each dependency with its previous value
+using the Object.is comparison. If you omit this argument, your Effect will
+re-run after every commit of the component. See the difference between passing
+an array of dependencies, an empty array, and no dependencies at all. Returns
+useEffect returns undefined . Caveats useEffect is a Hook, so you can only call
+it at the top level of your component or your own Hooks. You can’t call it
+inside loops or conditions. If you need that, extract a new component and move
+the state into it. If you’re not trying to synchronize
+----------------------------------------------------------------------------------------------------
+Index: 759 <<"chunk_id": 0, "docno": 112>>
+
+Rendering Lists – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Rendering Lists You will often want to display multiple similar components from
+a collection of data. You can use the JavaScript array methods to manipulate an
+array of data. On this page, you’ll use filter() and map() with React to filter
+and transform your array of data into an
+----------------------------------------------------------------------------------------------------
+Index: 8539 <<"chunk_id": 11, "docno": 1366>>
+
+the file instead of the entire file. Both start and end are inclusive and start
+counting at 0, allowed values are in the [0, Number.MAX_SAFE_INTEGER ] range. If
+start is omitted or undefined , filehandle.createReadStream() reads sequentially
+from the current file position. The encoding can be any one of those accepted by
+<Buffer> . If the FileHandle points to a character device that only supports
+blocking reads (such as keyboard or sound card), read operations do not finish
+until data is available. This can prevent the process from exiting and the
+stream from closing naturally. By default, the stream will emit a 'close' event
+after it has been destroyed. Set the emitClose option to false to change this
+behavior. import { open } from 'node:fs/promises' ; const fd = await open (
+'/dev/input/event0' ) ; // Create a stream from some character device. const
+stream = fd . createReadStream () ; setTimeout ( () => { stream . close () ; //
+This may not close the stream. // Artificially marking end-of-stream, as if the
+underlying resource had // indicated end-of-file by itself, allows the stream to
+close. // This does not cancel pending read operations, and if there is such an
+// operation, the process may still not be able to exit successfully // until it
+finishes. stream . push ( null ) ; stream . read ( 0 ) ; }, 100 ) ; mjs copy If
+autoClose is false, then the file descriptor won't be closed, even if there's an
+error. It is
+----------------------------------------------------------------------------------------------------
+Index: 10951 <<"chunk_id": 1, "docno": 1635>>
+
+and is ready for activation. unrecoverable Observable< UnrecoverableStateEvent >
+Emits an UnrecoverableStateEvent event whenever the version of the app used by
+the service worker to serve this client is in a broken state that cannot be
+recovered from without a full page reload. isEnabled boolean True if the Service
+Worker is enabled (supported by the browser and enabled via ServiceWorkerModule
+). checkForUpdate Promise<boolean> Checks for an update and waits until the new
+version is downloaded from the server and ready for activation. @returns
+Promise<boolean> a promise that resolves to true if a new version was found and
+is ready to be activated. resolves to false if no new version was found rejects
+if any error occurs activateUpdate Promise<boolean> Updates the current client
+(i.e. browser tab) to the latest version that is ready for activation. In most
+cases, you should not use this method and instead should update a client by
+reloading the page. Updating a client without reloading can easily result in a
+broken application due to a version mismatch between the application shell and
+other page resources, such as lazy-loaded chunks, whose filenames may change
+between versions. Only use this method, if you are certain it is safe for your
+specific use case. @returns Promise<boolean> a promise that resolves to true if
+an update was activated successfully resolves to false if no update was
+available (for example, the client was already on the latest version). rejects
+if any error occurs Jump to details Social Media Blog X (formerly Twitter)
+Bluesky YouTube Discord GitHub Stack Overflow
+----------------------------------------------------------------------------------------------------
+Index: 1727 <<"chunk_id": 13, "docno": 214>>
+
+consider context. Use cases for context Theming: If your app lets the user
+change its appearance (e.g. dark mode), you can put a context provider at the
+top of your app, and use that context in components that need to adjust their
+visual look. Current account: Many components might need to know the currently
+logged in user. Putting it in context makes it convenient to read it anywhere in
+the tree. Some apps also let you operate multiple accounts at the same time
+(e.g. to leave a comment as a different user). In those cases, it can be
+convenient to wrap a part of the UI into a nested provider with a different
+current account value. Routing: Most routing solutions use context internally to
+hold the current route. This is how every link “knows” whether it’s active or
+not. If you build your own router, you might want to do it too. Managing state:
+As your app grows, you might end up with a lot of state closer to the top of
+your app. Many distant components below may want to change it. It is common to
+use a reducer together with context to manage complex state and pass it down to
+distant components without too much hassle. Context is not limited to static
+values. If you pass a different value on the next render, React will update all
+the components reading it below! This is why context is often used in
+combination with state. In general, if some information is needed by distant
+components in
+----------------------------------------------------------------------------------------------------
+Index: 906 <<"chunk_id": 3, "docno": 129>>
+
+re-render. You can pass the next state directly, or a function that calculates
+it from the previous state: const [ name , setName ] = useState ( 'Edward' ) ;
+function handleClick ( ) { setName ( 'Taylor' ) ; setAge ( a => a + 1 ) ; // ...
+Parameters nextState : The value that you want the state to be. It can be a
+value of any type, but there is a special behavior for functions. If you pass a
+function as nextState , it will be treated as an updater function . It must be
+pure, should take the pending state as its only argument, and should return the
+next state. React will put your updater function in a queue and re-render your
+component. During the next render, React will calculate the next state by
+applying all of the queued updaters to the previous state. See an example below.
+Returns set functions do not have a return value. Caveats The set function only
+updates the state variable for the next render . If you read the state variable
+after calling the set function, you will still get the old value that was on the
+screen before your call. If the new value you provide is identical to the
+current state , as determined by an Object.is comparison, React will skip
+re-rendering the component and its children. This is an optimization. Although
+in some cases React may still need to call your component before skipping the
+children, it shouldn’t affect your code. React
+----------------------------------------------------------------------------------------------------
+Index: 1031 <<"chunk_id": 8, "docno": 146>>
+
+computed by taking the original list of products and filtering it according to
+the search text and value of the checkbox. This means only the search text and
+the value of the checkbox are state! Nicely done! Deep Dive Props vs State Show
+Details There are two types of “model” data in React: props and state. The two
+are very different: Props are like arguments you pass to a function. They let a
+parent component pass data to a child component and customize its appearance.
+For example, a Form can pass a color prop to a Button . State is like a
+component’s memory. It lets a component keep track of some information and
+change it in response to interactions. For example, a Button might keep track of
+isHovered state. Props and state are different, but they work together. A parent
+component will often keep some information in state (so that it can change it),
+and pass it down to child components as their props. It’s okay if the difference
+still feels fuzzy on the first read. It takes a bit of practice for it to really
+stick! Step 4: Identify where your state should live After identifying your
+app’s minimal state data, you need to identify which component is responsible
+for changing this state, or owns the state. Remember: React uses one-way data
+flow, passing data down the component hierarchy from parent to child component.
+It may not be immediately clear which component should own what state. This can
+be challenging if you’re new to
+----------------------------------------------------------------------------------------------------
+Index: 3872 <<"chunk_id": 2, "docno": 564>>
+
+your cleanup function. optional dependencies : The list of all reactive values
+referenced inside of the setup code. Reactive values include props, state, and
+all the variables and functions declared directly inside your component body. If
+your linter is configured for React , it will verify that every reactive value
+is correctly specified as a dependency. The list of dependencies must have a
+constant number of items and be written inline like [dep1, dep2, dep3] . React
+will compare each dependency with its previous value using the Object.is
+comparison. If you omit this argument, your Effect will re-run after every
+commit of the component. Returns useLayoutEffect returns undefined . Caveats
+useLayoutEffect is a Hook, so you can only call it at the top level of your
+component or your own Hooks. You can’t call it inside loops or conditions. If
+you need that, extract a component and move the Effect there. When Strict Mode
+is on, React will run one extra development-only setup+cleanup cycle before the
+first real setup. This is a stress-test that ensures that your cleanup logic
+“mirrors” your setup logic and that it stops or undoes whatever the setup is
+doing. If this causes a problem, implement the cleanup function. If some of your
+dependencies are objects or functions defined inside the component, there is a
+risk that they will cause the Effect to re-run more often than needed. To fix
+this, remove unnecessary object and function dependencies. You can also extract
+state updates and non-reactive logic outside of your Effect. Effects only
+----------------------------------------------------------------------------------------------------
+Index: 10425 <<"chunk_id": 18, "docno": 1485>>
+
+already in use): An attempt to bind a server ( net , http , or https ) to a
+local address failed due to another server on the local system already occupying
+that address. ECONNREFUSED (Connection refused): No connection could be made
+because the target machine actively refused it. This usually results from trying
+to connect to a service that is inactive on the foreign host. ECONNRESET
+(Connection reset by peer): A connection was forcibly closed by a peer. This
+normally results from a loss of the connection on the remote socket due to a
+timeout or reboot. Commonly encountered via the http and net modules. EEXIST
+(File exists): An existing file was the target of an operation that required
+that the target not exist. EISDIR (Is a directory): An operation expected a
+file, but the given pathname was a directory. EMFILE (Too many open files in
+system): Maximum number of file descriptors allowable on the system has been
+reached, and requests for another descriptor cannot be fulfilled until at least
+one has been closed. This is encountered when opening many files at once in
+parallel, especially on systems (in particular, macOS) where there is a low file
+descriptor limit for processes. To remedy a low limit, run ulimit -n 2048 in the
+same shell that will run the Node.js process. ENOENT (No such file or
+directory): Commonly raised by fs operations to indicate that a component of the
+specified pathname does not exist. No entity (file or directory) could be found
+by the given path.
+----------------------------------------------------------------------------------------------------
+Index: 375 <<"chunk_id": 0, "docno": 54>>
+
+Creating a React App – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Creating
+a React App If you want to build a new app or website with React, we recommend
+starting with a framework. If your app has constraints not well-served by
+existing frameworks, you prefer to build your own framework, or you just want to
+learn the basics of a
+----------------------------------------------------------------------------------------------------
+Index: 6138 <<"chunk_id": 6, "docno": 889>>
+
+control for when a resource should load and initialize. Actions : As shared
+above, we’ve added Actions to manage sending data from the client to the server.
+You can add action to elements like <form/> , access the status with
+useFormStatus , handle the result with useActionState , and optimistically
+update the UI with useOptimistic . Since all of these features work together,
+it’s difficult to release them in the Stable channel individually. Releasing
+Actions without the complementary hooks for accessing form states would limit
+the practical usability of Actions. Introducing React Server Components without
+integrating Server Actions would complicate modifying data on the server. Before
+we can release a set of features to the Stable channel, we need to ensure they
+work cohesively and developers have everything they need to use them in
+production. React Canaries allow us to develop these features individually, and
+release the stable APIs incrementally until the entire feature set is complete.
+The current set of features in React Canary are complete and ready to release.
+The Next Major Version of React After a couple of years of iteration,
+react@canary is now ready to ship to react@latest . The new features mentioned
+above are compatible with any environment your app runs in, providing everything
+needed for production use. Since Asset Loading and Document Metadata may be a
+breaking change for some apps, the next version of React will be a major
+version: React 19 . There’s still more to be done to prepare for release. In
+React 19, we’re also adding
+----------------------------------------------------------------------------------------------------
+Index: 25641 <<"chunk_id": 4, "docno": 4085>>
+
+allows checking whether a given instance has already been destroyed. This is
+useful for avoiding operations on destroyed components, especially when dealing
+with delayed or asynchronous logic. By checking destroyRef.destroyed , you can
+prevent executing code after the instance has been cleaned up, avoiding
+potential errors such as NG0911: View has already been destroyed. . ngDoCheck
+The ngDoCheck method runs before every time Angular checks a component's
+template for changes. You can use this lifecycle hook to manually check for
+state changes outside of Angular's normal change detection, manually updating
+the component's state. This method runs very frequently and can significantly
+impact your page's performance. Avoid defining this hook whenever possible, only
+using it when you have no alternative. During initialization, the first
+ngDoCheck runs after ngOnInit . ngAfterContentInit The ngAfterContentInit method
+runs once after all the children nested inside the component (its content ) have
+been initialized. You can use this lifecycle hook to read the results of content
+queries . While you can access the initialized state of these queries,
+attempting to change any state in this method results in an
+ExpressionChangedAfterItHasBeenCheckedError ngAfterContentChecked The
+ngAfterContentChecked method runs every time the children nested inside the
+component (its content ) have been checked for changes. This method runs very
+frequently and can significantly impact your page's performance. Avoid defining
+this hook whenever possible, only using it when you have no alternative. While
+you can access the updated state of content queries here, attempting to change
+any state in this method results in an
+ExpressionChangedAfterItHasBeenCheckedError . ngAfterViewInit
+----------------------------------------------------------------------------------------------------
+Index: 1743 <<"chunk_id": 0, "docno": 218>>
+
+Responding to Events – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Responding to Events React lets you add event handlers to your JSX. Event
+handlers are your own functions that will be triggered in response to
+interactions like clicking, hovering, focusing form inputs, and so on. You will
+learn Different ways to write an event handler How to pass event
+----------------------------------------------------------------------------------------------------
+Index: 3878 <<"chunk_id": 8, "docno": 564>>
+
+example, it probably doesn’t make sense to show a Tooltip during the initial
+render. It is triggered by a client interaction. However, if you’re running into
+this problem, you have a few different options: Replace useLayoutEffect with
+useEffect . This tells React that it’s okay to display the initial render result
+without blocking the paint (because the original HTML will become visible before
+your Effect runs). Alternatively, mark your component as client-only. This tells
+React to replace its content up to the closest <Suspense> boundary with a
+loading fallback (for example, a spinner or a glimmer) during server rendering.
+Alternatively, you can render a component with useLayoutEffect only after
+hydration. Keep a boolean isMounted state that’s initialized to false , and set
+it to true inside a useEffect call. Your rendering logic can then be like return
+isMounted ? <RealContent /> : <FallbackContent /> . On the server and during the
+hydration, the user will see FallbackContent which should not call
+useLayoutEffect . Then React will replace it with RealContent which runs on the
+client only and can include useLayoutEffect calls. If you synchronize your
+component with an external data store and rely on useLayoutEffect for different
+reasons than measuring layout, consider useSyncExternalStore instead which
+supports server rendering. Previous useInsertionEffect Next useMemo Copyright ©
+Meta Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick
+Start Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More
+----------------------------------------------------------------------------------------------------
+Index: 12921 <<"chunk_id": 3, "docno": 2018>>
+
+. Add flush option to fs.writeFile function When writing to files, it is
+possible that data is not immediately flushed to permanent storage. This allows
+subsequent read operations to see stale data. This PR adds a 'flush' option to
+the fs.writeFile family of functions which forces the data to be flushed at the
+end of a successful write operation. Contributed by Colin Ihrig in #50009 .
+Performance Performance is an important attribute of a runtime and our
+@nodejs/performance team has been working hard over the last year to make
+improvements in URL, fetch, streams, node:fs and HTTP. Streams The Node.js
+streams team keeps on optimizing Writable and Readable streams. In this version,
+streams maintainer Robert Nagy led an effort to further optimize streams by
+removing redundant checks, utilizing bitmaps, and scheduling callbacks in a more
+efficient way. Contributed in #50012 . HTTP Previously, when writing to a
+chunked response, Node.js would create a separate chunk for each call to
+.write(...) regardless of whether the response was corked or not. This leads to
+unnecessary overhead both on the client and server side. This change fixes this
+by creating a single chunk for all calls to write(...) when uncorking the
+response. Consider the following example based on the Transfer-Encoding docs :
+res . cork () ; res . write ( ' Mozilla ' ) ; res . write ( ' Developer Network
+' ) ; res . uncork () ; JavaScript Copy to clipboard At the beginning of each
+chunk you need to add the length of the
+----------------------------------------------------------------------------------------------------
+Index: 8686 <<"chunk_id": 158, "docno": 1366>>
+
+passed as the first argument to the event handler. new fs.Utf8Stream([options])
+# options <Object> append : <boolean> Appends writes to dest file instead of
+truncating it. Default : true . contentMode : <string> Which type of data you
+can send to the write function, supported values are 'utf8' or 'buffer' .
+Default : 'utf8' . dest : <string> A path to a file to be written to (mode
+controlled by the append option). fd : <number> A file descriptor, something
+that is returned by fs.open() or fs.openSync() . fs : <Object> An object that
+has the same API as the fs module, useful for mocking, testing, or customizing
+the behavior of the stream. fsync : <boolean> Perform a fs.fsyncSync() every
+time a write is completed. maxLength : <number> The maximum length of the
+internal buffer. If a write operation would cause the buffer to exceed maxLength
+, the data written is dropped and a drop event is emitted with the dropped data
+maxWrite : <number> The maximum number of bytes that can be written; Default :
+16384 minLength : <number> The minimum length of the internal buffer that is
+required to be full before flushing. mkdir : <boolean> Ensure directory for dest
+file exists when true. Default : false . mode : <number> | <string> Specify the
+creating file mode (see fs.open() ). periodicFlush : <number> Calls flush every
+periodicFlush milliseconds. retryEAGAIN <Function> A function that will be
+called when write() , writeSync() , or flushSync() encounters an EAGAIN or EBUSY
+error. If the return value
+----------------------------------------------------------------------------------------------------
+Index: 1927 <<"chunk_id": 8, "docno": 244>>
+
+coordinate them together. Controlled components are maximally flexible, but they
+require the parent components to fully configure them with props. In practice,
+“controlled” and “uncontrolled” aren’t strict technical terms—each component
+usually has some mix of both local state and props. However, this is a useful
+way to talk about how components are designed and what capabilities they offer.
+When writing a component, consider which information in it should be controlled
+(via props), and which information should be uncontrolled (via state). But you
+can always change your mind and refactor later. A single source of truth for
+each state In a React application, many components will have their own state.
+Some state may “live” close to the leaf components (components at the bottom of
+the tree) like inputs. Other state may “live” closer to the top of the app. For
+example, even client-side routing libraries are usually implemented by storing
+the current route in the React state, and passing it down by props! For each
+unique piece of state, you will choose the component that “owns” it. This
+principle is also known as having a “single source of truth”. It doesn’t mean
+that all state lives in one place—but that for each piece of state, there is a
+specific component that holds that piece of information. Instead of duplicating
+shared state between components, lift it up to their common shared parent, and
+pass it down to the children that need it. Your app will change as you work on
+it. It is common that you will move
+----------------------------------------------------------------------------------------------------
+Index: 875 <<"chunk_id": 32, "docno": 123>>
+
+state Caching expensive calculations Resetting all state when a prop changes
+Adjusting some state when a prop changes Sharing logic between event handlers
+Sending a POST request Chains of computations Initializing the application
+Notifying parent components about state changes Passing data to the parent
+Subscribing to an external store Fetching data Recap Challenges
+----------------------------------------------------------------------------------------------------
+Index: 905 <<"chunk_id": 2, "docno": 129>>
+
+there is a special behavior for functions. This argument is ignored after the
+initial render. If you pass a function as initialState , it will be treated as
+an initializer function . It should be pure, should take no arguments, and
+should return a value of any type. React will call your initializer function
+when initializing the component, and store its return value as the initial
+state. See an example below. Returns useState returns an array with exactly two
+values: The current state. During the first render, it will match the
+initialState you have passed. The set function that lets you update the state to
+a different value and trigger a re-render. Caveats useState is a Hook, so you
+can only call it at the top level of your component or your own Hooks. You can’t
+call it inside loops or conditions. If you need that, extract a new component
+and move the state into it. In Strict Mode, React will call your initializer
+function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your initializer
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. set functions, like
+setSomething(nextState) The set function returned by useState lets you update
+the state to a different value and trigger a re-render. You can pass the next
+state directly, or a function that calculates it from the previous state: const
+[ name , setName ] =
+----------------------------------------------------------------------------------------------------
+Index: 4954 <<"chunk_id": 8, "docno": 718>>
+
+your React components. On the client, you will need to call hydrateRoot to
+hydrate that server-generated HTML and make it interactive. Waiting for all data
+to load prerenderToNodeStream waits for all data to load before finishing the
+static HTML generation and resolving. For example, consider a profile page that
+shows a cover, a sidebar with friends and photos, and a list of posts: function
+ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> < Sidebar > <
+Friends /> < Photos /> </ Sidebar > < Suspense fallback = { < PostsGlimmer /> }
+> < Posts /> </ Suspense > </ ProfileLayout > ) ; } Imagine that <Posts /> needs
+to load some data, which takes some time. Ideally, you’d want wait for the posts
+to finish so it’s included in the HTML. To do this, you can use Suspense to
+suspend on the data, and prerenderToNodeStream will wait for the suspended
+content to finish before resolving to the static HTML. Note Only data read from
+a source that activates a Suspense boundary , such as a Promise read with use ,
+will suspend during rendering. Suspense does not detect data fetched inside an
+Effect or event handler. Aborting prerendering You can force the prerender to
+“give up” after a timeout: async function renderToString ( ) { const controller
+= new AbortController ( ) ; setTimeout ( ( ) => { controller . abort ( ) } ,
+10000 ) ; try { // the prelude will contain all the HTML
 ----------------------------------------------------------------------------------------------------

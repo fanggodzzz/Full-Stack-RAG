@@ -1,32 +1,389 @@
-Index: 483 <<"chunk_id": 26, "docno": 84>>
+Index: 5384 <<"chunk_id": 17, "docno": 790>>
 
-configuring a "startupProbe" that uses the liveness HTTP probe to make sure that
-Kubernetes won’t kill your application while it is in the process of starting.
-See the section that describes how probes behave during the application
-lifecycle . If your Actuator endpoints are deployed on a separate management
-context, the endpoints do not use the same web infrastructure (port, connection
-pools, framework components) as the main application. In this case, a probe
-check could be successful even if the main application does not work properly
-(for example, it cannot accept new connections). For this reason, it is a good
-idea to make the liveness and readiness health groups available on the main
-server port. This can be done by setting the following property:
-management.endpoint.health.probes.add-additional-paths=true This would make the
-liveness group available at /livez and the readiness group available at /readyz
-on the main server port. Paths can be customized using the additional-path
-property on each group, see health groups for details. Checking External State
-With Kubernetes Probes Actuator configures the “liveness” and “readiness” probes
-as Health Groups. This means that all the health groups features are available
-for them. You can, for example, configure additional Health Indicators:
-Properties YAML
-management.endpoint.health.group.readiness.include=readinessState,customCheck
-management: endpoint: health: group: readiness: include:
-"readinessState,customCheck" By default, Spring Boot does not add other health
-indicators to these groups. The “liveness” probe should not depend on health
-checks for external systems. If the liveness state of an application is broken,
-Kubernetes tries to solve that problem by restarting the application instance.
-This means that
+authorized users. Authorized roles can be configured by using
+management.endpoint.health.roles . always Details are shown to all users. The
+default value is never . A user is considered to be authorized when they are in
+one or more of the endpoint’s roles. If the endpoint has no configured roles
+(the default), all authenticated users are considered to be authorized. You can
+configure the roles by using the management.endpoint.health.roles property. If
+you have secured your application and wish to use always , your security
+configuration must permit access to the health endpoint for both authenticated
+and unauthenticated users. Health information is collected from the content of a
+HealthContributorRegistry (by default, all HealthContributor instances defined
+in your ApplicationContext ). Spring Boot includes a number of auto-configured
+HealthContributor beans, and you can also write your own. A HealthContributor
+can be either a HealthIndicator or a CompositeHealthContributor . A
+HealthIndicator provides actual health information, including a Status . A
+CompositeHealthContributor provides a composite of other HealthContributor
+instances. Taken together, contributors form a tree structure to represent the
+overall system health. By default, the final system health is derived by a
+StatusAggregator , which sorts the statuses from each HealthIndicator based on
+an ordered list of statuses. The first status in the sorted list is used as the
+overall health status. If no HealthIndicator returns a status that is known to
+the StatusAggregator , an UNKNOWN status is used. You can use the
+HealthContributorRegistry to register and unregister health indicators at
+runtime. Auto-configured HealthIndicators When appropriate, Spring Boot
+auto-configures the HealthIndicator
 ----------------------------------------------------------------------------------------------------
-Index: 27321 <<"chunk_id": 3, "docno": 3951>>
+Index: 5387 <<"chunk_id": 20, "docno": 790>>
+
+without the HealthIndicator suffix, if it exists. In the preceding example, the
+health information is available in an entry named my . Health indicators are
+usually called over HTTP and need to respond before any connection timeouts.
+Spring Boot will log a warning message for any health indicator that takes
+longer than 10 seconds to respond. If you want to configure this threshold, you
+can use the management.endpoint.health.logging.slow-indicator-threshold
+property. In addition to Spring Boot’s predefined Status types, Health can
+return a custom Status that represents a new system state. In such cases, you
+also need to provide a custom implementation of the StatusAggregator interface,
+or you must configure the default implementation by using the
+management.endpoint.health.status.order configuration property. For example,
+assume a new Status with a code of FATAL is being used in one of your
+HealthIndicator implementations. To configure the severity order, add the
+following property to your application properties: Properties YAML
+management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
+management: endpoint: health: status: order:
+"fatal,down,out-of-service,unknown,up" The HTTP status code in the response
+reflects the overall health status. By default, OUT_OF_SERVICE and DOWN map to
+503. Any unmapped health statuses, including UP , map to 200. You might also
+want to register custom status mappings if you access the health endpoint over
+HTTP. Configuring a custom mapping disables the defaults mappings for DOWN and
+OUT_OF_SERVICE . If you want to retain the default mappings, you must explicitly
+configure them, alongside any custom mappings. For example, the following
+property maps FATAL to 503 (service unavailable) and retains the default
+mappings for DOWN and OUT_OF_SERVICE
+----------------------------------------------------------------------------------------------------
+Index: 1092 <<"chunk_id": 5, "docno": 153>>
+
+can be used to override access rules for actuator endpoints and static
+resources. EndpointRequest can be used to create a RequestMatcher that is based
+on the management.endpoints.web.base-path property. PathRequest can be used to
+create a RequestMatcher for resources in commonly used locations. WebFlux
+Security Similar to Spring MVC applications, you can secure your WebFlux
+applications by adding the spring-boot-starter-security dependency. The default
+security configuration is implemented in ReactiveWebSecurityAutoConfiguration
+and ReactiveUserDetailsServiceAutoConfiguration . In addition to reactive web
+applications, the latter is also auto-configured when RSocket is in use.
+ReactiveWebSecurityAutoConfiguration imports WebFluxSecurityConfiguration for
+web security. ReactiveUserDetailsServiceAutoConfiguration auto-configures
+authentication. To completely switch off the default web application security
+configuration, including Actuator security, add a bean of type
+WebFilterChainProxy (doing so does not disable the ReactiveUserDetailsService
+configuration). To also switch off the ReactiveUserDetailsService configuration,
+add a bean of type ReactiveUserDetailsService or ReactiveAuthenticationManager .
+The auto-configuration will also back off when any of the following Spring
+Security modules is on the classpath: spring-security-oauth2-client
+spring-security-oauth2-resource-server To use ReactiveUserDetailsService in
+addition to one or more of these dependencies, define your own
+MapReactiveUserDetailsService bean. Access rules and the use of multiple Spring
+Security components such as OAuth 2 Client and Resource Server can be configured
+by adding a custom SecurityWebFilterChain bean. Spring Boot provides convenience
+methods that can be used to override access rules for actuator endpoints and
+static resources. EndpointRequest can be used to create a
+ServerWebExchangeMatcher that is based on the management.endpoints.web.base-path
+property. PathRequest can be used to create a ServerWebExchangeMatcher for
+resources in commonly used locations. For example, you can customize
+----------------------------------------------------------------------------------------------------
+Index: 5374 <<"chunk_id": 7, "docno": 790>>
+
+endpoints: jmx: exposure: include: "health,info" * can be used to select all
+endpoints. For example, to expose everything over HTTP except the env and beans
+endpoints, use the following properties: Properties YAML
+management.endpoints.web.exposure.include=*
+management.endpoints.web.exposure.exclude=env,beans management: endpoints: web:
+exposure: include: "*" exclude: "env,beans" * has a special meaning in YAML, so
+be sure to add quotation marks if you want to include (or exclude) all
+endpoints. If your application is exposed publicly, we strongly recommend that
+you also secure your endpoints . If you want to implement your own strategy for
+when endpoints are exposed, you can register an EndpointFilter bean. Security
+For security purposes, only the /health endpoint is exposed over HTTP by
+default. You can use the management.endpoints.web.exposure.include property to
+configure the endpoints that are exposed. Before setting the
+management.endpoints.web.exposure.include , ensure that the exposed actuators do
+not contain sensitive information, are secured by placing them behind a
+firewall, or are secured by something like Spring Security. If Spring Security
+is on the classpath and no other SecurityFilterChain bean is present, all
+actuators other than /health are secured by Spring Boot auto-configuration. If
+you define a custom SecurityFilterChain bean, Spring Boot auto-configuration
+backs off and lets you fully control the actuator access rules. If you wish to
+configure custom security for HTTP endpoints (for example, to allow only users
+with a certain role to access them), Spring Boot provides some convenient
+RequestMatcher objects that you can use in combination with Spring Security. A
+typical Spring Security configuration might look something like the following
+example: Java
+----------------------------------------------------------------------------------------------------
+Index: 216 <<"chunk_id": 4, "docno": 27>>
+
+Spring Boot auto-configuration tries its best to “do the right thing”, but
+sometimes things fail, and it can be hard to tell why. There is a really useful
+ConditionEvaluationReport available in any Spring Boot ApplicationContext . You
+can see it if you enable DEBUG logging output. If you use the
+spring-boot-actuator (see the Actuator section), there is also a conditions
+endpoint that renders the report in JSON. Use that endpoint to debug the
+application and see what features have been added (and which have not been
+added) by Spring Boot at runtime. Many more questions can be answered by looking
+at the source code and the API documentation. When reading the code, remember
+the following rules of thumb: Look for classes called *AutoConfiguration and
+read their sources. Pay special attention to the @Conditional* annotations to
+find out what features they enable and when. Add --debug to the command line or
+the System property -Ddebug to get a log on the console of all the
+auto-configuration decisions that were made in your app. In a running
+application with actuator enabled, look at the conditions endpoint (
+/actuator/conditions or the JMX equivalent) for the same information. Look for
+classes that are @ConfigurationProperties (such as ServerProperties ) and read
+from there the available external configuration options. The
+@ConfigurationProperties annotation has a name attribute that acts as a prefix
+to external properties. Thus, ServerProperties has prefix="server" and its
+configuration properties are server.port , server.address , and others. In a
+running application with actuator enabled, look at the configprops endpoint.
+Look
+----------------------------------------------------------------------------------------------------
+Index: 5386 <<"chunk_id": 19, "docno": 790>>
+
+the period defined by this threshold, the HealthIndicator will report this in
+the details section of its response where
+details.validChains.certificates.[*].validity.status will have the value
+WILL_EXPIRE_SOON . Additional HealthIndicator beans are enabled by default: Key
+Name Description livenessstate LivenessStateHealthIndicator Exposes the
+“Liveness” application availability state. readinessstate
+ReadinessStateHealthIndicator Exposes the “Readiness” application availability
+state. These can be disabled by using the
+management.endpoint.health.probes.enabled configuration property. Writing Custom
+HealthIndicators To provide custom health information, you can register Spring
+beans that implement the HealthIndicator interface. You need to provide an
+implementation of the health() method and return a Health response. The Health
+response should include a status and can optionally include additional details
+to be displayed. The following code shows a sample HealthIndicator
+implementation: Java Kotlin import
+org.springframework.boot.health.contributor.Health; import
+org.springframework.boot.health.contributor.HealthIndicator; import
+org.springframework.stereotype.Component; @Component public class
+MyHealthIndicator implements HealthIndicator { @Override public Health health()
+{ int errorCode = check(); if (errorCode != 0) { return
+Health.down().withDetail("Error Code", errorCode).build(); } return
+Health.up().build(); } private int check() { // perform some specific health
+check return ... } } import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.HealthIndicator import
+org.springframework.stereotype.Component @Component class MyHealthIndicator :
+HealthIndicator { override fun health(): Health { val errorCode = check() if
+(errorCode != 0) { return Health.down().withDetail("Error Code",
+errorCode).build() } return Health.up().build() } private fun check(): Int { //
+perform some specific health check return ... } } The identifier for a given
+HealthIndicator is the name of the bean without the HealthIndicator suffix, if
+it exists. In the preceding example, the health information is available in an
+entry named my . Health indicators are
+----------------------------------------------------------------------------------------------------
+Index: 23967 <<"chunk_id": 2, "docno": 3648>>
+
+users decide that they want to add custom security, the default security
+configuration provided by Spring Boot will back off completely. At this point,
+users need to explicitly define all the bits they want to secure. This means
+security configuration is now in one place and avoids any kind of ordering
+issues with existing WebSecurityConfigurerAdapter s. We provide dedicated
+helpers to make your configuration more readable and explicit. For management
+endpoints and static resources, Spring Boot provides convenience factories that
+will supply the right RequestMatcher . For management endpoints, the
+RequestMatcher will be created based on the management.context-path . Using
+RequestMatcher s gives users the flexibility to secure the application using
+existing Spring Security expressions such as permitAll , hasRole etc. Here is an
+example of a custom security: http .authorizeRequests() // 1
+.requestMatchers(EndpointRequest.to("status", "info")) .permitAll() // 2
+.requestMatchers(EndpointRequest.toAnyEndpoint()) .hasRole("ACTUATOR") // 3
+.requestMatchers(StaticResourceRequest.toCommonLocations()) .permitAll() // 4
+.antMatchers("/**") .hasRole("USER") .and() ... // additional configuration
+/status and /info endpoints do not require authentication. All other actuator
+endpoints are protected by the ACTUATOR role. Common static resource locations
+are open to all. All other application endpoints are protected by the USER role.
+We have reduced SecurityProperties to a minimum so that there is no confusion
+about which properties are used only by the auto-configuration and which ones
+get used even if the default security is turned off. As mentioned before, Spring
+Boot provides a default user with a generated password. If you want to configure
+your own user, you can define a bean of type UserDetailsService as follows:
+@Bean
+----------------------------------------------------------------------------------------------------
+Index: 1091 <<"chunk_id": 4, "docno": 153>>
+
+and spring.security.user.password . The basic features you get by default in a
+web application are: A UserDetailsService (or ReactiveUserDetailsService in case
+of a WebFlux application) bean with in-memory store and a single user with a
+generated password (see SecurityProperties.User for the properties of the user).
+Form-based login or HTTP Basic security (depending on the Accept header in the
+request) for the entire application (including actuator endpoints if actuator is
+on the classpath). A DefaultAuthenticationEventPublisher for publishing
+authentication events. You can provide a different AuthenticationEventPublisher
+by adding a bean for it. MVC Security The default security configuration is
+implemented in SecurityAutoConfiguration and UserDetailsServiceAutoConfiguration
+. SecurityAutoConfiguration imports SpringBootWebSecurityConfiguration for web
+security and UserDetailsServiceAutoConfiguration for authentication. To
+completely switch off the default web application security configuration,
+including Actuator security, or to combine multiple Spring Security components
+such as OAuth2 Client and Resource Server, add a bean of type
+SecurityFilterChain (doing so does not disable the UserDetailsService
+configuration). To also switch off the UserDetailsService configuration, add a
+bean of type UserDetailsService , AuthenticationProvider , or
+AuthenticationManager . The auto-configuration of a UserDetailsService will also
+back off when any of the following Spring Security modules is on the classpath:
+spring-security-oauth2-client spring-security-oauth2-resource-server
+spring-security-saml2-service-provider To use UserDetailsService in addition to
+one or more of these dependencies, define your own InMemoryUserDetailsManager
+bean. Access rules can be overridden by adding a custom SecurityFilterChain
+bean. Spring Boot provides convenience methods that can be used to override
+access rules for actuator endpoints and static resources. EndpointRequest can be
+used to create a RequestMatcher that is based on
+----------------------------------------------------------------------------------------------------
+Index: 5379 <<"chunk_id": 12, "docno": 790>>
+
+it does not share the same configuration as the application’s JsonMapper and it
+is not affected by spring.jackson.* properties. To disable this behavior and
+configure Actuator to use the application’s JsonMapper , set
+management.endpoints.jackson.isolated-json-mapper to false . Alternatively, you
+can define your own EndpointJsonMapper bean that produces a JsonMapper that
+meets your needs. Actuator will then use it for JSON processing. Implementing
+Custom Endpoints If you add a @Bean annotated with @Endpoint , any methods
+annotated with @ReadOperation , @WriteOperation , or @DeleteOperation are
+automatically exposed over JMX and, in a web application, over HTTP as well.
+Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring
+WebFlux. If both Jersey and Spring MVC are available, Spring MVC is used. The
+following example exposes a read operation that returns a custom object: Java
+Kotlin @ReadOperation public CustomData getData() { return new
+CustomData("test", 5); } @ReadOperation fun getData(): CustomData { return
+CustomData("test", 5) } You can also write technology-specific endpoints by
+using @JmxEndpoint or @WebEndpoint . These endpoints are restricted to their
+respective technologies. For example, @WebEndpoint is exposed only over HTTP and
+not over JMX. You can write technology-specific extensions by using
+@EndpointWebExtension and @EndpointJmxExtension . These annotations let you
+provide technology-specific operations to augment an existing endpoint. An
+endpoint may have at most one extension of each type. Finally, if you need
+access to web-framework-specific functionality, you can implement servlet or
+Spring @Controller and @RestController endpoints at the cost of them not being
+available over JMX or when using a different web
+----------------------------------------------------------------------------------------------------
+Index: 5381 <<"chunk_id": 14, "docno": 790>>
+
+be compiled with -parameters . For Kotlin code, please review the recommendation
+of the Spring Framework reference. This will happen automatically if you use
+Spring Boot’s Gradle plugin or if you use Maven and spring-boot-starter-parent .
+Input Type Conversion The parameters passed to endpoint operation methods are,
+if necessary, automatically converted to the required type. Before calling an
+operation method, the input received over JMX or HTTP is converted to the
+required types by using an instance of ApplicationConversionService as well as
+any Converter or GenericConverter beans qualified with @EndpointConverter .
+Custom Web Endpoints Operations on an @Endpoint , @WebEndpoint , or
+@EndpointWebExtension are automatically exposed over HTTP using Jersey, Spring
+MVC, or Spring WebFlux. If both Jersey and Spring MVC are available, Spring MVC
+is used. Web Endpoint Request Predicates A request predicate is automatically
+generated for each operation on a web-exposed endpoint. Path The path of the
+predicate is determined by the ID of the endpoint and the base path of the
+web-exposed endpoints. The default base path is /actuator . For example, an
+endpoint with an ID of sessions uses /actuator/sessions as its path in the
+predicate. You can further customize the path by annotating one or more
+parameters of the operation method with @Selector . Such a parameter is added to
+the path predicate as a path variable. The variable’s value is passed into the
+operation method when the endpoint operation is invoked. If you want to capture
+all remaining path elements, you can add @Selector(Match=ALL_REMAINING) to the
+last parameter and make
+----------------------------------------------------------------------------------------------------
+Index: 5378 <<"chunk_id": 11, "docno": 790>>
+
+beans have been defined. Hypermedia for Actuator Web Endpoints A “discovery
+page” is added with links to all the endpoints. The “discovery page” is
+available on /actuator by default. To disable the “discovery page”, add the
+following property to your application properties: Properties YAML
+management.endpoints.web.discovery.enabled=false management: endpoints: web:
+discovery: enabled: false When a custom management context path is configured,
+the “discovery page” automatically moves from /actuator to the root of the
+management context. For example, if the management context path is /management ,
+the discovery page is available from /management . When the management context
+path is set to / , the discovery page is disabled to prevent the possibility of
+a clash with other mappings. CORS Support Cross-origin resource sharing (CORS)
+is a W3C specification that lets you specify in a flexible way what kind of
+cross-domain requests are authorized. If you use Spring MVC or Spring WebFlux,
+you can configure Actuator’s web endpoints to support such scenarios. CORS
+support is disabled by default and is only enabled once you have set the
+management.endpoints.web.cors.allowed-origins property. The following
+configuration permits GET and POST calls from the example.com domain: Properties
+YAML management.endpoints.web.cors.allowed-origins=https://example.com
+management.endpoints.web.cors.allowed-methods=GET,POST management: endpoints:
+web: cors: allowed-origins: "https://example.com" allowed-methods: "GET,POST"
+See CorsEndpointProperties for a complete list of options. JSON When working
+with JSON, Jackson is used for serialization and deserialization. By default, an
+isolated JsonMapper is used. This isolation means that it does not share the
+same configuration as the application’s JsonMapper and it is not affected by
+spring.jackson.* properties. To disable this behavior and configure
+----------------------------------------------------------------------------------------------------
+Index: 1305 <<"chunk_id": 8, "docno": 164>>
+
+terminal window: ./mvnw spring-boot:run You should see that a new set of RESTful
+end points has been added to the application. These are management services
+provided by Spring Boot. The following listing shows a typical output:
+management.endpoint.health-org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointProperties
+management.endpoints.web-org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties
+management.endpoints.web.cors-org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties
+management.health.diskspace-org.springframework.boot.health.autoconfigure.application.DiskSpaceHealthIndicatorProperties
+management.health.ssl-org.springframework.boot.health.autoconfigure.application.SslHealthIndicatorProperties
+management.info-org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties
+management.metrics-org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties
+management.observations-org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties
+management.simple.metrics.export-org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleProperties
+The actuator exposes the following: actuator/health actuator There is also an
+/actuator/shutdown endpoint, but, by default, it is disabled. To expose it , add
+management.endpoint.shutdown.access=unrestricted to your application.properties
+file and expose it with
+management.endpoints.web.exposure.include=health,info,shutdown . However, you
+probably should not enable the shutdown endpoint for a publicly available
+application. You can check the health of the application by running the
+following command: $ curl http://localhost:8080/actuator/health {"status":"UP"}
+You can try also to invoke shutdown through curl, to see what happens when you
+have not added the necessary line (shown in the preceding note) to
+application.properties : $ curl -X POST http://localhost:8080/actuator/shutdown
+{"timestamp":"2026-02-06T08:13:01.514Z","status":404,"error":"Not
+Found","path":"/actuator/shutdown"} Because we did not enable it, the requested
+endpoint is not available (because the endpoint does not exist). For more
+details about each of these REST endpoints and how you can tune their settings
+with an application.properties file (in src/main/resources ), see the
+documentation about the endpoints . View Spring Boot’s Starters You have seen
+some of Spring Boot’s “starters” . You can see them all here in source code .
+JAR Support The last example showed how Spring Boot lets you wire beans that you
+may not be aware you need. It also showed how to turn on convenient management
+services. However, Spring Boot does more than that.
+----------------------------------------------------------------------------------------------------
+Index: 5389 <<"chunk_id": 22, "docno": 790>>
+
+import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.stereotype.Component; @Component public class
+MyReactiveHealthIndicator implements ReactiveHealthIndicator { @Override public
+Mono<Health> health() { return doHealthCheck().onErrorResume((exception) ->
+Mono.just(new Health.Builder().down(exception).build())); } private Mono<Health>
+doHealthCheck() { // perform some specific health check return ... } } import
+org.springframework.boot.health.contributor.Health import
+org.springframework.boot.health.contributor.ReactiveHealthIndicator import
+org.springframework.stereotype.Component import reactor.core.publisher.Mono
+@Component class MyReactiveHealthIndicator : ReactiveHealthIndicator { override
+fun health(): Mono<Health> { return doHealthCheck().onErrorResume { exception:
+Throwable -> Mono.just(Health.Builder().down(exception).build()) } } private fun
+doHealthCheck(): Mono<Health> { // perform some specific health check return ...
+} } To handle the error automatically, consider extending from
+AbstractReactiveHealthIndicator . Auto-configured ReactiveHealthIndicators When
+appropriate, Spring Boot auto-configures the following ReactiveHealthIndicator
+beans: Key Name Description cassandra CassandraDriverReactiveHealthIndicator
+Checks that a Cassandra database is up. couchbase
+CouchbaseReactiveHealthIndicator Checks that a Couchbase cluster is up.
+elasticsearch DataElasticsearchReactiveHealthIndicator Checks that an
+Elasticsearch cluster is up. mongo MongoReactiveHealthIndicator Checks that a
+Mongo database is up. neo4j Neo4jReactiveHealthIndicator Checks that a Neo4j
+database is up. redis DataRedisReactiveHealthIndicator Checks that a Redis
+server is up. If necessary, reactive indicators replace the regular ones. Also,
+any HealthIndicator that is not handled explicitly is wrapped automatically.
+Health Groups It is sometimes useful to organize health indicators into groups
+that you can use for different purposes. To create a health indicator group, you
+can use the management.endpoint.health.group.<name> property and specify a list
+of health indicator IDs to include or exclude . For example, to create a group
+that includes only database indicators you can define the following: Properties
+YAML management.endpoint.health.group.custom.include=db management: endpoint:
+health: group: custom: include: "db" You can then check the result by hitting
+localhost:8080/actuator/health/custom .
+----------------------------------------------------------------------------------------------------
+Index: 10990 <<"chunk_id": 3, "docno": 1647>>
 
 can enable the health-check configuration provided by the Load Balancer Client
 from Spring Cloud: spring: cloud: loadbalancer: configurations: health-check All
@@ -54,7 +411,228 @@ stress of the services and reducing the probability of crashing. Fault
 tolerance. The problem is that you are statically setting the upstream services
 in your configuration. If you need to change the list, you need to restart
 ----------------------------------------------------------------------------------------------------
-Index: 482 <<"chunk_id": 25, "docno": 84>>
+Index: 25310 <<"chunk_id": 1, "docno": 3984>>
+
+What's new in 2.4 Config File Processing (application properties and YAML files)
+Spring Boot 2.4 has improved the way that application.properties and
+application.yml files are processed. If you only have a simple
+application.properties or application.yml file , your upgrade should be
+seamless. If, however, you’ve have a more complex setup (with profile-specific
+properties, or profile activation properties) you may need to make some changes
+if you want to use the new features. Volume Mounted Config Directory Trees A new
+spring.config.import property can be used to import configuration trees that are
+commonly used with Kubernetes. A configuration tree is an alternative way of
+providing key/value pairs. Each pair is declared in its own file, with the
+filename forming the property key, and the file contents providing the value.
+For a complete example, see the updated reference documentation . Startup
+Endpoint A new startup actuator endpoint is now available that shows information
+about your applications startup. The endpoint can help you identify beans that
+are taking longer than expected to start. This work builds on the application
+startup tracking feature that was recently added to Spring Framwork 5.3. You can
+read more about the feature in the Spring Framework reference documentation .
+Origin Chains The Origin interface has been updated with a new getParent()
+method. This allows us to provide a full origin chain that can show exactly
+where an item originated from. For example, you might use spring.config.import
+in your application.properties to import a second file. The Origin of properties
+loaded from this second file will have
+----------------------------------------------------------------------------------------------------
+Index: 7395 <<"chunk_id": 6, "docno": 1123>>
+
+} @RefreshScope @RestController class MessageRestController {
+@Value("${message:Hello default}") private String message;
+@RequestMapping("/message") String getMessage() { return this.message; } } Test
+the Application You can test the end-to-end result by starting the Config
+Service first and then, once it is running, starting the client. Visit the
+client app in the browser at http://localhost:8080/message . There, you should
+see Hello world in the response. Change the message key in the
+a-bootiful-client.properties file in the Git repository to something different (
+Hello Spring! , perhaps?). You can confirm that the Config Server sees the
+change by visiting http://localhost:8888/a-bootiful-client/default . You need to
+invoke the refresh Spring Boot Actuator endpoint in order to force the client to
+refresh itself and draw in the new value. Spring Boot’s Actuator exposes
+operational endpoints (such as health checks and environment information) about
+an application. To use it, you must add
+org.springframework.boot:spring-boot-starter-actuator to the client
+application’s classpath. You can invoke the refresh Actuator endpoint by sending
+an empty HTTP POST to the client’s refresh endpoint:
+http://localhost:8080/actuator/refresh . Then you can confirm it worked by
+visting the http://localhost:8080/message endpoint. The following command
+invokes the Actuator’s refresh command: $ curl -X POST
+localhost:8080/actuator/refresh -d {} -H "Content-Type: application/json" We set
+management.endpoints.web.exposure.include=* in the client application to make
+this is easy to test (since Spring Boot 2.0, the Actuator endpoints are not
+exposed by default). By default, you can still access them over JMX if you do
+not set the flag. Summary Congratulations! You have just used Spring to
+centralize configuration for all of your services by
+----------------------------------------------------------------------------------------------------
+Index: 24555 <<"chunk_id": 4, "docno": 3788>>
+
+and Health Indicator The status page and health indicators for a Eureka instance
+default to /info and /health respectively, which are the default locations of
+useful endpoints in a Spring Boot Actuator application. You need to change
+these, even for an Actuator application if you use a non-default context path or
+servlet path (such as server.servletPath=/custom ). The following example shows
+the default values for the two settings: application.yml eureka: instance:
+statusPageUrlPath: ${server.servletPath}/info healthCheckUrlPath:
+${server.servletPath}/health These links show up in the metadata that is
+consumed by clients and are used in some scenarios to decide whether to send
+requests to your application, so it is helpful if they are accurate. In Dalston
+it was also required to set the status and health check URLs when changing that
+management context path. This requirement was removed beginning in Edgware.
+Registering a Secure Application If your app wants to be contacted over HTTPS,
+you can set two flags in the EurekaInstanceConfigBean :
+eureka.instance.[nonSecurePortEnabled]=[false]
+eureka.instance.[securePortEnabled]=[true] Doing so makes Eureka publish
+instance information that shows an explicit preference for secure communication.
+The Spring Cloud DiscoveryClient always returns a URI starting with https for a
+service configured this way. Similarly, when a service is configured this way,
+the Eureka (native) instance information has a secure health check URL. Because
+of the way Eureka works internally, it still publishes a non-secure URL for the
+status and home pages unless you also override those explicitly. You can use
+placeholders to configure the eureka instance URLs, as shown in the following
+example: application.yml eureka: instance:
+----------------------------------------------------------------------------------------------------
+Index: 5385 <<"chunk_id": 18, "docno": 790>>
+
+status is used. You can use the HealthContributorRegistry to register and
+unregister health indicators at runtime. Auto-configured HealthIndicators When
+appropriate, Spring Boot auto-configures the HealthIndicator beans listed in the
+following table. You can also enable or disable selected indicators by
+configuring management.health.key.enabled , with the key listed in the following
+table: Key Name Description cassandra CassandraDriverHealthIndicator Checks that
+a Cassandra database is up. couchbase CouchbaseHealthIndicator Checks that a
+Couchbase cluster is up. db DataSourceHealthIndicator Checks that a connection
+to DataSource can be obtained. diskspace DiskSpaceHealthIndicator Checks for low
+disk space. elasticsearch ElasticsearchRestClientHealthIndicator Checks that an
+Elasticsearch cluster is up. hazelcast HazelcastHealthIndicator Checks that a
+Hazelcast server is up. jms JmsHealthIndicator Checks that a JMS broker is up.
+ldap LdapHealthIndicator Checks that an LDAP server is up. mail
+MailHealthIndicator Checks that a mail server is up. mongo MongoHealthIndicator
+Checks that a Mongo database is up. neo4j Neo4jHealthIndicator Checks that a
+Neo4j database is up. ping PingHealthIndicator Always responds with UP . rabbit
+RabbitHealthIndicator Checks that a Rabbit server is up. redis
+DataRedisHealthIndicator Checks that a Redis server is up. ssl
+SslHealthIndicator Checks that SSL certificates are ok. You can disable them all
+by setting the management.health.defaults.enabled property. The ssl
+HealthIndicator has a "warning threshold" property named
+management.health.ssl.certificate-validity-warning-threshold . You can use this
+threshold to give yourself enough lead time to rotate the soon-to-be-expired
+certificate. If an SSL certificate will become invalid within the period defined
+by this threshold, the HealthIndicator will report this in the details section
+of its response where details.validChains.certificates.[*].validity.status will
+have the value WILL_EXPIRE_SOON
+----------------------------------------------------------------------------------------------------
+Index: 23966 <<"chunk_id": 1, "docno": 3648>>
+
+the effects of the management.security.enabled flag based on whether Spring
+Security was on the classpath or not was quite confusing. There were a number of
+properties under security.* and management.security.* that were applicable only
+to the auto-configuration provided by Spring Boot. For example, if
+security.basic.enabled was set to false , setting security.sessions would have
+absolutely no effect and this turned out to be quite misleading. Improvements in
+2.0 In Spring Boot 2.0, our main goal was to greatly simplify the default
+security configuration and and make adding custom security easy. Simplified
+default configuration Providing sensible defaults for security is challenging.
+We've decided to opt for the most secure default, which is, secure everything,
+even public and static resources. By default, if Spring Security is on the
+classpath, Spring Boot will add @EnableWebSecurity , and rely on Spring
+Security's content-negotiation to decide which authentication mechanism to use.
+A default user with a generated password will be provided. If actuator is on the
+classpath, the same default security configuration will also apply to actuator
+endpoints. In order to prevent actuators from exposing sensitive data
+accidentally, most web endpoints will be disabled by default ( status and info
+are enabled by default however). Users need to take an explicit step to enable
+those web endpoints. This behavior is consistent, regardless of whether Spring
+Security is present on the classpath or not. Consistent customization Once users
+decide that they want to add custom security, the default security configuration
+provided by Spring Boot will back off completely. At this point, users
+----------------------------------------------------------------------------------------------------
+Index: 5393 <<"chunk_id": 26, "docno": 790>>
+
+configuring a "startupProbe" that uses the liveness HTTP probe to make sure that
+Kubernetes won’t kill your application while it is in the process of starting.
+See the section that describes how probes behave during the application
+lifecycle . If your Actuator endpoints are deployed on a separate management
+context, the endpoints do not use the same web infrastructure (port, connection
+pools, framework components) as the main application. In this case, a probe
+check could be successful even if the main application does not work properly
+(for example, it cannot accept new connections). For this reason, it is a good
+idea to make the liveness and readiness health groups available on the main
+server port. This can be done by setting the following property:
+management.endpoint.health.probes.add-additional-paths=true This would make the
+liveness group available at /livez and the readiness group available at /readyz
+on the main server port. Paths can be customized using the additional-path
+property on each group, see health groups for details. Checking External State
+With Kubernetes Probes Actuator configures the “liveness” and “readiness” probes
+as Health Groups. This means that all the health groups features are available
+for them. You can, for example, configure additional Health Indicators:
+Properties YAML
+management.endpoint.health.group.readiness.include=readinessState,customCheck
+management: endpoint: health: group: readiness: include:
+"readinessState,customCheck" By default, Spring Boot does not add other health
+indicators to these groups. The “liveness” probe should not depend on health
+checks for external systems. If the liveness state of an application is broken,
+Kubernetes tries to solve that problem by restarting the application instance.
+This means that
+----------------------------------------------------------------------------------------------------
+Index: 23968 <<"chunk_id": 3, "docno": 3648>>
+
+default user with a generated password. If you want to configure your own user,
+you can define a bean of type UserDetailsService as follows: @Bean public
+UserDetailsService userDetailsService() throws Exception {
+InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+manager.createUser(User.withUsername("user").password("password")
+.roles("USER").build()); return manager; } You can also provide your own
+AuthenticationManager bean or AuthenticationProvider bean, which will then be
+used. Additional improvements Status endpoint Previously, the health endpoint
+would decide whether to return just the status or expose full health details
+based on the presence of a role. Users who always wanted to expose full health
+details, would need to set the management.security.flag to false which was less
+than ideal as it would expose other actuators. As part of 2.0, we've added a
+separate status endpoint which returns just the status. The health endpoint
+always returns the full health details. Both endpoints are secure by default but
+it makes adding custom security rules for the two cases much easier. Get the
+Spring newsletter Stay connected with the Spring newsletter Subscribe Get ahead
+VMware offers training and certification to turbo-charge your progress. Learn
+more Get support Tanzu Spring offers support and binaries for OpenJDK™, Spring,
+and Apache Tomcat® in one simple subscription. Learn more Upcoming events Check
+out all the upcoming events in the Spring community. View all Why Spring
+Generative AI Microservices Reactive Event Driven Cloud Web Applications
+Serverless Batch Learn Quickstart Guides Courses Get Certified Projects
+Resources Blog Release Calendar Version Mappings Release Highlights Security
+Advisories Community Events Authors Enterprise Long-term Support Automated
+Upgrades Governance and Compliance Modern
+----------------------------------------------------------------------------------------------------
+Index: 6862 <<"chunk_id": 9, "docno": 1020>>
+
+see the SpringApplication API documentation. Fluent Builder API If you need to
+build an ApplicationContext hierarchy (multiple contexts with a parent/child
+relationship) or if you prefer using a fluent builder API, you can use the
+SpringApplicationBuilder . The SpringApplicationBuilder lets you chain together
+multiple method calls and includes parent and child methods that let you create
+a hierarchy, as shown in the following example: Java Kotlin new
+SpringApplicationBuilder().sources(Parent.class) .child(Application.class)
+.bannerMode(Banner.Mode.OFF) .run(args); SpringApplicationBuilder()
+.sources(Parent::class.java) .child(Application::class.java)
+.bannerMode(Banner.Mode.OFF) .run(*args) There are some restrictions when
+creating an ApplicationContext hierarchy. For example, Web components must be
+contained within the child context, and the same Environment is used for both
+parent and child contexts. See the SpringApplicationBuilder API documentation
+for full details. Application Availability When deployed on platforms,
+applications can provide information about their availability to the platform
+using infrastructure such as Kubernetes Probes . Spring Boot includes out-of-the
+box support for the commonly used “liveness” and “readiness” availability
+states. If you are using Spring Boot’s “actuator” support then these states are
+exposed as health endpoint groups. In addition, you can also obtain availability
+states by injecting the ApplicationAvailability interface into your own beans.
+Liveness State The “Liveness” state of an application tells whether its internal
+state allows it to work correctly, or recover by itself if it is currently
+failing. A broken “Liveness” state means that the application is in a state that
+it cannot recover from, and the infrastructure should restart the application.
+In general, the "Liveness" state should not be based on external checks, such as
+health checks .
+----------------------------------------------------------------------------------------------------
+Index: 5392 <<"chunk_id": 25, "docno": 790>>
 
 Probes . Depending on your Kubernetes configuration , the kubelet calls those
 probes and reacts to the result. By default, Spring Boot manages your
@@ -83,7 +661,318 @@ application takes a long time to start, consider configuring a "startupProbe"
 that uses the liveness HTTP probe to make sure that Kubernetes won’t kill your
 application while it is in the process of
 ----------------------------------------------------------------------------------------------------
-Index: 460 <<"chunk_id": 3, "docno": 84>>
+Index: 2552 <<"chunk_id": 26, "docno": 341>>
+
+histogram buckets by clamping the range of expected values.
+management.metrics.distribution.percentiles Publish percentile values computed
+in your application management.metrics.distribution.expiry ,
+management.metrics.distribution.buffer-length Give greater weight to recent
+samples by accumulating them in ring buffers which rotate after a configurable
+expiry, with a configurable buffer length. management.metrics.distribution.slo
+Publish a cumulative histogram with buckets defined by your service-level
+objectives. For more details on the concepts behind percentiles-histogram ,
+percentiles , and slo , see the Histograms and percentiles section of the
+Micrometer documentation. Metrics Endpoint Spring Boot provides a metrics
+endpoint that you can use diagnostically to examine the metrics collected by an
+application. The endpoint is not available by default and must be exposed. See
+exposing endpoints for more details. Navigating to /actuator/metrics displays a
+list of available meter names. You can drill down to view information about a
+particular meter by providing its name as a selector — for example,
+/actuator/metrics/jvm.memory.max . The name you use here should match the name
+used in the code, not the name after it has been naming-convention normalized
+for a monitoring system to which it is shipped. In other words, if
+jvm.memory.max appears as jvm_memory_max in Prometheus because of its snake case
+naming convention, you should still use jvm.memory.max as the selector when
+inspecting the meter in the metrics endpoint. You can also add any number of
+tag=KEY:VALUE query parameters to the end of the URL to dimensionally drill down
+on a meter — for example, /actuator/metrics/jvm.memory.max?tag=area:nonheap .
+The reported measurements are the sum of the statistics of all meters that match
+----------------------------------------------------------------------------------------------------
+Index: 25311 <<"chunk_id": 2, "docno": 3984>>
+
+For example, you might use spring.config.import in your application.properties
+to import a second file. The Origin of properties loaded from this second file
+will have a parent that points back to the original import declaration. You can
+try this yourself by looking at the output of the actuator/env or
+actuator/configprops actuator endpoints. Docker/Buildpack Support Publishing
+Images The Maven plugin's spring-boot:build-image goal and the Gradle plugin's
+bootBuildImage task now have the ability to publish the generated image to a
+Docker registry. See the Maven and Gradle plugin documentation for more details
+on configuring the plugins for publishing images. Authentication When using
+Spring Boot’s buildpack support, you can now use a private authenticated Docker
+registry for your builder or run image. Both username/password and token based
+authentication are supported. The Maven and Gradle documentation has been
+updated to show the new configuration. Java 15 support Spring Boot 2.4 supports
+Java 15 while also remaining compatible with Java 11 and 8. Dependency upgrades
+Spring Boot 2.4 moves to new versions of several Spring projects: Spring AMQP
+2.3 Spring Batch 4.3 Spring Data 2020.0 Spring Framework 5.3 Spring HATEOAS 1.2
+Spring Integration 5.4 Spring Kafka 2.6 Spring Retry 1.3 Spring Security 5.4
+Spring Session 2020.0 We’ve also upgraded to the latest stable releases of other
+third-party libraries wherever possible. Please see the release notes for
+details. Other changes There's a whole host of other changes and improvements
+that are documented in the release notes . You can also find a list of
+deprecated classes and methods that we plan to
+----------------------------------------------------------------------------------------------------
+Index: 217 <<"chunk_id": 5, "docno": 27>>
+
+prefix="server" and its configuration properties are server.port ,
+server.address , and others. In a running application with actuator enabled,
+look at the configprops endpoint. Look for uses of the bind method on the Binder
+to pull configuration values explicitly out of the Environment in a relaxed
+manner. It is often used with a prefix. Look for @Value annotations that bind
+directly to the Environment . Look for @ConditionalOnExpression annotations that
+switch features on and off in response to SpEL expressions, normally evaluated
+with placeholders resolved from the Environment . Customize the Environment or
+ApplicationContext Before It Starts A SpringApplication has ApplicationListener
+and ApplicationContextInitializer implementations that are used to apply
+customizations to the context or environment. Spring Boot loads a number of such
+customizations for use internally from META-INF/spring.factories . There is more
+than one way to register additional customizations: Programmatically, per
+application, by calling the addListeners and addInitializers methods on
+SpringApplication before you run it. Declaratively, for all applications, by
+adding a META-INF/spring.factories and packaging a jar file that the
+applications all use as a library. The SpringApplication sends some special
+ApplicationEvents to the listeners (some even before the context is created) and
+then registers the listeners for events published by the ApplicationContext as
+well. See Application Events and Listeners in the “Spring Boot Features” section
+for a complete list. It is also possible to customize the Environment before the
+application context is refreshed by using EnvironmentPostProcessor . Each
+implementation should be registered in META-INF/spring.factories , as shown in
+the following example:
+org.springframework.boot.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+The implementation can
+----------------------------------------------------------------------------------------------------
+Index: 19779 <<"chunk_id": 6, "docno": 2799>>
+
+above) Spring Cloud Stream Reactive Spring Cloud Sleuth can instrument Spring
+Cloud Function. Since Spring Cloud Stream uses Spring Cloud Function you will
+get the messaging instrumentation out of the box. The way to achieve it is to
+provide a Function or Consumer or Supplier that takes in a Message as a
+parameter e.g. Function<Message<String>, Message<Integer>> . If the type is not
+Message then instrumentation will not take place. For a reactive
+Consumer<Flux<Message<?>>> remember to manually close the span and clear the
+context before you call .subscribe() . Here you can find a sample that depicts
+this integration for the producer. Here you can find a sample that depicts this
+integration for the consumer. Reactive Mongo We’re adding command listeners that
+wrap all commands in a span. It works both for the Reactive and non Reactive
+case. Here you can find a sample that depicts this integration. Abstracted Redis
+instrumentation With this PR the Redis instrumentation can work for other
+Tracers, such as OpenTelemetry. Custom Actuator for storing traces Spring Cloud
+Sleuth comes with a traces Actuator endpoint that can store finished spans. The
+endpoint can be queried either via an HTTP Get method to simply retrieve the
+list of stored spans or via HTTP Post method to retrieve the list and clear it.
+Check the docs for more details. Stay in touch! This release introduces a lot of
+instrumentations. We would love to see your traces! You can go to our Gitter and
+paste a screenshot of your traces so that we can analyze how
+----------------------------------------------------------------------------------------------------
+Index: 21617 <<"chunk_id": 7, "docno": 3206>>
+
+properties. For example: management.metrics.enable.jvm=false
+management.metrics.distribution.percentiles-histogram.http.server.requests=true
+management.metrics.distribution.sla.http.server.requests=1ms,5ms The above turns
+off all metrics beginning with the prefix "jvm", publishes percentile histograms
+for http server request metrics that are autoconfigured by Spring Boot, and
+ships counts of requests less than or equal to 1ms and 5ms SLA boundaries so you
+can see exactly how many requests are meeting your expectations. The SLA
+distribution configuration is also the core feature that enables you to
+visualize more complicated measurements like Apdex scores . You can flip
+enablement of metrics entirely at the root to generate a whitelist for just a
+handful of metrics you want. Suppose you want JVM metrics and nothing else:
+management.metrics.enable.all=false management.metrics.enable.jvm=true Why the
+/actuator/metrics endpoint changed in Spring Boot 2 It was trivial to provide a
+single REST endpoint that listed all metrics in Spring Boot 1, because we only
+had counters and gauges and both were hierarchical. More complex types like
+timers represent more than one time series (they contain at a minimum a count, a
+maximum, and a total sum). Also, our metrics went dimensional. It quickly became
+clear that there was no way to output all this information in a single payload.
+Even for a dimensional counter, do we display an aggregate for every permutation
+of tags? Flattening to hierarchical names for brevity, this turns into something
+like this: http.server.requests.method.GET.response.200.uri./foo=100
+http.server.requests.method.GET.response.500.uri./foo=1
+http.server.requests.method.GET.response.200.uri./bar=5
+http.server.requests.method.GET.response.400.uri./foo=1 # and now the
+aggregates... http.server.requests.method.GET=107
+http.server.requests.method.GET.response.200=105
+http.server.requests.method.GET.uri./foo=101
+http.server.requests.response.200.uri./foo=100
+http.server.requests.response.500.uri./foo=1
+http.server.requests.response.200.uri./bar=5 ... As you can see, this quickly
+becomes untenable. If you were wanting to build a custom UI, for
+----------------------------------------------------------------------------------------------------
+Index: 21477 <<"chunk_id": 1, "docno": 3189>>
+
+full Grails plugin for Spring Integration. More like an online diary, you'll get
+the chance to see how we take our first steps by bootstrapping Spring
+Integration into a Grails application, through using some of the more advanced
+features of Spring Integration to bridge messages across diverse
+infrastructures, to finally applying this experience to create a Grails plugin
+that you can use to quickly and easily add Spring Integration to your own Grails
+projects. If you'd prefer to have the finished project as you work through the
+article, the full Grails project source code is available for download here
+(NOTE: Built against Grails 1.1 Beta 1 ) Grails (for blaggers) Grails is a
+dynamic, convention-over-configuration application framework based on the Groovy
+language that uses Spring under the covers. This usage of Spring makes it a
+doddle to add Spring portfolio project functionality to a Grails application,
+which is exactly what we will look at in this article in terms of the Spring
+Integration project. Spring Integration (for blaggers) For anyone who has not
+had the chance to use Spring Integration, in a nutshell it is a lightweight
+message-oriented collection of libraries that you can use inside your
+Spring-based applications. To that end, Spring Integration has some core
+concepts that are useful to understand: Messages Messages are the core
+abstraction of any message-oriented middleware and Spring Integration is no
+different. Messages can be made up of any Java, and therefore Groovy, type that
+is then passed from endpoints to endpoint using channels... Endpoints Endpoints
+are the components
+----------------------------------------------------------------------------------------------------
+Index: 19775 <<"chunk_id": 2, "docno": 2799>>
+
+not stopping it. We had enough of such situations... Another challenge we faced
+was that we didn't even remember any longer how many spans we create, what their
+names are and how many tags / events are being set on them. We've decided to
+alter the way we code things in Sleuth so that we can introduce certain
+automation. We are instrumenting the code once, however we are able to turn on
+at the test time additional assertions that verify if spans were started and
+stopped etc. Also at the documentation build time we parse the sources and build
+a table of spans together with some details. You can check the docs to see the
+results of that automation. Spring Cloud Deployer If you have Spring Cloud
+Deployer running on the classpath, we wrap the AppDeployer in a trace
+representation. We are polling the application for its status at a default
+interval. Check the docs for more details. Here you can find a sample that
+depicts this integration. R2DBC If you have R2DBC Proxy on the classpath we will
+instrument the ConnectionFactory so that it contains a custom
+ProxyExecutionListener . Check the docs for more details. Here you can find a
+sample that depicts this integration. Kafka and Reactor Kafka We decorate the
+Kafka clients ( KafkaProducer and KafkaConsumer ) to create a span for each
+event that is produced or consumed. We also provide TracingKafkaProducerFactory
+and TracingKafkaConsumerFactory to be used with the Reactor Kafka clients (
+KafkaSender and KafkaReceiver , respectively). Additionally, we decorate any
+----------------------------------------------------------------------------------------------------
+Index: 5382 <<"chunk_id": 15, "docno": 790>>
+
+when the endpoint operation is invoked. If you want to capture all remaining
+path elements, you can add @Selector(Match=ALL_REMAINING) to the last parameter
+and make it a type that is conversion-compatible with a String[] . HTTP method
+The HTTP method of the predicate is determined by the operation type, as shown
+in the following table: Operation HTTP method @ReadOperation GET @WriteOperation
+POST @DeleteOperation DELETE Consumes For a @WriteOperation (HTTP POST ) that
+uses the request body, the consumes clause of the predicate is
+application/vnd.spring-boot.actuator.v2+json, application/json . For all other
+operations, the consumes clause is empty. Produces The produces clause of the
+predicate can be determined by the produces attribute of the @DeleteOperation ,
+@ReadOperation , and @WriteOperation annotations. The attribute is optional. If
+it is not used, the produces clause is determined automatically. If the
+operation method returns void or Void , the produces clause is empty. If the
+operation method returns a Resource , the produces clause is
+application/octet-stream . For all other operations, the produces clause is
+application/vnd.spring-boot.actuator.v2+json, application/json . Web Endpoint
+Response Status The default response status for an endpoint operation depends on
+the operation type (read, write, or delete) and what, if anything, the operation
+returns. If a @ReadOperation returns a value, the response status will be 200
+(OK). If it does not return a value, the response status will be 404 (Not
+Found). If a @WriteOperation or @DeleteOperation returns a value, the response
+status will be 200 (OK). If it does not return a value, the response status will
+be 204
+----------------------------------------------------------------------------------------------------
+Index: 5390 <<"chunk_id": 23, "docno": 790>>
+
+you can define the following: Properties YAML
+management.endpoint.health.group.custom.include=db management: endpoint: health:
+group: custom: include: "db" You can then check the result by hitting
+localhost:8080/actuator/health/custom . Similarly, to create a group that
+excludes the database indicators from the group and includes all the other
+indicators, you can define the following: Properties YAML
+management.endpoint.health.group.custom.exclude=db management: endpoint: health:
+group: custom: exclude: "db" By default, startup will fail if a health group
+includes or excludes a health indicator that does not exist. To disable this
+behavior set management.endpoint.health.validate-group-membership to false . By
+default, groups inherit the same StatusAggregator and HttpCodeStatusMapper
+settings as the system health. However, you can also define these on a per-group
+basis. You can also override the show-details and roles properties if required:
+Properties YAML
+management.endpoint.health.group.custom.show-details=when-authorized
+management.endpoint.health.group.custom.roles=admin
+management.endpoint.health.group.custom.status.order=fatal,up
+management.endpoint.health.group.custom.status.http-mapping.fatal=500
+management.endpoint.health.group.custom.status.http-mapping.out-of-service=500
+management: endpoint: health: group: custom: show-details: "when-authorized"
+roles: "admin" status: order: "fatal,up" http-mapping: fatal: 500
+out-of-service: 500 You can use @Qualifier("groupname") if you need to register
+custom StatusAggregator or HttpCodeStatusMapper beans for use with the group. A
+health group can also include/exclude a CompositeHealthContributor . You can
+also include/exclude only a certain component of a CompositeHealthContributor .
+This can be done using the fully qualified name of the component as follows:
+management.endpoint.health.group.custom.include="test/primary"
+management.endpoint.health.group.custom.exclude="test/primary/b" In the example
+above, the custom group will include the HealthContributor with the name primary
+which is a component of the composite test . Here, primary itself is a composite
+and the HealthContributor with the name b will be excluded from the custom
+group. Health groups can be made available at an additional path
+----------------------------------------------------------------------------------------------------
+Index: 6899 <<"chunk_id": 3, "docno": 1026>>
+
+spring-boot-kotlinx-serialization-json spring-boot-ldap spring-boot-liquibase
+spring-boot-mail spring-boot-micrometer-metrics
+spring-boot-micrometer-observation spring-boot-micrometer-tracing
+spring-boot-micrometer-tracing-brave
+spring-boot-micrometer-tracing-opentelemetry spring-boot-mongodb
+spring-boot-mustache spring-boot-neo4j spring-boot-netty
+spring-boot-opentelemetry spring-boot-persistence spring-boot-pulsar
+spring-boot-quartz spring-boot-r2dbc spring-boot-reactor
+spring-boot-reactor-netty spring-boot-restclient spring-boot-resttestclient
+spring-boot-rsocket spring-boot-security
+spring-boot-security-oauth2-authorization-server
+spring-boot-security-oauth2-client spring-boot-security-oauth2-resource-server
+spring-boot-security-saml2 spring-boot-sendgrid spring-boot-servlet
+spring-boot-session spring-boot-session-data-redis spring-boot-session-jdbc
+spring-boot-testcontainers spring-boot-thymeleaf spring-boot-tomcat
+spring-boot-transaction spring-boot-validation spring-boot-webclient
+spring-boot-webflux spring-boot-webmvc spring-boot-webservices
+spring-boot-websocket spring-boot-zipkin Test Auto-configuration Annotations
+Test Slices Dependency Versions Managed Dependency Coordinates Version
+Properties Search Edit this Page GitHub Project Stack Overflow Spring Boot
+Reference Production-ready Features Monitoring and Management Over HTTP
+Monitoring and Management Over HTTP If you are developing a web application,
+Spring Boot Actuator auto-configures all enabled endpoints to be exposed over
+HTTP. The default convention is to use the id of the endpoint with a prefix of
+/actuator as the URL path. For example, health is exposed as /actuator/health .
+Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey. If
+both Jersey and Spring MVC are available, Spring MVC is used. Jackson is a
+required dependency in order to get the correct JSON responses as documented in
+the API documentation . Jackson 3 should be used for Spring MVC and Spring
+WebFlux. Jersey does not yet have a Jackson 3 module, so you will need to use
+Jackson 2. Customizing the Management Endpoint Paths Sometimes, it is useful to
+customize the prefix for the management endpoints. For example, your application
+might already use /actuator for another purpose. You can use the
+management.endpoints.web.base-path property to change the prefix for your
+management endpoint, as the following example shows: Properties YAML
+management.endpoints.web.base-path=/manage management: endpoints: web:
+base-path: "/manage" The preceding application.properties example
+----------------------------------------------------------------------------------------------------
+Index: 12385 <<"chunk_id": 4, "docno": 1899>>
+
+right place to find these type of samples. ADVANCED (samples/advanced) This
+category targets develoopers who are very familiar with Spring Integration
+framework but looking to extend it to address a specific custom need by using
+Spring Integration public API. For example; if you are looking for samples
+showing you how to implement a custom Channel or Consumer (event-based or
+polling-based), or you trying to figure out what is the most appropriate way to
+implement custom Bean parser on top of Spring Integration Bean parsers hierarchy
+when implementing custom name space for a custom component, this would be the
+right place to look. Here you can also find samples that will help you with
+Adapter development. Spring Integration comes with an extensive library of
+adapters to allow you to connect remote systems with Spring Integration
+messaging framework. However you might have a need to integrate with system for
+which the core framework does not provide an adapter. So you have to implement
+your own. This category would include samples showing you how to do it.
+APPLICATIONS (samples/applications) This category targets developers and
+architects who have a good understanding of the Messaging architecture, EIP and
+above average understanding of Spring and Spring Integration frameworks and are
+looking for samples that address a particular business problem. In other words
+the emphasis of samples in this category is business use cases and how they
+could be solved via Messaging Architecture and Spring Integration in particular.
+For example; If you are interested to see how a Loan Broker or Travel Agent
+----------------------------------------------------------------------------------------------------
+Index: 5370 <<"chunk_id": 3, "docno": 790>>
 
 spring-boot-micrometer-metrics spring-boot-micrometer-observation
 spring-boot-micrometer-tracing spring-boot-micrometer-tracing-brave
@@ -121,470 +1010,375 @@ list of all the Spring beans in your application. caches Exposes available
 caches. conditions Shows the conditions that were evaluated on configuration and
 auto-configuration classes and the reasons why they did
 ----------------------------------------------------------------------------------------------------
-Index: 60095 <<"chunk_id": 2, "docno": 9985>>
+Index: 5383 <<"chunk_id": 16, "docno": 790>>
 
-immutable. Constructor-based binding can be enabled by annotating a
-@ConfigurationProperties class or one of its constructors with
-@ConstructorBinding . Annotations such as @DefaultValue and @DateTimeFormat can
-be used on constructor parameters that are provided by configuration property
-binding. Please see the relevant section of the reference documentation for
-further details. RSocket Support Extensive auto-configuration has been added for
-RSocket along with a new starter, spring-boot-starter-rsocket . Spring
-Security's RSocket integration is also auto-configured when the
-spring-security-rsocket is on the classpath. Please see the relevant section of
-the reference documentation for further details. Health indicator groups It is
-now possible to organize health indicators into groups. A typical example, if
-you deploy your application to Kubernetes, is that you may want different groups
-of health indicators for your “liveness” and “readiness” probes. Groups can be
-configured via configuration properties. The following creates a custom group
-with only the DataSource indicator:
-management.endpoint.health.group.custom.include=db The custom group can be
-invoked by hitting localhost:8080/actuator/health/custom. Check the updated
-reference documentation for more details. Other changes There's a whole host of
-other changes and improvements that are documented in the release notes . You
-can also find a list of deprecated classes and methods that we plan to remove in
-the next version. Thank you We want to take this opportunity to again thank all
-our users and contributors. We've now had over 600 people submit code, and there
-have been over 23000 commits to the project. If you're interested in helping
-out, check out the "ideal for contribution" tag in the issue
+or @DeleteOperation returns a value, the response status will be 200 (OK). If it
+does not return a value, the response status will be 204 (No Content). If an
+operation is invoked without a required parameter or with a parameter that
+cannot be converted to the required type, the operation method is not called,
+and the response status will be 400 (Bad Request). Web Endpoint Range Requests
+You can use an HTTP range request to request part of an HTTP resource. When
+using Spring MVC or Spring Web Flux, operations that return a Resource
+automatically support range requests. Range requests are not supported when
+using Jersey. Web Endpoint Security An operation on a web endpoint or a
+web-specific endpoint extension can receive the current Principal or
+SecurityContext as a method parameter. The former is typically used in
+conjunction with @Nullable to provide different behavior for authenticated and
+unauthenticated users. The latter is typically used to perform authorization
+checks by using its isUserInRole(String) method. Health Information You can use
+health information to check the status of your running application. It is often
+used by monitoring software to alert someone when a production system goes down.
+The information exposed by the health endpoint depends on the
+management.endpoint.health.show-details and
+management.endpoint.health.show-components properties, which can be configured
+with one of the following values: Name Description never Details are never
+shown. when-authorized Details are shown only to authorized users. Authorized
+roles can be configured by using management.endpoint.health.roles . always
+Details are shown to all users. The default value is never . A
 ----------------------------------------------------------------------------------------------------
-Index: 477 <<"chunk_id": 20, "docno": 84>>
+Index: 7409 <<"chunk_id": 11, "docno": 1124>>
 
-without the HealthIndicator suffix, if it exists. In the preceding example, the
-health information is available in an entry named my . Health indicators are
-usually called over HTTP and need to respond before any connection timeouts.
-Spring Boot will log a warning message for any health indicator that takes
-longer than 10 seconds to respond. If you want to configure this threshold, you
-can use the management.endpoint.health.logging.slow-indicator-threshold
-property. In addition to Spring Boot’s predefined Status types, Health can
-return a custom Status that represents a new system state. In such cases, you
-also need to provide a custom implementation of the StatusAggregator interface,
-or you must configure the default implementation by using the
-management.endpoint.health.status.order configuration property. For example,
-assume a new Status with a code of FATAL is being used in one of your
-HealthIndicator implementations. To configure the severity order, add the
-following property to your application properties: Properties YAML
-management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
-management: endpoint: health: status: order:
-"fatal,down,out-of-service,unknown,up" The HTTP status code in the response
-reflects the overall health status. By default, OUT_OF_SERVICE and DOWN map to
-503. Any unmapped health statuses, including UP , map to 200. You might also
-want to register custom status mappings if you access the health endpoint over
-HTTP. Configuring a custom mapping disables the defaults mappings for DOWN and
-OUT_OF_SERVICE . If you want to retain the default mappings, you must explicitly
-configure them, alongside any custom mappings. For example, the following
-property maps FATAL to 503 (service unavailable) and retains the default
-mappings for DOWN and OUT_OF_SERVICE
+and in Spring Framework’s reference documentation . Welcome Page Spring Boot
+supports both static and templated welcome pages. It first looks for an
+index.html file in the configured static content locations. If one is not found,
+it then looks for an index template. If either is found, it is automatically
+used as the welcome page of the application. This only acts as a fallback for
+actual index routes defined by the application. The ordering is defined by the
+order of HandlerMapping beans which is by default the following:
+RouterFunctionMapping Endpoints declared with RouterFunction beans
+RequestMappingHandlerMapping Endpoints declared in @Controller beans
+WelcomePageHandlerMapping The welcome page support Custom Favicon As with other
+static resources, Spring Boot checks for a favicon.ico in the configured static
+content locations. If such a file is present, it is automatically used as the
+favicon of the application. Path Matching and Content Negotiation Spring MVC can
+map incoming HTTP requests to handlers by looking at the request path and
+matching it to the mappings defined in your application (for example,
+@GetMapping annotations on Controller methods). Spring Boot chooses to disable
+suffix pattern matching by default, which means that requests like "GET
+/projects/spring-boot.json" will not be matched to
+@GetMapping("/projects/spring-boot") mappings. This is considered as a best
+practice for Spring MVC applications . This feature was mainly useful in the
+past for HTTP clients which did not send proper "Accept" request headers; we
+needed to make sure to send the correct Content Type to the client. Nowadays,
+Content Negotiation is much more reliable. There are other
 ----------------------------------------------------------------------------------------------------
-Index: 481 <<"chunk_id": 24, "docno": 84>>
+Index: 19060 <<"chunk_id": 3, "docno": 2739>>
 
-composite and the HealthContributor with the name b will be excluded from the
-custom group. Health groups can be made available at an additional path on
-either the main or management port. This is useful in cloud environments such as
-Kubernetes, where it is quite common to use a separate management port for the
-actuator endpoints for security purposes. Having a separate port could lead to
-unreliable health checks because the main application might not work properly
-even if the health check is successful. The health group can be configured with
-an additional path as follows:
-management.endpoint.health.group.live.additional-path="server:/healthz" This
-would make the live health group available on the main server port at /healthz .
-The prefix is mandatory and must be either server: (represents the main server
-port) or management: (represents the management port, if configured.) The path
-must be a single path segment. DataSource Health The DataSource health indicator
-shows the health of both standard data sources and routing data source beans.
-The health of a routing data source includes the health of each of its target
-data sources. In the health endpoint’s response, each of a routing data source’s
-targets is named by using its routing key. If you prefer not to include routing
-data sources in the indicator’s output, set
-management.health.db.ignore-routing-data-sources to true . Kubernetes Probes
-Applications deployed on Kubernetes can provide information about their internal
-state with Container Probes . Depending on your Kubernetes configuration , the
-kubelet calls those probes and reacts to the result. By default, Spring Boot
-manages your Application
+with major, minor, and patch values where minor and patch values are set to 0 if
+not present. This is important in order to be able to compare versions. The
+parser can be customized or replaced if you want to use a date or any other
+format. In the mappings, a version can be a fixed version, such as “1.2”, or a
+baseline version, such as “1.2+”. The baseline version is useful in scenarios
+where change is applied incrementally to selected endpoints, removing the need
+to create additional controller methods for endpoints that haven’t changed. For
+example, given supported versions of “1.2” and “1.3”, a controller method with
+version “1.2+” supports both versions. This allows the controller method to
+continue working in version 1.3 and with other future versions until there is a
+need for a new controller method in a higher version. An important aspect of
+versioning is to provide deprecation hints to clients. You can configure a
+deprecation handler to do that. The built-in handler can set "Deprecation",
+"Sunset", and "Link" headers based on RFC 9745 and RFC 8594 . Client Support
+From a client perspective you may need to perform requests with an API version.
+For this, there is an ApiVersionInserter that determines how to insert a version
+into the request once, and subsequently when you make requests, you only need to
+specify the version value. For example, in RestClient and WebClient you can set
+an inserter: RestClient client = RestClient.builder()
+.baseUrl("http://localhost:8080")
+.apiVersionInserter(ApiVersionInserter.useHeader("API-Version")) .build(); For
+Spring Boot applications, there are equivalent properties .
 ----------------------------------------------------------------------------------------------------
-Index: 40116 <<"chunk_id": 4, "docno": 6081>>
+Index: 21249 <<"chunk_id": 4, "docno": 3136>>
 
-determined from its available health endpoint. When the health endpoint is not
-available (either disabled or not a Spring Boot Actuator application) it assumes
-the application is in good health. When querying the health endpoint, the root
-health group is used by default. A different health group can be used by setting
-the following property: application.yml spring: cloud: consul: discovery:
-heartbeat: actuator-health-group: <your-custom-group-goes-here> You can disable
-the use of the health endpoint entirely by setting the following property:
-application.yml spring: cloud: consul: discovery: heartbeat:
-use-actuator-health: false Custom TTL Application Status If you want to
-configure your own application status mechanism, simply implement the
-ApplicationStatusProvider interface MyCustomApplicationStatusProvider.java @Bean
-public class MyCustomApplicationStatusProvider implements
-ApplicationStatusProvider { public CheckStatus currentStatus() { return
-yourMethodToDetermineAppStatusGoesHere(); } } and make it available to the
-application context: @Bean public CustomApplicationStatusProvider
-customAppStatusProvider() { return new MyCustomApplicationStatusProvider(); }
-Actuator Health Indicator(s) If the service instance is a Spring Boot Actuator
-application, it may be provided the following Actuator health indicators.
-DiscoveryClientHealthIndicator When Consul Service Discovery is active, a
-DiscoverClientHealthIndicator is configured and made available to the Actuator
-health endpoint. See here for configuration options. ConsulHealthIndicator An
-indicator is configured that verifies the health of the ConsulClient . By
-default, it retrieves the Consul leader node status and all registered services.
-In deployments that have many registered services it may be costly to retrieve
-all services on every health check. To skip the service retrieval and only check
-the leader node status set
-spring.cloud.consul.health-indicator.include-services-query=false . To disable
-the indicator set management.health.consul.enabled=false . When the application
-runs in
+most popular monitoring systems, allowing you to instrument your JVM-based
+application code without vendor lock-in. Think SLF4J, but for metrics. The most
+straightforward possible use of Micrometer is to capture metrics and keep them
+in memory, which the Spring Boot Actuator will do. You can configure your
+application to show those metrics under an Actuator management endpoint -
+/actuator/metrics/ . More commonly, though, you'll want to send these metrics to
+a time-series database like Graphite, Prometheus, Netflix Atlas, Datadog, or
+InfluxDB. Time series databases store the evolving value of a metric over time,
+so you can see how it has changed. Follow the Data Danger is the snack food of a
+true sleuth. -Mac Barnett We also want to have detailed breakdowns of individual
+requests and traces to give us context around particular failed requests. The
+Sleuth starter brings in the Spring Cloud Sleuth distributed tracing
+abstraction, which provides a simple facade over distributed tracing systems
+like OpenZipkin and Google Cloud Stackdriver Trace and Wavefront. Micrometer and
+Sleuth give you the power of choice in metrics and tracing backends. We could
+use these two different abstractions and separately stand up a dedicated cluster
+for our tracing and metrics aggregation systems. People do. Crazier things have
+happened. We're all about the idea that you shouldn't run what you can't charge
+for, so let's use an easy, turnkey, hosted, software-as-a-service (SaaS)
+offering and let someone else do that work. We don't envy the integration task
+that having such highly related data living in two different, unrelated backend
+systems
 ----------------------------------------------------------------------------------------------------
-Index: 9975 <<"chunk_id": 9, "docno": 1435>>
+Index: 5377 <<"chunk_id": 10, "docno": 790>>
 
-appropriately. Spring Boot provides a bridge between its own spring-boot-health
-module and the standard gRPC health service. Health information is provided
-whenever the io.grpc:grpc-services and
-org.springframework.boot:spring-boot-health modules are on your classpath. If
-you don’t want health indicators to be exposed, you can set
-spring.grpc.server.health.enabled to false . Service Specific Health Mappings By
-default, health information is provided for the overall server status ( "" )
-using all available health indicators. It is also possible to provide
-fine-grained health information for specific services by including only a
-sub-set of health indicators. Custom mapping and ordering rules can also be
-defined on a per-service basis. For example, the following configuration will
-provide health for “myservice” using only the db and redis indicators.
-Properties YAML spring.grpc.server.health.service.myservice.include[0]=db
-spring.grpc.server.health.service.myservice.include[1]=redis spring: grpc:
-server: health: service: myservice: include: - db - redis You can set
-spring.grpc.server.health.include-overall-health to false to disable the overall
-server status health if you only want to provide service-specific health. Push
-Configuration Unlike web-based health checks, gRPC health information is
-periodically pushed rather than pulled. By default, the first health push
-happens 5 seconds after the application starts and then every subsequent 5
-seconds. To fine-tune this, you can use the following properties: Properties
-YAML spring.grpc.server.health.schedule.period=5m
-spring.grpc.server.health.schedule.delay=2s spring: grpc: server: health:
-schedule: period: 5m delay: 2s You can also set
-spring.grpc.server.health.schedule.enabled to false if want to send health
-updates in some other way. Securing gRPC Server Applications Netty Based Servers
-Spring gRPC includes features that allow you to secure your Netty based server
-applications declaratively using Spring Security. This follows
+the time-to-live of the beans endpoint’s cache to 10 seconds: Properties YAML
+management.endpoint.beans.cache.time-to-live=10s management: endpoint: beans:
+cache: time-to-live: "10s" The management.endpoint.<name> prefix uniquely
+identifies the endpoint that is being configured. Sanitize Sensitive Values
+Information returned by the /env , /configprops and /quartz endpoints can be
+sensitive, so by default values are always fully sanitized (replaced by ******
+). Values can only be viewed in an unsanitized form when: The show-values
+property has been set to something other than never No custom SanitizingFunction
+beans apply The show-values property can be configured for sanitizable endpoints
+to one of the following values: never - values are always fully sanitized
+(replaced by ****** ) always - values are shown to all users (as long as no
+SanitizingFunction bean applies) when-authorized - values are shown only to
+authorized users (as long as no SanitizingFunction bean applies) For HTTP
+endpoints, a user is considered to be authorized if they have authenticated and
+have the roles configured by the endpoint’s roles property. By default, any
+authenticated user is authorized. For JMX endpoints, all users are always
+authorized. The following example allows all users with the admin role to view
+values from the /env endpoint in their original form. Unauthorized users, or
+users without the admin role, will see only sanitized values. Properties YAML
+management.endpoint.env.show-values=when-authorized
+management.endpoint.env.roles=admin management: endpoint: env: show-values:
+when-authorized roles: "admin" This example assumes that no SanitizingFunction
+beans have been defined. Hypermedia for Actuator Web Endpoints A “discovery
+page” is added with links to all the endpoints. The “discovery page” is
+available
 ----------------------------------------------------------------------------------------------------
-Index: 474 <<"chunk_id": 17, "docno": 84>>
+Index: 5005 <<"chunk_id": 17, "docno": 726>>
 
-authorized users. Authorized roles can be configured by using
-management.endpoint.health.roles . always Details are shown to all users. The
-default value is never . A user is considered to be authorized when they are in
-one or more of the endpoint’s roles. If the endpoint has no configured roles
-(the default), all authenticated users are considered to be authorized. You can
-configure the roles by using the management.endpoint.health.roles property. If
-you have secured your application and wish to use always , your security
-configuration must permit access to the health endpoint for both authenticated
-and unauthenticated users. Health information is collected from the content of a
-HealthContributorRegistry (by default, all HealthContributor instances defined
-in your ApplicationContext ). Spring Boot includes a number of auto-configured
-HealthContributor beans, and you can also write your own. A HealthContributor
-can be either a HealthIndicator or a CompositeHealthContributor . A
-HealthIndicator provides actual health information, including a Status . A
-CompositeHealthContributor provides a composite of other HealthContributor
-instances. Taken together, contributors form a tree structure to represent the
-overall system health. By default, the final system health is derived by a
-StatusAggregator , which sorts the statuses from each HealthIndicator based on
-an ordered list of statuses. The first status in the sorted list is used as the
-overall health status. If no HealthIndicator returns a status that is known to
-the StatusAggregator , an UNKNOWN status is used. You can use the
-HealthContributorRegistry to register and unregister health indicators at
-runtime. Auto-configured HealthIndicators When appropriate, Spring Boot
-auto-configures the HealthIndicator
+use to switch the auto-configured repositories on and off in external
+configuration. Doing so is useful, for instance, in case you want to switch off
+the Mongo repositories and still use the auto-configured MongoTemplate . The
+same obstacle and the same features exist for other auto-configured Spring Data
+repository types (Elasticsearch, Redis, and others). To work with them, change
+the names of the annotations and flags accordingly. Customize Spring Data’s Web
+Support Spring Data provides web support that simplifies the use of Spring Data
+repositories in a web application. Spring Boot provides properties in the
+spring.data.web namespace for customizing its configuration. Note that if you
+are using Spring Data REST, you must use the properties in the spring.data.rest
+namespace instead. Expose Spring Data Repositories as REST Endpoint Spring Data
+REST can expose the Repository implementations as REST endpoints for you,
+provided Spring MVC has been enabled for the application. Spring Boot exposes a
+set of useful properties (from the spring.data.rest namespace) that customize
+the RepositoryRestConfiguration . If you need to provide additional
+customization, you should use a RepositoryRestConfigurer bean. If you do not
+specify any order on your custom RepositoryRestConfigurer , it runs after the
+one Spring Boot uses internally. If you need to specify an order, make sure it
+is higher than 0. Configure a Component that is Used by JPA If you want to
+configure a component that JPA uses, then you need to ensure that the component
+is initialized before JPA. When the component is auto-configured, Spring Boot
+takes care of this for
 ----------------------------------------------------------------------------------------------------
-Index: 49871 <<"chunk_id": 1, "docno": 7908>>
+Index: 70 <<"chunk_id": 43, "docno": 6>>
 
-(and, by extension, Pivotal Cloud Cache, which is backed by Pivotal GemFire).
-Specifically, this support includes Spring Boot HealthIndicators to assess the
-state and health of the following GemFire/Geode components: Cache
-DistributedSystem / DistributedMember ResourceManager Regions Indexes DiskStores
-Continuous Queries CacheServers Pools AsyncEventQueues GatewaySenders
-GatewayReceivers In addition to basic status information, the GemFire/Geode
-HealthIndicators provide essential configuration meta-data details along with
-runtime characteristics/behavior of the GemFire/Geode components themselves.
-This includes simple metrics like the cache Region hit/miss counts or the
-connection load between clients and servers, and so on. "Essential"
-configuration meta-data details are provided in 1 convenient location so that
-you don’t have to sift through all the command-line arguments, log files,
-property files and other configuration files just to find the configuration of
-each GemFire/Geode object used in your application architecture. More details
-about the provided HealthIndicators is available here . Example There is even an
-undocumented example (already) that you can play with on the samples branch,
-here . The example Spring Boot app is a simple little temperature monitoring
-service for a temperature sensor, and uses Apache Geode CQ functionality to send
-temperature events to the client (monitor). It uses enough Geode components to
-make the Actuator health endpoints interesting. What’s Next By RC1, we intend to
-complete the following: (More) Samples, complete with documentation Amp up test
-coverage covering all manners of UCs Review the docs for correctness and
-conciseness. As always feedback is welcomed! Issues | PR | StackOverflow
-SpringOne Platform 2018 Also, don’t forget about SpringOne Platform 2018 this
+class MyProperties { var remoteAddress: @NotNull InetAddress? = null @Valid val
+security = Security() class Security { @NotEmpty var username: String? = null }
+} You can also add a custom Spring Validator by creating a bean definition
+called configurationPropertiesValidator . The @Bean method should be declared
+static . The configuration properties validator is created very early in the
+application’s lifecycle, and declaring the @Bean method as static lets the bean
+be created without having to instantiate the @Configuration class. Doing so
+avoids any problems that may be caused by early instantiation. The
+spring-boot-actuator module includes an endpoint that exposes all
+@ConfigurationProperties beans. Point your web browser to /actuator/configprops
+or use the equivalent JMX endpoint. See the Production ready features section
+for details. @ConfigurationProperties vs. @Value The @Value annotation is a core
+container feature, and it does not provide the same features as type-safe
+configuration properties. The following table summarizes the features that are
+supported by @ConfigurationProperties and @Value : Feature
+@ConfigurationProperties @Value Relaxed binding Yes Limited (see note below )
+Meta-data support Yes No SpEL evaluation No Yes If you do want to use @Value ,
+we recommend that you refer to property names using their canonical form
+(kebab-case using only lowercase letters). This will allow Spring Boot to use
+the same logic as it does when relaxed binding @ConfigurationProperties . For
+example, @Value("${demo.item-price}") will pick up demo.item-price and
+demo.itemPrice forms from the application.properties file, as well as
+DEMO_ITEMPRICE from the system environment. If you use
+@Value("${demo.itemPrice}") instead, it will pickup the demo.itemPrice form from
 ----------------------------------------------------------------------------------------------------
-Index: 1157 <<"chunk_id": 5, "docno": 173>>
+Index: 26380 <<"chunk_id": 4, "docno": 4236>>
 
-can be used to override access rules for actuator endpoints and static
-resources. EndpointRequest can be used to create a RequestMatcher that is based
-on the management.endpoints.web.base-path property. PathRequest can be used to
-create a RequestMatcher for resources in commonly used locations. WebFlux
-Security Similar to Spring MVC applications, you can secure your WebFlux
-applications by adding the spring-boot-starter-security dependency. The default
-security configuration is implemented in ReactiveWebSecurityAutoConfiguration
-and ReactiveUserDetailsServiceAutoConfiguration . In addition to reactive web
-applications, the latter is also auto-configured when RSocket is in use.
-ReactiveWebSecurityAutoConfiguration imports WebFluxSecurityConfiguration for
-web security. ReactiveUserDetailsServiceAutoConfiguration auto-configures
-authentication. To completely switch off the default web application security
-configuration, including Actuator security, add a bean of type
-WebFilterChainProxy (doing so does not disable the ReactiveUserDetailsService
-configuration). To also switch off the ReactiveUserDetailsService configuration,
-add a bean of type ReactiveUserDetailsService or ReactiveAuthenticationManager .
-The auto-configuration will also back off when any of the following Spring
-Security modules is on the classpath: spring-security-oauth2-client
-spring-security-oauth2-resource-server To use ReactiveUserDetailsService in
-addition to one or more of these dependencies, define your own
-MapReactiveUserDetailsService bean. Access rules and the use of multiple Spring
-Security components such as OAuth 2 Client and Resource Server can be configured
-by adding a custom SecurityWebFilterChain bean. Spring Boot provides convenience
-methods that can be used to override access rules for actuator endpoints and
-static resources. EndpointRequest can be used to create a
-ServerWebExchangeMatcher that is based on the management.endpoints.web.base-path
-property. PathRequest can be used to create a ServerWebExchangeMatcher for
-resources in commonly used locations. For example, you can customize
+when you use the template repositories for creating a custom application, you
+can take the application and run it on Spring Cloud Data Flow in the same way as
+the out of the box applications work. Here are the links to the template
+repositories. GitHub template repositories for Kafka binder based applications
+GitHub template repositories for RabbitMQ binder based applications . You can
+click on the Use this template at the top of the repository to create a new
+custom repository for the new application. Wrapping up the Blog Series Now that
+we covered all the 2020.0.0 release details, as mentioned before, let us use
+this as an opportunity to wrap up the blog series that we started in the summer.
+The series covered many different topics and use cases. Below, you can find
+links to all of them and a summary description of what was covered in each blog.
+Blog 1 : Introducing Java Functions for Spring Cloud Stream Applications - Part
+0 The first blog in this series gives us an overall vision and direction for
+this project. It starts with some historical context of how we got here. It then
+set the stage for these new functions and the Spring Cloud Stream applications
+based on them. Blog 2 : Introducing Java Functions for Spring Cloud Stream
+Applications - Part 1 This episode gives a detailed analysis of functional
+composition and then delved deep into how function composition works in Spring
+Cloud Stream. This blog provides us some good directions on how we can
 ----------------------------------------------------------------------------------------------------
-Index: 57868 <<"chunk_id": 1, "docno": 9426>>
+Index: 17775 <<"chunk_id": 2, "docno": 2383>>
 
-Californium Spring Data Lovelace Spring Framework 5.1 Tomcat 9 Undertow 2
-Performance improvements As part of our ongoing efforts to improve performance,
-we've made some significant progress in Spring Boot 2.1. Applications will now
-start faster and consume less memory while they do so. This can be particularly
-beneficial in environments with very tight memory constraints. We've also
-embraced Spring Framework and Spring Data JPA's support for bootstrapping
-Hibernate asynchronously. If you use Spring Data JPA and set
-spring.data.jpa.repositories.bootstrap-mode=deferred , Hibernate will bootstrap
-in a separate thread while the rest of your application's startup processing
-proceeds in parallel. Java 11 support Following on from Spring Framework 5.1's
-support for Java 11, Spring Boot 2.1 now also supports Java 11 while also
-remaining compatible with Java 8. DataSize support If a property needs to
-express a size in bytes or similar convenient unit, it can expose a
-org.springframework.util.unit.DataSize property. Similar to our Duration support
-introduced in Spring Boot 2.0, the data size support allow a unit to be
-specified when configuring a value in application.properties . For example, 10MB
-can be used for a value of 10 megabytes. Actuator endpoints Two new Actuator
-endpoints have been introduced in Spring Boot 2.1: /actuator/caches provides
-information about the application's cache managers /actuator/integrationgraph
-provides a graph representation of Spring Integration components The health
-endpoint has also be enhanced to allow a request for the health of an individual
-component to be made. For example, a request to /actuator/health/db executes
-only the "db" HealthIndicator. Metrics In addition to the upgrade to
+web project in the attached samples. BTW, credits for this idea should go to a
+former colleague of mine (Ezra, thanks!) The second is to use JavaConfig instead
+of XML to define your environment-dependent beans. Where you determine what
+beans to create is then moved from determining what config files to load to your
+JavaConfig class. The last sample combines the previous two to determine what
+JavaConfig class to use, where subclasses that extend a common base
+configuration are created for each environment. This showcases the power of
+having your configuration in an actual class: you can use regular java
+inheritance and polymorphism, which blurs the distinction between bean
+definition inheritance and class inheritance. Other ways could include custom
+FactoryBean -implementations, for example. The samples The samples demonstrate
+the use of a simple service and dao that find a Person's last name by first
+name. In the default case, only two persons are defined (Alef and I). In a
+development environment, we'll use a static dao implementation instead that
+always returns a John Doe . In an acceptance environment, a third person (our
+collegue Arjen) is defined. The integration tests check if the correct behaviour
+is exposed by our application in each environment. There are several ways you
+can check in what environment your application is running: for these samples,
+I've used a system property that is being used by the EnvironmentUtils class.
+Other ways could be to examine the database or a JNDI registry, for example.
+Instead of just zipping up my Eclipse workspace, I've
 ----------------------------------------------------------------------------------------------------
-Index: 1156 <<"chunk_id": 4, "docno": 173>>
+Index: 26381 <<"chunk_id": 5, "docno": 4236>>
 
-and spring.security.user.password . The basic features you get by default in a
-web application are: A UserDetailsService (or ReactiveUserDetailsService in case
-of a WebFlux application) bean with in-memory store and a single user with a
-generated password (see SecurityProperties.User for the properties of the user).
-Form-based login or HTTP Basic security (depending on the Accept header in the
-request) for the entire application (including actuator endpoints if actuator is
-on the classpath). A DefaultAuthenticationEventPublisher for publishing
-authentication events. You can provide a different AuthenticationEventPublisher
-by adding a bean for it. MVC Security The default security configuration is
-implemented in SecurityAutoConfiguration and UserDetailsServiceAutoConfiguration
-. SecurityAutoConfiguration imports SpringBootWebSecurityConfiguration for web
-security and UserDetailsServiceAutoConfiguration for authentication. To
-completely switch off the default web application security configuration,
-including Actuator security, or to combine multiple Spring Security components
-such as OAuth2 Client and Resource Server, add a bean of type
-SecurityFilterChain (doing so does not disable the UserDetailsService
-configuration). To also switch off the UserDetailsService configuration, add a
-bean of type UserDetailsService , AuthenticationProvider , or
-AuthenticationManager . The auto-configuration of a UserDetailsService will also
-back off when any of the following Spring Security modules is on the classpath:
-spring-security-oauth2-client spring-security-oauth2-resource-server
-spring-security-saml2-service-provider To use UserDetailsService in addition to
-one or more of these dependencies, define your own InMemoryUserDetailsManager
-bean. Access rules can be overridden by adding a custom SecurityFilterChain
-bean. Spring Boot provides convenience methods that can be used to override
-access rules for actuator endpoints and static resources. EndpointRequest can be
-used to create a RequestMatcher that is based on
+composition and then delved deep into how function composition works in Spring
+Cloud Stream. This blog provides us some good directions on how we can use the
+existing source applications to make use of other functions bundled with them
+and auto-configured. It also demonstrates how task launch requests can be made
+from a source application. Blog 3 : Creating a Supplier Function and generating
+Spring Cloud Stream Source In this part, we see how to write a new Supplier
+function from the ground up and use it to build a Spring Cloud Stream source. We
+used the existing RSS feed adapter in Spring Integration as an example to create
+a feed-supplier which we then used to build a feed source. This blog gives
+enough templates for new suppliers and sources. Blog 4 : Creating a function for
+consuming data and generating Spring Cloud Stream Sink applications Similar to
+blog #3 , this one demonstrates writing a new consumer function and using that
+to build a Spring Cloud Stream sink application. We used RSocket as an example
+and built a consumer function using the fire-and-forget strategy in RSocket.
+This blog also gives enough recipes for creating new consumer functions and
+sinks. Blog 5 : Case Study: Build and Run a Streaming Application Using an HTTP
+Source and a JDBC Sink In this blog, we demonstrate a data pipeline using HTTP |
+JDBC . This is a very detailed blog that shows invoking an HTTP POST endpoint
+and then inserts the data posted through the endpoint into a
 ----------------------------------------------------------------------------------------------------
-Index: 7811 <<"chunk_id": 6, "docno": 1082>>
+Index: 28483 <<"chunk_id": 1, "docno": 4678>>
 
-} @RefreshScope @RestController class MessageRestController {
-@Value("${message:Hello default}") private String message;
-@RequestMapping("/message") String getMessage() { return this.message; } } Test
-the Application You can test the end-to-end result by starting the Config
-Service first and then, once it is running, starting the client. Visit the
-client app in the browser at http://localhost:8080/message . There, you should
-see Hello world in the response. Change the message key in the
-a-bootiful-client.properties file in the Git repository to something different (
-Hello Spring! , perhaps?). You can confirm that the Config Server sees the
-change by visiting http://localhost:8888/a-bootiful-client/default . You need to
-invoke the refresh Spring Boot Actuator endpoint in order to force the client to
-refresh itself and draw in the new value. Spring Boot’s Actuator exposes
-operational endpoints (such as health checks and environment information) about
-an application. To use it, you must add
-org.springframework.boot:spring-boot-starter-actuator to the client
-application’s classpath. You can invoke the refresh Actuator endpoint by sending
-an empty HTTP POST to the client’s refresh endpoint:
-http://localhost:8080/actuator/refresh . Then you can confirm it worked by
-visting the http://localhost:8080/message endpoint. The following command
-invokes the Actuator’s refresh command: $ curl -X POST
-localhost:8080/actuator/refresh -d {} -H "Content-Type: application/json" We set
-management.endpoints.web.exposure.include=* in the client application to make
-this is easy to test (since Spring Boot 2.0, the Actuator endpoints are not
-exposed by default). By default, you can still access them over JMX if you do
-not set the flag. Summary Congratulations! You have just used Spring to
-centralize configuration for all of your services by
+"org.springframework.integration:spring-integration-core:5.3.0.M1" This version
+is going to be a foundation for the upcoming Spring Boot 2.3 . And more news
+below! What’s New in this generation? Upgrade to Gradle 6.1 , so now we also
+publish Gradle modules into Maven repository. Upgrade to the latest
+dependencies, including Spring Data Neumann . Removal of deprecations from the
+previous version, so if you are going to upgrade soon consider to fix all the
+deprecation warnings if favor of their replacements. Of course, we try to keep a
+compatibility with previous version because Spring Cloud Hoxton is going to
+support both Spring Boot 2.2 & 2.3 . Adding native support for the
+ReactiveMessageHandler . Reactive Channel Adapter implementations for MongoDb.
+In fact the ReactiveMongoDbStoringMessageHandler is an implementation of
+mentioned above ReactiveMessageHandler . The GatewayProxyFactoryBean now doesn’t
+proxy default methods in the service interface. We have added an
+IntegrationPattern abstraction to indicate which enterprise integration pattern
+(an IntegrationPatternType ) and category a Spring Integration component belongs
+to. See What’s New? in the Reference Manual for more information. In Addition We
+are working on a project which is going to provide a Web UI for integration
+graph representation including runtime metrics for messages processing on
+channels and endpoints. Here is a screenshot how it looks now: We are planning
+on open-sourcing the project soon, so stay tuned! Also we made some progress in
+Spring Integration Kotlin DSL. It now looks more "Kotlinish" style! A preview
+version is available in snapshot repository : compile
+"org.springframework.integration:spring-integration-kotlin-dsl:0.0.3.BUILD-SNAPSHOT"
+This is how it looks now: @Bean fun
 ----------------------------------------------------------------------------------------------------
-Index: 480 <<"chunk_id": 23, "docno": 84>>
+Index: 22708 <<"chunk_id": 1, "docno": 3382>>
 
-you can define the following: Properties YAML
-management.endpoint.health.group.custom.include=db management: endpoint: health:
-group: custom: include: "db" You can then check the result by hitting
-localhost:8080/actuator/health/custom . Similarly, to create a group that
-excludes the database indicators from the group and includes all the other
-indicators, you can define the following: Properties YAML
-management.endpoint.health.group.custom.exclude=db management: endpoint: health:
-group: custom: exclude: "db" By default, startup will fail if a health group
-includes or excludes a health indicator that does not exist. To disable this
-behavior set management.endpoint.health.validate-group-membership to false . By
-default, groups inherit the same StatusAggregator and HttpCodeStatusMapper
-settings as the system health. However, you can also define these on a per-group
-basis. You can also override the show-details and roles properties if required:
-Properties YAML
-management.endpoint.health.group.custom.show-details=when-authorized
-management.endpoint.health.group.custom.roles=admin
-management.endpoint.health.group.custom.status.order=fatal,up
-management.endpoint.health.group.custom.status.http-mapping.fatal=500
-management.endpoint.health.group.custom.status.http-mapping.out-of-service=500
-management: endpoint: health: group: custom: show-details: "when-authorized"
-roles: "admin" status: order: "fatal,up" http-mapping: fatal: 500
-out-of-service: 500 You can use @Qualifier("groupname") if you need to register
-custom StatusAggregator or HttpCodeStatusMapper beans for use with the group. A
-health group can also include/exclude a CompositeHealthContributor . You can
-also include/exclude only a certain component of a CompositeHealthContributor .
-This can be done using the fully qualified name of the component as follows:
-management.endpoint.health.group.custom.include="test/primary"
-management.endpoint.health.group.custom.exclude="test/primary/b" In the example
-above, the custom group will include the HealthContributor with the name primary
-which is a component of the composite test . Here, primary itself is a composite
-and the HealthContributor with the name b will be excluded from the custom
-group. Health groups can be made available at an additional path
+"single page application" are extremely valuable tools for modern developers,
+but any meaningful interactions will involve a backend server, so as well as
+static content (HTML, CSS and JavaScript) we are going to need a backend server.
+The backend server can play any or all of a number of roles: serving static
+content, sometimes (but not so often these days) rendering dynamic HTML,
+authenticating users, securing access to protected resources, and (last but not
+least) interacting with JavaScript in the browser through HTTP and JSON
+(sometimes referred to as a REST API). Spring has always been a popular
+technology for building the backend features (especially in the enterprise), and
+with the advent of Spring Boot things have never been easier. Let’s have a look
+at how to build a new single page application from nothing using Spring Boot,
+Angular and Twitter Bootstrap. There’s no particular reason to choose that
+specific stack, but it is quite popular, especially with the core Spring
+constituency in enterprise Java shops, so it’s a worthwhile starting point.
+Create a New Project We are going to step through creating this application in
+some detail, so that anyone who isn’t completely au fait with Spring and Angular
+can follow what is happening. If you prefer to cut to the chase, you can skip to
+the end where the application is working, and see how it all fits together.
+There are various options for creating a new project: Using curl on the command
+line Using Spring Boot CLI Using the Spring Initializr website Using
 ----------------------------------------------------------------------------------------------------
-Index: 469 <<"chunk_id": 12, "docno": 84>>
+Index: 1298 <<"chunk_id": 1, "docno": 164>>
 
-it does not share the same configuration as the application’s JsonMapper and it
-is not affected by spring.jackson.* properties. To disable this behavior and
-configure Actuator to use the application’s JsonMapper , set
-management.endpoints.jackson.isolated-json-mapper to false . Alternatively, you
-can define your own EndpointJsonMapper bean that produces a JsonMapper that
-meets your needs. Actuator will then use it for JSON processing. Implementing
-Custom Endpoints If you add a @Bean annotated with @Endpoint , any methods
-annotated with @ReadOperation , @WriteOperation , or @DeleteOperation are
-automatically exposed over JMX and, in a web application, over HTTP as well.
-Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring
-WebFlux. If both Jersey and Spring MVC are available, Spring MVC is used. The
-following example exposes a read operation that returns a custom object: Java
-Kotlin @ReadOperation public CustomData getData() { return new
-CustomData("test", 5); } @ReadOperation fun getData(): CustomData { return
-CustomData("test", 5) } You can also write technology-specific endpoints by
-using @JmxEndpoint or @WebEndpoint . These endpoints are restricted to their
-respective technologies. For example, @WebEndpoint is exposed only over HTTP and
-not over JMX. You can write technology-specific extensions by using
-@EndpointWebExtension and @EndpointJmxExtension . These annotations let you
-provide technology-specific operations to augment an existing endpoint. An
-endpoint may have at most one extension of each type. Finally, if you need
-access to web-framework-specific functionality, you can implement servlet or
-Spring @Controller and @RestController endpoints at the cost of them not being
-available over JMX or when using a different web
+17 or later Gradle 7.5+ or Maven 3.5+ You can also import the code straight into
+your IDE: Spring Tool Suite (STS) IntelliJ IDEA VSCode How to complete this
+guide Like most Spring Getting Started guides , you can start from scratch and
+complete each step or you can bypass basic setup steps that are already familiar
+to you. Either way, you end up with working code. To start from scratch , move
+on to Starting with Spring Initializr . To skip the basics , do the following:
+Download and unzip the source repository for this guide, or clone it using Git:
+git clone https://github.com/spring-guides/gs-spring-boot.git cd into
+gs-spring-boot/initial Jump ahead to Create a Simple Web Application . When you
+finish , you can check your results against the code in gs-spring-boot/complete
+. Learn What You Can Do with Spring Boot Spring Boot offers a fast way to build
+applications. It looks at the Spring Boot modules you’ve added and at the beans
+you have configured, makes reasonable assumptions about what you are missing,
+and adds those items. With Spring Boot, you can focus more on business features
+and less on infrastructure. The following examples show what Spring Boot can do
+for you: Is spring-boot-starter-webmvc on the classpath? There are several
+specific beans you almost always need, and Spring Boot adds them automatically.
+A Spring MVC application also needs a servlet container, so Spring Boot
+automatically configures embedded Tomcat. Is Jetty on the classpath, but Tomcat
+isn’t? If so Spring Boot handles that for you and configures
 ----------------------------------------------------------------------------------------------------
-Index: 5598 <<"chunk_id": 8, "docno": 780>>
+Index: 2690 <<"chunk_id": 3, "docno": 361>>
 
-terminal window: ./mvnw spring-boot:run You should see that a new set of RESTful
-end points has been added to the application. These are management services
-provided by Spring Boot. The following listing shows a typical output:
-management.endpoint.health-org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointProperties
-management.endpoints.web-org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties
-management.endpoints.web.cors-org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties
-management.health.diskspace-org.springframework.boot.health.autoconfigure.application.DiskSpaceHealthIndicatorProperties
-management.health.ssl-org.springframework.boot.health.autoconfigure.application.SslHealthIndicatorProperties
-management.info-org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties
-management.metrics-org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties
-management.observations-org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties
-management.simple.metrics.export-org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleProperties
-The actuator exposes the following: actuator/health actuator There is also an
-/actuator/shutdown endpoint, but, by default, it is disabled. To expose it , add
-management.endpoint.shutdown.access=unrestricted to your application.properties
-file and expose it with
-management.endpoints.web.exposure.include=health,info,shutdown . However, you
-probably should not enable the shutdown endpoint for a publicly available
-application. You can check the health of the application by running the
-following command: $ curl http://localhost:8080/actuator/health {"status":"UP"}
-You can try also to invoke shutdown through curl, to see what happens when you
-have not added the necessary line (shown in the preceding note) to
-application.properties : $ curl -X POST http://localhost:8080/actuator/shutdown
-{"timestamp":"2026-02-06T08:13:01.514Z","status":404,"error":"Not
-Found","path":"/actuator/shutdown"} Because we did not enable it, the requested
-endpoint is not available (because the endpoint does not exist). For more
-details about each of these REST endpoints and how you can tune their settings
-with an application.properties file (in src/main/resources ), see the
-documentation about the endpoints . View Spring Boot’s Starters You have seen
-some of Spring Boot’s “starters” . You can see them all here in source code .
-JAR Support The last example showed how Spring Boot lets you wire beans that you
-may not be aware you need. It also showed how to turn on convenient management
-services. However, Spring Boot does more than that.
+been released and is available from Maven Central. This release adds a
+significant number of new features and improvements. For full upgrade
+instructions and new and noteworthy features please see the release notes.
+What's new in 2.5 Support for Java 16 Support for Gradle 7 Enhanced Docker image
+building New mechanism for Datasource initialization Additionally, the HTML
+documentation published… Read more Making the most of available resources for
+Spring Boot Engineering | February 05, 2021 | ... Whether you’re a long time
+user of Spring Boot or just getting started with it, there are numerous
+resources out there that you can leverage. Knowing what’s available for your
+specific need is not always obvious and this blog post is aimed toward helping
+you to navigate through these resources. Learning Reference Documentation As a
+software developer, you probably already know that reading any project’s
+documentation can help you save a lot of time and effort. The Spring Boot
+reference documentation is a comprehensive document containing everything you
+need to know about Spring Boot. It is… Read more Spring Boot 2.5.0-M1 available
+now Releases | January 22, 2021 | ... On behalf of the team and everyone that
+contributed, I am pleased to announce that the first milestone of Spring Boot
+2.5 has been released and is available from our milestone repository. This
+release closes over 130 issues and pull requests. Highlights of this first
+milestone include: Support for GET requests to the startup endpoint Security
+improvements to the info endpoint Preliminary support for Java 16 Spring
+Integration 5.5.0
 ----------------------------------------------------------------------------------------------------
-Index: 463 <<"chunk_id": 6, "docno": 84>>
+Index: 28654 <<"chunk_id": 5, "docno": 4724>>
 
-only the technologies over which an endpoint is exposed, use the include and
-exclude properties instead. Limiting Access Application-wide endpoint access can
-be limited using the management.endpoints.access.max-permitted property. This
-property takes precedence over the default access or an individual endpoint’s
-access level. Set it to none to make all endpoints inaccessible. Set it to
-read-only to only allow read access to endpoints. For @Endpoint , @JmxEndpoint ,
-and @WebEndpoint , read access equates to the endpoint methods annotated with
-@ReadOperation . For @ControllerEndpoint and @RestControllerEndpoint , read
-access equates to request mappings that can handle GET and HEAD requests. For
-@ServletEndpoint , read access equates to GET and HEAD requests. Exposing
-Endpoints By default, only the health endpoint is exposed over HTTP and JMX.
-Since Endpoints may contain sensitive information, you should carefully consider
-when to expose them. To change which endpoints are exposed, use the following
-technology-specific include and exclude properties: Property Default
-management.endpoints.jmx.exposure.exclude
-management.endpoints.jmx.exposure.include health
-management.endpoints.web.exposure.exclude
-management.endpoints.web.exposure.include health The include property lists the
-IDs of the endpoints that are exposed. The exclude property lists the IDs of the
-endpoints that should not be exposed. The exclude property takes precedence over
-the include property. You can configure both the include and the exclude
-properties with a list of endpoint IDs. For example, to only expose the health
-and info endpoints over JMX, use the following property: Properties YAML
-management.endpoints.jmx.exposure.include=health,info management: endpoints:
-jmx: exposure: include: "health,info" * can be used to select all endpoints. For
-example, to expose everything over HTTP except the env and beans
-----------------------------------------------------------------------------------------------------
-Index: 65 <<"chunk_id": 5, "docno": 13>>
-
-Component If a particular component contains other nested components (as the
-broker indicator in the example above), the health of such a nested component
-can be retrieved by issuing a GET request to
-/actuator/health/{component}/{subcomponent} , as shown in the following
-curl-based example: $ curl 'http://localhost:8080/actuator/health/broker/us1' -i
--X GET \ -H 'Accept: application/json' The resulting response is similar to the
-following: HTTP/1.1 200 OK Content-Type: application/json Content-Length: 66 {
-"details" : { "version" : "1.0.2" }, "status" : "UP" } Components of an
-application’s health may be nested arbitrarily deep depending on the
-application’s health indicators and how they have been grouped. The health
-endpoint supports any number of /{component} identifiers in the URL to allow the
-health of a component at any depth to be retrieved. Response Structure The
-response contains details of the health of an instance of a particular component
-of the application. The following table describes the structure of the response:
-Path Type Description status String Status of a specific part of the application
-details Object Details of the health of a specific part of the application.
-Flyway ( flyway ) Heap Dump ( heapdump ) Spring Boot Stable 4.1.0 4.0.7 3.5.16
-3.4.13 3.3.13 Snapshot 4.2.0-SNAPSHOT 4.1.1-SNAPSHOT 4.0.8-SNAPSHOT Related
-Spring Documentation Spring Boot Spring Framework Spring Cloud Spring Cloud
-Build Spring Cloud Bus Spring Cloud Circuit Breaker Spring Cloud Commons Spring
-Cloud Config Spring Cloud Consul Spring Cloud Contract Spring Cloud Function
-Spring Cloud Gateway Spring Cloud Kubernetes Spring Cloud Netflix Spring Cloud
-OpenFeign Spring Cloud Stream Spring Cloud Task Spring Cloud Vault
+according the target environment and available persistent store. It has more
+value when an Aggregator function is deployed as clustered instance (e.g. via
+Spring Cloud Data Flow when used as a part of the aggregator-processor ), so
+sharing the state you may produce messages into an aggregator on one instance,
+but they can be released on a different one. And with this you won’t lose
+messages when application is crashed. The dependencies for the MessageGroupStore
+implementations are packed into the final function uber jar and auto-configured
+according this options. Only the difference comes with the JDBC, where we have
+to supply an appropriate driver according target environment requirements. See
+more information about MessageGroupStore abstraction in Spring Integration
+System Management and in the previous blog post how to supply JDBC driver . All
+the configuration options for those persistent stores are just the same what
+Spring Boot provides for us to auto-configure them. messageStoreEntity - this
+option is specific only for some MessageGroupStore implementation: it refers to
+the client region for Gemfire/Geode; the table prefix for JDBC; a collection
+name in case of MongoDB. For the rest of implementations it is ignored. See more
+information about those components in Spring Integration and respective function
+implementations (if any) in the Stream Applications project. So, if we want to
+run an Aggregator function (as a standalone, as a Spring Cloud Stream processor
+or as a part of Spring Cloud Data Flow stream definition) with some custom
+properties and against shared MongoDB store, we may declare it like this: java
 ----------------------------------------------------------------------------------------------------

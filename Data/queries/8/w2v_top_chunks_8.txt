@@ -1,491 +1,1150 @@
-Index: 5188 <<"chunk_id": 2, "docno": 723>>
+Index: 1899 <<"chunk_id": 8, "docno": 239>>
 
-your fix There are 2 main options, which cover almost all use-cases: Write
-source code and publish in CJS (you use require() ); CJS is consumable by both
-CJS and ESM (in all versions of node). Skip to CJS source and distribution .
-Write source code and publish in ESM (you use import , and don't use top-level
-await ); ESM is consumable by both ESM and CJS (in node 22.x and 23.x; see
-require() an ES Module ). Skip to ESM source and distribution . It's generally
-best to publish only 1 format, either CJS or ESM. Not both. Publishing multiple
-formats can result in the dual-package hazard , as well as other drawbacks.
-There are other options available, mostly for historical purposes. You as a
-package author write Consumers of your package write their code in Your options
-CJS source code using require() ESM: consumers import your package CJS source
-and only ESM distribution CJS source code using require() CJS & ESM: consumers
-either require() or import your package CJS source and both CJS & ESM
-distribution ESM source code using import CJS: consumers require() your package
-(and you use top-level await ) ESM source with only CJS distribution ESM source
-code using import CJS & ESM: consumers either require() or import your package
-ESM source and both CJS & ESM distribution CJS source and distribution The most
-minimal configuration may be only "name" . But the less arcane, the better:
-Essentially just declare the package’s exports via the "exports"
-field/field-set. Working example :
+improve performance by skipping rendering components whose inputs have not
+changed. This is safe because pure functions always return the same results, so
+they are safe to cache. If some data changes in the middle of rendering a deep
+component tree, React can restart rendering without wasting time to finish the
+outdated render. Purity makes it safe to stop calculating at any time. Every new
+React feature we’re building takes advantage of purity. From data fetching to
+animations to performance, keeping components pure unlocks the power of the
+React paradigm. Recap A component must be pure, meaning: It minds its own
+business. It should not change any objects or variables that existed before
+rendering. Same inputs, same output. Given the same inputs, a component should
+always return the same JSX. Rendering can happen at any time, so components
+should not depend on each others’ rendering sequence. You should not mutate any
+of the inputs that your components use for rendering. That includes props,
+state, and context. To update the screen, “set” state instead of mutating
+preexisting objects. Strive to express your component’s logic in the JSX you
+return. When you need to “change things”, you’ll usually want to do it in an
+event handler. As a last resort, you can useEffect . Writing pure functions
+takes a bit of practice, but it unlocks the power of React’s paradigm. Try out
+some challenges 1 . Fix a broken clock 2 . Fix a broken profile 3 . Fix a broken
+story tray Challenge 1 of 3 :
 ----------------------------------------------------------------------------------------------------
-Index: 14018 <<"chunk_id": 26, "docno": 1848>>
+Index: 6029 <<"chunk_id": 4, "docno": 874>>
 
-The specific <TypedArray> object is a <Uint8Array> . If the source value of a
-text-based format (i.e., 'json' , 'module' ) is not a string, it is converted to
-a string using util.TextDecoder . Asynchronous customization hooks # Stability:
-1.1 - Active Development Caveats of asynchronous customization hooks # The
-asynchronous customization hooks have many caveats and it is uncertain if their
-issues can be resolved. Users are encouraged to use the synchronous
-customization hooks via module.registerHooks() instead to avoid these caveats.
-Asynchronous hooks run on a separate thread, so the hook functions cannot
-directly mutate the global state of the modules being customized. It's typical
-to use message channels and atomics to pass data between the two or to affect
-control flows. See Communication with asynchronous module customization hooks .
-Asynchronous hooks do not affect all require() calls in the module graph. Custom
-require functions created using module.createRequire() are not affected. If the
-asynchronous load hook does not override the source for CommonJS modules that go
-through it, the child modules loaded by those CommonJS modules via built-in
-require() would not be affected by the asynchronous hooks either. There are
-several caveats that the asynchronous hooks need to handle when customizing
-CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
-details. When require() calls inside CommonJS modules are customized by
-asynchronous hooks, Node.js may need to load the source code of the CommonJS
-module multiple times to maintain compatibility with existing CommonJS
-monkey-patching. If the module code changes between loads, this may lead
+like: Instant transitions. Some routing frameworks already prefetch data to
+speed up subsequent navigations, like when hovering over a link. With Offscreen,
+they’ll also be able to prerender the next screen in the background. Reusable
+state. Similarly, when navigating between routes or tabs, you can use Offscreen
+to preserve the state of the previous screen so you can switch back and pick up
+where you left off. Virtualized list rendering. When displaying large lists of
+items, virtualized list frameworks will prerender more rows than are currently
+visible. You can use Offscreen to prerender the hidden rows at a lower priority
+than the visible items in the list. Backgrounded content. We’re also exploring a
+related feature for deprioritizing content in the background without hiding it,
+like when displaying a modal overlay. Transition Tracing Currently, React has
+two profiling tools. The original Profiler shows an overview of all the commits
+in a profiling session. For each commit, it also shows all components that
+rendered and the amount of time it took for them to render. We also have a beta
+version of a Timeline Profiler introduced in React 18 that shows when components
+schedule updates and when React works on these updates. Both of these profilers
+help developers identify performance problems in their code. We’ve realized that
+developers don’t find knowing about individual slow commits or components out of
+context that useful. It’s more useful to know about what actually causes the
+slow commits. And that developers want to be able to track specific interactions
+(eg a button
 ----------------------------------------------------------------------------------------------------
-Index: 44363 <<"chunk_id": 2, "docno": 6884>>
+Index: 905 <<"chunk_id": 2, "docno": 129>>
 
-to the same ESM file. If the package already doesn't want to support older
-versions of Node.js that doesn't support require(esm) , don't use this export
-condition. For bundlers/tools : they should avoid implementing this stop-gap
-condition. Most existing bundlers implement the de-facto bundler standard module
-exports condition, and that should be enough to support users who want to bundle
-ESM from CJS consumers. Users who want both bundlers and Node.js to recognize
-the ESM exports can use both module / module-sync conditions during the
-transition period, and can drop module-sync + module when they no longer need to
-support older versions of Node.js. If tools do want to support this condition,
-it's recommended to make the resolution rules in the graph pointed by this
-condition match the Node.js native ESM rules to avoid divergence. We ended up
-implementing a condition with a different name instead of reusing "module" ,
-because existing code in the ecosystem using the "module" condition sometimes
-also expect the module resolution for these ESM files to work in CJS style,
-which is supported by bundlers, but the native Node.js loader has intentionally
-made ESM resolution different from CJS resolution (e.g. forbidding import
-'./noext' or import './directory' ), so it would be breaking to implement a
-"module" condition without implementing the forbidden ESM resolution rules. For
-now, this just implements a new condition as semver-minor so it can be
-backported to older LTS. Contributed by Joyee Cheung in #54648 . node --run is
-now stable This CLI flag runs a specified command
+there is a special behavior for functions. This argument is ignored after the
+initial render. If you pass a function as initialState , it will be treated as
+an initializer function . It should be pure, should take no arguments, and
+should return a value of any type. React will call your initializer function
+when initializing the component, and store its return value as the initial
+state. See an example below. Returns useState returns an array with exactly two
+values: The current state. During the first render, it will match the
+initialState you have passed. The set function that lets you update the state to
+a different value and trigger a re-render. Caveats useState is a Hook, so you
+can only call it at the top level of your component or your own Hooks. You can’t
+call it inside loops or conditions. If you need that, extract a new component
+and move the state into it. In Strict Mode, React will call your initializer
+function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your initializer
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. set functions, like
+setSomething(nextState) The set function returned by useState lets you update
+the state to a different value and trigger a re-render. You can pass the next
+state directly, or a function that calculates it from the previous state: const
+[ name , setName ] =
 ----------------------------------------------------------------------------------------------------
-Index: 29329 <<"chunk_id": 565, "docno": 4202>>
+Index: 432 <<"chunk_id": 4, "docno": 67>>
 
-but dynamic import() expressions are supported in CommonJS for loading ES
-modules. When importing CommonJS modules , the module.exports object is provided
-as the default export. Named exports may be available, provided by static
-analysis as a convenience for better ecosystem compatibility. require # The
-CommonJS module require currently only supports loading synchronous ES modules
-(that is, ES modules that do not use top-level await ). See Loading ECMAScript
-modules using require() for details. CommonJS Namespaces # Added in: v14.13.0
-History Version Changes v23.0.0 Added 'module.exports' export marker to CJS
-namespaces. CommonJS modules consist of a module.exports object which can be of
-any type. To support this, when importing CommonJS from an ECMAScript module, a
-namespace wrapper for the CommonJS module is constructed, which always provides
-a default export key pointing to the CommonJS module.exports value. In addition,
-a heuristic static analysis is performed against the source text of the CommonJS
-module to get a best-effort static list of exports to provide on the namespace
-from values on module.exports . This is necessary since these namespaces must be
-constructed prior to the evaluation of the CJS module. These CommonJS namespace
-objects also provide the default export as a 'module.exports' named export, in
-order to unambiguously indicate that their representation in CommonJS uses this
-value, and not the namespace value. This mirrors the semantics of the handling
-of the 'module.exports' export name in require(esm) interop support. When
-importing a CommonJS module, it can be reliably imported using the ES module
-default import or its corresponding sugar syntax:
+Show more Ready to learn this topic? Read State: A Component’s Memory to learn
+how to remember a value and update it on interaction. Read More Render and
+commit Before your components are displayed on the screen, they must be rendered
+by React. Understanding the steps in this process will help you think about how
+your code executes and explain its behavior. Imagine that your components are
+cooks in the kitchen, assembling tasty dishes from ingredients. In this
+scenario, React is the waiter who puts in requests from customers and brings
+them their orders. This process of requesting and serving UI has three steps:
+Triggering a render (delivering the diner’s order to the kitchen) Rendering the
+component (preparing the order in the kitchen) Committing to the DOM (placing
+the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
+Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
+update. Read More State as a snapshot Unlike regular JavaScript variables, React
+state behaves more like a snapshot. Setting it does not change the state
+variable you already have, but instead triggers a re-render. This can be
+surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
+Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
+helps you avoid subtle bugs. Here is a little chat app. Try to guess what
+happens if you press “Send” first and then change the
 ----------------------------------------------------------------------------------------------------
-Index: 14129 <<"chunk_id": 4, "docno": 1854>>
+Index: 1025 <<"chunk_id": 2, "docno": 146>>
 
-module syntax in "ambiguous" files incurs a performance cost, and therefore it
-is encouraged that authors be explicit wherever possible. In particular, package
-authors should always include the "type" field in their package.json files, even
-in packages where all sources are CommonJS. Being explicit about the type of the
-package will future-proof the package in case the default type of Node.js ever
-changes, and it will also make things easier for build tools and loaders to
-determine how the files in the package should be interpreted. Syntax detection #
-Added in: v21.1.0, v20.10.0 History Version Changes v22.7.0, v20.19.0 Syntax
-detection is enabled by default. Stability: 1.2 - Release candidate Node.js will
-inspect the source code of ambiguous input to determine whether it contains ES
-module syntax; if such syntax is detected, the input will be treated as an ES
-module. Ambiguous input is defined as: Files with a .js extension or no
-extension; and either no controlling package.json file or one that lacks a type
-field. String input ( --eval or STDIN ) when --input-type is not specified. ES
-module syntax is defined as syntax that would throw when evaluated as CommonJS.
-This includes the following: import statements (but not import() expressions,
-which are valid in CommonJS). export statements. import.meta references. await
-at the top level of a module. Lexical redeclarations of the CommonJS wrapper
-variables ( require , module , exports , __dirname , __filename ). Module
-resolution and loading # Node.js has two types of module resolution and loading,
-chosen based on how the
+every component and subcomponent in the mockup and naming them. If you work with
+a designer, they may have already named these components in their design tool.
+Ask them! Depending on your background, you can think about splitting up a
+design into components in different ways: Programming —use the same techniques
+for deciding if you should create a new function or object. One such technique
+is the separation of concerns , that is, a component should ideally only be
+concerned with one thing. If it ends up growing, it should be decomposed into
+smaller subcomponents. CSS —consider what you would make class selectors for.
+(However, components are a bit less granular.) Design —consider how you would
+organize the design’s layers. If your JSON is well-structured, you’ll often find
+that it naturally maps to the component structure of your UI. That’s because UI
+and data models often have the same information architecture—that is, the same
+shape. Separate your UI into components, where each component matches one piece
+of your data model. There are five components on this screen:
+FilterableProductTable (grey) contains the entire app. SearchBar (blue) receives
+the user input. ProductTable (lavender) displays and filters the list according
+to the user input. ProductCategoryRow (green) displays a heading for each
+category. ProductRow (yellow) displays a row for each product. If you look at
+ProductTable (lavender), you’ll see that the table header (containing the “Name”
+and “Price” labels) isn’t its own component. This is a matter of preference, and
+you could go either way. For this example, it is
 ----------------------------------------------------------------------------------------------------
-Index: 42684 <<"chunk_id": 0, "docno": 6550>>
+Index: 2453 <<"chunk_id": 9, "docno": 331>>
 
-Node.js — Node.js 12.17.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.17.0 (LTS) MLZ
-Michaël Zasso Node.js 12.17.0 (LTS) Notable Changes ECMAScript Modules -
---experimental-modules flag removal As of Node.js 12.17.0, the
---experimental-modules flag is no longer necessary to use ECMAScript modules
-(ESM). However, the ESM implementation in Node.js remains experimental. As per
-our stability index: “The feature is not subject to Semantic Versioning rules.
-Non-backward compatible changes or removal may occur in any future release.”
-Users should be cautious when using the feature in production environments.
-Unlike Node.js 14, using ESM will still emit a runtime experimental warning,
-either when a module is used a the application's entrypoint or the first time
-dynamic import() is called. Please keep in mind that the implementation of ESM
-in Node.js differs from the developer experience you might be familiar with.
-Most transpilation workflows support features such as named exports from
-CommonJS module imports, optional file extensions or JSON modules that the
-Node.js ESM implementation does not support. It is highly likely that modules
-from transpiled environments will require a certain degree of refactoring to
-work in Node.js. It is worth mentioning that many of our design decisions were
-made with two primary goals. Spec compliance and Web Compatibility. It is our
-belief that the current implementation offers a future proof model to authoring
-ESM modules that paves the path to Universal JavaScript. Please read more in our
-documentation. The ESM implementation in Node.js is still experimental but
+only if dependencies changed. The function you’re passing is later used as a
+dependency of some Hook. For example, another function wrapped in useCallback
+depends on it, or you depend on this function from useEffect. There is no
+benefit to wrapping a function in useCallback in other cases. There is no
+significant harm to doing that either, so some teams choose to not think about
+individual cases, and memoize as much as possible. The downside is that code
+becomes less readable. Also, not all memoization is effective: a single value
+that’s “always new” is enough to break memoization for an entire component. Note
+that useCallback does not prevent creating the function. You’re always creating
+a function (and that’s fine!), but React ignores it and gives you back a cached
+function if nothing changed. In practice, you can make a lot of memoization
+unnecessary by following a few principles: When a component visually wraps other
+components, let it accept JSX as children. Then, if the wrapper component
+updates its own state, React knows that its children don’t need to re-render.
+Prefer local state and don’t lift state up any further than necessary. Don’t
+keep transient state like forms and whether an item is hovered at the top of
+your tree or in a global state library. Keep your rendering logic pure. If
+re-rendering a component causes a problem or produces some noticeable visual
+artifact, it’s a bug in your component! Fix the bug instead of adding
+memoization. Avoid unnecessary Effects that update state. Most performance
+problems in
 ----------------------------------------------------------------------------------------------------
-Index: 14133 <<"chunk_id": 8, "docno": 1854>>
+Index: 4567 <<"chunk_id": 4, "docno": 665>>
 
-ES modules within a "module" package). Within a "type": "commonjs" package,
-Node.js can be instructed to interpret a particular file as an ES module by
-naming it with an .mjs extension (since both .js and .cjs files are treated as
-CommonJS within a "commonjs" package). --input-type flag # Added in: v12.0.0
-Strings passed in as an argument to --eval (or -e ), or piped to node via STDIN
-, are treated as ES modules when the --input-type=module flag is set. node
---input-type=module --eval "import { sep } from 'node:path'; console.log(sep);"
-echo "import { sep } from 'node:path'; console.log(sep);" | node
---input-type=module bash copy For completeness there is also
---input-type=commonjs , for explicitly running string input as CommonJS. This is
-the default behavior if --input-type is unspecified. Package entry points # In a
-package's package.json file, two fields can define entry points for a package:
-"main" and "exports" . Both fields apply to both ES module and CommonJS module
-entry points. The "main" field is supported in all versions of Node.js, but its
-capabilities are limited: it only defines the main entry point of the package.
-The "exports" provides a modern alternative to "main" allowing multiple entry
-points to be defined, conditional entry resolution support between environments,
-and preventing any other entry points besides those defined in "exports" . This
-encapsulation allows module authors to clearly define the public interface for
-their package. For new packages targeting the currently supported versions of
-Node.js, the "exports" field is recommended. For packages supporting Node.js 10
-and below, the "main"
+and effects phases: Mount - A corresponding subtree of component renders or
+effects was mounted. Unmount - A corresponding subtree of component renders or
+effects was unmounted. Reconnect - Similar to Mount, but limited to cases when
+<Activity> is used. Disconnect - Similar to Unmount, but limited to cases when
+<Activity> is used. Changed props In development builds, when you click on a
+component render entry, you can inspect potential changes in props. You can use
+this information to identify unnecessary renders. Server Server Requests The
+Server Requests track visualized all Promises that eventually end up in a React
+Server Component. This includes any async operations like calling fetch or async
+Node.js file operations. React will try to combine Promises that are started
+from inside third-party code into a single span representing the the duration of
+the entire operation blocking 1st party code. For example, a third party library
+method called getUser that calls fetch internally multiple times will be
+represented as a single span called getUser , instead of showing multiple fetch
+spans. Clicking on spans will show you a stack trace of where the Promise was
+created as well as a view of the value that the Promise resolved to, if
+available. Rejected Promises are displayed as red with their rejected value.
+Server Components The Server Components tracks visualize the durations of React
+Server Components Promises they awaited. Timings are displayed as a flamegraph,
+where each entry represents the duration of the corresponding component render
+and all its descendant children components. If you await
 ----------------------------------------------------------------------------------------------------
-Index: 14151 <<"chunk_id": 26, "docno": 1854>>
+Index: 6078 <<"chunk_id": 7, "docno": 878>>
 
-throw an error rather than guess. To support this pattern, implementers must key
-module instances by package ID and propagate it from each resolution result to
-subsequent resolution requests. This ensures that when lib requires react , the
-runtime knows whether the request comes from lib-old or lib-new and can select
-the correct dependency. Interaction with other resolution # Package maps only
-apply to bare specifiers that are not Node.js builtin modules. The following
-cases are not affected by package maps and continue to use standard resolution:
-Relative paths or URLs ( ./ or ../ ). Absolute paths or URLs. Node.js builtin
-modules ( node:fs , etc.). Limitations # Package maps must be a single static
-file; dynamic configuration is not supported. Circular dependency detection is
-not performed by the package map resolver. The package map file is loaded
-synchronously at startup. Node.js package.json field definitions # This section
-describes the fields used by the Node.js runtime. Other tools (such as npm ) use
-additional fields which are ignored by Node.js and not documented here. The
-following fields in package.json files are used in Node.js: "name" - Relevant
-when using named imports within a package. Also used by package managers as the
-name of the package. "main" - The default module when loading the package, if
-exports is not specified, and in versions of Node.js prior to the introduction
-of exports. "type" - The package type determining whether to load .js files as
-CommonJS or ES modules. "exports" - Package exports and conditional exports.
-When present,
+but representative subset of the language: let/const, if/else, for loops,
+objects, arrays, primitives, function calls, and a few other features. As we
+gained confidence in the core model and refined our internal abstractions, we
+expanded the supported language subset. We’re also explicit about syntax we
+don’t yet support, logging diagnostics and skipping compilation for unsupported
+input. We have utilities to try the compiler on Meta’s codebases and see what
+unsupported features are most common so we can prioritize those next. We’ll
+continue incrementally expanding towards supporting the whole language. Making
+plain JavaScript in React components reactive requires a compiler with a deep
+understanding of semantics so that it can understand exactly what the code is
+doing. By taking this approach, we’re creating a system for reactivity within
+JavaScript that lets you write product code of any complexity with the full
+expressivity of the language, instead of being limited to a domain specific
+language. Offscreen Rendering Offscreen rendering is an upcoming capability in
+React for rendering screens in the background without additional performance
+overhead. You can think of it as a version of the content-visibility CSS
+property that works not only for DOM elements but React components, too. During
+our research, we’ve discovered a variety of use cases: A router can prerender
+screens in the background so that when a user navigates to them, they’re
+instantly available. A tab switching component can preserve the state of hidden
+tabs, so the user can switch between them without losing their progress. A
+virtualized list component can prerender additional rows
 ----------------------------------------------------------------------------------------------------
-Index: 13335 <<"chunk_id": 3, "docno": 1787>>
+Index: 4843 <<"chunk_id": 4, "docno": 703>>
 
-" erasableSyntaxOnly " : true , " verbatimModuleSyntax " : true } } json copy
-Use the noEmit option if you intend to only execute *.ts files, for example a
-build script. You won't need this flag if you intend to distribute *.js files.
-Determining module system # Node.js supports both CommonJS and ES Modules syntax
-in TypeScript files. Node.js will not convert from one module system to another;
-if you want your code to run as an ES module, you must use import and export
-syntax, and if you want your code to run as CommonJS you must use require and
-module.exports . .ts files will have their module system determined the same way
-as .js files. To use import and export syntax, add "type": "module" to the
-nearest parent package.json . .mts files will always be run as ES modules,
-similar to .mjs files. .cts files will always be run as CommonJS modules,
-similar to .cjs files. .tsx files are unsupported. As in JavaScript files, file
-extensions are mandatory in import statements and import() expressions: import
-'./file.ts' , not import './file' . Because of backward compatibility, file
-extensions are also mandatory in require() calls: require('./file.ts') , not
-require('./file') , similar to how the .cjs extension is mandatory in require
-calls in CommonJS files. The tsconfig.json option allowImportingTsExtensions
-will allow the TypeScript compiler tsc to type-check files with import
-specifiers that include the .ts extension. TypeScript features # Since Node.js
-is only removing inline types, any TypeScript features that involve replacing
-TypeScript syntax with new
+Event handler function. Fires if an input fails validation on form submit.
+Unlike the built-in invalid event, the React onInvalid event bubbles.
+onInvalidCapture : A version of onInvalid that fires in the capture phase.
+onSelect : An Event handler function. Fires after the selection inside the
+<input> changes. React extends the onSelect event to also fire for empty
+selection and on edits (which may affect the selection). onSelectCapture : A
+version of onSelect that fires in the capture phase. pattern : A string.
+Specifies the pattern that the value must match. placeholder : A string.
+Displayed in a dimmed color when the input value is empty. readOnly : A boolean.
+If true , the input is not editable by the user. required : A boolean. If true ,
+the value must be provided for the form to submit. size : A number. Similar to
+setting width, but the unit depends on the control. src : A string. Specifies
+the image source for a type="image" input. step : A positive number or an 'any'
+string. Specifies the distance between valid values. type : A string. One of the
+input types. width : A string. Specifies the image width for a type="image"
+input. Caveats Checkboxes need checked (or defaultChecked ), not value (or
+defaultValue ). If a text input receives a string value prop, it will be treated
+as controlled. If a checkbox or a radio button receives a boolean checked prop,
+it will be treated as controlled. An input can’t be both controlled and
+uncontrolled at the
 ----------------------------------------------------------------------------------------------------
-Index: 13217 <<"chunk_id": 10, "docno": 1772>>
+Index: 1031 <<"chunk_id": 8, "docno": 146>>
 
-performance similarly to require.resolve . This feature is not available within
-custom loaders (it would create a deadlock). Non-standard API : When using the
---experimental-import-meta-resolve flag, that function accepts a second
-argument: parent <string> | <URL> An optional absolute parent module URL to
-resolve from. Default: import.meta.url Interoperability with CommonJS # import
-statements # An import statement can reference an ES module or a CommonJS
-module. import statements are permitted only in ES modules, but dynamic import()
-expressions are supported in CommonJS for loading ES modules. When importing
-CommonJS modules , the module.exports object is provided as the default export.
-Named exports may be available, provided by static analysis as a convenience for
-better ecosystem compatibility. require # The CommonJS module require currently
-only supports loading synchronous ES modules (that is, ES modules that do not
-use top-level await ). See Loading ECMAScript modules using require() for
-details. CommonJS Namespaces # Added in: v14.13.0 History Version Changes
-v23.0.0 Added 'module.exports' export marker to CJS namespaces. CommonJS modules
-consist of a module.exports object which can be of any type. To support this,
-when importing CommonJS from an ECMAScript module, a namespace wrapper for the
-CommonJS module is constructed, which always provides a default export key
-pointing to the CommonJS module.exports value. In addition, a heuristic static
-analysis is performed against the source text of the CommonJS module to get a
-best-effort static list of exports to provide on the namespace from values on
-module.exports . This is necessary since these namespaces must be constructed
-prior to the
+computed by taking the original list of products and filtering it according to
+the search text and value of the checkbox. This means only the search text and
+the value of the checkbox are state! Nicely done! Deep Dive Props vs State Show
+Details There are two types of “model” data in React: props and state. The two
+are very different: Props are like arguments you pass to a function. They let a
+parent component pass data to a child component and customize its appearance.
+For example, a Form can pass a color prop to a Button . State is like a
+component’s memory. It lets a component keep track of some information and
+change it in response to interactions. For example, a Button might keep track of
+isHovered state. Props and state are different, but they work together. A parent
+component will often keep some information in state (so that it can change it),
+and pass it down to child components as their props. It’s okay if the difference
+still feels fuzzy on the first read. It takes a bit of practice for it to really
+stick! Step 4: Identify where your state should live After identifying your
+app’s minimal state data, you need to identify which component is responsible
+for changing this state, or owns the state. Remember: React uses one-way data
+flow, passing data down the component hierarchy from parent to child component.
+It may not be immediately clear which component should own what state. This can
+be challenging if you’re new to
 ----------------------------------------------------------------------------------------------------
-Index: 29349 <<"chunk_id": 585, "docno": 4202>>
+Index: 23021 <<"chunk_id": 8, "docno": 3413>>
 
-STDIN , with the flag --input-type=commonjs . Files with a .js extension with no
-parent package.json file or where the nearest parent package.json file lacks a
-type field, and where the code can evaluate successfully as CommonJS. In other
-words, Node.js tries to run such "ambiguous" files as CommonJS first, and will
-retry evaluating them as ES modules if the evaluation as CommonJS fails because
-the parser found ES module syntax. Writing ES module syntax in "ambiguous" files
-incurs a performance cost, and therefore it is encouraged that authors be
-explicit wherever possible. In particular, package authors should always include
-the "type" field in their package.json files, even in packages where all sources
-are CommonJS. Being explicit about the type of the package will future-proof the
-package in case the default type of Node.js ever changes, and it will also make
-things easier for build tools and loaders to determine how the files in the
-package should be interpreted. Syntax detection # Added in: v21.1.0, v20.10.0
-History Version Changes v22.7.0, v20.19.0 Syntax detection is enabled by
-default. Stability: 1.2 - Release candidate Node.js will inspect the source code
-of ambiguous input to determine whether it contains ES module syntax; if such
-syntax is detected, the input will be treated as an ES module. Ambiguous input
-is defined as: Files with a .js extension or no extension; and either no
-controlling package.json file or one that lacks a type field. String input (
---eval or STDIN ) when --input-type is not specified. ES module syntax is
-defined
+to enter the bank account info, they have second thoughts, they wouldn't want it
+to wind up in a leak. They toggle back to credit card option, but they notice
+all the info they just entered is gone! This illustrates another problem with
+form models that have a dynamic structure: they can cause data loss. A model
+like this assumes that once a field becomes hidden, the information in it will
+never be needed again. It replaces the credit card information with the bank
+information, and has no way to get the credit card information back. Exceptions
+While static structure is generally preferred, there are specific scenarios
+where dynamic structure is necessary and supported. Arrays Arrays are the most
+common exception. Forms often need to collect a variable number of items, such
+as a list of phone numbers, attendees, or line items in an order. interface
+SendEmailFormModel { subject : string ; recipientEmails : string []; } In this
+case, the recipientEmails array grows and shrinks as the user interacts with the
+form. While the length of the array is dynamic, the structure of the individual
+items should be consistent (each item should have the same shape). Fields that
+are treated atomically by the UI control Another case where dynamic structure is
+acceptable is when a complex object is treated as a single, atomic value by the
+UI control. That is, if the control does not attempt to bind to or access any of
+its sub-fields individually. In this scenario, the control updates the value by
 ----------------------------------------------------------------------------------------------------
-Index: 12866 <<"chunk_id": 6, "docno": 1735>>
+Index: 4181 <<"chunk_id": 3, "docno": 616>>
 
-looking for missing dependencies in /usr/node_modules or /node_modules . In
-order to make modules available to the Node.js REPL, it might be useful to also
-add the /usr/lib/node_modules folder to the $NODE_PATH environment variable.
-Since the module lookups using node_modules folders are all relative, and based
-on the real path of the files making the calls to require() , the packages
-themselves can be anywhere. Loading ECMAScript modules using require() # Added
-in: v22.0.0, v20.17.0 History Version Changes v25.4.0 This feature is no longer
-experimental. v23.5.0, v22.13.0, v20.19.0 This feature no longer emits an
-experimental warning by default, though the warning can still be emitted by
---trace-require-module. v23.0.0, v22.12.0, v20.19.0 This feature is no longer
-behind the --experimental-require-module CLI flag. v23.0.0, v22.12.0 Support
-'module.exports' interop export in require(esm) . The .mjs extension is reserved
-for ECMAScript Modules . See Determining module system section for more info
-regarding which files are parsed as ECMAScript modules. require() only supports
-loading ECMAScript modules that meet the following requirements: The module is
-fully synchronous (contains no top-level await ); and One of these conditions
-are met: The file has a .mjs extension. The file has a .js extension, and the
-closest package.json contains "type": "module" The file has a .js extension, the
-closest package.json does not contain "type": "commonjs" , and the module
-contains ES module syntax. If the ES Module being loaded meets the requirements,
-require() can load it and return the module namespace object . In this case it
-is similar to dynamic import() but is run synchronously
+performing that update as blocking. Specifically, for every Transition update,
+React will call getSnapshot a second time just before applying changes to the
+DOM. If it returns a different value than when it was called originally, React
+will restart the update from scratch, this time applying it as a blocking
+update, to ensure that every component on screen is reflecting the same version
+of the store. It’s not recommended to suspend a render based on a store value
+returned by useSyncExternalStore . The reason is that mutations to the external
+store cannot be marked as non-blocking Transition updates , so they will trigger
+the nearest Suspense fallback , replacing already-rendered content on screen
+with a loading spinner, which typically makes a poor UX. For example, the
+following are discouraged: const LazyProductDetailPage = lazy ( ( ) => import (
+'./ProductDetailPage.js' ) ) ; function ShoppingApp ( ) { const
+selectedProductId = useSyncExternalStore ( ... ) ; // ❌ Calling `use` with a
+Promise dependent on `selectedProductId` const data = use ( fetchItem (
+selectedProductId ) ) // ❌ Conditionally rendering a lazy component based on
+`selectedProductId` return selectedProductId != null ? < LazyProductDetailPage
+/> : < FeaturedProducts /> ; } Usage Subscribing to an external store Most of
+your React components will only read data from their props, state, and context.
+However, sometimes a component needs to read some data from some store outside
+of React that changes over time. This includes: Third-party state management
+libraries that hold state outside of React. Browser APIs that expose
 ----------------------------------------------------------------------------------------------------
-Index: 16097 <<"chunk_id": 17, "docno": 2150>>
+Index: 11010 <<"chunk_id": 7, "docno": 1649>>
 
-different guides for different choices, as some may still want to support older
-versions of Node.js. Future Prospects : We envisioned a future where shipping
-native ESM (only) in all packages would be feasible, as long as there is an easy
-method for users on older engines to seamlessly adapt/transpile a consistent
-compile source. ESM as First Class Opinionated Documentation : We suggested that
-the documentation could be more opinionated, telling people to write ESM and
-considering CommonJS as legacy (but still supported). This would move away from
-presenting both as equal first-class citizens. Learn Article : We mentioned a
-potential Learn article that could be ported from the loaders example, providing
-practical guidance on configuring CommonJS and ESM for Node.js. node --init
-Problem (npm init): The group discussed the issue of npm init not making "type":
-"module" by default. Solution ( node --init ): The proposed solution was to
-introduce a node --init command to create a package.json with "type": "module" .
-This could be extended to include "scripts": {"test": "node --test"} to
-bootstrap a project. Related Work : We mentioned that the package maintenance
-working group (Node.js WG) is working on an pkgjs/create-package-json an
-alternative to npm init . ⚠️ WARNING : This is a proposal and not yet
-implemented. Also, it's may never be implemented. Please don't take this for
-granted. Missing Pieces of ESM Performance : We mentioned a work-in-progress to
-remove async handling in the ESM loader, which is currently failing tests due to
-unexpected async activity. We noted that it
+is just a heuristic (not a strong rule) that can help us at finding independent
+modules. Also, if you think about it, proposed modules have linguistic
+boundaries. Credit card means something different for accounting and marketing,
+even though it's the same word. In DDD terminology those are called Bounded
+Contexts . Those will be our deployment units. Also, this generalization must
+take into account if the effect should be immediate or eventual. If it can be
+eventually consistent, this heuristic is not that strong, even though there is a
+relationship. The last step in DIVIDE part is to identify how modules
+communicate with each other. This is so-called context mapping. Here is a list
+of some integration strategies: A module sends a query to another module -
+Statement module needs to ask Card Operations if there are any withdrawals.
+Because if not, it does not issue any statement. A module listens to events sent
+by another module - The direct consequence of Money Repaid event is Statement
+Closed event. That means that Statements shall subscribe to events thrown by
+Card Operations. That was missed at the beginning of Event Storming session.
+Context Mapping is actually a moment when we discover a lot of new information A
+module fires a command to another module - no such example in our system.
+Implement Having functionally decomposed software tremendously helps during its
+maintenance. Modular monolith is a good start, but the fact that it is a single
+deployment unit might cause problems. All of the modules must be deployed
 ----------------------------------------------------------------------------------------------------
-Index: 29272 <<"chunk_id": 508, "docno": 4202>>
+Index: 980 <<"chunk_id": 2, "docno": 137>>
 
-their issues can be resolved. Users are encouraged to use the synchronous
-customization hooks via module.registerHooks() instead to avoid these caveats.
-Asynchronous hooks run on a separate thread, so the hook functions cannot
-directly mutate the global state of the modules being customized. It's typical
-to use message channels and atomics to pass data between the two or to affect
-control flows. See Communication with asynchronous module customization hooks .
-Asynchronous hooks do not affect all require() calls in the module graph. Custom
-require functions created using module.createRequire() are not affected. If the
-asynchronous load hook does not override the source for CommonJS modules that go
-through it, the child modules loaded by those CommonJS modules via built-in
-require() would not be affected by the asynchronous hooks either. There are
-several caveats that the asynchronous hooks need to handle when customizing
-CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
-details. When require() calls inside CommonJS modules are customized by
-asynchronous hooks, Node.js may need to load the source code of the CommonJS
-module multiple times to maintain compatibility with existing CommonJS
-monkey-patching. If the module code changes between loads, this may lead to
-unexpected behaviors. As a side effect, if both asynchronous hooks and
-synchronous hooks are registered and the asynchronous hooks choose to customize
-the CommonJS module, the synchronous hooks may be invoked multiple times for the
-require() calls in that CommonJS module. Registration of asynchronous
-customization hooks # Asynchronous customization hooks are registered using
-module.register() which takes a path or URL
+{ message } onChange = { e => setMessage ( e . target . value ) } /> < button
+type = "submit" > Send </ button > </ form > ) ; } function sendMessage (
+message ) { // ... } Show more Here’s what happens when you click the button:
+The onSubmit event handler executes. setIsSent(true) sets isSent to true and
+queues a new render. React re-renders the component according to the new isSent
+value. Let’s take a closer look at the relationship between state and rendering.
+Rendering takes a snapshot in time “Rendering” means that React is calling your
+component, which is a function. The JSX you return from that function is like a
+snapshot of the UI in time. Its props, event handlers, and local variables were
+all calculated using its state at the time of the render. Unlike a photograph or
+a movie frame, the UI “snapshot” you return is interactive. It includes logic
+like event handlers that specify what happens in response to inputs. React
+updates the screen to match this snapshot and connects the event handlers. As a
+result, pressing a button will trigger the click handler from your JSX. When
+React re-renders a component: React calls your function again. Your function
+returns a new JSX snapshot. React then updates the screen to match the snapshot
+your function returned. React executing the function Calculating the snapshot
+Updating the DOM tree Illustrated by Rachel Lee Nabors As a component’s memory,
+state is not like a regular variable that disappears
 ----------------------------------------------------------------------------------------------------
-Index: 16360 <<"chunk_id": 0, "docno": 2176>>
+Index: 2292 <<"chunk_id": 1, "docno": 310>>
 
-Node.js — npm 1.0: Global vs Local installation Skip to content Learn About
-Download Blog Docs Beta Docs Contribute Courses Start typing... ⌘ K npm 1.0:
-Global vs Local installation IS Isaac Schlueter npm 1.0: Global vs Local
-installation npm 1.0 is in release candidate mode. Go get it! More than anything
-else, the driving force behind the npm 1.0 rearchitecture was the desire to
-simplify what a package installation directory structure looks like. In npm 0.x,
-there was a command called bundle that a lot of people liked. bundle let you
-install your dependencies locally in your project, but even still, it was
-basically a hack that never really worked very reliably. Also, there was that
-activation/deactivation thing. That’s confusing. Two paths In npm 1.0, there are
-two ways to install things: globally —- This drops modules in
-{prefix}/lib/node_modules , and puts executable files in {prefix}/bin , where
-{prefix} is usually something like /usr/local . It also installs man pages in
-{prefix}/share/man , if they’re supplied. locally —- This installs your package
-in the current working directory. Node modules go in ./node_modules ,
-executables go in ./node_modules/.bin/ , and man pages aren’t installed at all.
-Which to choose Whether to install a package globally or locally depends on the
-global config, which is aliased to the -g command line switch. Just like how
-global variables are kind of gross, but also necessary in some cases, global
-packages are important, but best avoided if not needed. In general, the rule of
-thumb is: If you’re installing
+forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
+React APIs In addition to Hooks and Components , the react package exports a few
+other APIs that are useful for defining components. This page lists all the
+remaining modern React APIs. createContext lets you define and provide context
+to the child components. Used with useContext . lazy lets you defer loading a
+component’s code until it’s rendered for the first time. memo lets your
+component skip re-renders with same props. Used with useMemo and useCallback .
+startTransition lets you mark a state update as non-urgent. Similar to
+useTransition . act lets you wrap renders and interactions in tests to ensure
+updates have processed before making assertions. Resource APIs Resources can be
+accessed by a component without having them as part of their state. For example,
+a component can read a message from a Promise or read styling information from a
+context. To read a value from a resource, use this API: use lets you read the
+value of a resource like a Promise or context . function MessageComponent ( {
+messagePromise } ) { const message = use ( messagePromise ) ; const theme = use
+( ThemeContext ) ; // ... } Previous <ViewTransition> Next act Copyright © Meta
+Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start
+Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
 ----------------------------------------------------------------------------------------------------
-Index: 2726 <<"chunk_id": 2, "docno": 394>>
+Index: 3481 <<"chunk_id": 5, "docno": 494>>
 
-addons often need to be recompiled - and sometimes updated - when Node.js ships
-a new V8 version. Node-API abstracts the JavaScript engine behind a stable
-interface. This gives you two important guarantees: Backward compatibility - a
-module built today will run on all future versions of Node.js without any
-recompilation or code changes. ABI stability - because the API is ABI-stable,
-the compiled .node binary itself continues to work across Node.js releases.
-Common use cases Wrapping an existing C/C++ library The most common reason to
-write a native addon is to expose an existing C/C++ library to JavaScript
-developers. Node-API lets you maintain your C/C++ code independently and keep
-the JavaScript bindings in sync with minimal effort. Accessing OS resources Some
-applications - such as those built with Electron or NW.js - need access to
-system APIs that Node.js does not expose. Node-API provides the hooks to reach
-those resources. Computationally intensive work For compute-heavy tasks, writing
-the hot path in C or C++ and calling it from JavaScript via Node-API can yield
-significant performance gains. Unlike JIT-compiled JavaScript, the compiled
-C/C++ binary is available to Node.js immediately without a warm-up phase.
-node-addon-api An important companion to Node-API is the npm package
-node-addon-api . It wraps the C API in an idiomatic C++ object model, reducing
-boilerplate and making common patterns - like wrapping C++ objects as JavaScript
-objects - much more ergonomic. It retains the full ABI-stability guarantee of
-Node-API. Most of the examples on this site use node-addon-api . Reading Time 2
-min
+wrapping a component in memo in other cases. There is no significant harm to
+doing that either, so some teams choose to not think about individual cases, and
+memoize as much as possible. The downside of this approach is that code becomes
+less readable. Also, not all memoization is effective: a single value that’s
+“always new” is enough to break memoization for an entire component. In
+practice, you can make a lot of memoization unnecessary by following a few
+principles: When a component visually wraps other components, let it accept JSX
+as children. This way, when the wrapper component updates its own state, React
+knows that its children don’t need to re-render. Prefer local state and don’t
+lift state up any further than necessary. For example, don’t keep transient
+state like forms and whether an item is hovered at the top of your tree or in a
+global state library. Keep your rendering logic pure. If re-rendering a
+component causes a problem or produces some noticeable visual artifact, it’s a
+bug in your component! Fix the bug instead of adding memoization. Avoid
+unnecessary Effects that update state. Most performance problems in React apps
+are caused by chains of updates originating from Effects that cause your
+components to render over and over. Try to remove unnecessary dependencies from
+your Effects. For example, instead of memoization, it’s often simpler to move
+some object or a function inside an Effect or outside the component. If a
+specific interaction still feels laggy, use the React Developer Tools profiler
+to see
 ----------------------------------------------------------------------------------------------------
-Index: 29298 <<"chunk_id": 534, "docno": 4202>>
+Index: 128 <<"chunk_id": 7, "docno": 15>>
 
-Node.js will not bother looking for missing dependencies in /usr/node_modules or
-/node_modules . In order to make modules available to the Node.js REPL, it might
-be useful to also add the /usr/lib/node_modules folder to the $NODE_PATH
-environment variable. Since the module lookups using node_modules folders are
-all relative, and based on the real path of the files making the calls to
-require() , the packages themselves can be anywhere. Loading ECMAScript modules
-using require() # Added in: v22.0.0, v20.17.0 History Version Changes v25.4.0
-This feature is no longer experimental. v23.5.0, v22.13.0, v20.19.0 This feature
-no longer emits an experimental warning by default, though the warning can still
-be emitted by --trace-require-module. v23.0.0, v22.12.0, v20.19.0 This feature
-is no longer behind the --experimental-require-module CLI flag. v23.0.0,
-v22.12.0 Support 'module.exports' interop export in require(esm) . The .mjs
-extension is reserved for ECMAScript Modules . See Determining module system
-section for more info regarding which files are parsed as ECMAScript modules.
-require() only supports loading ECMAScript modules that meet the following
-requirements: The module is fully synchronous (contains no top-level await );
-and One of these conditions are met: The file has a .mjs extension. The file has
-a .js extension, and the closest package.json contains "type": "module" The file
-has a .js extension, the closest package.json does not contain "type":
-"commonjs" , and the module contains ES module syntax. If the ES Module being
-loaded meets the requirements, require() can load it and return the module
-namespace object . In this case it is similar to dynamic import()
+in mind. Here are a few strategies that you can use in your application
+implementation: Adjust prompts and model parameters (such as temperature ) for
+more or less deterministic responses. You can find out more in the prompting
+strategies section of ai.google.dev . Use the "human in the loop" strategy where
+a human verifies outputs before proceeding in a workflow. Build your application
+workflows to allow operators (humans or other models) to verify outputs and
+confirm key decisions. Employ tool (or function) calling and schema constraints
+to guide and restrict model responses to predefined formats, increasing response
+predictability. Even considering these strategies and techniques, sensible
+fallbacks should be incorporated in your application design. Follow existing
+standards of application resiliency. For example, it is not acceptable for an
+application to crash if a resource or API is not available. In that scenario, an
+error message is displayed to the user and, if applicable, options for next
+steps are also displayed. Building AI-powered applications requires the same
+consideration. Confirm that the response is aligned with the expected output and
+provide a "safe landing" in case it is not aligned by way of graceful
+degradation . This also applies to API outages for LLM providers. Consider this
+example: The LLM provider is not responding. A potential strategy to handle the
+outage is: Save the response from the user to use in a retry scenario (now or at
+a later time) Alert the user to the outage with an appropriate message that
+doesn't reveal sensitive information Resume the conversation at
 ----------------------------------------------------------------------------------------------------
-Index: 29350 <<"chunk_id": 586, "docno": 4202>>
+Index: 1026 <<"chunk_id": 3, "docno": 146>>
 
-file or one that lacks a type field. String input ( --eval or STDIN ) when
---input-type is not specified. ES module syntax is defined as syntax that would
-throw when evaluated as CommonJS. This includes the following: import statements
-(but not import() expressions, which are valid in CommonJS). export statements.
-import.meta references. await at the top level of a module. Lexical
-redeclarations of the CommonJS wrapper variables ( require , module , exports ,
-__dirname , __filename ). Module resolution and loading # Node.js has two types
-of module resolution and loading, chosen based on how the module is requested.
-When a module is requested via require() (available by default in CommonJS
-modules, and can be dynamically generated using createRequire() in both CommonJS
-and ES Modules): Resolution: The resolution initiated by require() supports
-folders as modules . When resolving a specifier, if no exact match is found,
-require() will try to add extensions ( .js , .json , and finally .node ) and
-then attempt to resolve folders as modules . It does not support URLs as
-specifiers by default. Loading: .json files are treated as JSON text files.
-.node files are interpreted as compiled addon modules loaded with
-process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
-files. Files with any other extension, or without extensions, are treated as
-JavaScript text files. require() can only be used to load ECMAScript modules
-from CommonJS modules if the ECMAScript module and its dependencies are
-synchronous (i.e. they do not contain top-level await
+“Name” and “Price” labels) isn’t its own component. This is a matter of
+preference, and you could go either way. For this example, it is a part of
+ProductTable because it appears inside the ProductTable ’s list. However, if
+this header grows to be complex (e.g., if you add sorting), you can move it into
+its own ProductTableHeader component. Now that you’ve identified the components
+in the mockup, arrange them into a hierarchy. Components that appear within
+another component in the mockup should appear as a child in the hierarchy:
+FilterableProductTable SearchBar ProductTable ProductCategoryRow ProductRow Step
+2: Build a static version in React Now that you have your component hierarchy,
+it’s time to implement your app. The most straightforward approach is to build a
+version that renders the UI from your data model without adding any
+interactivity… yet! It’s often easier to build the static version first and add
+interactivity later. Building a static version requires a lot of typing and no
+thinking, but adding interactivity requires a lot of thinking and not a lot of
+typing. To build a static version of your app that renders your data model,
+you’ll want to build components that reuse other components and pass data using
+props. Props are a way of passing data from parent to child. (If you’re familiar
+with the concept of state , don’t use state at all to build this static version.
+State is reserved only for interactivity, that is, data that changes over time.
+Since this is a static version of the app,
 ----------------------------------------------------------------------------------------------------
-Index: 14130 <<"chunk_id": 5, "docno": 1854>>
+Index: 11011 <<"chunk_id": 8, "docno": 1649>>
 
-exports , __dirname , __filename ). Module resolution and loading # Node.js has
-two types of module resolution and loading, chosen based on how the module is
-requested. When a module is requested via require() (available by default in
-CommonJS modules, and can be dynamically generated using createRequire() in both
-CommonJS and ES Modules): Resolution: The resolution initiated by require()
-supports folders as modules . When resolving a specifier, if no exact match is
-found, require() will try to add extensions ( .js , .json , and finally .node )
-and then attempt to resolve folders as modules . It does not support URLs as
-specifiers by default. Loading: .json files are treated as JSON text files.
-.node files are interpreted as compiled addon modules loaded with
-process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
-files. Files with any other extension, or without extensions, are treated as
-JavaScript text files. require() can only be used to load ECMAScript modules
-from CommonJS modules if the ECMAScript module and its dependencies are
-synchronous (i.e. they do not contain top-level await ). When a module is
-requested via static import statements (only available in ES Modules) or
-import() expressions (available in both CommonJS and ES Modules): Resolution:
-The resolution of import / import() does not support folders as modules,
-directory indexes (e.g. './startup/index.js' ) must be fully specified. It does
-not perform extension searching. A file extension must be provided when the
-specifier is a relative or absolute file URL. It supports file:// and
+monolith is a good start, but the fact that it is a single deployment unit might
+cause problems. All of the modules must be deployed together. In some
+enterprises going with microservices may be a better option. Please refer to
+this article by Nate Shutta in order to learn more about when this decision is
+right. Let's assume that our example fits microservice architecture. Each module
+can be a separate Spring Boot application. We know the boundaries of the
+modules. Different architectural styles can be applied in each of them. The
+places which contain the most business logic should be implemented with careful
+attention. On the other hand, there are some modules which are clear and simple.
+How to find both? Look for spots with a lot of yellow notes (invariants). This
+is where we have much logic in between a command and eventual event. System
+needs to process complex commands here. This is where we expect sudden changes
+and where we probably build competitive advantage. We want to apply special care
+here, thus for example apply the Domain-Driven Design techniques or hexagonal
+architecture. Look for spots that contain a few or zero yellow notes. Those are
+clear and easy to implement. There is almost nothing in between a command and an
+event, the system does not need to do anything complex here. The only job here
+is to interact with the database so we should be careful and try to avoid
+accidental complexity there. That knowledge is a very important architectural
+driver that can make
 ----------------------------------------------------------------------------------------------------
-Index: 4113 <<"chunk_id": 4, "docno": 562>>
+Index: 5913 <<"chunk_id": 2, "docno": 857>>
 
-environment in which such applications run. In contrast, if an application
-depends on a package that contains a native addon, the application has to be
-recompiled, reinstalled, and redeployed whenever a new major version of Node.js
-is introduced into the production environment. This disparity between Node.js
-packages containing native addons and those that are written entirely in
-JavaScript has added to the maintenance burden of production systems which rely
-on native addons. Other projects have started to produce JavaScript interfaces
-that are essentially alternative implementations of Node.js. Since these
-projects are usually built on a different JavaScript engine than V8, their
-native addons necessarily take on a different structure and use a different API.
-Nevertheless, using a single API for a native addon across different
-implementations of the Node.js JavaScript API would allow these projects to take
-advantage of the ecosystem of JavaScript packages that has accrued around
-Node.js. Node.js may contain a different JavaScript engine in the future. This
-means that, externally, all Node.js interfaces would remain the same, but the V8
-header file would be absent. Such a step would cause the disruption of the
-Node.js ecosystem in general, and that of the native addons in particular, if an
-API that is JavaScript engine agnostic is not first provided by Node.js and
-adopted by native addons. To these ends Node.js has introduced N-API in version
-8.6.0 and marked it as a stable component of the project as of Node.js 8.12.0.
-The API is defined in the headers node_api.h and node_api_types.h , and provides
-a
+developers to know how concurrency works under the hood. However, Concurrent
+React is more important than a typical implementation detail — it’s a
+foundational update to React’s core rendering model. So while it’s not super
+important to know how concurrency works, it may be worth knowing what it is at a
+high level. A key property of Concurrent React is that rendering is
+interruptible. When you first upgrade to React 18, before adding any concurrent
+features, updates are rendered the same as in previous versions of React — in a
+single, uninterrupted, synchronous transaction. With synchronous rendering, once
+an update starts rendering, nothing can interrupt it until the user can see the
+result on screen. In a concurrent render, this is not always the case. React may
+start rendering an update, pause in the middle, then continue later. It may even
+abandon an in-progress render altogether. React guarantees that the UI will
+appear consistent even if a render is interrupted. To do this, it waits to
+perform DOM mutations until the end, once the entire tree has been evaluated.
+With this capability, React can prepare new screens in the background without
+blocking the main thread. This means the UI can respond immediately to user
+input even if it’s in the middle of a large rendering task, creating a fluid
+user experience. Another example is reusable state. Concurrent React can remove
+sections of the UI from the screen, then add them back later while reusing the
+previous state. For example, when a user tabs away from a
+----------------------------------------------------------------------------------------------------
+Index: 7412 <<"chunk_id": 14, "docno": 1124>>
+
+expected template. If you have this problem, you can reorder the classpath in
+the IDE to place the module’s classes and resources first. Error Handling By
+default, Spring Boot provides an /error mapping that handles all errors in a
+sensible way, and it is registered as a “global” error page in the servlet
+container. For machine clients, it produces a JSON response with details of the
+error, the HTTP status, and the exception message. For browser clients, there is
+a “whitelabel” error view that renders the same data in HTML format (to
+customize it, add a View that resolves to error ). There are a number of
+spring.web.error properties that can be set if you want to customize the default
+error handling behavior. See the Web Properties section of the Appendix. To
+replace the default behavior completely, you can implement ErrorController and
+register a bean definition of that type or add a bean of type ErrorAttributes to
+use the existing mechanism but replace the contents. The BasicErrorController
+can be used as a base class for a custom ErrorController . This is particularly
+useful if you want to add a handler for a new content type (the default is to
+handle text/html specifically and provide a fallback for everything else). To do
+so, extend BasicErrorController , add a public method with a @RequestMapping
+that has a produces attribute, and create a bean of your new type. As of Spring
+Framework 6.0, RFC 9457 Problem Details is supported. Spring MVC can produce
+custom error messages with the application/problem+json
+----------------------------------------------------------------------------------------------------
+Index: 4698 <<"chunk_id": 3, "docno": 685>>
+
+camelCase , for example fontWeight instead of font-weight . You can pass strings
+or numbers as values. If you pass a number, like width: 100 , React will
+automatically append px (“pixels”) to the value unless it’s a unitless property.
+We recommend using style only for dynamic styles where you don’t know the style
+values ahead of time. In other cases, applying plain CSS classes with className
+is more efficient. Read more about className and style . These standard DOM
+props are also supported for all built-in components: accessKey : A string.
+Specifies a keyboard shortcut for the element. Not generally recommended. aria-*
+: ARIA attributes let you specify the accessibility tree information for this
+element. See ARIA attributes for a complete reference. In React, all ARIA
+attribute names are exactly the same as in HTML. autoCapitalize : A string.
+Specifies whether and how the user input should be capitalized. className : A
+string. Specifies the element’s CSS class name. Read more about applying CSS
+styles. contentEditable : A boolean. If true , the browser lets the user edit
+the rendered element directly. This is used to implement rich text input
+libraries like Lexical. React warns if you try to pass React children to an
+element with contentEditable={true} because React will not be able to update its
+content after user edits. data-* : Data attributes let you attach some string
+data to the element, for example data-fruit="banana" . In React, they are not
+commonly used because you would usually read data from props or state instead.
+----------------------------------------------------------------------------------------------------
+Index: 23545 <<"chunk_id": 3, "docno": 3553>>
+
+the user detail page that displays the user with id 42. There is no issue when
+the user initially loads the index page and then navigates to that URL from
+within a running client. The Angular router performs the navigation client-side
+and does not request a new HTML page. But clicking a deep link in an email,
+entering it in the browser address bar, or even refreshing the browser while
+already on the deep linked page will all be handled by the browser itself,
+outside the running application. The browser makes a direct request to the
+server for /users/42 , bypassing Angular's router. A static server routinely
+returns index.html when it receives a request for http://my-app.test/ . But most
+servers by default will reject http://my-app.test/users/42 and returns a 404 -
+Not Found error unless it is configured to return index.html instead. Configure
+the fallback route or 404 page to index.html for your server, so Angular is
+served for deep links and can display the correct route. Some servers call this
+fallback behavior "Single-Page Application" (SPA) mode. Once the browser loads
+the application, Angular router will read the URL to determine which page it is
+on and display /users/42 correctly. For "real" 404 pages such as
+http://my-app.test/does-not-exist , the server does not require any additional
+configuration. 404 pages implemented in the Angular router will be displayed
+correctly. Requesting data from a different server (CORS) Web developers may
+encounter a cross-origin resource sharing error when making a network request to
+a server other than the application's own host
+----------------------------------------------------------------------------------------------------
+Index: 22742 <<"chunk_id": 35, "docno": 3382>>
+
+the UI server into a reverse proxy to the backend resource server, fixing the
+issues with the last implementation (technical complexity introduced by custom
+token authentication), and giving us a lot of new options for controlling access
+from the browser client. Reminder: if you are working through this section with
+the sample application, be sure to clear your browser cache of cookies and HTTP
+Basic credentials. In Chrome the best way to do that for a single server is to
+open a new incognito window. Creating an API Gateway An API Gateway is a single
+point of entry (and control) for front end clients, which could be browser based
+(like the examples in this section) or mobile. The client only has to know the
+URL of one server, and the backend can be refactored at will with no change,
+which is a significant advantage. There are other advantages in terms of
+centralization and control: rate limiting, authentication, auditing and logging.
+And implementing a simple reverse proxy is really simple with Spring Cloud . If
+you were following along in the code, you will know that the application
+implementation at the end of the last section was a bit complicated, so it’s not
+a great place to iterate away from. There was, however, a halfway point which we
+could start from more easily, where the backend resource wasn’t yet secured with
+Spring Security. The source code for this is a separate project in Github so we
+are going to start from there. It has a UI server
+----------------------------------------------------------------------------------------------------
+Index: 1413 <<"chunk_id": 19, "docno": 174>>
+
+: 2 , name : 'Bob' , email : 'bob@mail.com' } ] ; Show more Deep Dive Preserving
+state for removed components Show Details In a real chat app, you’d probably
+want to recover the input state when the user selects the previous recipient
+again. There are a few ways to keep the state “alive” for a component that’s no
+longer visible: You could render all chats instead of just the current one, but
+hide all the others with CSS. The chats would not get removed from the tree, so
+their local state would be preserved. This solution works great for simple UIs.
+But it can get very slow if the hidden trees are large and contain a lot of DOM
+nodes. You could lift the state up and hold the pending message for each
+recipient in the parent component. This way, when the child components get
+removed, it doesn’t matter, because it’s the parent that keeps the important
+information. This is the most common solution. You might also use a different
+source in addition to React state. For example, you probably want a message
+draft to persist even if the user accidentally closes the page. To implement
+this, you could have the Chat component initialize its state by reading from the
+localStorage , and save the drafts there too. No matter which strategy you pick,
+a chat with Alice is conceptually distinct from a chat with Bob , so it makes
+sense to give a key to the <Chat> tree based on the current recipient.
+----------------------------------------------------------------------------------------------------
+Index: 1774 <<"chunk_id": 7, "docno": 222>>
+
+mix build-time, server-only, and interactive components in a single React tree.
+RSC can improve performance, but it currently requires deep expertise to set up
+and maintain. See Parcel’s RSC examples . Your rendering strategies need to
+integrate with your router so apps built with your framework can choose the
+rendering strategy on a per-route level. This will enable different rendering
+strategies without having to rewrite your whole app. For example, the landing
+page for your app might benefit from being statically generated (SSG), while a
+page with a content feed might perform best with server-side rendering. Using
+the right rendering strategy for the right routes can decrease the time it takes
+for the first byte of content to be loaded ( Time to First Byte ), the first
+piece of content to render ( First Contentful Paint ), and the largest visible
+content of the app to render ( Largest Contentful Paint ). And more… These are
+just a few examples of the features a new app will need to consider when
+building from scratch. Many limitations you’ll hit can be difficult to solve as
+each problem is interconnected with the others and can require deep expertise in
+problem areas you may not be familiar with. If you don’t want to solve these
+problems on your own, you can get started with a framework that provides these
+features out of the box. Previous Creating a React App Next Add React to an
+Existing Project Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by
+@sawaratsuki1004
+----------------------------------------------------------------------------------------------------
+Index: 26579 <<"chunk_id": 1, "docno": 4273>>
+
+particular feature or concern into a single, self-contained unit. The code in
+that unit should not take on any other responsibility. For example, the business
+logic of a web service should be in one class while the handling of SOAP
+messages should be in another: the business logic and SOAP handling are two
+different concerns. The real beauty of this pattern is that you can aggregate
+these units into coarser-grained concerns, so you end up using the pattern at
+multiple levels. For example, say that the web service mentioned above provides
+a blog-like feature. You could package the business logic, SOAP gateway, and
+perhaps a REST interface all into a single unit that can be reused. The standard
+form of packaging for such coarse-grained features in the Java world is the Java
+ARchive (JAR). If you're already a Grails developer, you will know that your
+Grails applications can use such JAR files. But they don't help when it comes to
+controllers, domain classes, and other special Grails "artifacts". Fortunately,
+we have a ready-made unit that can help: the Grails plugin. Ryan Geyer has
+written a great post demonstrating how to use a plugin to provide a reusable
+domain model and why you might want to do so. Here's another example in
+diagrammatic form: We package a blog feature into one plugin and a payment
+processing feature into another. The idea here is that multiple applications are
+likely to use the same payment processing code and some may also require a blog
+feature. You can also package
+----------------------------------------------------------------------------------------------------
+Index: 906 <<"chunk_id": 3, "docno": 129>>
+
+re-render. You can pass the next state directly, or a function that calculates
+it from the previous state: const [ name , setName ] = useState ( 'Edward' ) ;
+function handleClick ( ) { setName ( 'Taylor' ) ; setAge ( a => a + 1 ) ; // ...
+Parameters nextState : The value that you want the state to be. It can be a
+value of any type, but there is a special behavior for functions. If you pass a
+function as nextState , it will be treated as an updater function . It must be
+pure, should take the pending state as its only argument, and should return the
+next state. React will put your updater function in a queue and re-render your
+component. During the next render, React will calculate the next state by
+applying all of the queued updaters to the previous state. See an example below.
+Returns set functions do not have a return value. Caveats The set function only
+updates the state variable for the next render . If you read the state variable
+after calling the set function, you will still get the old value that was on the
+screen before your call. If the new value you provide is identical to the
+current state , as determined by an Object.is comparison, React will skip
+re-rendering the component and its children. This is an optimization. Although
+in some cases React may still need to call your component before skipping the
+children, it shouldn’t affect your code. React
+----------------------------------------------------------------------------------------------------
+Index: 3419 <<"chunk_id": 8, "docno": 483>>
+
+process has the ability to load and run additional arbitrary code by using
+eval() (or its equivalents). All code with file system write access may achieve
+the same thing by writing to new or existing files that are loaded. Examples An
+attacker compromises the maintainer account of a popular logging library and
+ships a new minor version that exfiltrates environment variables (for example,
+database passwords or access tokens) to a remote server when the logger is
+initialized. A typosquatting package with a name similar to a well-known
+framework is published to the npm registry. When installed, it runs a
+postinstall script that sends SSH keys from the developer's machine to an
+attacker-controlled endpoint. Be sure to pin dependency versions and run
+automatic checks for vulnerabilities using common workflows or npm scripts.
+Before installing a package make sure that this package is maintained and
+includes all the content you expected. Be careful, the GitHub source code is not
+always the same as the published one, validate it in the node_modules . Supply
+chain attacks A supply chain attack on a Node.js application happens when one of
+its dependencies (either direct or transitive) are compromised. This can happen
+either due to the application being too lax on the specification of the
+dependencies (allowing for unwanted updates) and/or common typos in the
+specification (vulnerable to typosquatting ). An attacker who takes control of
+an upstream package can publish a new version with malicious code in it. If a
+Node.js application depends on that package without being strict on which
+----------------------------------------------------------------------------------------------------
+Index: 18946 <<"chunk_id": 2, "docno": 2701>>
+
+while a navigation is executing. After a navigation completes, the router writes
+an object containing this value together with a navigationId to history.state .
+The value is written when location.go() or location.replaceState() is called
+before activating this route. Note that history.state does not pass an object
+equality test because the router adds the navigationId on each navigation. info
+unknown Use this to convey transient information about this particular
+navigation, such as how it happened. In this way, it's different from the
+persisted value state that will be set to history.state . This object is
+assigned directly to the Router's current Navigation (it is not copied or
+cloned), so it should be mutated with caution. One example of how this might be
+used is to trigger different single-page navigation animations depending on how
+a certain route was reached. For example, consider a photo gallery app, where
+you can reach the same photo URL and state via various routes: Clicking on it in
+a gallery view Clicking "next" or "previous" when viewing another photo in the
+album Etc. Each of these wants a different animation at navigate time. This
+information doesn't make sense to store in the persistent URL or history entry
+state, but it's still important to communicate from the rest of the application,
+into the router. This information could be used in coordination with the View
+Transitions feature and the onViewTransitionCreated callback. The information
+might be used in the callback to set classes on the document in order to control
+the transition animations and remove the
+----------------------------------------------------------------------------------------------------
+Index: 6100 <<"chunk_id": 10, "docno": 882>>
+
+effects. Instead, React will throw away the new tree completely, wait for the
+asynchronous operation to finish, and then retry rendering again from scratch.
+React will render the retry attempt concurrently, and without blocking the
+browser. Layout Effects with Suspense : When a tree re-suspends and reverts to a
+fallback, React will now clean up layout effects, and then re-create them when
+the content inside the boundary is shown again. This fixes an issue which
+prevented component libraries from correctly measuring layout when used with
+Suspense. New JS Environment Requirements : React now depends on modern browsers
+features including Promise , Symbol , and Object.assign . If you support older
+browsers and devices such as Internet Explorer which do not provide modern
+browser features natively or have non-compliant implementations, consider
+including a global polyfill in your bundled application. Other Notable Changes
+React Components can now render undefined : React no longer warns if you return
+undefined from a component. This makes the allowed component return values
+consistent with values that are allowed in the middle of a component tree. We
+suggest to use a linter to prevent mistakes like forgetting a return statement
+before JSX. In tests, act warnings are now opt-in: If you’re running end-to-end
+tests, the act warnings are unnecessary. We’ve introduced an opt-in mechanism so
+you can enable them only for unit tests where they are useful and beneficial. No
+warning about setState on unmounted components: Previously, React warned about
+memory leaks when you call setState on an unmounted component. This warning was
+----------------------------------------------------------------------------------------------------
+Index: 19090 <<"chunk_id": 4, "docno": 2745>>
+
+considered a dependency of conditionalCount . Reactive contexts A reactive
+context is a runtime state where Angular monitors signal reads to establish a
+dependency. The code reading the signal is the consumer , and the signal being
+read is the producer . Angular automatically enters a reactive context when:
+Executing an effect , afterRenderEffect callback. Evaluating a computed signal.
+Evaluating a linkedSignal . Evaluating a resource 's params or loader function.
+Rendering a component template (including bindings in the host property ).
+During these operations, Angular creates a live connection. If a tracked signal
+changes, Angular will eventually re-run the consumer. Asserts the reactive
+context Angular provides the assertNotInReactiveContext helper function to
+assert that code is not executing within a reactive context. Pass a reference to
+the calling function so the error message points to the correct API entry point
+if the assertion fails. This produces a clearer, more actionable error message
+than a generic reactive context error. import { assertNotInReactiveContext }
+from '@angular/core' ; function subscribeToEvents () {
+assertNotInReactiveContext (subscribeToEvents); // Safe to proceed -
+subscription logic here } Reading without tracking dependencies Rarely, you may
+want to execute code which may read signals within a reactive function such as
+computed or effect without creating a dependency. For example, suppose that when
+currentUser changes, the value of a counter should be logged. You could create
+an effect which reads both signals: effect (() => { console. log ( `User set to
+${ currentUser () } and the counter is ${ counter () }` ); });
+----------------------------------------------------------------------------------------------------
+Index: 3038 <<"chunk_id": 2, "docno": 424>>
+
+These <select> props are relevant both for uncontrolled and controlled select
+boxes: autoComplete : A string. Specifies one of the possible autocomplete
+behaviors. autoFocus : A boolean. If true , React will focus the element on
+mount. children : <select> accepts <option> , <optgroup> , and <datalist>
+components as children. You can also pass your own components as long as they
+eventually render one of the allowed components. If you pass your own components
+that eventually render <option> tags, each <option> you render must have a value
+. disabled : A boolean. If true , the select box will not be interactive and
+will appear dimmed. form : A string. Specifies the id of the <form> this select
+box belongs to. If omitted, it’s the closest parent form. multiple : A boolean.
+If true , the browser allows multiple selection. name : A string. Specifies the
+name for this select box that’s submitted with the form. onChange : An Event
+handler function. Required for controlled select boxes. Fires immediately when
+the user picks a different option. Behaves like the browser input event.
+onChangeCapture : A version of onChange that fires in the capture phase. onInput
+: An Event handler function. Fires immediately when the value is changed by the
+user. For historical reasons, in React it is idiomatic to use onChange instead
+which works similarly. onInputCapture : A version of onInput that fires in the
+capture phase. onInvalid : An Event handler function. Fires if an input fails
+validation on form submit. Unlike the built-in invalid
+----------------------------------------------------------------------------------------------------
+Index: 767 <<"chunk_id": 8, "docno": 112>>
+
+would get confusing. The second file would become the first file, the third file
+would be the second file, and so on. File names in a folder and JSX keys in an
+array serve a similar purpose. They let us uniquely identify an item between its
+siblings. A well-chosen key provides more information than the position within
+the array. Even if the position changes due to reordering, the key lets React
+identify the item throughout its lifetime. Pitfall You might be tempted to use
+an item’s index in the array as its key. In fact, that’s what React will use if
+you don’t specify a key at all. But the order in which you render items will
+change over time if an item is inserted, deleted, or if the array gets
+reordered. Index as a key often leads to subtle and confusing bugs. Similarly,
+do not generate keys on the fly, e.g. with key={Math.random()} . This will cause
+keys to never match up between renders, leading to all your components and DOM
+being recreated every time. Not only is this slow, but it will also lose any
+user input inside the list items. Instead, use a stable ID based on the data.
+Note that your components won’t receive key as a prop. It’s only used as a hint
+by React itself. If your component needs an ID, you have to pass it as a
+separate prop: <Profile key={id} userId={id} /> . Recap On this page you
+learned: How to move data out of components and into
+----------------------------------------------------------------------------------------------------
+Index: 8888 <<"chunk_id": 41, "docno": 1384>>
+
+than once an error will be returned. This API can be called even if there is a
+pending JavaScript exception. References to values with a lifespan longer than
+that of the native method # In some cases, an addon will need to be able to
+create and reference values with a lifespan longer than that of a single native
+method invocation. For example, to create a constructor and later use that
+constructor in a request to create instances, it must be possible to reference
+the constructor object across many different instance creation requests. This
+would not be possible with a normal handle returned as a napi_value as described
+in the earlier section. The lifespan of a normal handle is managed by scopes and
+all scopes must be closed before the end of a native method. Node-API provides
+methods for creating persistent references to values. Currently Node-API only
+allows references to be created for a limited set of value types, including
+object, external, function, and symbol. Each reference has an associated count
+with a value of 0 or higher, which determines whether the reference will keep
+the corresponding value alive. References with a count of 0 do not prevent
+values from being collected. Values of object (object, function, external) and
+symbol types are becoming 'weak' references and can still be accessed while they
+are not collected. Any count greater than 0 will prevent the values from being
+collected. Symbol values have different flavors. The true weak reference
+behavior is only supported by local symbols created with the
+----------------------------------------------------------------------------------------------------
+Index: 28855 <<"chunk_id": 5, "docno": 4780>>
+
+an example to show the effect of that optimization in a quite extreme example
+consisting of 2,000 entities, 2,000 repositories and 2,000 beans that depend on
+the repositories. Using the deferred mode cuts off about a third (~12 seconds)
+of the startup time. The lazy one even takes away another third (~22 seconds
+better than the default). Controlling HTTP method exposure in Spring Data REST
+We finish with a look at a feature in Spring Data REST that had been requested
+for a while. In Spring Data REST, the decision about which HTTP methods are
+supported for which resource type exposed is, by default driven by the declared
+CRUD methods. However, there are certain cases in which the presence of a single
+repository method causes multiple resource-HTTP-method combinations to be
+enabled. For example, the save(…) method exposed on a repository causes POST to
+be supported on the collection resources as well as PUT for both update and
+creation of the item resource. Spring Data Lovelace has a new
+ExposureConfiguration (obtainable from a RepositoryRestConfiguration ), which
+allows fine grained control over which methods are supposed to be exposed:
+ExposureConfiguration config = restConfiguration.getExposureConfiguration();
+config.withItemExposure((metadata, httpMethods) ->
+httpMethods.disable(HttpMethod.PATCH));
+config.forDomainType(User.class).disablePutForCreation(); As you can see, the
+configuration options come in two flavors: A global one (shown first) that
+allows control over collection, item, and association resource exposure by using
+a lambda over a ResourceMapping and ConfigurableHttpMethods . A type-specific
+one as shown below. Some setup details, such as disabling the (enabled by
+default) ability to create entities by using PUT requests
+----------------------------------------------------------------------------------------------------
+Index: 3910 <<"chunk_id": 3, "docno": 571>>
+
+are no-referrer-when-downgrade (the default), no-referrer , origin ,
+origin-when-cross-origin , and unsafe-url . fetchPriority : a string. Suggests a
+relative priority for fetching the resource. The possible values are auto (the
+default), high , and low . hrefLang : a string. The language of the linked
+resource. integrity : a string. A cryptographic hash of the resource, to verify
+its authenticity . type : a string. The MIME type of the linked resource. Props
+that are not recommended for use with React: blocking : a string. If set to
+"render" , instructs the browser not to render the page until the stylesheet is
+loaded. React provides more fine-grained control using Suspense. Special
+rendering behavior React will always place the DOM element corresponding to the
+<link> component within the document’s <head> , regardless of where in the React
+tree it is rendered. The <head> is the only valid place for <link> to exist
+within the DOM, yet it’s convenient and keeps things composable if a component
+representing a specific page can render <link> components itself. There are a
+few exceptions to this: If the <link> has a rel="stylesheet" prop, then it has
+to also have a precedence prop to get this special behavior. This is because the
+order of stylesheets within the document is significant, so React needs to know
+how to order this stylesheet relative to others, which you specify using the
+precedence prop. If the precedence prop is omitted, there is no special
+behavior. If the <link> has an itemProp prop, there is no special
+----------------------------------------------------------------------------------------------------
+Index: 6002 <<"chunk_id": 9, "docno": 870>>
+
+like a colleague or a friend might explain. It shows the canonical scenarios for
+how each API was meant to be used by the React team. We’ve added color-coded
+snippets, examples of using different APIs together, and recipes that you can
+copy and paste from: Basic useState examples 1 . Counter (number) 2 . Text field
+(string) 3 . Checkbox (boolean) 4 . Form (two variables) Example 1 of 4 :
+Counter (number) In this example, the count state variable holds a number.
+Clicking the button increments it. App.js App.js Reload Clear Fork import {
+useState } from 'react' ; export default function Counter ( ) { const [ count ,
+setCount ] = useState ( 0 ) ; function handleClick ( ) { setCount ( count + 1 )
+; } return ( < button onClick = { handleClick } > You pressed me { count } times
+</ button > ) ; } Next Example Some API pages also include Troubleshooting (for
+common problems) and Alternatives (for deprecated APIs). We hope that this
+approach will make the API reference useful not only as a way to look up an
+argument, but as a way to see all the different things you can do with any given
+API—and how it connects to the other ones. What’s next? That’s a wrap for our
+little tour! Have a look around the new website, see what you like or don’t
+like, and keep the feedback coming in our issue tracker . We acknowledge this
+project has taken a
+----------------------------------------------------------------------------------------------------
+Index: 4363 <<"chunk_id": 13, "docno": 640>>
+
+; } Show more Note If either the mounted or unmounted side of a pair is outside
+the viewport, then no pair is formed. This ensures that it doesn’t fly in or out
+of the viewport when something is scrolled. Instead it’s treated as a regular
+enter/exit by itself. This does not happen if the same Component instance
+changes position, which triggers an “update”. Those animate regardless of
+whether one position is outside the viewport. There is a known case where if a
+deeply nested unmounted <ViewTransition> is inside the viewport but the mounted
+side is not within the viewport, then the unmounted side animates as its own
+“exit” animation even if it’s deeply nested instead of as part of the parent
+animation. Pitfall It’s important that there’s only one thing with the same name
+mounted at a time in the entire app. Therefore it’s important to use unique
+namespaces for the name to avoid conflicts. To ensure you can do this you might
+want to add a constant in a separate module that you import. export const
+MY_NAME = "my-globally-unique-name" ; import { MY_NAME } from './shared-name' ;
+... < ViewTransition name = { MY_NAME } > Animating reorder of items in a list
+items . map ( ( item ) => < Component key = { item . id } item = { item } /> ) ;
+When reordering a list, without updating the content, the “update” animation
+triggers on each <ViewTransition> in the list if they’re outside a DOM node.
+Similar to
+----------------------------------------------------------------------------------------------------
+Index: 852 <<"chunk_id": 9, "docno": 123>>
+
+its children. Now the comment field will clear out automatically when navigating
+between profiles. Note that in this example, only the outer ProfilePage
+component is exported and visible to other files in the project. Components
+rendering ProfilePage don’t need to pass the key to it: they pass userId as a
+regular prop. The fact ProfilePage passes it as a key to the inner Profile
+component is an implementation detail. Adjusting some state when a prop changes
+Sometimes, you might want to reset or adjust a part of the state on a prop
+change, but not all of it. This List component receives a list of items as a
+prop, and maintains the selected item in the selection state variable. You want
+to reset the selection to null whenever the items prop receives a different
+array: function List ( { items } ) { const [ isReverse , setIsReverse ] =
+useState ( false ) ; const [ selection , setSelection ] = useState ( null ) ; //
+🔴 Avoid: Adjusting state on prop change in an Effect useEffect ( ( ) => {
+setSelection ( null ) ; } , [ items ] ) ; // ... } This, too, is not ideal.
+Every time the items change, the List and its child components will render with
+a stale selection value at first. Then React will update the DOM and run the
+Effects. Finally, the setSelection(null) call will cause another re-render of
+the List and its child components, restarting this whole process again. Start by
+----------------------------------------------------------------------------------------------------
+Index: 14840 <<"chunk_id": 399, "docno": 2234>>
+
+component of the given pathname existed, but was not a directory as expected.
+Commonly raised by fs.readdir . ENOTEMPTY (Directory not empty): A directory
+with entries was the target of an operation that requires an empty directory,
+usually fs.unlink . ENOTFOUND (DNS lookup failed): Indicates a DNS failure of
+either EAI_NODATA or EAI_NONAME . This is not a standard POSIX error. EPERM
+(Operation not permitted): An attempt was made to perform an operation that
+requires elevated privileges. EPIPE (Broken pipe): A write on a pipe, socket, or
+FIFO for which there is no process to read the data. Commonly encountered at the
+net and http layers, indicative that the remote side of the stream being written
+to has been closed. ETIMEDOUT (Operation timed out): A connect or send request
+failed because the connected party did not properly respond after a period of
+time. Usually encountered by http or net . Often a sign that a socket.end() was
+not properly called. Class: TypeError # Extends <errors.Error> Indicates that a
+provided argument is not an allowable type. For example, passing a function to a
+parameter which expects a string would be a TypeError . require ( 'node:url' ) .
+parse ( () => { } ) ; // Throws TypeError, since it expected a string. js copy
+Node.js will generate and throw TypeError instances immediately as a form of
+argument validation. Exceptions vs. errors # A JavaScript exception is a value
+that is thrown as a result of an invalid operation or as the target of a throw
+----------------------------------------------------------------------------------------------------
+Index: 23017 <<"chunk_id": 4, "docno": 3413>>
+
+the UI control understands to mean "empty" (e.g. "" for a <input type="text"> ).
+If you're designing a custom UI control, null often works as a good value to
+signify "empty". Prefer Appropriate empty values interface UserFormModel { name
+: string ; // Bound to <input type="text"> birthday : Date | null ; // Bound to
+<input type="date"> } // Initialize our form with empty values. form ( signal
+({name: '' , birthday: null })); Avoid models with dynamic structure A form
+model has a dynamic structure if it changes shape (if the properties on the
+object change) based on its value. This happens when the model type allows for
+values with different shapes, such as a union of object types that have
+different properties, or a union of an object and a primitive. The following
+sections examine a few common scenarios where models with a dynamic structure
+might seem appealing, but ultimately prove problematic. Empty value for a
+complex object We often use forms to ask users to enter brand new data, rather
+than edit existing data in a system. A good example of this is an account
+creation form. We might model that using the following form model. interface
+CreateAccountFormModel { name : { first : string ; last : string ; }; username :
+string ; } When creating the form we encounter a dilemma, what should the
+initial value in the model be? It may be tempting to create a
+form<CreateAccountFormModel | null>() since we don't have any input from the
+user
+----------------------------------------------------------------------------------------------------
+Index: 3819 <<"chunk_id": 3, "docno": 556>>
+
+indicators . Returns startTransition does not return anything. Caveats
+useTransition is a Hook, so it can only be called inside components or custom
+Hooks. If you need to start a Transition somewhere else (for example, from a
+data library), call the standalone startTransition instead. You can wrap an
+update into a Transition only if you have access to the set function of that
+state. If you want to start a Transition in response to some prop or a custom
+Hook value, try useDeferredValue instead. The function you pass to
+startTransition is called immediately, marking all state updates that happen
+while it executes as Transitions. If you try to perform state updates in a
+setTimeout , for example, they won’t be marked as Transitions. You must wrap any
+state updates after any async requests in another startTransition to mark them
+as Transitions. This is a known limitation that we will fix in the future (see
+Troubleshooting ). The startTransition function has a stable identity, so you
+will often see it omitted from Effect dependencies, but including it will not
+cause the Effect to fire. If the linter lets you omit a dependency without
+errors, it is safe to do. Learn more about removing Effect dependencies. A state
+update marked as a Transition will be interrupted by other state updates. For
+example, if you update a chart component inside a Transition, but then start
+typing into an input while the chart is in the middle of a re-render, React will
+restart the rendering work on the chart component
+----------------------------------------------------------------------------------------------------
+Index: 910 <<"chunk_id": 7, "docno": 129>>
+
+) ; // setAge(43 => 44) setAge ( a => a + 1 ) ; // setAge(44 => 45) } Here, a =>
+a + 1 is your updater function. It takes the pending state and calculates the
+next state from it. React puts your updater functions in a queue. Then, during
+the next render, it will call them in the same order: a => a + 1 will receive 42
+as the pending state and return 43 as the next state. a => a + 1 will receive 43
+as the pending state and return 44 as the next state. a => a + 1 will receive 44
+as the pending state and return 45 as the next state. There are no other queued
+updates, so React will store 45 as the current state in the end. By convention,
+it’s common to name the pending state argument for the first letter of the state
+variable name, like a for age . However, you may also call it like prevAge or
+something else that you find clearer. React may call your updaters twice in
+development to verify that they are pure. Deep Dive Is using an updater always
+preferred? Show Details You might hear a recommendation to always write code
+like setAge(a => a + 1) if the state you’re setting is calculated from the
+previous state. There is no harm in it, but it is also not always necessary. In
+most cases, there is no difference between these two approaches. React always
+makes sure that
+----------------------------------------------------------------------------------------------------
+Index: 24321 <<"chunk_id": 3, "docno": 3732>>
+
+interact with other applications. The user elects to grant these permissions to
+the app or to not install it. The permissions required or requested by an app
+are defined in each app's Android Manifest file. This is an XML file that lists
+all the components of the app, and any settings for those components. The four
+types of application components are activities , services , content providers ,
+and broadcast receivers . For the purposes of this post, I will be focusing on
+activities. Activities basically represent a single screen of an Android
+application. For example, a Twitter app may have a login screen, a screen with a
+list of tweets, and a screen for authoring a new tweet. Each of these screens
+represent different activities within the application. As a developer you never
+instantiate an activity object yourself. Activities are activated by sending an
+asynchronous message called an Intent , as seen in the example below.
+startActivity(new Intent(context, HomeActivity.class)); When
+startActivity(Intent intent) is called, the system either creates a new instance
+or reuses an existing one in order to display the activity to the user. The
+important point is that the system controls the starting and stopping, and
+creation and destroying of the application and each activity. If you want to
+interact with this process, then the application and activity classes provide
+methods for different lifecycle events that you can override in a subclass.
+Dependency Injection The Spring Android project recently reached its fourth
+milestone release. With that release we have continued to improve upon
+----------------------------------------------------------------------------------------------------
+Index: 17864 <<"chunk_id": 1, "docno": 2404>>
+
+do we try to solve? Let's take a concrete example, and say we are using a
+library that provides a TokenExtractor interface defined as follow: interface
+TokenExtractor { /** * Extract a token from a {@link String}. * @param input the
+input to process * @return the extracted token */ String extractToken(String
+input); } If for some reason the implementation returns null , the access to a
+null reference in token.length() like below causes a NullPointerException which
+typically ends up at runtime in producing an HTTP response with a 500 Internal
+Server Error status code. package com.example; String token =
+extractor.extractToken("..."); System.out.println("The token has a length of " +
+token.length()); Since this error could happen only in some cases (for example
+with very specific inputs that have not been tested), this can be detected
+pretty late in production, generating end-user frustration or even preventing
+transactions to happen, reducing your company revenue, damaging your brand and
+involving latency and cost to fix. This kind of error is so frequent that the
+inventor of null references himself, Tony Hoare , hyperbolically apologized for
+inventing it and called it "my billion-dollar mistake". But as brilliantly
+demonstrated by Kotlin , the root issue is not null references by themselves,
+but the fact that they are not explicitly specified in the type system. In Java,
+non primitive type usage nullness is unspecified. A parameter may accept or not
+a null argument. A return value could be nullable or non-null. You don't know
+and have to rely on reading the Javadoc or
+----------------------------------------------------------------------------------------------------
+Index: 1559 <<"chunk_id": 2, "docno": 192>>
+
+the documentation page you’re reading is made out of React components: <
+PageLayout > < NavigationHeader > < SearchBar /> < Link to = "/docs" > Docs </
+Link > </ NavigationHeader > < Sidebar /> < PageContent > < TableOfContents /> <
+DocumentationText /> </ PageContent > </ PageLayout > As your project grows, you
+will notice that many of your designs can be composed by reusing components you
+already wrote, speeding up your development. Our table of contents above could
+be added to any screen with <TableOfContents /> ! You can even jumpstart your
+project with the thousands of components shared by the React open source
+community like Chakra UI and Material UI. Defining a component Traditionally
+when creating web pages, web developers marked up their content and then added
+interaction by sprinkling on some JavaScript. This worked great when interaction
+was a nice-to-have on the web. Now it is expected for many sites and all apps.
+React puts interactivity first while still using the same technology: a React
+component is a JavaScript function that you can sprinkle with markup . Here’s
+what that looks like (you can edit the example below): App.js App.js Reload
+Clear Fork export default function Profile ( ) { return ( < img src =
+"https://react.dev/images/docs/scientists/MK3eW3Am.jpg" alt = "Katherine
+Johnson" /> ) } And here’s how to build a component: Step 1: Export the
+component The export default prefix is a standard JavaScript syntax (not
+specific to React). It lets you mark the main function in a file so
+----------------------------------------------------------------------------------------------------
+Index: 13487 <<"chunk_id": 5, "docno": 2131>>
+
+simple configuration to directly generate the schema in the database and also to
+having schema information as part of the mapping annotations. It's natural to
+ask why we chose a different way. There are multiple answers to this question:
+Schema changes are potentially dangerous. You can easily do things that you can
+recover from only by applying a database backup. We do not think it is a good
+thing to condition developers to do this kind of thing without really seeing,
+let alone thinking about, the changes they apply. That is why we create the
+changes but leave applying the changes as a separate step. Schema changes should
+be controlled by version control, and they need to be managed by a dedicated
+tool, since they are not idempotent. That is, you cannot reapply a SQL script
+that adds a table or column to make sure that column is present. That is why we
+chose Liquibase for creating and managing changes. The exact datatypes used in
+the database are not relevant for an object relational mapper, such as Spring
+Data JDBC. Therefore, this kind of information should not be part of the mapping
+annotations used by Spring Data JDBC. Instead, this kind of information should
+be derived from your model in a way that is really independent of Spring Data
+JDBC. We think the demonstrated meta annotation approach is a good way to do
+that. Conclusion With current milestone and upcoming GA releases, Spring Data
+JDBC provides a flexible and powerful way to generate database migrations from
+----------------------------------------------------------------------------------------------------
+Index: 3711 <<"chunk_id": 1, "docno": 535>>
+
+forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
+React Hooks Hooks let you use different React features from your components. You
+can either use the built-in Hooks or combine them to build your own. This page
+lists all built-in Hooks in React. State Hooks State lets a component “remember”
+information like user input. For example, a form component can use state to
+store the input value, while an image gallery component can use state to store
+the selected image index. To add state to a component, use one of these Hooks:
+useState declares a state variable that you can update directly. useReducer
+declares a state variable with the update logic inside a reducer function.
+function ImageGallery ( ) { const [ index , setIndex ] = useState ( 0 ) ; // ...
+Context Hooks Context lets a component receive information from distant parents
+without passing it as props. For example, your app’s top-level component can
+pass the current UI theme to all components below, no matter how deep.
+useContext reads and subscribes to a context. function Button ( ) { const theme
+= useContext ( ThemeContext ) ; // ... Ref Hooks Refs let a component hold some
+information that isn’t used for rendering, like a DOM node or a timeout ID.
+Unlike with state, updating a ref does not re-render your component. Refs are an
+“escape hatch” from the React paradigm. They are useful when you need to work
+with non-React systems, such as the built-in browser APIs. useRef declares a
+ref. You
+----------------------------------------------------------------------------------------------------
+Index: 5512 <<"chunk_id": 7, "docno": 804>>
+
+useMemo is noticeably slow, and its dependencies rarely change. You pass it as a
+prop to a component wrapped in memo . You want to skip re-rendering if the value
+hasn’t changed. Memoization lets your component re-render only when dependencies
+aren’t the same. The value you’re passing is later used as a dependency of some
+Hook. For example, maybe another useMemo calculation value depends on it. Or
+maybe you are depending on this value from useEffect. There is no benefit to
+wrapping a calculation in useMemo in other cases. There is no significant harm
+to doing that either, so some teams choose to not think about individual cases,
+and memoize as much as possible. The downside of this approach is that code
+becomes less readable. Also, not all memoization is effective: a single value
+that’s “always new” is enough to break memoization for an entire component. In
+practice, you can make a lot of memoization unnecessary by following a few
+principles: When a component visually wraps other components, let it accept JSX
+as children. This way, when the wrapper component updates its own state, React
+knows that its children don’t need to re-render. Prefer local state and don’t
+lift state up any further than necessary. For example, don’t keep transient
+state like forms and whether an item is hovered at the top of your tree or in a
+global state library. Keep your rendering logic pure. If re-rendering a
+component causes a problem or produces some noticeable visual artifact, it’s a
+bug in your component! Fix
 ----------------------------------------------------------------------------------------------------

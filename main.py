@@ -3,6 +3,7 @@ from Models import vector_model as vec
 import threading
 from shared import import_chunks
 from query_retrieval import querying
+from evaluation import retrieval_evaluate, rag_evaluate
 
 chunks = []
 
@@ -19,9 +20,8 @@ def prepare_data():
     processor_thread.join()
     
 def train_data():
-    chunks = import_chunks()
-    bm_thread = threading.Thread(target=bm.build_bm25_model, args=(chunks,))
-    vec_thread = threading.Thread(target=vec.build_vector_model, args=(chunks,))
+    bm_thread = threading.Thread(target=bm.build_bm25_model)
+    vec_thread = threading.Thread(target=vec.build_vector_model)
 
     bm_thread.start()
     vec_thread.start()
@@ -35,7 +35,9 @@ def get_query_response():
 def main():
     # prepare_data()
     # train_data()
-    get_query_response()
+    # get_query_response()
+    # retrieval_evaluate()
+    rag_evaluate()
 
 if __name__ == "__main__":
     main()

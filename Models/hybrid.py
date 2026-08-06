@@ -14,7 +14,7 @@ def _minmax_scale(scores):
 		return np.zeros_like(arr)
 	return (arr - mn) / (mx - mn)
 
-def combine_scores(bm25_scores, w2v_scores, bm25_weight=0.5, top_n=10):
+def combine_scores(bm25_scores, w2v_scores, bm25_weight=0.5, top_n=20):
 	# Scale to [0, 1]
 	bm25_scaled = _minmax_scale(bm25_scores)
 	vec_scaled = _minmax_scale(w2v_scores)

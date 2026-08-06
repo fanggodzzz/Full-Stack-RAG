@@ -1,477 +1,1087 @@
-Index: 16220 <<"chunk_id": 30, "docno": 2165>>
+Index: 4616 <<"chunk_id": 1, "docno": 675>>
 
-This has a similar purpose to select_related , in that both are designed to stop
-the deluge of database queries that is caused by accessing related objects, but
-the strategy is quite different. select_related works by creating an SQL join
-and including the fields of the related object in the SELECT statement. For this
-reason, select_related gets the related objects in the same database query.
-However, to avoid the much larger result set that would result from joining
-across a ‘many’ relationship, select_related is limited to single-valued
-relationships - foreign key and one-to-one. prefetch_related , on the other
-hand, does a separate lookup for each relationship, and does the ‘joining’ in
-Python. This allows it to prefetch many-to-many, many-to-one, and
-GenericRelation objects which cannot be done using select_related , in addition
-to the foreign key and one-to-one relationships that are supported by
-select_related . It also supports prefetching of GenericForeignKey , however,
-the queryset for each ContentType must be provided in the querysets parameter of
-GenericPrefetch . For example, suppose you have these models: from django.db
-import models class Topping ( models . Model ): name = models . CharField (
-max_length = 30 ) class Pizza ( models . Model ): name = models . CharField (
-max_length = 50 ) toppings = models . ManyToManyField ( Topping ) def __str__ (
-self ): return " %s ( %s )" % ( self . name , ", " . join ( topping . name for
-topping in self . toppings . all ()), ) and
+PureComponent API Reference Components Copy page Copy <Suspense> <Suspense> lets
+you display a fallback until its children have finished loading. < Suspense
+fallback = { < Loading /> } > < SomeComponent /> </ Suspense > Reference
+<Suspense> What activates a Suspense boundary Usage Displaying a fallback while
+content is loading Revealing content together at once Revealing nested content
+as it loads Showing stale content while fresh content is loading Preventing
+already revealed content from hiding Indicating that a Transition is happening
+Resetting Suspense boundaries on navigation Providing a fallback for server
+errors and client-only content Waiting for a stylesheet to load Animating from
+Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update? Reference <Suspense>
+Props children : The actual UI you intend to render. If children suspends while
+rendering, the Suspense boundary will switch to rendering fallback . fallback :
+An alternate UI to render in place of the actual UI if it has not finished
+loading. Any valid React node is accepted, though in practice, a fallback is a
+lightweight placeholder view, such as a loading spinner or skeleton. Suspense
+will automatically switch to fallback when children suspends, and back to
+children when the data is ready. If fallback suspends while rendering, it will
+activate the closest parent Suspense boundary. Experimental only optional defer
+: A boolean. When true , React may show the fallback first and render
 ----------------------------------------------------------------------------------------------------
-Index: 33321 <<"chunk_id": 0, "docno": 4409>>
+Index: 4642 <<"chunk_id": 27, "docno": 675>>
 
-Performing raw SQL queries | Django documentation | Django Skip to main content
-Django The web framework for perfectionists with deadlines. Menu Main navigation
-Overview Download Documentation News Code Issues Community Foundation ♥ Donate
-Search Submit Toggle theme (current theme: auto) Toggle theme (current theme:
-light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto color theme
-Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it id fr es el
-Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 4.0 3.2 3.1 3.0 2.2 2.1
-2.0 1.11 1.10 1.9 1.8 Performing raw SQL queries ¶ Django gives you three ways
-of performing raw SQL queries: you can embed raw SQL fragments into ORM queries
-using RawSQL (see Raw SQL fragments ), use Manager.raw() to perform raw queries
-and return model instances , or avoid the model layer entirely and execute
-custom SQL directly . Explore the ORM before using raw SQL! The Django ORM
-provides many tools to express queries without writing raw SQL. For example: The
-QuerySet API is extensive. You can annotate and aggregate using many built-in
-database functions . Beyond those, you can create custom query expressions .
-Before using raw SQL, explore the ORM . Ask on one of the support channels to
-see if the ORM supports your use case. Warning You should be very careful
-whenever you write raw SQL. Every time you use it, you should properly escape
-any parameters that the user can control by using params in order to protect
-against
+only prevent unwanted fallbacks during non-urgent updates . It will not delay a
+render if it’s the result of an urgent update. You must opt in with an API like
+startTransition or useDeferredValue . If your router is integrated with
+Suspense, it should wrap its updates into startTransition automatically.
+Previous <StrictMode> Next <Activity> Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+Reference <Suspense> What activates a Suspense boundary Usage Displaying a
+fallback while content is loading Revealing content together at once Revealing
+nested content as it loads Showing stale content while fresh content is loading
+Preventing already revealed content from hiding Indicating that a Transition is
+happening Resetting Suspense boundaries on navigation Providing a fallback for
+server errors and client-only content Waiting for a stylesheet to load Animating
+from Suspense content Waiting for a font to load Waiting for an image to load
+Coordinating fonts, images, and stylesheets Troubleshooting How do I prevent the
+UI from being replaced by a fallback during an update?
 ----------------------------------------------------------------------------------------------------
-Index: 16223 <<"chunk_id": 33, "docno": 2165>>
+Index: 4619 <<"chunk_id": 4, "docno": 675>>
 
-here; in fact it hurts performance, since you have done a database query that
-you haven’t used. So use this feature with caution! Also, if you call the
-database-altering methods add() , create() , remove() , clear() or set() , on
-related managers , any prefetched cache for the relation will be cleared. You
-can also use the normal join syntax to do related fields of related fields.
-Suppose we have an additional model to the example above: class Restaurant (
-models . Model ): pizzas = models . ManyToManyField ( Pizza , related_name =
-"restaurants" ) best_pizza = models . ForeignKey ( Pizza , related_name =
-"championed_by" , on_delete = models . CASCADE ) The following are all legal:
->>> Restaurant . objects . prefetch_related ( "pizzas__toppings" ) This will
-prefetch all pizzas belonging to restaurants, and all toppings belonging to
-those pizzas. This will result in a total of 3 database queries - one for the
-restaurants, one for the pizzas, and one for the toppings. >>> Restaurant .
-objects . prefetch_related ( "best_pizza__toppings" ) This will fetch the best
-pizza and all the toppings for the best pizza for each restaurant. This will be
-done in 3 database queries - one for the restaurants, one for the ‘best pizzas’,
-and one for the toppings. The best_pizza relationship could also be fetched
-using select_related to reduce the query count to 2: >>> Restaurant . objects .
-select_related ( "best_pizza" ) . prefetch_related ( "best_pizza__toppings" )
-Since the prefetch is executed after the main query
+A Suspense-enabled framework gives you a way to read data in your component in a
+way that activates the closest Suspense boundary. The exact way you load your
+data depends on your framework, and you’ll find the details in its
+documentation. Under the hood, a Suspense-enabled framework maintains a cache of
+Promises and calls use to suspend on a Promise. Without a framework, you can
+read a Promise with use directly, as long as the Promise is cached so the same
+instance is reused across renders. Usage Displaying a fallback while content is
+loading You can wrap any part of your application with a Suspense boundary: <
+Suspense fallback = { <Loading /> } > <Albums /> </ Suspense > React will
+display your loading fallback until all the code and data needed by the children
+has been loaded. In the example below, the Albums component suspends while
+fetching the list of albums. Until it’s ready to render, React switches the
+closest Suspense boundary above to show the fallback—your Loading component.
+Then, when the data loads, React hides the Loading fallback and renders the
+Albums component with data. ArtistPage.js Albums.js ArtistPage.js Reload Clear
+Fork import { Suspense } from 'react' ; import Albums from './Albums.js' ;
+export default function ArtistPage ( { artist } ) { return ( < > < h1 > { artist
+. name } </ h1 > < Suspense fallback = { < Loading /> } > < Albums artistId = {
+artist . id } /> </ Suspense > </ >
 ----------------------------------------------------------------------------------------------------
-Index: 17736 <<"chunk_id": 6, "docno": 2350>>
+Index: 4617 <<"chunk_id": 2, "docno": 675>>
 
-has been added to QuerySet . This method returns a new QuerySet that will
-prefetch each of the specified related lookups in a single batch as soon as the
-query begins to be evaluated. Unlike select_related , it does the joins in
-Python, not in the database, and supports many-to-many relationships,
-GenericForeignKey and more. This allows you to fix a very common performance
-problem in which your code ends up doing O(n) database queries (or worse) if
-objects on your primary QuerySet each have many related objects that you also
-need to fetch. Improved password hashing ¶ Django’s auth system (
-django.contrib.auth ) stores passwords using a one-way algorithm. Django 1.3
-uses the SHA1 algorithm, but increasing processor speeds and theoretical attacks
-have revealed that SHA1 isn’t as secure as we’d like. Thus, Django 1.4
-introduces a new password storage system: by default Django now uses the PBKDF2
-algorithm (as recommended by NIST ). You can also easily choose a different
-algorithm (including the popular bcrypt algorithm). For more details, see How
-Django stores passwords . HTML5 doctype ¶ We’ve switched the admin and other
-bundled templates to use the HTML5 doctype. While Django will be careful to
-maintain compatibility with older browsers, this change means that you can use
-any HTML5 features you need in admin pages without having to lose HTML validity
-or override the provided templates to change the doctype. List filters in admin
-interface ¶ Prior to Django 1.4, the admin app let you specify change list
-filters by specifying a field
+will activate the closest parent Suspense boundary. Experimental only optional
+defer : A boolean. When true , React may show the fallback first and render or
+stream children later, even when nothing in them suspends. Use it for content
+that is expensive to render. Defaults to false . Caveats Suspense does not
+detect when data is fetched inside an Effect or event handler. It only activates
+in the cases listed below. React does not preserve any state for renders that
+got suspended before they were able to mount for the first time. When the
+component has loaded, React will retry rendering the suspended tree from
+scratch. If Suspense was displaying content for the tree, but then it suspended
+again, the fallback will be shown again unless the update causing it was caused
+by startTransition or useDeferredValue . React reveals suspended content at most
+once every 300ms, measured from the last reveal. Boundaries that become ready
+within that window are revealed together rather than one at a time. If React
+needs to hide the already visible content because it suspended again, it will
+clean up layout Effects in the content tree. When the content is ready to be
+shown again, React will fire the layout Effects again. This ensures that Effects
+measuring the DOM layout don’t try to do this while the content is hidden. React
+includes under-the-hood optimizations like Streaming Server Rendering and
+Selective Hydration that are integrated with Suspense. Read an architectural
+overview and watch a technical talk to learn more. What activates a Suspense
 ----------------------------------------------------------------------------------------------------
-Index: 16219 <<"chunk_id": 29, "docno": 2165>>
+Index: 4641 <<"chunk_id": 26, "docno": 675>>
 
-or OneToOneField relation in the list of fields passed to select_related() . You
-can also refer to the reverse direction of a OneToOneField in the list of fields
-passed to select_related — that is, you can traverse a OneToOneField back to the
-object on which the field is defined. Instead of specifying the field name, use
-the related_name for the field on the related object. There may be some
-situations where you wish to call select_related() with a lot of related
-objects, or where you don’t know all of the relations. In these cases it is
-possible to call select_related() with no arguments. This will follow all
-non-null foreign keys it can find - nullable foreign keys must be specified.
-This is not recommended in most cases as it is likely to make the underlying
-query more complex, and return more data, than is actually needed. If you need
-to clear the list of related fields added by past calls of select_related on a
-QuerySet , you can pass None as a parameter: >>> without_relations = queryset .
-select_related ( None ) Chaining select_related calls works in a similar way to
-other methods - that is that select_related('foo', 'bar') is equivalent to
-select_related('foo').select_related('bar') . prefetch_related() ¶
-prefetch_related ( * lookups ) ¶ Returns a QuerySet that will automatically
-retrieve, in a single batch, related objects for each of the specified lookups.
-This has a similar purpose to select_related , in that both are designed to stop
-the deluge of database queries that is caused by accessing
+{ setResources ( { quotePromise : fetchQuote ( ) , stylesheet :
+freshStylesheetUrl ( ) , image : freshImageUrl ( ) , } ) ; } ) ; } } > Show
+profile </ button > { resources && ( < ViewTransition > < Suspense fallback = {
+< ProfileCardPlaceholder /> } > < ProfileCard resources = { resources } /> </
+Suspense > </ ViewTransition > ) } < hr /> < VanillaProfileCard /> </ > ) ; }
+Show more Troubleshooting How do I prevent the UI from being replaced by a
+fallback during an update? Replacing visible UI with a fallback creates a
+jarring user experience. This can happen when an update causes a component to
+suspend, and the nearest Suspense boundary is already showing content to the
+user. To prevent this from happening, mark the update as non-urgent using
+startTransition . During a Transition, React will wait until enough data has
+loaded to prevent an unwanted fallback from appearing: function
+handleNextPageClick ( ) { // If this update suspends, don't hide the already
+displayed content startTransition ( ( ) => { setCurrentPage ( currentPage + 1 )
+; } ) ; } This will avoid hiding existing content. However, any newly rendered
+Suspense boundaries will still immediately display fallbacks to avoid blocking
+the UI and let the user see the content as it becomes available. React will only
+prevent unwanted fallbacks during non-urgent updates . It will not delay a
+render if it’s the result of an urgent update. You must opt
 ----------------------------------------------------------------------------------------------------
-Index: 16217 <<"chunk_id": 27, "docno": 2165>>
+Index: 6271 <<"chunk_id": 10, "docno": 910>>
 
-( * fields ) ¶ Returns a QuerySet that will “follow” foreign-key relationships,
-selecting additional related-object data when it executes its query. This is a
-performance booster which results in a single more complex query but means later
-use of foreign-key relationships won’t require database queries. The following
-examples illustrate the difference between plain lookups and select_related()
-lookups. Here’s standard lookup: # Hits the database. e = Entry . objects . get
-( id = 5 ) # Hits the database again to get the related Blog object. b = e .
-blog And here’s select_related lookup: # Hits the database. e = Entry . objects
-. select_related ( "blog" ) . get ( id = 5 ) # Doesn't hit the database, because
-e.blog has been prepopulated # in the previous query. b = e . blog You can use
-select_related() with any queryset of objects: from django.utils import timezone
-# Find all the blogs with entries scheduled to be published in the future. blogs
-= set () for e in Entry . objects . filter ( pub_date__gt = timezone . now ()) .
-select_related ( "blog" ): # Without select_related(), this would make a
-database query for each # loop iteration in order to fetch the related blog for
-each entry. blogs . add ( e . blog ) The order of filter() and select_related()
-chaining isn’t important. These querysets are equivalent: Entry . objects .
-filter ( pub_date__gt = timezone . now ()) . select_related ( "blog" ) Entry .
-objects . select_related
+bugs in your components during development so you can fix them before they are
+shipped to production. For example, during development, Strict Mode will
+double-invoke ref callback functions on initial mount, to simulate what happens
+when a mounted component is replaced by a Suspense fallback. Improvements to
+Suspense In React 19, when a component suspends, React will immediately commit
+the fallback of the nearest Suspense boundary without waiting for the entire
+sibling tree to render. After the fallback commits, React schedules another
+render for the suspended siblings to “pre-warm” lazy requests in the rest of the
+tree: Previously, when a component suspended, the suspended siblings were
+rendered and then the fallback was committed. In React 19, when a component
+suspends, the fallback is committed and then the suspended siblings are
+rendered. This change means Suspense fallbacks display faster, while still
+warming lazy requests in the suspended tree. UMD builds removed UMD was widely
+used in the past as a convenient way to load React without a build step. Now,
+there are modern alternatives for loading modules as scripts in HTML documents.
+Starting with React 19, React will no longer produce UMD builds to reduce the
+complexity of its testing and release process. To load React 19 with a script
+tag, we recommend using an ESM-based CDN such as esm.sh . < script type =
+"module" > import React from "https://esm.sh/react@19/?dev" import
+ReactDOMClient from "https://esm.sh/react-dom@19/client?dev" ... </ script >
+Libraries depending on React internals may block upgrades This release includes
+changes to React internals that may impact
 ----------------------------------------------------------------------------------------------------
-Index: 25598 <<"chunk_id": 1, "docno": 3532>>
+Index: 4925 <<"chunk_id": 8, "docno": 714>>
 
-aspect that triggers the underlying persistence mechanism (JPA, Hibernate,
-TopLink) to send any dirty data to the database. I presented this aspect by the
-way during one of my sessions at The Spring Experience last December and this
-post also has the source code for those of you who were waiting for it. The need
-for mixing usage of ORM engines with straight JDBC In many enterprise
-applications, an Object-Relational Mapping engine is used to manage the storage
-and retrieval of (sometimes complex) domain models. I don't think I have to
-argue that in situations where a heavily interlinked domain model needs to be
-persisted an ORM tool might increase productivity not to speak of efficiency
-over straight JDBC. This does not mean however that writing explicit SQL in an
-application can be completely disposed of. In many situations, one still needs
-to write the occasional SQL query to satisfy a certain requirement in an
-application. I usually see several reasons why people still write SQL queries by
-hand and execute them in Java code such as: Testing code: code that uses an ORM
-tool still needs to be tested. To be absolutely certain that a piece of data
-access code (using an ORM tool) is correctly inserting records in the database,
-one need to verify the database itself... using straight SQL queries. I consider
-it a very good practice to for example first insert an object using an ORM tool
-to then verify the number of rows has increased Stored procedures: it's best to
-call
+= { < BigSpinner /> } > < Sidebar > < Friends /> < Photos /> </ Sidebar > <
+Suspense fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </ Suspense
+> </ ProfileLayout > ) ; } In this example, React can start streaming the page
+even earlier. Only ProfileLayout and ProfileCover must finish rendering first
+because they are not wrapped in any <Suspense> boundary. However, if Sidebar ,
+Friends , or Photos need to load some data, React will send the HTML for the
+BigSpinner fallback instead. Then, as more data becomes available, more content
+will continue to be revealed until all of it becomes visible. Streaming does not
+need to wait for React itself to load in the browser, or for your app to become
+interactive. The HTML content from the server will get progressively revealed
+before any of the <script> tags load. Read more about how streaming HTML works.
+Note Only data read from a source that activates a Suspense boundary , such as a
+Promise read with use , will suspend during rendering. Suspense does not detect
+data fetched inside an Effect or event handler. Specifying what goes into the
+shell The part of your app outside of any <Suspense> boundaries is called the
+shell: function ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> <
+Suspense fallback = { < BigSpinner /> } > < Sidebar > < Friends /> < Photos />
+</ Sidebar > < Suspense fallback = {
 ----------------------------------------------------------------------------------------------------
-Index: 6346 <<"chunk_id": 4, "docno": 828>>
+Index: 5919 <<"chunk_id": 8, "docno": 857>>
 
-Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
-Signals Listening to signals Defining and sending signals Disconnecting signals
-System check framework Writing your own checks External packages Localflavor
-Comments Formtools Asynchronous support Async views Async safety Async adapter
-functions Django’s Tasks framework Background Task fundamentals Configuring a
-Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
-data and databases How to provide initial data for models How to integrate
-Django with a legacy database How to create custom model fields How to create
-database migrations How to write custom lookups Templates and output How to
-create CSV output How to create PDF files How to override templates How to
-implement a custom template backend How to create custom template tags and
-filters Project configuration and management How to manage static files (e.g.
-images, JavaScript, CSS) How to configure and use logging How to manage error
-reporting How to delete a Django application Installing, deploying and upgrading
-How to upgrade Django to a newer version How to install Django on Windows How to
-deploy Django How to deploy static files Other guides How to authenticate using
-REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
-protection How to write a custom storage class How to create custom django-admin
-commands How to customize the shell command Django FAQ FAQ: General Why does
-this project exist? What does “Django” mean, and how do you pronounce it? Is
-Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
-does Django
+or key presses come in. If a transition gets interrupted by the user (for
+example, by typing multiple characters in a row), React will throw out the stale
+rendering work that wasn’t finished and render only the latest update.
+useTransition : a Hook to start transitions, including a value to track the
+pending state. startTransition : a method to start transitions when the Hook
+cannot be used. Transitions will opt in to concurrent rendering, which allows
+the update to be interrupted. If the content re-suspends, transitions also tell
+React to continue showing the current content while rendering the transition
+content in the background (see the Suspense RFC for more info). See docs for
+transitions here . New Suspense Features Suspense lets you declaratively specify
+the loading state for a part of the component tree if it’s not yet ready to be
+displayed: < Suspense fallback = { < Spinner /> } > < Comments /> </ Suspense >
+Suspense makes the “UI loading state” a first-class declarative concept in the
+React programming model. This lets us build higher-level features on top of it.
+We introduced a limited version of Suspense several years ago. However, the only
+supported use case was code splitting with React.lazy, and it wasn’t supported
+at all when rendering on the server. In React 18, we’ve added support for
+Suspense on the server and expanded its capabilities using concurrent rendering
+features. Suspense in React 18 works best when combined with the transition API.
+If you suspend during a transition, React will prevent already-visible
 ----------------------------------------------------------------------------------------------------
-Index: 31460 <<"chunk_id": 10, "docno": 4212>>
+Index: 4636 <<"chunk_id": 21, "docno": 675>>
 
-code within the deprecation timeline for a given feature, its removal may appear
-as a backwards incompatible change. Database backend API ¶ GIS’s AreaField uses
-an unspecified underlying numeric type that could in practice be any numeric
-Python type. decimal.Decimal values retrieved from the database are now
-converted to float to make it easier to combine them with values used by the GIS
-libraries. In order to enable temporal subtraction you must set the
-supports_temporal_subtraction database feature flag to True and implement the
-DatabaseOperations.subtract_temporals() method. This method should return the
-SQL and parameters required to compute the difference in microseconds between
-the lhs and rhs arguments in the datatype used to store DurationField .
-select_related() prohibits non-relational fields for nested relations ¶ Django
-1.8 added validation for non-relational fields in select_related() : >>> Book .
-objects . select_related ( "title" ) Traceback (most recent call last): ...
-FieldError : Non-relational field given in select_related: 'title' But it didn’t
-prohibit nested non-relation fields as it does now: >>> Book . objects .
-select_related ( "author__name" ) Traceback (most recent call last): ...
-FieldError : Non-relational field given in select_related: 'name'
-_meta.get_fields() returns consistent reverse fields for proxy models ¶ Before
-Django 1.10, the get_fields() method returned different reverse fields when
-called on a proxy model compared to its proxied concrete class. This
-inconsistency was fixed by returning the full set of fields pointing to a
-concrete class or one of its proxies in both cases. AbstractUser.username
-max_length increased to 150 ¶ A migration for
-django.contrib.auth.models.User.username is included.
+default function Component ( ) { const [ showItem , setShowItem ] = useState (
+false ) ; return ( < > < button onClick = { ( ) => { startTransition ( ( ) => {
+setShowItem ( ( prev ) => ! prev ) ; } ) ; } } > { showItem ? '➖' : '➕' } </
+button > { showItem ? ( < ViewTransition > < Suspense fallback = { <
+VideoPlaceholder /> } > < LazyVideo /> </ Suspense > </ ViewTransition > ) :
+null } </ > ) ; } Show more Note Where you place the <ViewTransition> relative
+to the boundary determines whether the fallback and content cross-fade as one
+update or animate as separate exit and enter animations. You can also customize
+the animation with View Transition classes. Learn more about animating from
+Suspense content. Canary only Waiting for a font to load When a <ViewTransition>
+animates a Suspense boundary’s reveal, React waits for new fonts the content
+introduces, up to a timeout, so the text doesn’t flash with a fallback font.
+This only happens during a <ViewTransition> update. In the example below, the
+Suspense boundary is wrapped in a <ViewTransition> , and the Quote component
+suspends while its data loads. Rendering the quote starts its font download.
+React keeps the fallback visible until the font has loaded, so the quote appears
+already in its font. For comparison, the second button performs the same update
+without React. Nothing waits for the font, so the text appears
 ----------------------------------------------------------------------------------------------------
-Index: 16224 <<"chunk_id": 34, "docno": 2165>>
+Index: 4623 <<"chunk_id": 8, "docno": 675>>
 
-to 2: >>> Restaurant . objects . select_related ( "best_pizza" ) .
-prefetch_related ( "best_pizza__toppings" ) Since the prefetch is executed after
-the main query (which includes the joins needed by select_related ), it is able
-to detect that the best_pizza objects have already been fetched, and it will
-skip fetching them again. Chaining prefetch_related calls will accumulate the
-lookups that are prefetched. To clear any prefetch_related behavior, pass None
-as a parameter: >>> non_prefetched = qs . prefetch_related ( None ) One
-difference to note when using prefetch_related is that objects created by a
-query can be shared between the different objects that they are related to i.e.
-a single Python model instance can appear at more than one point in the tree of
-objects that are returned. This will normally happen with foreign key
-relationships. Typically this behavior will not be a problem, and will in fact
-save both memory and CPU time. While prefetch_related supports prefetching
-GenericForeignKey relationships, the number of queries will depend on the data.
-Since a GenericForeignKey can reference data in multiple tables, one query per
-table referenced is needed, rather than one query for all the items. There could
-be additional queries on the ContentType table if the relevant rows have not
-already been fetched. prefetch_related in most cases will be implemented using
-an SQL query that uses the ‘IN’ operator. This means that for a large QuerySet a
-large ‘IN’ clause could be generated, which, depending on the database, might
-have performance problems of its own when it
+</ h2 > ; } Show more Components that load data don’t have to be direct children
+of the Suspense boundary. For example, you can move Biography and Albums into a
+new Details component. This doesn’t change the behavior. Biography and Albums
+share the same closest parent Suspense boundary, so their reveal is coordinated
+together. < Suspense fallback = { < Loading /> } > < Details artistId = { artist
+. id } /> </ Suspense > function Details ( { artistId } ) { return ( < > <
+Biography artistId = { artistId } /> < Panel > < Albums artistId = { artistId }
+/> </ Panel > </ > ) ; } Revealing nested content as it loads When a component
+suspends, the closest parent Suspense component shows the fallback. This lets
+you nest multiple Suspense components to create a loading sequence. Each
+Suspense boundary’s fallback will be filled in as the next level of content
+becomes available. For example, you can give the album list its own fallback: <
+Suspense fallback = { < BigSpinner /> } > < Biography /> < Suspense fallback = {
+< AlbumsGlimmer /> } > < Panel > < Albums /> </ Panel > </ Suspense > </
+Suspense > With this change, displaying the Biography doesn’t need to “wait” for
+the Albums to load. The sequence will be: If Biography hasn’t loaded yet,
+BigSpinner is shown in place of the entire content area. Once Biography finishes
+loading, BigSpinner is replaced by the content.
 ----------------------------------------------------------------------------------------------------
-Index: 14469 <<"chunk_id": 22, "docno": 1896>>
+Index: 6073 <<"chunk_id": 2, "docno": 878>>
 
-to __repr__() only returns a slice of the entire queryset. Asynchronous queries
-¶ If you are writing asynchronous views or code, you cannot use the ORM for
-queries in quite the way we have described above, as you cannot call blocking
-synchronous code from asynchronous code - it will block up the event loop (or,
-more likely, Django will notice and raise a SynchronousOnlyOperation to stop
-that from happening). Fortunately, you can do many queries using Django’s
-asynchronous query APIs. Every method that might block - such as get() or
-delete() - has an asynchronous variant ( aget() or adelete() ), and when you
-iterate over results, you can use asynchronous iteration ( async for ) instead.
-Query iteration ¶ The default way of iterating over a query - with for - will
-result in a blocking database query behind the scenes as Django loads the
-results at iteration time. To fix this, you can swap to async for : async for
-entry in Authors . objects . filter ( name__startswith = "A" ): ... Be aware
-that you also can’t do other things that might iterate over the queryset, such
-as wrapping list() around it to force its evaluation (you can use async for in a
-comprehension, if you want it). Because QuerySet methods like filter() and
-exclude() do not actually run the query - they set up the queryset to run when
-it’s iterated over - you can use those freely in asynchronous code. For a guide
-to which methods can keep being used
+and framework. There’s a clear separation for features provided by the RSC spec
+and implementation. React Server Components is meant as a spec for components
+that work across compatible React frameworks. We generally recommend using an
+existing framework, but if you need to build your own custom framework, it is
+possible. Building your own RSC-compatible framework is not as easy as we’d like
+it to be, mainly due to the deep bundler integration needed. The current
+generation of bundlers are great for use on the client, but they weren’t
+designed with first-class support for splitting a single module graph between
+the server and the client. This is why we’re now partnering directly with
+bundler developers to get the primitives for RSC built-in. Asset Loading
+Suspense lets you specify what to display on the screen while the data or code
+for your components is still being loaded. This lets your users progressively
+see more content while the page is loading as well as during the router
+navigations that load more data and code. However, from the user’s perspective,
+data loading and rendering do not tell the whole story when considering whether
+new content is ready. By default, browsers load stylesheets, fonts, and images
+independently, which can lead to UI jumps and consecutive layout shifts. We’re
+working to fully integrate Suspense with the loading lifecycle of stylesheets,
+fonts, and images, so that React takes them into account to determine whether
+the content is ready to be displayed. Without any change to the way you author
+your React components,
 ----------------------------------------------------------------------------------------------------
-Index: 10277 <<"chunk_id": 0, "docno": 1486>>
+Index: 4768 <<"chunk_id": 8, "docno": 690>>
 
-App Router: Fetching Data | Next.js Skip to content Search documentation... ⌘K
-Search... ⌘K Showcase Docs Blog Templates Enterprise Search documentation... ⌘K
-Search... ⌘K Deploy Learn 7 Chapter 7 Fetching Data Now that you've created and
-seeded your database, let's discuss the different ways you can fetch data for
-your application, and build out your dashboard overview page. In this chapter...
-Here are the topics we'll cover Learn about some approaches to fetching data:
-APIs, ORMs, SQL, etc. How Server Components can help you access back-end
-resources more securely. What network waterfalls are. How to implement parallel
-data fetching using a JavaScript Pattern. Choosing how to fetch data API layer
-APIs are an intermediary layer between your application code and database. There
-are a few cases where you might use an API: If you're using third-party services
-that provide an API. If you're fetching data from the client, you want to have
-an API layer that runs on the server to avoid exposing your database secrets to
-the client. In Next.js, you can create API endpoints using Route Handlers .
-Database queries When you're creating a full-stack application, you'll also need
-to write logic to interact with your database. For relational databases like
-Postgres, you can do this with SQL or with an ORM . There are a few cases where
-you have to write database queries: When creating your API endpoints, you need
-to write logic to interact with your database. If you are using React Server
-Components (fetching data on the server), you can
+> < Suspense fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </
+ProfileLayout > ) ; } This tells React to start streaming the HTML before Posts
+loads its data. React will send the HTML for the loading fallback ( PostsGlimmer
+) first, and then, when Posts finishes loading its data, React will send the
+remaining HTML along with an inline <script> tag that replaces the loading
+fallback with that HTML. From the user’s perspective, the page will first appear
+with the PostsGlimmer , later replaced by the Posts . You can further nest
+<Suspense> boundaries to create a more granular loading sequence: function
+ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> < Suspense
+fallback = { < BigSpinner /> } > < Sidebar > < Friends /> < Photos /> </ Sidebar
+> < Suspense fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </
+Suspense > </ ProfileLayout > ) ; } In this example, React can start streaming
+the page even earlier. Only ProfileLayout and ProfileCover must finish rendering
+first because they are not wrapped in any <Suspense> boundary. However, if
+Sidebar , Friends , or Photos need to load some data, React will send the HTML
+for the BigSpinner fallback instead. Then, as more data becomes available, more
+content will continue to be revealed until all of it becomes visible. Streaming
+does not need to wait for React itself to load in the browser, or for your
 ----------------------------------------------------------------------------------------------------
-Index: 15315 <<"chunk_id": 2, "docno": 2018>>
+Index: 4928 <<"chunk_id": 11, "docno": 714>>
 
-rather than serially. This is especially handy when dealing with external APIs
-or data stores. If you want to call a part of Django that is still synchronous,
-you will need to wrap it in a sync_to_async() call. For example: from
-asgiref.sync import sync_to_async results = await sync_to_async ( sync_function
-, thread_sensitive = True )( pk = 123 ) If you accidentally try to call a part
-of Django that is synchronous-only from an async view, you will trigger Django’s
-asynchronous safety protection to protect your data from corruption. Decorators
-¶ The following decorators can be used with both synchronous and asynchronous
-view functions: cache_control() never_cache() no_append_slash() csp_override()
-csp_report_only_override() csrf_exempt() csrf_protect() ensure_csrf_cookie()
-requires_csrf_token() sensitive_variables() sensitive_post_parameters()
-gzip_page() condition() conditional_page() etag() last_modified()
-require_http_methods() require_GET() require_POST() require_safe()
-vary_on_cookie() vary_on_headers() xframe_options_deny()
-xframe_options_sameorigin() xframe_options_exempt() For example: from
-django.views.decorators.cache import never_cache @never_cache def my_sync_view (
-request ): ... @never_cache async def my_async_view ( request ): ... Queries &
-the ORM ¶ With some exceptions, Django can run ORM queries asynchronously: async
-for author in Author . objects . filter ( name__startswith = "A" ): book = await
-author . books . afirst () Detailed notes can be found in Asynchronous queries ,
-but in short: All QuerySet methods that cause an SQL query to occur have an a
--prefixed asynchronous variant. async for is supported on all QuerySets
-(including the output of values() and values_list() .) Asynchronous model
-methods that use the database are also supported: async def make_book ( * args ,
-** kwargs ): book = Book ( ... )
+, { bootstrapScripts : [ '/main.js' ] , onError ( error ) { console . error (
+error ) ; logServerCrashReport ( error ) ; } } ) ; return new Response ( stream
+, { headers : { 'content-type' : 'text/html' } , } ) ; } catch ( error ) {
+return new Response ( '<h1>Something went wrong</h1>' , { status : 500 , headers
+: { 'content-type' : 'text/html' } , } ) ; } } If there is an error while
+generating the shell, both onError and your catch block will fire. Use onError
+for error reporting and use the catch block to send the fallback HTML document.
+Your fallback HTML does not have to be an error page. Instead, you may include
+an alternative shell that renders your app on the client only. Recovering from
+errors outside the shell In this example, the <Posts /> component is wrapped in
+<Suspense> so it is not a part of the shell: function ProfilePage ( ) { return (
+< ProfileLayout > < ProfileCover /> < Suspense fallback = { < PostsGlimmer /> }
+> < Posts /> </ Suspense > </ ProfileLayout > ) ; } If an error happens in the
+Posts component or somewhere inside it, React will try to recover from it: It
+will emit the loading fallback for the closest <Suspense> boundary (
+PostsGlimmer ) into the HTML. It will “give up” on trying to render the Posts
+content on the server anymore. When the JavaScript code loads on
 ----------------------------------------------------------------------------------------------------
-Index: 568 <<"chunk_id": 1, "docno": 98>>
+Index: 4633 <<"chunk_id": 18, "docno": 675>>
 
-complete. Use the use cache directive to cache results, or wrap the fetching
-component in to stream fresh data at request time. See caching for details.
-During development, you can log fetch calls for better visibility and debugging.
-See the logging API reference . With an ORM or database Since Server Components
-are rendered on the server, credentials and query logic will not be included in
-the client bundle so you can safely make database queries using an ORM or
-database client. tsx filename="app/blog/page.tsx" switcher import { db, posts }
-from '@/lib/db' export default async function Page() { const allPosts = await
-db.select().from(posts) return ( {allPosts.map((post) => ( {post.title} ))} ) }
-jsx filename="app/blog/page.js" switcher import { db, posts } from '@/lib/db'
-export default async function Page() { const allPosts = await
-db.select().from(posts) return ( {allPosts.map((post) => ( {post.title} ))} ) }
-You should still ensure requests are properly authenticated and authorized. For
-best practices on securing server-side data access, see the data security guide
-. Streaming When you fetch data in Server Components, the data is fetched and
-rendered on the server for each request. If you have any slow data requests, the
-whole route will be blocked from rendering until all the data is fetched. To
-improve the initial load time and user experience, you can break the page into
-smaller chunks and progressively send those chunks from the server to the
-client. This is called streaming. See the Streaming guide for a deeper look at
-how streaming works, including the HTTP contract, infrastructure
+) } > Alice </ button > < button onClick = { ( ) => navigate ( 'bob' ) } > Bob
+</ button > < Suspense key = { user . id } fallback = { < p > ⌛ Loading
+profile... </ p > } > < Bio bioPromise = { user . bioPromise } /> </ Suspense >
+</ > ) ; } Show more Providing a fallback for server errors and client-only
+content If you use one of the streaming server rendering APIs (or a framework
+that relies on them), React will also use your <Suspense> boundaries to handle
+errors on the server. If a component throws an error on the server, React will
+not abort the server render. Instead, it will find the closest <Suspense>
+component above it and include its fallback (such as a spinner) into the
+generated server HTML. The user will see a spinner at first. On the client,
+React will attempt to render the same component again. If it errors on the
+client too, React will throw the error and display the closest Error Boundary.
+However, if it does not error on the client, React will not display the error to
+the user since the content was eventually displayed successfully. You can use
+this to opt out some components from rendering on the server. To do this, throw
+an error in the server environment and then wrap them in a <Suspense> boundary
+to replace their HTML with fallbacks: < Suspense fallback = { < Loading /> }
 ----------------------------------------------------------------------------------------------------
-Index: 18777 <<"chunk_id": 45, "docno": 2483>>
+Index: 4426 <<"chunk_id": 6, "docno": 651>>
 
-reference](/docs/app/api-reference/config/next-config-js/logging). #### With an
-ORM or database Since Server Components are rendered on the server, credentials
-and query logic will not be included in the client bundle so you can safely make
-database queries using an ORM or database client. ```tsx
-filename="app/blog/page.tsx" switcher import { db, posts } from '@/lib/db'
-export default async function Page() { const allPosts = await
-db.select().from(posts) return ( <ul> {allPosts.map((post) => ( <li
-key={post.id}>{post.title}</li> ))} </ul> ) } ``` ```jsx
-filename="app/blog/page.js" switcher import { db, posts } from '@/lib/db' export
-default async function Page() { const allPosts = await db.select().from(posts)
-return ( <ul> {allPosts.map((post) => ( <li key={post.id}>{post.title}</li> ))}
-</ul> ) } ``` You should still ensure requests are properly authenticated and
-authorized. For best practices on securing server-side data access, see the
-[data security guide](/docs/app/guides/data-security). ### Streaming When you
-fetch data in Server Components, the data is fetched and rendered on the server
-for each request. If you have any slow data requests, the whole route will be
-blocked from rendering until all the data is fetched. To improve the initial
-load time and user experience, you can break the page into smaller *chunks* and
-progressively send those chunks from the server to the client. This is called
-streaming. See the [Streaming guide](/docs/app/guides/streaming) for a deeper
-look at how streaming works, including the HTTP contract, infrastructure
-considerations, and performance trade-offs. ![How Server Rendering with
-Streaming
-Works](https://h8DxKfmAPhn8O0p3.public.blob.vercel-storage.com/docs/light/server-rendering-with-streaming.png)
-There are two ways you can use streaming in your application: 1. Wrapping a page
-with a [`loading.js` file](#with-loadingjs) 2. Wrapping a component with
+use } from 'react' ; function Albums ( { albumsPromise } ) { const albums =
+use(albumsPromise) ; return ( < ul > { albums . map ( album => ( < li key = {
+album . id } > { album . title } ( { album . year } ) </ li > ) ) } </ ul > ) ;
+} Wrap the component that calls use in a Suspense boundary so React can show a
+fallback while the Promise is pending. The closest Suspense boundary above the
+suspending component shows its fallback. Once the Promise resolves, React reads
+the value with use and replaces the fallback with the rendered component.
+Reading a Promise with use vs fetching in an Effect 1 . Fetching data with use 2
+. Fetching data with useEffect Example 1 of 2 : Fetching data with use In this
+example, Albums calls use with a cached Promise. The component suspends while
+the Promise is pending, and React displays the nearest Suspense fallback.
+Rejected Promises propagate to the nearest Error Boundary . App.js App.js Reload
+Clear Fork import { use , Suspense } from 'react' ; import { ErrorBoundary }
+from 'react-error-boundary' ; import { fetchData } from './data.js' ; export
+default function App ( ) { return ( < ErrorBoundary fallback = { < p > Could not
+fetch albums. </ p > } > < Suspense fallback = { < Loading /> } > < Albums /> </
+Suspense > </ ErrorBoundary > ) ; }
 ----------------------------------------------------------------------------------------------------
-Index: 16274 <<"chunk_id": 84, "docno": 2165>>
+Index: 2221 <<"chunk_id": 5, "docno": 294>>
 
-evaluate the list of values instead of providing a list of literal values:
-inner_qs = Blog . objects . filter ( name__contains = "Cheddar" ) entries =
-Entry . objects . filter ( blog__in = inner_qs ) This queryset will be evaluated
-as subselect statement: SELECT ... WHERE blog . id IN ( SELECT id FROM ... WHERE
-NAME LIKE '%Cheddar%' ) If you pass in a QuerySet resulting from values() or
-values_list() as the value to an __in lookup, you need to ensure you are only
-extracting one field in the result. For example, this will work (filtering on
-the blog names): inner_qs = Blog . objects . filter ( name__contains = "Ch" ) .
-values ( "name" ) entries = Entry . objects . filter ( blog__name__in = inner_qs
-) This example will raise an exception, since the inner query is trying to
-extract two field values, where only one is expected: # Bad code! Will raise a
-TypeError. inner_qs = Blog . objects . filter ( name__contains = "Ch" ) . values
-( "name" , "id" ) entries = Entry . objects . filter ( blog__name__in = inner_qs
-) Performance considerations Be cautious about using nested queries and
-understand your database server’s performance characteristics (if in doubt,
-benchmark!). Some database backends, most notably MySQL, don’t optimize nested
-queries very well. It is more efficient, in those cases, to extract a list of
-values and then pass that into the second query. That is, execute two queries
-instead of one: values = Blog .
+h2 > } > < SearchResults query = { deferredQuery } /> </ Suspense > </ > ) ; }
+The query will update immediately, so the input will display the new value.
+However, the deferredQuery will keep its previous value until the data has
+loaded, so SearchResults will show the stale results for a bit. Enter "a" in the
+example below, wait for the results to load, and then edit the input to "ab" .
+Notice how instead of the Suspense fallback, you now see the stale result list
+until the new results have loaded: App.js SearchResults.js App.js Reload Clear
+Fork import { Suspense , useState , useDeferredValue } from 'react' ; import
+SearchResults from './SearchResults.js' ; export default function App ( ) {
+const [ query , setQuery ] = useState ( '' ) ; const deferredQuery =
+useDeferredValue ( query ) ; return ( < > < label > Search albums: < input value
+= { query } onChange = { e => setQuery ( e . target . value ) } /> </ label > <
+Suspense fallback = { < h2 > Loading... </ h2 > } > < SearchResults query = {
+deferredQuery } /> </ Suspense > </ > ) ; } Show more Deep Dive How does
+deferring a value work under the hood? Show Details You can think of it as
+happening in two steps: First, React re-renders with the new query ( "ab" ) but
+with the old deferredQuery (still "a" ). The deferredQuery value, which
 ----------------------------------------------------------------------------------------------------
-Index: 25599 <<"chunk_id": 2, "docno": 3532>>
+Index: 4626 <<"chunk_id": 11, "docno": 675>>
 
-for example first insert an object using an ORM tool to then verify the number
-of rows has increased Stored procedures: it's best to call stored procedures
-with a JDBC call instead of via clunky APIs. I really don't want to get into the
-debate whether or not stored procedures are good. If you're into that, just read
-some of these posts. Story is: I come across projects frequently that use stored
-procs and want to mix code that does so with code that uses an ORM engine. For
-example to first insert several new objects, after which an aggregation needs to
-be performed over the newly inserted records and the records already available.
-Operations that involves a very large amount of similar objects. This could be
-the case when for example you need to set the canceled flag of a million orders
-from true to false . I personally might not want to use an ORM engine for this
-(sometimes even if the ORM engine has a clean DML to handle the dirty work for
-me). Issue with mixing ORM operations with straight SQL There is one big issue
-with mixing operations executed by an ORM engine with operations using straight
-SQL in your application. To understand this, first have a look at the following
-piece of pseudo code (considering the database is empty): start transaction
-create part with name Bolt associate with ORM engine (i.e. save using entity
-manager) update part set stock = 15 where name='Bolt' end transaction The update
-statement here will
+} /> </ Suspense > </ > ) ; } Show more A common alternative UI pattern is to
+defer updating the list and to keep showing the previous results until the new
+results are ready. The useDeferredValue Hook lets you pass a deferred version of
+the query down: export default function App ( ) { const [ query , setQuery ] =
+useState ( '' ) ; const deferredQuery = useDeferredValue ( query ) ; return ( <
+> < label > Search albums: < input value = { query } onChange = { e => setQuery
+( e . target . value ) } /> </ label > < Suspense fallback = { < h2 > Loading...
+</ h2 > } > < SearchResults query = { deferredQuery } /> </ Suspense > </ > ) ;
+} The query will update immediately, so the input will display the new value.
+However, the deferredQuery will keep its previous value until the data has
+loaded, so SearchResults will show the stale results for a bit. To make it more
+obvious to the user, you can add a visual indication when the stale result list
+is displayed: < div style = { { opacity : query !== deferredQuery ? 0.5 : 1 } }
+> < SearchResults query = { deferredQuery } /> </ div > Enter "a" in the example
+below, wait for the results to load, and then edit the input to "ab" . Notice
+how instead of the Suspense fallback, you now see
 ----------------------------------------------------------------------------------------------------
-Index: 41062 <<"chunk_id": 2, "docno": 6274>>
+Index: 4769 <<"chunk_id": 9, "docno": 690>>
 
-manage.py migrate Test and tweak ¶ Those are the basic steps – from here you’ll
-want to tweak the models Django generated until they work the way you’d like.
-Try accessing your data via the Django database API, and try editing objects via
-Django’s admin site, and edit the models file accordingly. Previous page and
-next page How to provide initial data for models How to create custom model
-fields Back to Top Additional Information Support Django! Valtteri Mäkelä
-donated to the Django Software Foundation to support Django development. Donate
-today! Contents How to integrate Django with a legacy database Give Django your
-database parameters Auto-generate the models Install the core Django tables Test
-and tweak Browse Prev: How to provide initial data for models Next: How to
-create custom model fields Table of contents General Index Python Module Index
-You are here: Django dev documentation How-to guides How to integrate Django
-with a legacy database Getting help FAQ Try the FAQ — it's got answers to many
-common questions. Index , Module Index , or Table of Contents Handy when looking
-for specific information. Django Discord Server Join the Django Discord
-Community. Official Django Forum Join the community on the Django Forum. Ticket
-tracker Report bugs with Django or Django documentation in our ticket tracker.
-Download: Offline (development version): HTML | PDF | ePub Provided by Read the
-Docs . Diamond and Platinum Members Sentry Monitor your Django Code Resolve
-performance bottlenecks and errors using monitoring, replays, logs and Seer an
-AI agent for debugging.
+be revealed until all of it becomes visible. Streaming does not need to wait for
+React itself to load in the browser, or for your app to become interactive. The
+HTML content from the server will get progressively revealed before any of the
+<script> tags load. Read more about how streaming HTML works. Note Only data
+read from a source that activates a Suspense boundary , such as a Promise read
+with use , will suspend during rendering. Suspense does not detect data fetched
+inside an Effect or event handler. Specifying what goes into the shell The part
+of your app outside of any <Suspense> boundaries is called the shell: function
+ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> < Suspense
+fallback = { < BigSpinner /> } > < Sidebar > < Friends /> < Photos /> </ Sidebar
+> < Suspense fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </
+Suspense > </ ProfileLayout > ) ; } It determines the earliest loading state
+that the user may see: < ProfileLayout > < ProfileCover /> < BigSpinner /> </
+ProfileLayout > If you wrap the whole app into a <Suspense> boundary at the
+root, the shell will only contain that spinner. However, that’s not a pleasant
+user experience because seeing a big spinner on the screen can feel slower and
+more annoying than waiting a bit more and seeing the real layout. This is why
+usually you’ll want to place the <Suspense> boundaries so
 ----------------------------------------------------------------------------------------------------
-Index: 33322 <<"chunk_id": 1, "docno": 4409>>
+Index: 4772 <<"chunk_id": 12, "docno": 690>>
 
-SQL. Every time you use it, you should properly escape any parameters that the
-user can control by using params in order to protect against SQL injection
-attacks. Please read more about SQL injection protection . Raw SQL fragments ¶
-In some cases, you may need to embed raw SQL fragments directly into ORM queries
-— for example, in annotate() or filter() calls. Use Func() expressions for
-calling database functions across backends, or RawSQL for arbitrary
-parameterized SQL fragments. Performing raw queries ¶ The raw() manager method
-can be used to perform raw SQL queries that return model instances: Manager. raw
-( raw_query , params = () , translations = None ) ¶ This method takes a raw SQL
-query, executes it, and returns a django.db.models.query.RawQuerySet instance.
-This RawQuerySet instance can be iterated over like a normal QuerySet to provide
-object instances. This is best illustrated with an example. Suppose you have the
-following model: class Person ( models . Model ): first_name = models .
-CharField ( ... ) last_name = models . CharField ( ... ) birth_date = models .
-DateField ( ... ) You could then execute custom SQL like so: >>> for p in Person
-. objects . raw ( "SELECT * FROM myapp_person" ): ... print ( p ) ... John Smith
-Jane Jones This example isn’t very exciting – it’s exactly the same as running
-Person.objects.all() . However, raw() has a bunch of other options that make it
-very powerful. Model table names Where did the name of the Person
+wrapped in <Suspense> so it is not a part of the shell: function ProfilePage ( )
+{ return ( < ProfileLayout > < ProfileCover /> < Suspense fallback = { <
+PostsGlimmer /> } > < Posts /> </ Suspense > </ ProfileLayout > ) ; } If an
+error happens in the Posts component or somewhere inside it, React will try to
+recover from it: It will emit the loading fallback for the closest <Suspense>
+boundary ( PostsGlimmer ) into the HTML. It will “give up” on trying to render
+the Posts content on the server anymore. When the JavaScript code loads on the
+client, React will retry rendering Posts on the client. If retrying rendering
+Posts on the client also fails, React will throw the error on the client. As
+with all the errors thrown during rendering, the closest parent error boundary
+determines how to present the error to the user. In practice, this means that
+the user will see a loading indicator until it is certain that the error is not
+recoverable. If retrying rendering Posts on the client succeeds, the loading
+fallback from the server will be replaced with the client rendering output. The
+user will not know that there was a server error. However, the server onError
+callback and the client onRecoverableError callbacks will fire so that you can
+get notified about the error. Setting the status code Streaming introduces a
+tradeoff. You want to start streaming the page as early as possible so that the
+user can see the content
 ----------------------------------------------------------------------------------------------------
-Index: 27790 <<"chunk_id": 0, "docno": 4036>>
+Index: 3353 <<"chunk_id": 4, "docno": 472>>
 
-Models and databases | Django documentation | Django Skip to main content Django
-The web framework for perfectionists with deadlines. Menu Main navigation
-Overview Download Documentation News Code Issues Community Foundation ♥ Donate
-Search Submit Toggle theme (current theme: auto) Toggle theme (current theme:
-light) Toggle theme (current theme: dark) Toggle Light / Dark / Auto color theme
-Documentation Getting Help Language: en zh-hans sv pt-br pl ko ja it id fr es el
-Documentation version: 6.0 dev 6.1 5.2 5.1 5.0 4.2 4.1 4.0 3.2 3.1 3.0 2.2 2.1
-2.0 1.11 1.10 1.9 1.8 Models and databases ¶ A model is the single, definitive
-source of information about your data. It contains the essential fields and
-behaviors of the data you’re storing. Generally, each model maps to a single
-database table. Models Making queries Aggregation Search Managers Performing raw
-SQL queries Database transactions Multiple databases Tablespaces Database access
-optimization Database instrumentation Fixtures Examples of model relationship
-API usage Previous page and next page How to install Django Models Back to Top
-Additional Information Support Django! Daniel Rios donated to the Django
-Software Foundation to support Django development. Donate today! Contents Models
-and databases Browse Prev: How to install Django Next: Models Table of contents
-General Index Python Module Index You are here: Django 6.0 documentation Using
-Django Models and databases Getting help FAQ Try the FAQ — it's got answers to
-many common questions. Index , Module Index , or Table of Contents Handy when
-looking for specific information. Django Discord Server Join the Django
+demonstration purposes return ( < html > < body > { children } </ body > </ html
+> ) ; } function App ( ) { return ( < Shell > < Suspense fallback = "loading
+header" > < Header /> </ Suspense > < Suspense fallback = "loading main" > <
+Main /> </ Suspense > </ Shell > ) ; } async function main ( frame ) { // Layer
+1 const controller = new AbortController ( ) ; const prerenderedApp = prerender
+( < App /> , { signal : controller . signal , onError ( error ) { if ( error
+instanceof Postponed ) { } else { console . error ( error ) ; } } , } ) ; //
+We're immediately aborting in a macrotask. // Any data fetching that's not
+available synchronously, or in a microtask, will not have finished. setTimeout (
+( ) => { controller . abort ( new Postponed ( ) ) ; } ) ; const { prelude ,
+postponed } = await prerenderedApp ; await flushReadableStreamToFrame ( prelude
+, frame ) ; // Layer 2 // Just waiting here for demonstration purposes. // In a
+real app, the prelude and postponed state would've been serialized in Layer 1
+and Layer would deserialize them. // The prelude content could be flushed
+immediated as plain HTML while // React is continuing to render from where the
+prerender left off. await sleep ( 2000 ) ; // You would get the cookies from the
+incoming
+----------------------------------------------------------------------------------------------------
+Index: 4924 <<"chunk_id": 7, "docno": 714>>
+
+with friends and photos, and a list of posts: function ProfilePage ( ) { return
+( < ProfileLayout > < ProfileCover /> < Sidebar > < Friends /> < Photos /> </
+Sidebar > < Posts /> </ ProfileLayout > ) ; } Imagine that loading data for
+<Posts /> takes some time. Ideally, you’d want to show the rest of the profile
+page content to the user without waiting for the posts. To do this, wrap Posts
+in a <Suspense> boundary: function ProfilePage ( ) { return ( < ProfileLayout >
+< ProfileCover /> < Sidebar > < Friends /> < Photos /> </ Sidebar > < Suspense
+fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </ ProfileLayout > )
+; } This tells React to start streaming the HTML before Posts loads its data.
+React will send the HTML for the loading fallback ( PostsGlimmer ) first, and
+then, when Posts finishes loading its data, React will send the remaining HTML
+along with an inline <script> tag that replaces the loading fallback with that
+HTML. From the user’s perspective, the page will first appear with the
+PostsGlimmer , later replaced by the Posts . You can further nest <Suspense>
+boundaries to create a more granular loading sequence: function ProfilePage ( )
+{ return ( < ProfileLayout > < ProfileCover /> < Suspense fallback = { <
+BigSpinner /> } > < Sidebar > < Friends /> < Photos /> </ Sidebar > < Suspense
+fallback = { <
+----------------------------------------------------------------------------------------------------
+Index: 4620 <<"chunk_id": 5, "docno": 675>>
+
+< Suspense fallback = { < Loading /> } > < Albums artistId = { artist . id } />
+</ Suspense > </ > ) ; } function Loading ( ) { return < h2 > 🌀 Loading... </ h2
+> ; } Show more By contrast, code that fetches data outside of use , such as
+inside an Effect, does not activate the boundary: ArtistPage.js EffectAlbums.js
+ArtistPage.js Reload Clear Fork import { Suspense } from 'react' ; import
+EffectAlbums from './EffectAlbums.js' ; export default function ArtistPage ( {
+artist } ) { return ( < > < h1 > { artist . name } </ h1 > < Suspense fallback =
+{ < Loading /> } > < EffectAlbums artistId = { artist . id } /> </ Suspense > </
+> ) ; } function Loading ( ) { return < h2 > 🌀 Loading... </ h2 > ; } Show more
+During streaming server rendering, a boundary also activates while its HTML is
+still streaming in. With any streaming server rendering API, React sends the
+shell with the fallback first, then streams in each boundary’s HTML and swaps
+out its fallback as that content arrives. Press “Render the page” to watch the
+page stream in: index.js index.html index.js Reload Clear Fork import {
+flushReadableStreamToFrame } from './demo-helpers.js' ; import { Suspense , use
+} from 'react' ; import { renderToReadableStream } from 'react-dom/server' ; let
+posts = null ; function Posts ( ) { const text = use ( posts . promise
+----------------------------------------------------------------------------------------------------
+Index: 4625 <<"chunk_id": 10, "docno": 675>>
+
+in” together at the same time, and which parts should progressively reveal more
+content in a sequence of loading states. You can add, move, or delete Suspense
+boundaries in any place in the tree without affecting the rest of your app’s
+behavior. Don’t put a Suspense boundary around every component. Suspense
+boundaries should not be more granular than the loading sequence that you want
+the user to experience. If you work with a designer, ask them where the loading
+states should be placed—it’s likely that they’ve already included them in their
+design wireframes. Showing stale content while fresh content is loading In this
+example, the SearchResults component suspends while fetching the search results.
+Type "a" , wait for the results, and then edit it to "ab" . The results for "a"
+will get replaced by the loading fallback. App.js SearchResults.js App.js Reload
+Clear Fork import { Suspense , useState } from 'react' ; import SearchResults
+from './SearchResults.js' ; export default function App ( ) { const [ query ,
+setQuery ] = useState ( '' ) ; return ( < > < label > Search albums: < input
+value = { query } onChange = { e => setQuery ( e . target . value ) } /> </
+label > < Suspense fallback = { < h2 > Loading... </ h2 > } > < SearchResults
+query = { query } /> </ Suspense > </ > ) ; } Show more A common alternative UI
+pattern is to defer updating the list and to
+----------------------------------------------------------------------------------------------------
+Index: 4422 <<"chunk_id": 2, "docno": 651>>
+
+resolved value. The component calling use suspends while the Promise is pending.
+Despite its name, use is not a Hook. Unlike Hooks, it can be called inside loops
+and conditional statements like if . import { use } from 'react' ; function
+MessageComponent ( { messagePromise } ) { const message = use ( messagePromise )
+; // ... If the component that calls use is wrapped in a Suspense boundary, the
+fallback will be displayed while the Promise is pending. Once the Promise is
+resolved, the Suspense fallback is replaced by the rendered components using the
+data returned by use . If the Promise is rejected, the fallback of the nearest
+Error Boundary will be displayed. See more examples below. Parameters promise :
+A Promise whose resolved value you want to read. The Promise must be cached so
+that the same instance is reused across re-renders. Returns The resolved value
+of the Promise. Caveats use must be called inside a Component or a Hook. use
+cannot be called inside a try-catch block. Instead, wrap your component in an
+Error Boundary to catch the error and display a fallback. Promises passed to use
+must be cached so the same Promise instance is reused across re-renders. See
+caching Promises below. When passing a Promise from a Server Component to a
+Client Component, its resolved value must be serializable . Usage (Context)
+Reading context with use When a context is passed to use , it works similarly to
+useContext . While useContext must be called at the top
+----------------------------------------------------------------------------------------------------
+Index: 4622 <<"chunk_id": 7, "docno": 675>>
+
+} ) ; Show more Revealing content together at once By default, the whole tree
+inside Suspense is treated as a single unit. For example, even if only one of
+these components suspends waiting for some data, all of them together will be
+replaced by the loading indicator: < Suspense fallback = { < Loading /> } > <
+Biography /> < Panel > < Albums /> </ Panel > </ Suspense > Then, after all of
+them are ready to be displayed, they will all appear together at once. In the
+example below, both Biography and Albums fetch some data. However, because they
+are grouped under a single Suspense boundary, these components always “pop in”
+together at the same time. ArtistPage.js Panel.js Biography.js Albums.js
+ArtistPage.js Reload Clear Fork import { Suspense } from 'react' ; import Albums
+from './Albums.js' ; import Biography from './Biography.js' ; import Panel from
+'./Panel.js' ; export default function ArtistPage ( { artist } ) { return ( < >
+< h1 > { artist . name } </ h1 > < Suspense fallback = { < Loading /> } > <
+Biography artistId = { artist . id } /> < Panel > < Albums artistId = { artist .
+id } /> </ Panel > </ Suspense > </ > ) ; } function Loading ( ) { return < h2 >
+🌀 Loading... </ h2 > ; } Show more Components that load data don’t have to be
+direct children of the Suspense boundary. For example, you can
+----------------------------------------------------------------------------------------------------
+Index: 4624 <<"chunk_id": 9, "docno": 675>>
+
+If Biography hasn’t loaded yet, BigSpinner is shown in place of the entire
+content area. Once Biography finishes loading, BigSpinner is replaced by the
+content. If Albums hasn’t loaded yet, AlbumsGlimmer is shown in place of Albums
+and its parent Panel . Finally, once Albums finishes loading, it replaces
+AlbumsGlimmer . ArtistPage.js Panel.js Biography.js Albums.js ArtistPage.js
+Reload Clear Fork import { Suspense } from 'react' ; import Albums from
+'./Albums.js' ; import Biography from './Biography.js' ; import Panel from
+'./Panel.js' ; export default function ArtistPage ( { artist } ) { return ( < >
+< h1 > { artist . name } </ h1 > < Suspense fallback = { < BigSpinner /> } > <
+Biography artistId = { artist . id } /> < Suspense fallback = { < AlbumsGlimmer
+/> } > < Panel > < Albums artistId = { artist . id } /> </ Panel > </ Suspense >
+</ Suspense > </ > ) ; } function BigSpinner ( ) { return < h2 > 🌀 Loading... </
+h2 > ; } function AlbumsGlimmer ( ) { return ( < div className = "glimmer-panel"
+> < div className = "glimmer-line" /> < div className = "glimmer-line" /> < div
+className = "glimmer-line" /> </ div > ) ; } Show more Suspense boundaries let
+you coordinate which parts of your UI should always “pop in” together at the
+same time, and which parts should progressively reveal more content in a
+sequence of loading states. You can add, move, or
+----------------------------------------------------------------------------------------------------
+Index: 4954 <<"chunk_id": 8, "docno": 718>>
+
+your React components. On the client, you will need to call hydrateRoot to
+hydrate that server-generated HTML and make it interactive. Waiting for all data
+to load prerenderToNodeStream waits for all data to load before finishing the
+static HTML generation and resolving. For example, consider a profile page that
+shows a cover, a sidebar with friends and photos, and a list of posts: function
+ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> < Sidebar > <
+Friends /> < Photos /> </ Sidebar > < Suspense fallback = { < PostsGlimmer /> }
+> < Posts /> </ Suspense > </ ProfileLayout > ) ; } Imagine that <Posts /> needs
+to load some data, which takes some time. Ideally, you’d want wait for the posts
+to finish so it’s included in the HTML. To do this, you can use Suspense to
+suspend on the data, and prerenderToNodeStream will wait for the suspended
+content to finish before resolving to the static HTML. Note Only data read from
+a source that activates a Suspense boundary , such as a Promise read with use ,
+will suspend during rendering. Suspense does not detect data fetched inside an
+Effect or event handler. Aborting prerendering You can force the prerender to
+“give up” after a timeout: async function renderToString ( ) { const controller
+= new AbortController ( ) ; setTimeout ( ( ) => { controller . abort ( ) } ,
+10000 ) ; try { // the prelude will contain all the HTML
+----------------------------------------------------------------------------------------------------
+Index: 4812 <<"chunk_id": 2, "docno": 698>>
+
+a boolean. Disables the script in browsers that support ES modules — allowing
+for a fallback script for browsers that do not. nonce : a string. A
+cryptographic nonce to allow the resource when using a strict Content Security
+Policy. referrer : a string. Says what Referer header to send when fetching the
+script and any resources that the script fetches in turn. type : a string. Says
+whether the script is a classic script, ES module, or import map . Props that
+disable React’s special treatment of scripts : onError : a function. Called when
+the script fails to load. onLoad : a function. Called when the script finishes
+being loaded. Props that are not recommended for use with React: blocking : a
+string. If set to "render" , instructs the browser not to render the page until
+the scriptsheet is loaded. React provides more fine-grained control using
+Suspense. defer : a string. Prevents the browser from executing the script until
+the document is done loading. Not compatible with streaming server-rendered
+components. Use the async prop instead. Special rendering behavior React can
+move <script> components to the document’s <head> and de-duplicate identical
+scripts. To opt into this behavior, provide the src and async={true} props.
+React will de-duplicate scripts if they have the same src . The async prop must
+be true to allow scripts to be safely moved. This special treatment comes with
+two caveats: React will ignore changes to props after the script has been
+rendered. (React will issue a warning in development if
+----------------------------------------------------------------------------------------------------
+Index: 4639 <<"chunk_id": 24, "docno": 675>>
+
+"avatar-placeholder" /> < p className = "name-placeholder" > &nbsp; </ p > </
+div > ) ; } export default function App ( ) { const [ src , setSrc ] = useState
+( null ) ; return ( < > < button onClick = { ( ) => { startTransition ( ( ) => {
+setSrc ( freshImageUrl ( ) ) ; } ) ; } } > Show profile </ button > { src && ( <
+ViewTransition > < Suspense fallback = { < ProfilePlaceholder /> } > < Profile
+src = { src } /> </ Suspense > </ ViewTransition > ) } < hr /> < VanillaProfile
+/> </ > ) ; } Show more Canary only Coordinating fonts, images, and stylesheets
+A Suspense boundary can wait for data, stylesheets, fonts, and images at once.
+Waiting for fonts and images only happens during a <ViewTransition> update. In
+the example below, the ProfileCard component suspends while its data loads, and
+renders a stylesheet with precedence , text in a new font, and a portrait. React
+keeps the skeleton visible while the data and the stylesheet load. The
+<ViewTransition> reveal then waits for the font and the image, so the card
+appears complete. For comparison, the version without React loads the same data
+and shows every resource arriving on its own schedule: App.js
+VanillaProfileCard.js App.js Reload Clear Fork import { ViewTransition ,
+Suspense , use , useState , startTransition } from 'react' ; import { fetchQuote
+} from './data.js' ; import { freshStylesheetUrl
+----------------------------------------------------------------------------------------------------
+Index: 2406 <<"chunk_id": 9, "docno": 322>>
+
+App /> , { signal : controller . signal , } ) ; //... Any Suspense boundaries
+with incomplete children will be included in the prelude in the fallback state.
+This can be used for partial prerendering together with resume or
+resumeAndPrerender . Troubleshooting My stream doesn’t start until the entire
+app is rendered The prerender response waits for the entire app to finish
+rendering, including waiting for all Suspense boundaries to resolve, before
+resolving. It is designed for static site generation (SSG) ahead of time and
+does not support streaming more content as it loads. To stream content as it
+loads, use a streaming server render API like renderToReadableStream . Previous
+Static APIs Next prerenderToNodeStream Copyright © Meta Platforms, Inc no uwu
+plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation
+Describing the UI Adding Interactivity Managing State Escape Hatches API
+Reference React APIs React DOM APIs Community Code of Conduct Meet the Team Docs
+Contributors Acknowledgements More Blog React Native Privacy Terms On this page
+Overview Reference prerender(reactNode, options?) Usage Rendering a React tree
+to a stream of static HTML Rendering a React tree to a string of static HTML
+Waiting for all data to load Aborting prerendering Troubleshooting My stream
+doesn’t start until the entire app is rendered
+----------------------------------------------------------------------------------------------------
+Index: 4658 <<"chunk_id": 1, "docno": 679>>
+
+forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
+React Components React exposes a few built-in components that you can use in
+your JSX. Built-in components <Fragment> , alternatively written as <>...</> ,
+lets you group multiple JSX nodes together. <Profiler> lets you measure
+rendering performance of a React tree programmatically. <Suspense> lets you
+display a fallback while the child components are loading. <StrictMode> enables
+extra development-only checks that help you find bugs early. <Activity> lets you
+hide and restore the UI and internal state of its children. Your own components
+You can also define your own components as JavaScript functions. Previous
+useTransition Next <Fragment> (<>) Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+Built-in components Your own components
+----------------------------------------------------------------------------------------------------
+Index: 4618 <<"chunk_id": 3, "docno": 675>>
+
+Rendering and Selective Hydration that are integrated with Suspense. Read an
+architectural overview and watch a technical talk to learn more. What activates
+a Suspense boundary A Suspense boundary waits for its content to be ready before
+revealing it. Any of the following keeps a boundary from revealing its content:
+Lazy-loading component code with lazy . Reading a Promise with use , including
+data streamed from Server Components or loaded through a Suspense-enabled
+framework . Loading a stylesheet rendered with <link rel="stylesheet"> and a
+precedence prop. React blocks the boundary until the stylesheet loads, up to a
+timeout. See an example below. Waiting for a large boundary’s HTML to arrive
+during streaming server rendering. Sending HTML takes time, so a boundary with
+enough content activates even when nothing in it suspends. React reveals the
+content as the HTML arrives. Canary only Loading fonts. Suspense doesn’t wait
+for fonts by default, but a <ViewTransition> update waits for new fonts to load,
+up to a timeout, so text doesn’t flash with a fallback font. See an example
+below. Canary only Loading images. Suspense doesn’t wait for images by default,
+but during a <ViewTransition> update, React blocks the boundary until the image
+loads, up to a timeout. Adding an onLoad handler opts a specific image out. See
+an example below. Experimental only Performing CPU-bound render work inside a
+<Suspense defer> boundary. Note Suspense-enabled frameworks A Suspense-enabled
+framework gives you a way to read data in your component in a way that activates
+the closest Suspense boundary. The exact way
+----------------------------------------------------------------------------------------------------
+Index: 2222 <<"chunk_id": 6, "docno": 294>>
+
+in two steps: First, React re-renders with the new query ( "ab" ) but with the
+old deferredQuery (still "a" ). The deferredQuery value, which you pass to the
+result list, is deferred: it “lags behind” the query value. In the background,
+React tries to re-render with both query and deferredQuery updated to "ab" . If
+this re-render completes, React will show it on the screen. However, if it
+suspends (the results for "ab" have not loaded yet), React will abandon this
+rendering attempt, and retry this re-render again after the data has loaded. The
+user will keep seeing the stale deferred value until the data is ready. The
+deferred “background” rendering is interruptible. For example, if you type into
+the input again, React will abandon it and restart with the new value. React
+will always use the latest provided value. Note that there is still a network
+request per each keystroke. What’s being deferred here is displaying results
+(until they’re ready), not the network requests themselves. Even if the user
+continues typing, responses for each keystroke get cached, so pressing Backspace
+is instant and doesn’t fetch again. Indicating that the content is stale In the
+example above, there is no indication that the result list for the latest query
+is still loading. This can be confusing to the user if the new results take a
+while to load. To make it more obvious to the user that the result list does not
+match the latest query, you can add a visual indication when the stale
+----------------------------------------------------------------------------------------------------
+Index: 4565 <<"chunk_id": 2, "docno": 665>>
+
+React also includes a special profiling build. To use profiling builds, you have
+to use react-dom/profiling instead of react-dom/client . We recommend that you
+alias react-dom/client to react-dom/profiling at build time via bundler aliases
+instead of manually updating each react-dom/client import. Your framework might
+have built-in support for enabling React’s profiling build. Tracks Scheduler The
+Scheduler is an internal React concept used for managing tasks with different
+priorities. This track consists of 4 subtracks, each representing work of a
+specific priority: Blocking - The synchronous updates, which could’ve been
+initiated by user interactions. Transition - Non-blocking work that happens in
+the background, usually initiated via startTransition . Suspense - Work related
+to Suspense boundaries, such as displaying fallbacks or revealing content. Idle
+- The lowest priority work that is done when there are no other tasks with
+higher priority. Renders Every render pass consists of multiple phases that you
+can see on a timeline: Update - this is what caused a new render pass. Render -
+React renders the updated subtree by calling render functions of components. You
+can see the rendered components subtree on Components track , which follows the
+same color scheme. Commit - After rendering components, React will submit the
+changes to the DOM and run layout effects, like useLayoutEffect . Remaining
+Effects - React runs passive effects of a rendered subtree. This usually happens
+after the paint, and this is when React runs hooks like useEffect . One known
+exception is user interactions, like clicks, or other discrete events. In this
+scenario,
+----------------------------------------------------------------------------------------------------
+Index: 2220 <<"chunk_id": 4, "docno": 294>>
+
+results, and then editing it to "ab" . The results for "a" get replaced by the
+loading fallback. App.js SearchResults.js App.js Reload Clear Fork import {
+Suspense , useState } from 'react' ; import SearchResults from
+'./SearchResults.js' ; export default function App ( ) { const [ query ,
+setQuery ] = useState ( '' ) ; return ( < > < label > Search albums: < input
+value = { query } onChange = { e => setQuery ( e . target . value ) } /> </
+label > < Suspense fallback = { < h2 > Loading... </ h2 > } > < SearchResults
+query = { query } /> </ Suspense > </ > ) ; } Show more A common alternative UI
+pattern is to defer updating the list of results and to keep showing the
+previous results until the new results are ready. Call useDeferredValue to pass
+a deferred version of the query down: export default function App ( ) { const [
+query , setQuery ] = useState ( '' ) ; const deferredQuery = useDeferredValue (
+query ) ; return ( < > < label > Search albums: < input value = { query }
+onChange = { e => setQuery ( e . target . value ) } /> </ label > < Suspense
+fallback = { < h2 > Loading... </ h2 > } > < SearchResults query = {
+deferredQuery } /> </ Suspense > </ > ) ; } The query will update immediately,
+----------------------------------------------------------------------------------------------------
+Index: 2219 <<"chunk_id": 3, "docno": 294>>
+
+with the new deferred value. Any updates caused by events (like typing) will
+interrupt the background re-render and get prioritized over it. The background
+re-render caused by useDeferredValue does not fire Effects until it’s committed
+to the screen. If the background re-render suspends, its Effects will run after
+the data loads and the UI updates. Usage Showing stale content while fresh
+content is loading Call useDeferredValue at the top level of your component to
+defer updating some part of your UI. import { useState , useDeferredValue } from
+'react' ; function SearchPage ( ) { const [ query , setQuery ] = useState ( '' )
+; const deferredQuery = useDeferredValue ( query ) ; // ... } During the initial
+render, the deferred value will be the same as the value you provided. During
+updates, the deferred value will “lag behind” the latest value . In particular,
+React will first re-render without updating the deferred value, and then try to
+re-render with the newly received value in the background. Let’s walk through an
+example to see when this is useful. Note This example assumes you use a data
+source that activates a Suspense boundary , such as a Promise you read with use
+. Learn more about Suspense and its limitations. In this example, the
+SearchResults component suspends while fetching the search results. Try typing
+"a" , waiting for the results, and then editing it to "ab" . The results for "a"
+get replaced by the loading fallback. App.js SearchResults.js App.js Reload
+Clear Fork import
+----------------------------------------------------------------------------------------------------
+Index: 4955 <<"chunk_id": 9, "docno": 718>>
+
+( ( ) => { controller . abort ( ) } , 10000 ) ; try { // the prelude will
+contain all the HTML that was prerendered // before the controller aborted.
+const { prelude } = await prerenderToNodeStream ( < App /> , { signal :
+controller . signal , } ) ; //... Any Suspense boundaries with incomplete
+children will be included in the prelude in the fallback state. This can be used
+for partial prerendering together with resumeToPipeableStream or
+resumeAndPrerenderToNodeStream . Troubleshooting My stream doesn’t start until
+the entire app is rendered The prerenderToNodeStream response waits for the
+entire app to finish rendering, including waiting for all Suspense boundaries to
+resolve, before resolving. It is designed for static site generation (SSG) ahead
+of time and does not support streaming more content as it loads. To stream
+content as it loads, use a streaming server render API like
+renderToPipeableStream . Previous prerender Next resumeAndPrerender Copyright ©
+Meta Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick
+Start Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
+On this page Overview Reference prerenderToNodeStream(reactNode, options?) Usage
+Rendering a React tree to a stream of static HTML Rendering a React tree to a
+string of static HTML Waiting for all data to load Aborting prerendering
+Troubleshooting My stream doesn’t start until the entire app is rendered
+----------------------------------------------------------------------------------------------------
+Index: 4771 <<"chunk_id": 11, "docno": 690>>
+
+: function ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover /> <
+Suspense fallback = { < PostsGlimmer /> } > < Posts /> </ Suspense > </
+ProfileLayout > ) ; } If an error occurs while rendering those components, React
+won’t have any meaningful HTML to send to the client. Override onShellError to
+send a fallback HTML that doesn’t rely on server rendering as the last resort:
+const { pipe } = renderToPipeableStream ( < App /> , { bootstrapScripts : [
+'/main.js' ] , onShellReady ( ) { response . setHeader ( 'content-type' ,
+'text/html' ) ; pipe ( response ) ; } , onShellError ( error ) { response .
+statusCode = 500 ; response . setHeader ( 'content-type' , 'text/html' ) ;
+response . send ( '<h1>Something went wrong</h1>' ) ; } , onError ( error ) {
+console . error ( error ) ; logServerCrashReport ( error ) ; } } ) ; If there is
+an error while generating the shell, both onError and onShellError will fire.
+Use onError for error reporting and use onShellError to send the fallback HTML
+document. Your fallback HTML does not have to be an error page. Instead, you may
+include an alternative shell that renders your app on the client only.
+Recovering from errors outside the shell In this example, the <Posts />
+component is wrapped in <Suspense> so it is not a part of the shell: function
+ProfilePage ( ) { return ( < ProfileLayout > < ProfileCover />
+----------------------------------------------------------------------------------------------------
+Index: 2985 <<"chunk_id": 2, "docno": 415>>
+
+return a Promise or some other thenable (a Promise-like object with a then
+method). It needs to eventually resolve to an object whose .default property is
+a valid React component type, such as a function, memo , or a forwardRef
+component. Usage Lazy-loading components with Suspense Usually, you import
+components with the static import declaration: import MarkdownPreview from
+'./MarkdownPreview.js' ; To defer loading this component’s code until it’s
+rendered for the first time, replace this import with: import { lazy } from
+'react' ; const MarkdownPreview = lazy ( ( ) => import ( './MarkdownPreview.js'
+) ) ; This code relies on dynamic import() , which might require support from
+your bundler or framework. Using this pattern requires that the lazy component
+you’re importing was exported as the default export. Now that your component’s
+code loads on demand, you also need to specify what should be displayed while it
+is loading. You can do this by wrapping the lazy component or any of its parents
+into a <Suspense> boundary: < Suspense fallback = { < Loading /> } > < h2 >
+Preview </ h2 > < MarkdownPreview /> </ Suspense > In this example, the code for
+MarkdownPreview won’t be loaded until you attempt to render it. If
+MarkdownPreview hasn’t loaded yet, Loading will be shown in its place. Try
+ticking the checkbox: App.js Loading.js MarkdownPreview.js App.js Reload Clear
+Fork import { useState , Suspense , lazy } from 'react' ; import Loading from
+'./Loading.js' ; const MarkdownPreview = lazy ( ( ) => delayForDemo
+----------------------------------------------------------------------------------------------------
+Index: 6220 <<"chunk_id": 6, "docno": 906>>
+
+setOptimisticName ( newName ) ; const updatedName = await updateName ( newName )
+; onUpdateName ( updatedName ) ; } ; return ( < form action = { submitAction } >
+< p > Your name is: { optimisticName } </ p > < p > < label > Change Name: </
+label > < input type = "text" name = "name" disabled = { currentName !==
+optimisticName } /> </ p > </ form > ) ; } The useOptimistic hook will
+immediately render the optimisticName while the updateName request is in
+progress. When the update finishes or errors, React will automatically switch
+back to the currentName value. For more information, see the docs for
+useOptimistic . New API: use In React 19 we’re introducing a new API to read
+resources in render: use . For example, you can read a promise with use , and
+React will Suspend until the promise resolves: import { use } from 'react' ;
+function Comments ( { commentsPromise } ) { // `use` will suspend until the
+promise resolves. const comments = use ( commentsPromise ) ; return comments .
+map ( comment => < p key = { comment . id } > { comment } </ p > ) ; } function
+Page ( { commentsPromise } ) { // When `use` suspends in Comments, // this
+Suspense boundary will be shown. return ( < Suspense fallback = { < div >
+Loading... </ div > } > < Comments commentsPromise = { commentsPromise } />
+----------------------------------------------------------------------------------------------------
+Index: 4353 <<"chunk_id": 3, "docno": 640>>
+
+which boundaries will need to animate. After the ready Promise of the
+startViewTransition is resolved, React will then revert the view-transition-name
+. Then React will invoke the onEnter , onExit , onUpdate and onShare callbacks
+to allow for manual programmatic control over the animations. This will be after
+the built-in default ones have already been computed. If a flushSync happens to
+get in the middle of this sequence, then React will skip the Transition since it
+relies on being able to complete synchronously. After the finished Promise of
+the startViewTransition is resolved, React will then invoke useEffect . This
+prevents those from interfering with the performance of the animation. However,
+this is not a guarantee because if another setState happens while the animation
+is running it’ll still have to invoke the useEffect earlier to preserve the
+sequential guarantees. Props optional name : A string or object. The name of the
+View Transition used for shared element transitions. If not provided, React will
+use a unique name for each View Transition to prevent unexpected animations.
+View Transition Class props. View Transition Event props. Caveats Only use name
+for shared element transitions . For all other animations, React automatically
+generates a unique name to prevent unexpected animations. By default, setState
+updates immediately and does not activate <ViewTransition> , only updates
+wrapped in a Transition , <Suspense> , or useDeferredValue activate
+ViewTransition. <ViewTransition> creates an image that can be moved around,
+scaled and cross-faded. Unlike Layout Animations you may have seen in React
+Native or Motion, this means that
+----------------------------------------------------------------------------------------------------
+Index: 4438 <<"chunk_id": 18, "docno": 651>>
+
+; return < p > { messageContent } </ p > ; } Or, in a separate file, a Client
+Component can unwrap the same Promise with use : // Client Component 'use
+client' ; import { use } from 'react' ; export function Message ( {
+messagePromise } ) { const messageContent = use ( messagePromise ) ; return < p
+> { messageContent } </ p > ; } Passing the Promise down works the same way in
+both cases. Both suspend where the Promise is read, and both unblock the UI
+above. The only difference is that Client Components can’t await during render,
+so they unwrap the Promise with use instead. A common case is interactive
+content like popovers and tooltips, where the data is only needed after a hover
+or click. See Revealing content together at once for guidance on where to place
+Suspense boundaries. Displaying an error with an Error Boundary If the Promise
+passed to use is rejected, the error propagates to the nearest Error Boundary .
+Wrap the component that calls use in an Error Boundary to display a fallback
+when the Promise is rejected. In the example below, fetchData rejects on the
+first attempt and succeeds on retry. The Error Boundary catches the rejection
+and shows a fallback with a “Try again” button. App.js App.js Reload Clear Fork
+import { use , Suspense , useState , startTransition } from "react" ; import {
+ErrorBoundary } from "react-error-boundary" ; import { fetchData , refetchData }
+from "./data.js" ; export
+----------------------------------------------------------------------------------------------------
+Index: 4436 <<"chunk_id": 16, "docno": 651>>
+
+it received as a prop and passes it to the use API. This allows the Client
+Component to read the value from the Promise that was initially created by the
+Server Component. // message.js 'use client' ; import { use } from 'react' ;
+export function Message ( { messagePromise } ) { const messageContent = use (
+messagePromise ) ; return < p > Here is the message: { messageContent } </ p > ;
+} Because Message is wrapped in a Suspense boundary, the fallback will be
+displayed until the Promise is resolved. When the Promise is resolved, the value
+will be read by the use API and the Message component will replace the Suspense
+fallback. message.js message.js Reload Clear Fork "use client" ; import { use ,
+Suspense } from "react" ; function Message ( { messagePromise } ) { const
+messageContent = use ( messagePromise ) ; return < p > Here is the message: {
+messageContent } </ p > ; } export function MessageContainer ( { messagePromise
+} ) { return ( < Suspense fallback = { < p > ⌛Downloading message... </ p > } >
+< Message messagePromise = { messagePromise } /> </ Suspense > ) ; } Show more
+Deep Dive Should I resolve a Promise in a Server or Client Component? Show
+Details If you have a Promise, at some point you need to unwrap it to read its
+value. You unwrap it with await in a Server Component, and with use in a Client
+----------------------------------------------------------------------------------------------------
+Index: 5848 <<"chunk_id": 6, "docno": 847>>
+
+state to pass to the resume apis. Notable Changes Batching Suspense Boundaries
+for SSR We fixed a behavioral bug where Suspense boundaries would reveal
+differently depending on if they were rendered on the client or when streaming
+from server-side rendering. Starting in 19.2, React will batch reveals of
+server-rendered Suspense boundaries for a short time, to allow more content to
+be revealed together and align with the client-rendered behavior. Previously,
+during streaming server-side rendering, suspense content would immediately
+replace fallbacks. In React 19.2, suspense boundaries are batched for a small
+amount of time, to allow revealing more content together. This fix also prepares
+apps for supporting <ViewTransition> for Suspense during SSR. By revealing more
+content together, animations can run in larger batches of content, and avoid
+chaining animations of content that stream in close together. Note React uses
+heuristics to ensure throttling does not impact core web vitals and search
+ranking. For example, if the total page load time is approaching 2.5s (which is
+the time considered “good” for LCP ), React will stop batching and reveal
+content immediately so that the throttling is not the reason to miss the metric.
+SSR: Web Streams support for Node React 19.2 adds support for Web Streams for
+streaming SSR in Node.js: renderToReadableStream is now available for Node.js
+prerender is now available for Node.js As well as the new resume APIs: resume is
+available for Node.js. resumeAndPrerender is available for Node.js. Pitfall
+Prefer Node Streams for server-side rendering in Node.js In Node.js
+environments, we still highly recommend using the
+----------------------------------------------------------------------------------------------------
+Index: 632 <<"chunk_id": 1, "docno": 97>>
+
+How does React keep track of your app’s component structure? React, and many
+other UI libraries, model UI as a tree. Thinking of your app as a tree is useful
+for understanding the relationship between components. This understanding will
+help you debug future concepts like performance and state management. You will
+learn How React “sees” component structures What a render tree is and what it is
+useful for What a module dependency tree is and what it is useful for Your UI as
+a tree Trees are a relationship model between items. The UI is often represented
+using tree structures. For example, browsers use tree structures to model HTML (
+DOM ) and CSS ( CSSOM ). Mobile platforms also use trees to represent their view
+hierarchy. React creates a UI tree from your components. In this example, the UI
+tree is then used to render to the DOM. Like browsers and mobile platforms,
+React also uses tree structures to manage and model the relationship between
+components in a React app. These trees are useful tools to understand how data
+flows through a React app and how to optimize rendering and app size. The Render
+Tree A major feature of components is the ability to compose components of other
+components. As we nest components , we have the concept of parent and child
+components, where each parent component may itself be a child of another
+component. When we render a React app, we can model this relationship in a tree,
+known as the render tree. Here
+----------------------------------------------------------------------------------------------------
+Index: 3375 <<"chunk_id": 6, "docno": 477>>
+
+} > < Home /> </ Activity > < Activity mode = { activeTab === 'contact' ?
+'visible' : 'hidden' } > < Contact /> </ Activity > </ > ) ; } Show more Again,
+the Activity boundary let us preserve the Contact tab’s internal state without
+changing its implementation. Pre-rendering content that’s likely to become
+visible So far, we’ve seen how Activity can hide some content that the user has
+interacted with, without discarding that content’s ephemeral state. But Activity
+boundaries can also be used to prepare content that the user has yet to see for
+the first time: < Activity mode = "hidden" > < SlowComponent /> </ Activity >
+When an Activity boundary is hidden during its initial render, its children
+won’t be visible on the page — but they will still be rendered , albeit at a
+lower priority than the visible content, and without mounting their Effects.
+This pre-rendering allows the children to load any code or data they need ahead
+of time, so that later, when the Activity boundary becomes visible, the children
+can appear faster with reduced loading times. Let’s look at an example. In this
+demo, the Posts tab loads some data. If you press it, you’ll see a Suspense
+fallback displayed while the data is being fetched: App.js Home.js Posts.js
+App.js Reload Clear Fork import { useState , Suspense } from 'react' ; import
+TabButton from './TabButton.js' ; import Home from './Home.js' ; import Posts
+from './Posts.js' ; export default function App ( ) { const
+----------------------------------------------------------------------------------------------------
+Index: 4367 <<"chunk_id": 17, "docno": 640>>
+
+to load. See examples of waiting for a font and waiting for an image on the
+Suspense page. If it’s inside a new Suspense boundary instance, then the
+fallback is shown first. After the Suspense boundary fully loads, it triggers
+the <ViewTransition> to animate the reveal to the content. There are two ways to
+animate Suspense boundaries depending on where you place the <ViewTransition> :
+Update: < ViewTransition > < Suspense fallback = { < A /> } > < B /> </ Suspense
+> </ ViewTransition > In this scenario when the content goes from A to B, it’ll
+be treated as an “update” and apply that class if appropriate. Both A and B will
+get the same view-transition-name and therefore they’re acting as a cross-fade
+by default. App.js App.js Reload Clear Fork import { ViewTransition , useState ,
+startTransition , Suspense } from 'react' ; import { Video , VideoPlaceholder }
+from './Video' ; import { useLazyVideoData } from './data' ; function LazyVideo
+( ) { const video = useLazyVideoData ( ) ; return < Video video = { video } /> ;
+} export default function Component ( ) { const [ showItem , setShowItem ] =
+useState ( false ) ; return ( < > < button onClick = { ( ) => { startTransition
+( ( ) => { setShowItem ( ( prev ) => ! prev ) ; } ) ; } } > { showItem ? '➖' :
+'➕' } </ button > { showItem ? ( < ViewTransition
+----------------------------------------------------------------------------------------------------
+Index: 23545 <<"chunk_id": 3, "docno": 3553>>
+
+the user detail page that displays the user with id 42. There is no issue when
+the user initially loads the index page and then navigates to that URL from
+within a running client. The Angular router performs the navigation client-side
+and does not request a new HTML page. But clicking a deep link in an email,
+entering it in the browser address bar, or even refreshing the browser while
+already on the deep linked page will all be handled by the browser itself,
+outside the running application. The browser makes a direct request to the
+server for /users/42 , bypassing Angular's router. A static server routinely
+returns index.html when it receives a request for http://my-app.test/ . But most
+servers by default will reject http://my-app.test/users/42 and returns a 404 -
+Not Found error unless it is configured to return index.html instead. Configure
+the fallback route or 404 page to index.html for your server, so Angular is
+served for deep links and can display the correct route. Some servers call this
+fallback behavior "Single-Page Application" (SPA) mode. Once the browser loads
+the application, Angular router will read the URL to determine which page it is
+on and display /users/42 correctly. For "real" 404 pages such as
+http://my-app.test/does-not-exist , the server does not require any additional
+configuration. 404 pages implemented in the Angular router will be displayed
+correctly. Requesting data from a different server (CORS) Web developers may
+encounter a cross-origin resource sharing error when making a network request to
+a server other than the application's own host
+----------------------------------------------------------------------------------------------------
+Index: 3573 <<"chunk_id": 2, "docno": 512>>
+
+certain media query . nonce : a string. A cryptographic nonce to allow the
+resource when using a strict Content Security Policy. title : a string.
+Specifies the name of an alternative stylesheet . Props that are not recommended
+for use with React: blocking : a string. If set to "render" , instructs the
+browser not to render the page until the stylesheet is loaded. React provides
+more fine-grained control using Suspense. Special rendering behavior React can
+move <style> components to the document’s <head> , de-duplicate identical
+stylesheets, and suspend while the stylesheet is loading. To opt into this
+behavior, provide the href and precedence props. React will de-duplicate styles
+if they have the same href . The precedence prop tells React where to rank the
+<style> DOM node relative to others in the document <head> , which determines
+which stylesheet can override the other. This special treatment comes with three
+caveats: React will ignore changes to props after the style has been rendered.
+(React will issue a warning in development if this happens.) React will drop all
+extraneous props when using the precedence prop (beyond href and precedence ).
+React may leave the style in the DOM even after the component that rendered it
+has been unmounted. Usage Rendering an inline CSS stylesheet If a component
+depends on certain CSS styles in order to be displayed correctly, you can render
+an inline stylesheet within the component. The href prop should uniquely
+identify the stylesheet, because React will de-duplicate stylesheets that have
+the same href .
+----------------------------------------------------------------------------------------------------
+Index: 334 <<"chunk_id": 8, "docno": 45>>
+
+export default function TeaSet ( ) { return ( < > < Cup guest = { 1 } /> < Cup
+guest = { 2 } /> < Cup guest = { 3 } /> </ > ) ; } Ready to learn this topic?
+Read Keeping Components Pure to learn how to write components as pure,
+predictable functions. Read More Your UI as a tree React uses trees to model the
+relationships between components and modules. A React render tree is a
+representation of the parent and child relationship between components. An
+example React render tree. Components near the top of the tree, near the root
+component, are considered top-level components. Components with no child
+components are leaf components. This categorization of components is useful for
+understanding data flow and rendering performance. Modelling the relationship
+between JavaScript modules is another useful way to understand your app. We
+refer to it as a module dependency tree. An example module dependency tree. A
+dependency tree is often used by build tools to bundle all the relevant
+JavaScript code for the client to download and render. A large bundle size
+regresses user experience for React apps. Understanding the module dependency
+tree is helpful to debug such issues. Ready to learn this topic? Read Your UI as
+a Tree to learn how to create a render and module dependency trees for a React
+app and how they’re useful mental models for improving user experience and
+performance. Read More What’s next? Head over to Your First Component to start
+reading
 ----------------------------------------------------------------------------------------------------

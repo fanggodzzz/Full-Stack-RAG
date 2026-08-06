@@ -1,13 +1,18 @@
 import json
+from os import getenv
 import time
 from shared import import_chunks
 import Models.bm25_model as bm
 import Models.vector_model as vec
 import Models.hybrid as hybrid
 from ollama import chat
+from query_retrieval import normalize_text_tokens, load_models
+import dotenv
 
+dotenv.load_dotenv()
 
-BM25_WEIGHT = 0.25
+TOP_N = int(getenv("TOP_N", 20))  # Default to top 20 results if not set in .env
+BM25_WEIGHT = float(getenv("BM25_WEIGHT", 0.25))  # Default weight for BM25 in hybrid retrieval
 SYSTEM_PROMPT = """
 You are a closed-book question answering system.
 
@@ -76,6 +81,9 @@ def query_llm(query, context):
     return response
 
 def query_models(tokens):
+    global bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix
+    bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix = load_models()
+
     bm_scores = bm_top_indices = []
     w2v_scores = w2v_top_indices = []
 
@@ -83,7 +91,7 @@ def query_models(tokens):
     bm_scores, bm_top_indices = bm.query_bm25(bm25_model, tokens, top_n=20)
 
     print("Querying Word2Vec model...")
-    w2v_scores, w2v_top_indices = vec.query_vector(w2v_model, w2v_doc_vectors, tokens, top_n=20)
+    w2v_scores, w2v_top_indices = vec.query_vector(w2v_model, w2v_doc_vectors, tokens, top_n=20, vectorizer=vectorizer, tfidf_matrix=tfidf_matrix)
 
     print("Combining BM25 and Word2Vec scores for hybrid retrieval...")
     _, hybrid_top_indices = hybrid.combine_scores(bm_scores, w2v_scores, bm25_weight=BM25_WEIGHT, top_n=20)
@@ -100,6 +108,7 @@ def get_chunks(top_indices):
         idx = top_indices[i]
         title = chunks[idx].get("title", "")
         text = chunks[idx].get("chunk_text", "")
+        # print(idx)
         if len(text) > max_chars_per_chunk:
             text = text[:max_chars_per_chunk] + "..."
         context_parts.append(f"{title}\n{text}")
@@ -109,22 +118,23 @@ def get_chunks(top_indices):
     return context
 
 def querying(user_query):
-    tokens = user_query.split()
+    global bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix, chunks
+    tokens = normalize_text_tokens(user_query)
     bm25, w2v, hybrid = query_models(tokens)
-    
     bm25_context = w2v_context = hybrid_context = ""
+    chunks = import_chunks()  
 
     print("Retrieving context for BM25, Word2Vec, and Hybrid models...")
-    # bm25_context = get_chunks(bm25)
+    bm25_context = get_chunks(bm25)
     w2v_context = get_chunks(w2v)
-    # hybrid_context = get_chunks(hybrid)
+    hybrid_context = get_chunks(hybrid)
 
     bm25_response = w2v_response = hybrid_response = None
 
     print("Querying LLM with BM25, Word2Vec, and Hybrid contexts...")
-    # bm25_response = query_llm(user_query, bm25_context)
+    bm25_response = query_llm(user_query, bm25_context)
     w2v_response = query_llm(user_query, w2v_context)
-    # hybrid_response = query_llm(user_query, hybrid_context)
+    hybrid_response = query_llm(user_query, hybrid_context)
 
     return {
         "bm25": {

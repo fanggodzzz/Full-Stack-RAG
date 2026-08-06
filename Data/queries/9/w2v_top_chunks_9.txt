@@ -1,508 +1,1214 @@
-Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+Index: 788 <<"chunk_id": 5, "docno": 115>>
 
-that would cause the required CSRF cookie to be sent. Solution: use
-ensure_csrf_cookie() on the view that sends the page. CSRF protection in
-reusable applications ¶ Because it is possible for the developer to turn off the
-CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
-decorator to ensure the security of these applications against CSRF. It is
-recommended that the developers of other reusable apps that want the same
-guarantees also use the csrf_protect decorator on their views. Previous page and
-next page How to use Django’s Content Security Policy How to write a custom
-storage class Back to Top Additional Information Support Django! Abu Ashraf
-Masnun donated to the Django Software Foundation to support Django development.
-Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
-with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
-False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
-Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
-Using the decorator method Handling rejected requests Using CSRF protection with
-caching Testing and CSRF protection Edge cases Disabling CSRF protection for
-just a few views Setting the token when CsrfViewMiddleware.process_view() is not
-used Including the CSRF token in an unprotected view Protecting a view for only
-one path Protecting a page that uses AJAX without an HTML form CSRF protection
-in reusable applications Browse Prev: How to use Django’s Content Security
-Policy Next: How to write a custom storage class Table of contents General Index
-Python Module Index You are
+browser will repaint the screen. Although this process is known as “browser
+rendering”, we’ll refer to it as “painting” to avoid confusion throughout the
+docs. Illustrated by Rachel Lee Nabors Recap Any screen update in a React app
+happens in three steps: Trigger Render Commit You can use Strict Mode to find
+mistakes in your components React does not touch the DOM if the rendering result
+is the same as last time Previous State: A Component's Memory Next State as a
+Snapshot Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by
+@sawaratsuki1004 Learn React Quick Start Installation Describing the UI Adding
+Interactivity Managing State Escape Hatches API Reference React APIs React DOM
+APIs Community Code of Conduct Meet the Team Docs Contributors Acknowledgements
+More Blog React Native Privacy Terms On this page Overview Step 1: Trigger a
+render Initial render Re-renders when state updates Step 2: React renders your
+components Step 3: React commits changes to the DOM Epilogue: Browser paint
+Recap
 ----------------------------------------------------------------------------------------------------
-Index: 36507 <<"chunk_id": 11, "docno": 5248>>
+Index: 783 <<"chunk_id": 0, "docno": 115>>
 
-Python code is outside of the web server’s root. This will ensure that your
-Python code is not accidentally served as plain text (or accidentally executed).
-Take care with any user uploaded files . Django does not throttle requests to
-authenticate users. To protect against brute-force attacks against the
-authentication system, you may consider deploying a Django plugin or web server
-module to throttle these requests. Keep your SECRET_KEY , and
-SECRET_KEY_FALLBACKS if in use, secret. It is a good idea to limit the
-accessibility of your caching system and database using a firewall. Take a look
-at the Open Web Application Security Project (OWASP) Top 10 list which
-identifies some common vulnerabilities in web applications. While Django has
-tools to address some of the issues, other issues must be accounted for in the
-design of your project. Mozilla discusses various topics regarding web security
-. Their pages also include security principles that apply to any system.
-Previous page and next page Pagination Performance and optimization Back to Top
-Additional Information Support Django! Django Debug Toolbar donated to the
-Django Software Foundation to support Django development. Donate today! Contents
-Security in Django Always sanitize user input Cross-site scripting (XSS)
-protection Cross-site request forgery (CSRF) protection SQL injection protection
-Clickjacking protection SSL/HTTPS Host header validation Referrer policy
-Cross-origin opener policy Session security User-uploaded content Form
-Submissions Content Security Policy Limitations and considerations Additional
-security topics Browse Prev: Pagination Next: Performance and optimization Table
-of contents General Index Python Module Index You are here: Django dev
-documentation Using
+Render and Commit – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Render and Commit Before your components are displayed on screen, they must be
+rendered by React. Understanding the steps in this process will help you think
+about how your code executes and explain its behavior. You will learn What
+rendering means in React When and why React renders a
 ----------------------------------------------------------------------------------------------------
-Index: 27802 <<"chunk_id": 6, "docno": 4038>>
+Index: 631 <<"chunk_id": 0, "docno": 97>>
 
-wish to return them in other cases, set them in your view. See RFC 9110 Section
-9.3.4 to learn about the distinction between setting a validator header in
-response to requests made with PUT versus POST . Comparison with middleware
-conditional processing ¶ Django provides conditional GET handling via
-django.middleware.http.ConditionalGetMiddleware . While being suitable for many
-situations, the middleware has limitations for advanced usage: It’s applied
-globally to all views in your project. It doesn’t save you from generating the
-response, which may be expensive. It’s only appropriate for HTTP GET requests.
-You should choose the most appropriate tool for your particular problem here. If
-you have a way to compute ETags and modification times quickly and if some view
-takes a while to generate the content, you should consider using the condition
-decorator described in this document. If everything already runs fairly quickly,
-stick to using the middleware and the amount of network traffic sent back to the
-clients will still be reduced if the view hasn’t changed. Previous page and next
-page Django’s cache framework Composite primary keys Back to Top Additional
-Information Support Django! Ken Whitesell donated to the Django Software
-Foundation to support Django development. Donate today! Contents Conditional
-View Processing The condition decorator Shortcuts for only computing one value
-Use condition when testing both conditions Using the decorators with other HTTP
-methods Comparison with middleware conditional processing Browse Prev: Django’s
-cache framework Next: Composite primary keys Table of contents General Index
-Python Module Index You are here: Django 6.0 documentation Using
+Understanding Your UI as a Tree – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Understanding Your UI as a Tree Your React app is taking shape with many
+components being nested within each other. How does React keep track of your
+app’s component structure? React, and many other UI libraries, model UI as a
+tree. Thinking of your app
 ----------------------------------------------------------------------------------------------------
-Index: 21539 <<"chunk_id": 3, "docno": 2637>>
+Index: 326 <<"chunk_id": 0, "docno": 45>>
 
-in Django 1.2 ¶ Support for multiple databases ¶ Django 1.2 adds the ability to
-use more than one database in your Django project. Queries can be issued at a
-specific database with the using() method on QuerySet objects. Individual
-objects can be saved to a specific database by providing a using argument when
-you call save() . Model validation ¶ Model instances now have support for
-validating their own data , and both model and form fields now accept
-configurable lists of validators specifying reusable, encapsulated validation
-behavior. Note, however, that validation must still be performed explicitly.
-Simply invoking a model instance’s save() method will not perform any validation
-of the instance’s data. Improved CSRF protection ¶ Django now has much improved
-protection against Cross-Site Request Forgery (CSRF) attacks . This type of
-attack occurs when a malicious website contains a link, a form button or some
-JavaScript that is intended to perform some action on your website, using the
-credentials of a logged-in user who visits the malicious site in their browser.
-A related type of attack, “login CSRF,” where an attacking site tricks a user’s
-browser into logging into a site with someone else’s credentials, is also
-covered. Messages framework ¶ Django now includes a robust and configurable
-messages framework with built-in support for cookie- and session-based
-messaging, for both anonymous and authenticated clients. The messages framework
-replaces the deprecated user message API and allows you to temporarily store
-messages in one request and retrieve them for display in a subsequent request
-(usually
+Describing the UI – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Describing the UI
+React is a JavaScript library for rendering user interfaces (UI). UI is built
+from small units like buttons, text, and images. React lets you combine them
+into reusable, nestable components. From web sites to phone apps, everything on
+the screen can be broken down into components. In this
 ----------------------------------------------------------------------------------------------------
-Index: 33602 <<"chunk_id": 35, "docno": 4450>>
+Index: 73 <<"chunk_id": 0, "docno": 7>>
 
-of known directives can be found in the IANA registry (note that not all of them
-apply to responses). If you want to use headers to disable caching altogether,
-never_cache() is a view decorator that adds headers to ensure the response won’t
-be cached by browsers or other caches. Example: from
-django.views.decorators.cache import never_cache @never_cache def myview (
-request ): ... Order of MIDDLEWARE ¶ If you use caching middleware, it’s
-important to put each half in the right place within the MIDDLEWARE setting.
-That’s because the cache middleware needs to know which headers by which to vary
-the cache storage. Middleware always adds something to the Vary response header
-when it can. UpdateCacheMiddleware runs during the response phase, where
-middleware is run in reverse order, so an item at the top of the list runs last
-during the response phase. Thus, you need to make sure that
-UpdateCacheMiddleware appears before any other middleware that might add
-something to the Vary header. The following middleware modules do so:
-SessionMiddleware adds Cookie GZipMiddleware adds Accept-Encoding
-LocaleMiddleware adds Accept-Language FetchFromCacheMiddleware , on the other
-hand, runs during the request phase, where middleware is applied first-to-last,
-so an item at the top of the list runs first during the request phase. The
-FetchFromCacheMiddleware also needs to run after other middleware updates the
-Vary header, so FetchFromCacheMiddleware must be after any item that does so.
-Previous page and next page Customizing authentication in Django Conditional
-View Processing Back to Top Additional Information Support Django! revolunet
-donated to the Django Software
+Quick Start – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Quick Start Welcome to the
+React documentation! This page will give you an introduction to 80% of the React
+concepts that you will use on a daily basis. You will learn How to create and
+nest components How to add markup and styles How to display data How to render
+conditions and
 ----------------------------------------------------------------------------------------------------
-Index: 16077 <<"chunk_id": 6, "docno": 2149>>
+Index: 1557 <<"chunk_id": 0, "docno": 192>>
 
-between GET and POST data. Cache Framework ¶ The core goals of Django’s cache
-framework are: Less code ¶ A cache should be as fast as possible. Hence, all
-framework code surrounding the cache backend should be kept to the absolute
-minimum, especially for get() operations. Consistency ¶ The cache API should
-provide a consistent interface across the different cache backends.
-Extensibility ¶ The cache API should be extensible at the application level
-based on the developer’s needs (for example, see Cache key transformation ).
-Previous page and next page API stability Third-party distributions of Django
-Back to Top Additional Information Support Django! Kai Diefenbach donated to the
-Django Software Foundation to support Django development. Donate today! Contents
-Design philosophies Overall Loose coupling Less code Quick development Don’t
-repeat yourself (DRY) Explicit is better than implicit Consistency Models
-Explicit is better than implicit Include all relevant domain logic Database API
-SQL efficiency Terse, powerful syntax Option to drop into raw SQL easily, when
-needed URL design Loose coupling Infinite flexibility Encourage best practices
-Definitive URLs Template system Separate logic from presentation Discourage
-redundancy Be decoupled from HTML XML should not be used for template languages
-Assume designer competence Treat whitespace obviously Don’t invent a programming
-language Safety and security Extensibility Views Simplicity Use request objects
-Loose coupling Differentiate between GET and POST Cache Framework Less code
-Consistency Extensibility Browse Prev: API stability Next: Third-party
-distributions of Django Table of contents General Index Python Module Index You
-are here: Django 6.0 documentation Meta-documentation and miscellany Design
-philosophies
+Your First Component – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Your First Component Components are one of the core concepts of React. They are
+the foundation upon which you build user interfaces (UI), which makes them the
+perfect place to start your React journey! You will learn What a component is
+What role components play in a React
 ----------------------------------------------------------------------------------------------------
-Index: 36506 <<"chunk_id": 10, "docno": 5248>>
+Index: 393 <<"chunk_id": 0, "docno": 59>>
 
-endpoint, enabling monitoring and debugging. For configuration instructions, see
-the Using CSP documentation, and refer to the CSP overview for details on
-directives and settings. Limitations and considerations ¶ While CSP is a
-powerful security mechanism, it’s important to understand its limitations and
-implications, particularly when used in Django: Policy exclusion risks: Avoid
-excluding specific paths or responses from CSP protection. Due to the browser’s
-same-origin policy, a vulnerability on an unprotected page (e.g., one allowing
-arbitrary script injection) may be leveraged to attack protected pages.
-Excluding any route can significantly weaken the site’s overall CSP protection.
-Performance overhead: Although typically negligible, CSP adds some processing
-overhead. Nonce generation involves secure randomness for each applicable
-request. For high-traffic applications or resource-constrained environments,
-measure the performance impact accordingly. Browser support: While CSP Levels 1
-and 2 are widely supported, newer directives (CSP Level 3+) or complex policy
-behaviors may vary across browsers. Test your policy across the environments you
-intend to support. Despite these limitations, CSP remains an important and
-recommended security layer for web applications. Understanding its constraints
-will help you design a more effective and reliable deployment. Additional
-security topics ¶ While Django provides good security protection out of the box,
-it is still important to properly deploy your application and take advantage of
-the security protection of the web server, operating system and other
-components. Make sure that your Python code is outside of the web server’s root.
-This will ensure that your Python code is not accidentally served as plain text
-(or accidentally
+Installation – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Installation React has been
+designed from the start for gradual adoption. You can use as little or as much
+React as you need. Whether you want to get a taste of React, add some
+interactivity to an HTML page, or start a complex React-powered app, this
+section will help you get started. Try
 ----------------------------------------------------------------------------------------------------
-Index: 41715 <<"chunk_id": 7, "docno": 6384>>
+Index: 759 <<"chunk_id": 0, "docno": 112>>
 
-get the best performance from their databases. The database optimization
-documentation gathers together links to the relevant documentation and adds
-various tips that outline the steps to take when attempting to optimize your
-database usage. Other database-related tips ¶ Enabling Persistent connections
-can speed up connections to the database accounts for a significant part of the
-request processing time. This helps a lot on virtualized hosts with limited
-network performance, for example. HTTP performance ¶ Middleware ¶ Django comes
-with a few helpful pieces of middleware that can help optimize your site’s
-performance. They include: ConditionalGetMiddleware ¶ Adds support for modern
-browsers to conditionally GET responses based on the ETag and Last-Modified
-headers. It also calculates and sets an ETag if needed. GZipMiddleware ¶
-Compresses responses for all modern browsers, saving bandwidth and transfer
-time. Note that GZipMiddleware is currently considered a security risk, and is
-vulnerable to attacks that nullify the protection provided by TLS/SSL. See the
-warning in GZipMiddleware for more information. Sessions ¶ Using cached sessions
-¶ Using cached sessions may be a way to increase performance by eliminating the
-need to load session data from a slower storage source like the database and
-instead storing frequently used session data in memory. Static files ¶ Static
-files, which by definition are not dynamic, make an excellent target for
-optimization gains. ManifestStaticFilesStorage ¶ By taking advantage of web
-browsers’ caching abilities, you can eliminate network hits entirely for a given
-file after the initial download. ManifestStaticFilesStorage appends a
-content-dependent tag to the filenames of
+Rendering Lists – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Rendering Lists You will often want to display multiple similar components from
+a collection of data. You can use the JavaScript array methods to manipulate an
+array of data. On this page, you’ll use filter() and map() with React to filter
+and transform your array of data into an
 ----------------------------------------------------------------------------------------------------
-Index: 41774 <<"chunk_id": 4, "docno": 6391>>
+Index: 1023 <<"chunk_id": 0, "docno": 146>>
 
-STATIC_ROOT directory where collectstatic will copy them. See How to manage
-static files (e.g. images, JavaScript, CSS) for more information. MEDIA_ROOT and
-MEDIA_URL ¶ Media files are uploaded by your users. They’re untrusted! Make sure
-your web server never attempts to interpret them. For instance, if a user
-uploads a .php file, the web server shouldn’t execute it. Now is a good time to
-check your backup strategy for these files. HTTPS ¶ Any website which allows
-users to log in should enforce site-wide HTTPS to avoid transmitting access
-tokens in clear. In Django, access tokens include the login/password, the
-session cookie, and password reset tokens. (You can’t do much to protect
-password reset tokens if you’re sending them by email.) Protecting sensitive
-areas such as the user account or the admin isn’t sufficient, because the same
-session cookie is used for HTTP and HTTPS. Your web server must redirect all
-HTTP traffic to HTTPS, and only transmit HTTPS requests to Django. Once you’ve
-set up HTTPS, enable the following settings. CSRF_COOKIE_SECURE ¶ Set this to
-True to avoid transmitting the CSRF cookie over HTTP accidentally.
-SESSION_COOKIE_SECURE ¶ Set this to True to avoid transmitting the session
-cookie over HTTP accidentally. Performance optimizations ¶ Setting DEBUG = False
-disables several features that are only useful in development. In addition, you
-can tune the following settings. Sessions ¶ Consider using cached sessions to
-improve performance. If using database-backed sessions, regularly clear old
-sessions to avoid storing unnecessary data. CONN_MAX_AGE ¶ Enabling persistent
-database connections can result in
+Thinking in React – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Quick Start Copy page Copy Thinking
+in React React can change how you think about the designs you look at and the
+apps you build. When you build a user interface with React, you will first break
+it apart into pieces called components . Then, you will describe the different
+visual states for each
 ----------------------------------------------------------------------------------------------------
-Index: 33597 <<"chunk_id": 30, "docno": 4450>>
+Index: 375 <<"chunk_id": 0, "docno": 54>>
 
-a man-in-the-middle attack. Your Django website may sit behind a proxy cache ,
-such as Squid Web Proxy Cache ( http://www.squid-cache.org/ ), that caches pages
-for performance. In this case, each request first would be handled by the proxy,
-and it would be passed to your application only if needed. Your web browser
-caches pages, too. If a web page sends out the appropriate headers, your browser
-will use the local cached copy for subsequent requests to that page, without
-even contacting the web page again to see whether it has changed. Downstream
-caching is a nice efficiency boost, but there’s a danger to it: Many web pages’
-contents differ based on authentication and a host of other variables, and cache
-systems that blindly save pages based purely on URLs could expose incorrect or
-sensitive data to subsequent visitors to those pages. For example, if you
-operate a web email system, then the contents of the “inbox” page depend on
-which user is logged in. If an ISP blindly cached your site, then the first user
-who logged in through that ISP would have their user-specific inbox page cached
-for subsequent visitors to the site. That’s not cool. Fortunately, HTTP provides
-a solution to this problem. A number of HTTP headers exist to instruct
-downstream caches to differ their cache contents depending on designated
-variables, and to tell caching mechanisms not to cache particular pages. We’ll
-look at some of these headers in the sections that follow. Using Vary headers ¶
-The Vary header defines which
+Creating a React App – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Creating
+a React App If you want to build a new app or website with React, we recommend
+starting with a framework. If your app has constraints not well-served by
+existing frameworks, you prefer to build your own framework, or you just want to
+learn the basics of a
 ----------------------------------------------------------------------------------------------------
-Index: 22793 <<"chunk_id": 12, "docno": 2852>>
+Index: 1767 <<"chunk_id": 0, "docno": 222>>
 
-usage details, including security considerations. CSRF protection middleware ¶
-class CsrfViewMiddleware [source] ¶ Adds protection against Cross Site Request
-Forgeries by adding hidden form fields to POST forms and checking requests for
-the correct value. See the Cross Site Request Forgery protection documentation .
-You can add Cross Site Request Forgery protection to individual views using the
-csrf_protect() decorator. X-Frame-Options middleware ¶ class
-XFrameOptionsMiddleware [source] ¶ Simple clickjacking protection via the
-X-Frame-Options header . Content Security Policy middleware ¶ class
-ContentSecurityPolicyMiddleware [source] ¶ New in Django 6.0. Adds support for
-Content Security Policy (CSP), which helps mitigate risks such as Cross-Site
-Scripting (XSS) and data injection attacks by controlling the sources of content
-that can be loaded in the browser. See the Overview documentation for details on
-configuring policies. This middleware sets the following headers on the response
-depending on the available settings: Content-Security-Policy , based on
-SECURE_CSP . Content-Security-Policy-Report-Only , based on
-SECURE_CSP_REPORT_ONLY . Middleware ordering ¶ Here are some hints about the
-ordering of various Django middleware classes: SecurityMiddleware It should go
-near the top of the list if you’re going to turn on the SSL redirect as that
-avoids running through a bunch of other unnecessary middleware.
-UpdateCacheMiddleware Before those that modify the Vary header (
-SessionMiddleware , GZipMiddleware , LocaleMiddleware ). GZipMiddleware Before
-any middleware that may change or use the response body. After
-UpdateCacheMiddleware : Modifies Vary header. SessionMiddleware Before any
-middleware that may raise an exception to trigger an error view (such as
-PermissionDenied ) if you’re using CSRF_USE_SESSIONS .
+Build a React app from Scratch – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Build a
+React app from Scratch If your app has constraints not well-served by existing
+frameworks, you prefer to build your own framework, or you just want to learn
+the basics of a React app, you can build a React app from scratch. Deep Dive
+Consider using
 ----------------------------------------------------------------------------------------------------
-Index: 1088 <<"chunk_id": 13, "docno": 165>>
+Index: 282 <<"chunk_id": 0, "docno": 40>>
 
-the cookie and adds a custom request header with the token in all following
-requests. The server compares the received cookie value to the request header
-value and rejects the request if the values are missing or don't match. This
-technique is effective because all browsers implement the same origin policy .
-Only code from the website on which cookies are set can read the cookies from
-that site and set custom headers on requests to that site. That means only your
-application can read this cookie token and set the custom header. The malicious
-code on evil.com can't. HttpClient XSRF/CSRF security HttpClient supports a
-common mechanism used to prevent XSRF attacks. When performing HTTP requests, an
-interceptor reads a token from a cookie, by default XSRF-TOKEN , and sets it as
-an HTTP header, X-XSRF-TOKEN . Because only code that runs on your domain could
-read the cookie, the backend can be certain that the HTTP request came from your
-client application and not an attacker. By default, an interceptor sends this
-header on all mutating requests (such as POST ) to relative and same origin
-URLs, but not on GET or HEAD requests. Why not protect GET requests? CSRF
-protection is only needed for requests that can change state on the backend. By
-their nature, CSRF attacks cross domain boundaries, and the web's same-origin
-policy will prevent an attacking page from retrieving the results of
-authenticated GET requests. To take advantage of this, your server needs to set
-a token in a JavaScript readable
+Add React to an Existing Project – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Installation Copy page Copy Add
+React to an Existing Project If you want to add some interactivity to your
+existing project, you don’t have to rewrite it in React. Add React to your
+existing stack, and render interactive React components anywhere. Note You need
+to install Node.js for local development. Although
 ----------------------------------------------------------------------------------------------------
-Index: 3751 <<"chunk_id": 4, "docno": 505>>
+Index: 4565 <<"chunk_id": 2, "docno": 665>>
 
-of little kittens. When users would go to that page, their profiles would get
-deleted while they are looking at images of fluffy cats. How can you prevent
-that? Basically for each request that modifies content on the server you would
-have to either use a one-time token and store that in the cookie and also
-transmit it with the form data. After receiving the data on the server again,
-you would then have to compare the two tokens and ensure they are equal. Why
-does Flask not do that for you? The ideal place for this to happen is the form
-validation framework, which does not exist in Flask. JSON Security ¶ In Flask
-0.10 and lower, jsonify() did not serialize top-level arrays to JSON. This was
-because of a security vulnerability in ECMAScript 4. ECMAScript 5 closed this
-vulnerability, so only extremely old browsers are still vulnerable. All of these
-browsers have other more serious vulnerabilities , so this behavior was changed
-and jsonify() now supports serializing arrays. Security Headers ¶ Browsers
-recognize various response headers in order to control security. We recommend
-reviewing each of the headers below for use in your application. The
-Flask-Talisman extension can be used to manage HTTPS and the security headers
-for you. HTTP Strict Transport Security (HSTS) ¶ Tells the browser to convert
-all HTTP requests to HTTPS, preventing man-in-the-middle (MITM) attacks.
-response . headers [ 'Strict-Transport-Security' ] = 'max-age=31536000;
-includeSubDomains'
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
-Content Security Policy (CSP) ¶ Tell the browser where it can load various types
-of
+React also includes a special profiling build. To use profiling builds, you have
+to use react-dom/profiling instead of react-dom/client . We recommend that you
+alias react-dom/client to react-dom/profiling at build time via bundler aliases
+instead of manually updating each react-dom/client import. Your framework might
+have built-in support for enabling React’s profiling build. Tracks Scheduler The
+Scheduler is an internal React concept used for managing tasks with different
+priorities. This track consists of 4 subtracks, each representing work of a
+specific priority: Blocking - The synchronous updates, which could’ve been
+initiated by user interactions. Transition - Non-blocking work that happens in
+the background, usually initiated via startTransition . Suspense - Work related
+to Suspense boundaries, such as displaying fallbacks or revealing content. Idle
+- The lowest priority work that is done when there are no other tasks with
+higher priority. Renders Every render pass consists of multiple phases that you
+can see on a timeline: Update - this is what caused a new render pass. Render -
+React renders the updated subtree by calling render functions of components. You
+can see the rendered components subtree on Components track , which follows the
+same color scheme. Commit - After rendering components, React will submit the
+changes to the DOM and run layout effects, like useLayoutEffect . Remaining
+Effects - React runs passive effects of a rendered subtree. This usually happens
+after the paint, and this is when React runs hooks like useEffect . One known
+exception is user interactions, like clicks, or other discrete events. In this
+scenario,
 ----------------------------------------------------------------------------------------------------
-Index: 40824 <<"chunk_id": 3, "docno": 6231>>
+Index: 1063 <<"chunk_id": 0, "docno": 150>>
 
-application that uses GET requests for admin forms is a security risk: it can be
-easy for an attacker to mimic a form’s request to gain access to sensitive parts
-of the system. POST , coupled with other protections like Django’s CSRF
-protection offers more control over access. On the other hand, GET is suitable
-for things like a web search form, because the URLs that represent a GET request
-can easily be bookmarked, shared, or resubmitted. Django’s role in forms ¶
-Handling forms is a complex business. Consider Django’s admin, where numerous
-items of data of several different types may need to be prepared for display in
-a form, rendered as HTML, edited using a convenient interface, returned to the
-server, validated and cleaned up, and then saved or passed on for further
-processing. Django’s form functionality can simplify and automate vast portions
-of this work, and can also do it more securely than most programmers would be
-able to do in code they wrote themselves. Django handles three distinct parts of
-the work involved in forms: preparing and restructuring data to make it ready
-for rendering creating HTML forms for the data receiving and processing
-submitted forms and data from the client It is possible to write code that does
-all of this manually, but Django can take care of it all for you. Forms in
-Django ¶ We’ve described HTML forms briefly, but an HTML <form> is just one part
-of the machinery required. In the context of a web application, ‘form’ might
+Conditional Rendering – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Conditional Rendering Your components will often need to display different
+things depending on different conditions. In React, you can conditionally render
+JSX using JavaScript syntax like if statements, && , and ? : operators. You will
+learn How to return different JSX depending on a condition How to conditionally
 ----------------------------------------------------------------------------------------------------
-Index: 27642 <<"chunk_id": 3, "docno": 4017>>
+Index: 1743 <<"chunk_id": 0, "docno": 218>>
 
-The middleware will only add a trailing slash and redirect (by looking at the
-APPEND_SLASH setting) if the resulting URL refers to a valid flatpage. Redirects
-are permanent (301 status code). If it doesn’t find a match, the request
-continues to be processed as usual. The middleware only gets activated for 404s
-– not for 500s or responses of any other status code. Flatpages will not apply
-view middleware Because the FlatpageFallbackMiddleware is applied only after URL
-resolution has failed and produced a 404, the response it returns will not apply
-any view middleware methods. Only requests which are successfully routed to a
-view via normal URL resolution apply view middleware. Note that the order of
-MIDDLEWARE matters. Generally, you can put FlatpageFallbackMiddleware at the end
-of the list. This means it will run first when processing the response, and
-ensures that any other response-processing middleware see the real flatpage
-response rather than the 404. For more on middleware, read the middleware docs .
-Ensure that your 404 template works Note that the FlatpageFallbackMiddleware
-only steps in once another view has successfully produced a 404 response. If
-another view or middleware class attempts to produce a 404 but ends up raising
-an exception instead, the response will become an HTTP 500 (“Internal Server
-Error”) and the FlatpageFallbackMiddleware will not attempt to serve a flatpage.
-How to add, change and delete flatpages ¶ Warning Permissions to add or edit
-flatpages should be restricted to trusted users. Flatpages are defined by raw
-HTML and are not sanitized by
+Responding to Events – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Responding to Events React lets you add event handlers to your JSX. Event
+handlers are your own functions that will be triggered in response to
+interactions like clicking, hovering, focusing form inputs, and so on. You will
+learn Different ways to write an event handler How to pass event
 ----------------------------------------------------------------------------------------------------
-Index: 36505 <<"chunk_id": 9, "docno": 5248>>
+Index: 1274 <<"chunk_id": 71, "docno": 161>>
 
-For example, if your site runs on example.com , you would want to serve uploaded
-content (the MEDIA_URL setting) from something like usercontent-example.com .
-It’s not sufficient to serve content from a subdomain like
-usercontent.example.com . Beyond this, applications may choose to define a list
-of allowable file extensions for user uploaded files and configure the web
-server to only serve such files. Form Submissions ¶ Form submissions containing
-files are not limited by DATA_UPLOAD_MAX_MEMORY_SIZE . Under ASGI, the entire
-request may be spooled to disk before any file size validation is performed. It
-is strongly advised that you limit the maximum request body size in your web
-server configuration to prevent denial of service (DOS) attacks. Content
-Security Policy ¶ Content Security Policy (CSP) is a browser security mechanism
-that helps protect web applications against attacks such as cross-site scripting
-(XSS) and other content injection attacks. CSP allows web applications to define
-which sources of content are trusted, instructing the browser to load, execute,
-or render resources only from those sources. This effectively creates an
-allowlist of content origins, reducing the risk of malicious code execution. Key
-benefits of enabling CSP include: Mitigating XSS attacks by blocking inline
-scripts and restricting external script loading. Controlling which external
-resources (e.g., images, fonts, stylesheets) can be loaded. Preventing unwanted
-framing of your site to protect against clickjacking. Reporting violations to a
-specified endpoint, enabling monitoring and debugging. For configuration
-instructions, see the Using CSP documentation, and refer to the CSP overview for
-details on directives and settings.
+Display the location for each move in the format (row, col) in the move history
+list. Throughout this tutorial, you’ve touched on React concepts including
+elements, components, props, and state. Now that you’ve seen how these concepts
+work when building a game, check out Thinking in React to see how the same React
+concepts work when building an app’s UI. Previous Quick Start Next Thinking in
+React Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004
+Learn React Quick Start Installation Describing the UI Adding Interactivity
+Managing State Escape Hatches API Reference React APIs React DOM APIs Community
+Code of Conduct Meet the Team Docs Contributors Acknowledgements More Blog React
+Native Privacy Terms On this page Overview What are you building? Setup for the
+tutorial Overview Inspecting the starter code Building the board Passing data
+through props Making an interactive component React Developer Tools Completing
+the game Lifting state up Why immutability is important Taking turns Declaring a
+winner Adding time travel Storing a history of moves Lifting state up, again
+Showing the past moves Picking a key Implementing time travel Final cleanup
+Wrapping up
 ----------------------------------------------------------------------------------------------------
-Index: 50853 <<"chunk_id": 6, "docno": 8103>>
+Index: 554 <<"chunk_id": 0, "docno": 84>>
 
-CSRF protection, but a few do not. Solution: rather than disabling the
-middleware and applying csrf_protect to all the views that need it, enable the
-middleware and use csrf_exempt() . Setting the token when
-CsrfViewMiddleware.process_view() is not used ¶ There are cases when
-CsrfViewMiddleware.process_view may not have run before your view is run - 404
-and 500 handlers, for example - but you still need the CSRF token in a form.
-Solution: use requires_csrf_token() Including the CSRF token in an unprotected
-view ¶ There may be some views that are unprotected and have been exempted by
-csrf_exempt , but still need to include the CSRF token. Solution: use
-csrf_exempt() followed by requires_csrf_token() . (i.e. requires_csrf_token
-should be the innermost decorator). Protecting a view for only one path ¶ A view
-needs CSRF protection under one set of conditions only, and mustn’t have it for
-the rest of the time. Solution: use csrf_exempt() for the whole view function,
-and csrf_protect() for the path within it that needs protection. Example: from
-django.views.decorators.csrf import csrf_exempt , csrf_protect @csrf_exempt def
-my_view ( request ): @csrf_protect def protected_path ( request ): do_something
-() if some_condition (): return protected_path ( request ) else :
-do_something_else () Protecting a page that uses AJAX without an HTML form ¶ A
-page makes a POST request via AJAX, and the page does not have an HTML form with
-a csrf_token that would cause the required CSRF cookie to be sent. Solution: use
-ensure_csrf_cookie() on the view that sends the page. CSRF protection in
-reusable applications
+Escape Hatches – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Escape Hatches
+Advanced Some of your components may need to control and synchronize with
+systems outside of React. For example, you might need to focus an input using
+the browser API, play and pause a video player implemented without React, or
+connect and listen to messages from a remote server. In this
 ----------------------------------------------------------------------------------------------------
-Index: 15217 <<"chunk_id": 27, "docno": 2002>>
+Index: 742 <<"chunk_id": 0, "docno": 110>>
 
-JSON encoder class you can pass the encoder parameter to the constructor method:
->>> response = JsonResponse ( data , encoder = MyJSONEncoder )
-StreamingHttpResponse objects ¶ class StreamingHttpResponse [source] ¶ The
-StreamingHttpResponse class is used to stream a response from Django to the
-browser. Advanced usage StreamingHttpResponse is somewhat advanced, in that it
-is important to know whether you’ll be serving your application synchronously
-under WSGI or asynchronously under ASGI, and adjust your usage appropriately.
-Please read these notes with care. An example usage of StreamingHttpResponse
-under WSGI is streaming content when generating the response would take too long
-or uses too much memory. For instance, it’s useful for generating large CSV
-files . There are performance considerations when doing this, though. Django,
-under WSGI, is designed for short-lived requests. Streaming responses will tie a
-worker process for the entire duration of the response. This may result in poor
-performance. Generally speaking, you would perform expensive tasks outside of
-the request-response cycle, rather than resorting to a streamed response. When
-serving under ASGI, however, a StreamingHttpResponse need not stop other
-requests from being served whilst waiting for I/O. This opens up the possibility
-of long-lived requests for streaming content and implementing patterns such as
-long-polling, and server-sent events. Even under ASGI note,
-StreamingHttpResponse should only be used in situations where it is absolutely
-required that the whole content isn’t iterated before transferring the data to
-the client. Because the content can’t be accessed, many middleware can’t
-function normally. For example the ETag and Content-Length headers
+Reacting to Input with State – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Reacting to Input with State React provides a declarative way to manipulate the
+UI. Instead of manipulating individual pieces of the UI directly, you describe
+the different states that your component can be in, and switch between them in
+response to the user input. This is similar
 ----------------------------------------------------------------------------------------------------
-Index: 27903 <<"chunk_id": 1, "docno": 4054>>
+Index: 681 <<"chunk_id": 0, "docno": 104>>
 
-have already been set by another layer. Settings ¶ The
-ContentSecurityPolicyMiddleware is configured using the following settings:
-SECURE_CSP : defines the enforced Content Security Policy .
-SECURE_CSP_REPORT_ONLY : defines a report-only Content Security Policy . These
-settings can be used independently or together Use SECURE_CSP alone to enforce a
-policy that has already been tested and verified. Use SECURE_CSP_REPORT_ONLY on
-its own to evaluate a new policy without disrupting site behavior. This mode
-does not block violations, it only logs them. It’s useful for testing and
-monitoring, but provides no protection against active threats. Use both to
-maintain an enforced baseline while experimenting with changes. Even for
-well-established policies, continuing to collect reports can help detect
-regressions, unexpected changes in behavior, or potential tampering in
-production environments. Policy violation reports ¶ When a CSP violation occurs,
-browsers typically log details to the developer console, providing immediate
-feedback during development. To also receive these reports programmatically, the
-policy must include a reporting directive such as report-uri that specifies
-where violation data should be sent. Django supports configuring these
-directives via the SECURE_CSP_REPORT_ONLY settings, but reports will only be
-issued by the browser if the policy explicitly includes a valid reporting
-directive. Django does not provide built-in functionality to receive, store, or
-process violation reports. To collect and analyze them, you must implement your
-own reporting endpoint or integrate with a third-party monitoring service. CSP
-constants ¶ Django provides predefined constants representing common CSP source
-expression keywords such as 'self' , 'none' , and 'unsafe-inline' . These
-constants
+Passing Props to a Component – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Passing Props to a Component React components use props to communicate with each
+other. Every parent component can pass some information to its child components
+by giving them props. Props might remind you of HTML attributes, but you can
+pass any JavaScript value through them, including
 ----------------------------------------------------------------------------------------------------
-Index: 18581 <<"chunk_id": 3, "docno": 2457>>
+Index: 1433 <<"chunk_id": 0, "docno": 179>>
 
-(and other requests that are defined as ‘safe’ by RFC 9110 Section 9.2.1 ).
-These requests ought never to have any potentially dangerous side effects, and
-so a CSRF attack with a GET request ought to be harmless. RFC 9110 Section 9.2.1
-defines POST, PUT, and DELETE as ‘unsafe’, and all other methods are also
-assumed to be unsafe, for maximum protection. The CSRF protection cannot protect
-against man-in-the-middle attacks, so use HTTPS with HTTP Strict Transport
-Security . It also assumes validation of the HOST header and that there aren’t
-any cross-site scripting vulnerabilities on your site (because XSS
-vulnerabilities already let an attacker do anything a CSRF vulnerability allows
-and much worse). Removing the Referer header To avoid disclosing the referrer
-URL to third-party sites, you might want to disable the referer on your site’s
-<a> tags. For example, you might use the <meta name="referrer"
-content="no-referrer"> tag or include the Referrer-Policy: no-referrer header.
-Due to the CSRF protection’s strict referer checking on HTTPS requests, those
-techniques cause a CSRF failure on requests with ‘unsafe’ methods. Instead, use
-alternatives like <a rel="noreferrer" ...>" for links to third-party sites.
-Limitations ¶ Subdomains within a site will be able to set cookies on the client
-for the whole domain. By setting the cookie and using a corresponding token,
-subdomains will be able to circumvent the CSRF protection. The only way to avoid
-this is to ensure that subdomains are controlled by trusted users (or, are at
-least unable to set cookies). Note that even without CSRF, there
+Manipulating the DOM with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Manipulating the DOM with Refs React automatically updates the DOM to match your
+render output, so your components won’t often need to manipulate it. However,
+sometimes you might need access to the DOM elements managed by React—for
+example, to focus a node, scroll to it, or measure
+----------------------------------------------------------------------------------------------------
+Index: 428 <<"chunk_id": 0, "docno": 67>>
+
+Adding Interactivity – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Adding Interactivity
+Some things on the screen update in response to user input. For example,
+clicking an image gallery switches the active image. In React, data that changes
+over time is called state. You can add state to any component, and update it as
+needed. In this chapter, you’ll learn how to
+----------------------------------------------------------------------------------------------------
+Index: 2071 <<"chunk_id": 0, "docno": 267>>
+
+Introduction – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React React Compiler Copy page Copy Introduction
+React Compiler is a new build-time tool that automatically optimizes your React
+app. It works with plain JavaScript, and understands the Rules of React , so you
+don’t need to rewrite any code to use it. You will learn What React Compiler
+does Getting started with the compiler Incremental adoption
+----------------------------------------------------------------------------------------------------
+Index: 887 <<"chunk_id": 0, "docno": 126>>
+
+Writing Markup with JSX – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Writing Markup with JSX JSX is a syntax extension for JavaScript that lets you
+write HTML-like markup inside a JavaScript file. Although there are other ways
+to write components, most React developers prefer the conciseness of JSX, and
+most codebases use it. You will learn Why React
+----------------------------------------------------------------------------------------------------
+Index: 1670 <<"chunk_id": 0, "docno": 204>>
+
+Setup – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog GET
+STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Setup React integrates with
+tools like editors, TypeScript, browser extensions, and compilers. This section
+will help you get your environment set up. Editor Setup See our recommended
+editors and learn how to set them up to work with React. Using TypeScript
+TypeScript is a popular way to add type definitions to JavaScript codebases.
+----------------------------------------------------------------------------------------------------
+Index: 1837 <<"chunk_id": 0, "docno": 234>>
+
+Reusing Logic with Custom Hooks – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Reusing Logic with Custom Hooks React comes with several built-in Hooks like
+useState , useContext , and useEffect . Sometimes, you’ll wish that there was a
+Hook for some more specific purpose: for example, to fetch data, to keep track
+of whether the user is online, or
+----------------------------------------------------------------------------------------------------
+Index: 843 <<"chunk_id": 0, "docno": 123>>
+
+You Might Not Need an Effect – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy You
+Might Not Need an Effect Effects are an escape hatch from the React paradigm.
+They let you “step outside” of React and synchronize your components with some
+external system like a non-React widget, network, or the browser DOM. If there
+is no external system involved
+----------------------------------------------------------------------------------------------------
+Index: 1590 <<"chunk_id": 0, "docno": 197>>
+
+Synchronizing with Effects – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Synchronizing with Effects Some components need to synchronize with external
+systems. For example, you might want to control a non-React component based on
+the React state, set up a server connection, or send an analytics log when a
+component appears on the screen. Effects let you run some code
+----------------------------------------------------------------------------------------------------
+Index: 1780 <<"chunk_id": 0, "docno": 224>>
+
+Debugging and Troubleshooting – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React React Compiler Copy page Copy
+Debugging and Troubleshooting This guide helps you identify and fix issues when
+using React Compiler. Learn how to debug compilation problems and resolve common
+issues. You will learn The difference between compiler errors and runtime issues
+Common patterns that break compilation Step-by-step debugging workflow
+Understanding Compiler Behavior React Compiler
+----------------------------------------------------------------------------------------------------
+Index: 6100 <<"chunk_id": 10, "docno": 882>>
+
+effects. Instead, React will throw away the new tree completely, wait for the
+asynchronous operation to finish, and then retry rendering again from scratch.
+React will render the retry attempt concurrently, and without blocking the
+browser. Layout Effects with Suspense : When a tree re-suspends and reverts to a
+fallback, React will now clean up layout effects, and then re-create them when
+the content inside the boundary is shown again. This fixes an issue which
+prevented component libraries from correctly measuring layout when used with
+Suspense. New JS Environment Requirements : React now depends on modern browsers
+features including Promise , Symbol , and Object.assign . If you support older
+browsers and devices such as Internet Explorer which do not provide modern
+browser features natively or have non-compliant implementations, consider
+including a global polyfill in your bundled application. Other Notable Changes
+React Components can now render undefined : React no longer warns if you return
+undefined from a component. This makes the allowed component return values
+consistent with values that are allowed in the middle of a component tree. We
+suggest to use a linter to prevent mistakes like forgetting a return statement
+before JSX. In tests, act warnings are now opt-in: If you’re running end-to-end
+tests, the act warnings are unnecessary. We’ve introduced an opt-in mechanism so
+you can enable them only for unit tests where they are useful and beneficial. No
+warning about setState on unmounted components: Previously, React warned about
+memory leaks when you call setState on an unmounted component. This warning was
+----------------------------------------------------------------------------------------------------
+Index: 6235 <<"chunk_id": 21, "docno": 906>>
+
+props as attributes rather than properties. In React 19, we’ve added support for
+properties that works on the client and during SSR with the following strategy:
+Server Side Rendering : props passed to a custom element will render as
+attributes if their type is a primitive value like string , number , or the
+value is true . Props with non-primitive types like object , symbol , function ,
+or value false will be omitted. Client Side Rendering : props that match a
+property on the Custom Element instance will be assigned as properties,
+otherwise they will be assigned as attributes. Thanks to Joey Arhar for driving
+the design and implementation of Custom Element support in React. How to upgrade
+See the React 19 Upgrade Guide for step-by-step instructions and a full list of
+breaking and notable changes. Note: this post was originally published
+04/25/2024 and has been updated to 12/05/2024 with the stable release. Previous
+Sunsetting Create React App Next React Compiler Beta Release and Roadmap
+Copyright © Meta Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn
+React Quick Start Installation Describing the UI Adding Interactivity Managing
+State Escape Hatches API Reference React APIs React DOM APIs Community Code of
+Conduct Meet the Team Docs Contributors Acknowledgements More Blog React Native
+Privacy Terms
+----------------------------------------------------------------------------------------------------
+Index: 812 <<"chunk_id": 0, "docno": 119>>
+
+Using TypeScript – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Setup Copy page Copy Using
+TypeScript TypeScript is a popular way to add type definitions to JavaScript
+codebases. Out of the box, TypeScript supports JSX and you can get full React
+Web support by adding @types/react and @types/react-dom to your project. You
+will learn TypeScript with React Components Examples of typing with Hooks Common
+types
+----------------------------------------------------------------------------------------------------
+Index: 5922 <<"chunk_id": 11, "docno": 857>>
+
+Effects are created . With Strict Mode in React 18, React will simulate
+unmounting and remounting the component in development mode: * React mounts the
+component . * Layout effects are created . * Effects are created . * React
+simulates unmounting the component . * Layout effects are destroyed . * Effects
+are destroyed . * React simulates mounting the component with the previous state
+. * Layout effects are created . * Effects are created . See docs for ensuring
+reusable state here . New Hooks useId useId is a new Hook for generating unique
+IDs on both the client and server, while avoiding hydration mismatches. It is
+primarily useful for component libraries integrating with accessibility APIs
+that require unique IDs. This solves an issue that already exists in React 17
+and below, but it’s even more important in React 18 because of how the new
+streaming server renderer delivers HTML out-of-order. See docs here . Note useId
+is not for generating keys in a list . Keys should be generated from your data.
+useTransition useTransition and startTransition let you mark some state updates
+as not urgent. Other state updates are considered urgent by default. React will
+allow urgent state updates (for example, updating a text input) to interrupt
+non-urgent state updates (for example, rendering a list of search results). See
+docs here . useDeferredValue useDeferredValue lets you defer re-rendering a
+non-urgent part of the tree. It is similar to debouncing, but has a few
+advantages compared to it. There is no fixed time
+----------------------------------------------------------------------------------------------------
+Index: 2100 <<"chunk_id": 0, "docno": 272>>
+
+React Compiler – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy React Compiler
+Introduction Learn what React Compiler does and how it automatically optimizes
+your React application by handling memoization for you, eliminating the need for
+manual useMemo , useCallback , and React.memo . Installation Get started with
+installing React Compiler and learn how to configure it with your build tools.
+Incremental Adoption
+----------------------------------------------------------------------------------------------------
+Index: 656 <<"chunk_id": 0, "docno": 101>>
+
+React Developer Tools – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Setup Copy page Copy React Developer
+Tools Use React Developer Tools to inspect React components , edit props and
+state , and identify performance problems. You will learn How to install React
+Developer Tools Browser extension The easiest way to debug websites built with
+React is to install the React Developer Tools browser extension.
+----------------------------------------------------------------------------------------------------
+Index: 1714 <<"chunk_id": 0, "docno": 214>>
+
+Passing Data Deeply with Context – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Passing Data Deeply with Context Usually, you will pass information from a
+parent component to a child component via props. But passing props can become
+verbose and inconvenient if you have to pass them through many components in the
+middle, or if many components in your app
+----------------------------------------------------------------------------------------------------
+Index: 1313 <<"chunk_id": 0, "docno": 166>>
+
+Importing and Exporting Components – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Importing and Exporting Components The magic of components lies in their
+reusability: you can create components that are composed of other components.
+But as you nest more and more components, it often makes sense to start
+splitting them into different files. This lets you keep your files
+----------------------------------------------------------------------------------------------------
+Index: 1563 <<"chunk_id": 6, "docno": 192>>
+
+use components for reusable pieces like buttons, but also for larger pieces like
+sidebars, lists, and ultimately, complete pages! Components are a handy way to
+organize UI code and markup, even if some of them are only used once.
+React-based frameworks take this a step further. Instead of using an empty HTML
+file and letting React “take over” managing the page with JavaScript, they also
+generate the HTML automatically from your React components. This allows your app
+to show some content before the JavaScript code loads. Still, many websites only
+use React to add interactivity to existing HTML pages. They have many root
+components instead of a single one for the entire page. You can use as much—or
+as little—React as you need. Recap You’ve just gotten your first taste of React!
+Let’s recap some key points. React lets you create components, reusable UI
+elements for your app. In a React app, every piece of UI is a component. React
+components are regular JavaScript functions except: Their names always begin
+with a capital letter. They return JSX markup. Try out some challenges 1 .
+Export the component 2 . Fix the return statement 3 . Spot the mistake 4 . Your
+own component Challenge 1 of 4 : Export the component This sandbox doesn’t work
+because the root component is not exported: App.js App.js Reload Clear Fork
+function Profile ( ) { return ( < img src =
+"https://react.dev/images/docs/scientists/lICfvbD.jpg" alt = "Aklilu Lemma" /> )
+; } Try to fix it yourself before looking at the
+----------------------------------------------------------------------------------------------------
+Index: 592 <<"chunk_id": 0, "docno": 91>>
+
+Incremental Adoption – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React React Compiler Copy page Copy
+Incremental Adoption React Compiler can be adopted incrementally, allowing you
+to try it on specific parts of your codebase first. This guide shows you how to
+gradually roll out the compiler in existing projects. You will learn Why
+incremental adoption is recommended Using Babel overrides for directory-based
+adoption Using the
+----------------------------------------------------------------------------------------------------
+Index: 1644 <<"chunk_id": 0, "docno": 202>>
+
+State: A Component's Memory – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State: A Component's Memory Components often need to change what’s on the screen
+as a result of an interaction. Typing into the form should update the input
+field, clicking “next” on an image carousel should change which image is
+displayed, clicking “buy” should put a product in the
+----------------------------------------------------------------------------------------------------
+Index: 5913 <<"chunk_id": 2, "docno": 857>>
+
+developers to know how concurrency works under the hood. However, Concurrent
+React is more important than a typical implementation detail — it’s a
+foundational update to React’s core rendering model. So while it’s not super
+important to know how concurrency works, it may be worth knowing what it is at a
+high level. A key property of Concurrent React is that rendering is
+interruptible. When you first upgrade to React 18, before adding any concurrent
+features, updates are rendered the same as in previous versions of React — in a
+single, uninterrupted, synchronous transaction. With synchronous rendering, once
+an update starts rendering, nothing can interrupt it until the user can see the
+result on screen. In a concurrent render, this is not always the case. React may
+start rendering an update, pause in the middle, then continue later. It may even
+abandon an in-progress render altogether. React guarantees that the UI will
+appear consistent even if a render is interrupted. To do this, it waits to
+perform DOM mutations until the end, once the entire tree has been evaluated.
+With this capability, React can prepare new screens in the background without
+blocking the main thread. This means the UI can respond immediately to user
+input even if it’s in the middle of a large rendering task, creating a fluid
+user experience. Another example is reusable state. Concurrent React can remove
+sections of the UI from the screen, then add them back later while reusing the
+previous state. For example, when a user tabs away from a
+----------------------------------------------------------------------------------------------------
+Index: 1690 <<"chunk_id": 0, "docno": 209>>
+
+JavaScript in JSX with Curly Braces – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+JavaScript in JSX with Curly Braces JSX lets you write HTML-like markup inside a
+JavaScript file, keeping rendering logic and content in the same place.
+Sometimes you will want to add a little JavaScript logic or reference a dynamic
+property inside that markup. In this
+----------------------------------------------------------------------------------------------------
+Index: 2007 <<"chunk_id": 0, "docno": 257>>
+
+Editor Setup – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Setup Copy page Copy Editor Setup A properly
+configured editor can make code clearer to read and faster to write. It can even
+help you catch bugs as you write them! If this is your first time setting up an
+editor or you’re looking to tune up your current editor, we have a few
+recommendations.
+----------------------------------------------------------------------------------------------------
+Index: 1001 <<"chunk_id": 0, "docno": 141>>
+
+Queueing a Series of State Updates – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Queueing a Series of State Updates Setting a state variable will queue another
+render. But sometimes you might want to perform multiple operations on the value
+before queueing the next render. To do this, it helps to understand how React
+batches state updates. You will learn
+----------------------------------------------------------------------------------------------------
+Index: 2039 <<"chunk_id": 0, "docno": 264>>
+
+Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Separating Events from Effects Event handlers only re-run when you perform the
+same interaction again. Unlike event handlers, Effects re-synchronize if some
+value they read, like a prop or a state variable, is different from what it was
+during the last render. Sometimes, you also want a mix
+----------------------------------------------------------------------------------------------------
+Index: 1891 <<"chunk_id": 0, "docno": 239>>
+
+Keeping Components Pure – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Keeping Components Pure Some JavaScript functions are pure. Pure functions only
+perform a calculation and nothing more. By strictly only writing your components
+as pure functions, you can avoid an entire class of baffling bugs and
+unpredictable behavior as your codebase grows. To get these benefits, though,
+there
+----------------------------------------------------------------------------------------------------
+Index: 264 <<"chunk_id": 5, "docno": 37>>
+
+and provide feedback… Read more Introducing Zero-Bundle-Size React Server
+Components December 21, 2020 2020 has been a long year. As it comes to an end we
+wanted to share a special Holiday Update on our research into zero-bundle-size
+React Server Components. To introduce React Server Components, we have prepared
+a talk and a demo. If you want, you can check them out during the holidays, or
+later when work picks back up in the new year… Read more All release notes Not
+every React release deserves its own blog post, but you can find a detailed
+changelog for every release in the CHANGELOG.md file in the React repository, as
+well as on the Releases page. Older posts See the older posts. Copyright © Meta
+Platforms, Inc no uwu plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start
+Installation Describing the UI Adding Interactivity Managing State Escape
+Hatches API Reference React APIs React DOM APIs Community Code of Conduct Meet
+the Team Docs Contributors Acknowledgements More Blog React Native Privacy Terms
+----------------------------------------------------------------------------------------------------
+Index: 1805 <<"chunk_id": 0, "docno": 229>>
+
+Updating Objects in State – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Updating Objects in State State can hold any kind of JavaScript value, including
+objects. But you shouldn’t change objects that you hold in the React state
+directly. Instead, when you want to update an object, you need to create a new
+one (or make a copy of an
+----------------------------------------------------------------------------------------------------
+Index: 5011 <<"chunk_id": 2, "docno": 727>>
+
+created locally in render. When render is kept pure, React can understand how to
+prioritize which updates are most important for the user to see first. This is
+made possible because of render purity: since components don’t have side effects
+in render , React can pause rendering components that aren’t as important to
+update, and only come back to them later when it’s needed. Concretely, this
+means that rendering logic can be run multiple times in a way that allows React
+to give your user a pleasant user experience. However, if your component has an
+untracked side effect – like modifying the value of a global variable during
+render – when React runs your rendering code again, your side effects will be
+triggered in a way that won’t match what you want. This often leads to
+unexpected bugs that can degrade how your users experience your app. You can see
+an example of this in the Keeping Components Pure page . How does React run your
+code? React is declarative: you tell React what to render, and React will figure
+out how best to display it to your user. To do this, React has a few phases
+where it runs your code. You don’t need to know about all of these phases to use
+React well. But at a high level, you should know about what code runs in render
+, and what runs outside of it. Rendering refers to calculating what the next
+version of your UI should look like. After rendering, React takes this
+----------------------------------------------------------------------------------------------------
+Index: 6461 <<"chunk_id": 3, "docno": 946>>
+
+clear all the existing HTML content inside the domNode before rendering the
+React component into it. If your domNode contains HTML generated by React on the
+server or during the build, use hydrate() instead, which attaches the event
+handlers to the existing HTML. If you call render on the same domNode more than
+once, React will update the DOM as necessary to reflect the latest JSX you
+passed. React will decide which parts of the DOM can be reused and which need to
+be recreated by “matching it up” with the previously rendered tree. Calling
+render on the same domNode again is similar to calling the set function on the
+root component: React avoids unnecessary DOM updates. If your app is fully built
+with React, you’ll likely have only one render call in your app. (If you use a
+framework, it might do this call for you.) When you want to render a piece of
+JSX in a different part of the DOM tree that isn’t a child of your component
+(for example, a modal or a tooltip), use createPortal instead of render . Usage
+Call render to display a React component inside a browser DOM node . import {
+render } from 'react-dom' ; import App from './App.js' ; render ( <App /> ,
+document.getElementById('root') ) ; Rendering the root component In apps fully
+built with React, you will usually only do this once at startup —to render the
+“root” component. index.js App.js index.js Reset Fork import './styles.css' ;
+import { render } from 'react-dom'
+----------------------------------------------------------------------------------------------------
+Index: 712 <<"chunk_id": 0, "docno": 107>>
+
+Updating Arrays in State – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+Updating Arrays in State Arrays are mutable in JavaScript, but you should treat
+them as immutable when you store them in state. Just like with objects, when you
+want to update an array stored in state, you need to create a new one (or make a
+copy of
 ----------------------------------------------------------------------------------------------------

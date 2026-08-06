@@ -1,523 +1,1215 @@
-Index: 50438 <<"chunk_id": 0, "docno": 8029>>
+Index: 9087 <<"chunk_id": 3, "docno": 1397>>
 
-Node.js — Node.js 9.10.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 9.10.0 (Current)
-MB Myles Borins Node.js 9.10.0 (Current) Notable Changes Upgrade to OpenSSL
-1.0.2o : Does not contain any security fixes that are known to impact Node.js.
-Fix for inspector DNS rebinding vulnerability (CVE-2018-7160) : A malicious
-website could use a DNS rebinding attack to trick a web browser to bypass
-same-origin-policy checks and allow HTTP connections to localhost or to hosts on
-the local network, potentially to an open inspector port as a debugger,
-therefore gaining full code execution access. The inspector now only allows
-connections that have a browser Host value that is either not subject to DNS
-resolution or matches localhost or localhost6 . Fix for 'path' module regular
-expression denial of service (CVE-2018-7158) : A regular expression used for
-parsing POSIX paths could be used to cause a denial of service if an attacker
-were able to have a specially crafted path string passed through one of the
-impacted 'path' module functions. Reject spaces in HTTP Content-Length header
-values (CVE-2018-7159) : The Node.js HTTP parser allowed for spaces inside
-Content-Length header values. Such values now lead to rejected connections in
-the same way as non-numeric values. Update root certificates : 5 additional root
-certificates have been added to the Node.js binary and 30 have been removed.
-cluster : Add support for NODE_OPTIONS="--inspect" (Sameer Srivastava) #19165
-crypto : Expose the public key of a certificate (Hannes Magnusson) #17690 n-api
-: Add
+--eval , or piped to node via STDIN , with the flag --input-type=module . Code
+containing syntax only successfully parsed as ES modules , such as import or
+export statements or import.meta , with no explicit marker of how it should be
+interpreted. Explicit markers are .mjs or .cjs extensions, package.json "type"
+fields with either "module" or "commonjs" values, or the --input-type flag.
+Dynamic import() expressions are supported in either CommonJS or ES modules and
+would not force a file to be treated as an ES module. See Syntax detection .
+Node.js will treat the following as CommonJS when passed to node as the initial
+input, or when referenced by import statements or import() expressions: Files
+with a .cjs extension. Files with a .js extension when the nearest parent
+package.json file contains a top-level field "type" with a value of "commonjs" .
+Strings passed in as an argument to --eval or --print , or piped to node via
+STDIN , with the flag --input-type=commonjs . Files with a .js extension with no
+parent package.json file or where the nearest parent package.json file lacks a
+type field, and where the code can evaluate successfully as CommonJS. In other
+words, Node.js tries to run such "ambiguous" files as CommonJS first, and will
+retry evaluating them as ES modules if the evaluation as CommonJS fails because
+the parser found ES module syntax. Writing ES module syntax in "ambiguous" files
+incurs a performance cost, and therefore it is encouraged that authors be
+explicit wherever possible. In particular, package authors should
 ----------------------------------------------------------------------------------------------------
-Index: 46537 <<"chunk_id": 0, "docno": 7274>>
+Index: 15027 <<"chunk_id": 586, "docno": 2234>>
 
-Node.js — Node.js 6.14.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 6.14.0 (LTS) MB Myles
-Borins Node.js 6.14.0 (LTS) Notable Changes Upgrade to OpenSSL 1.0.2o : Does not
-contain any security fixes that are known to impact Node.js. Fix for inspector
-DNS rebinding vulnerability (CVE-2018-7160) : A malicious website could use a
-DNS rebinding attack to trick a web browser to bypass same-origin-policy checks
-and allow HTTP connections to localhost or to hosts on the local network,
-potentially to an open inspector port as a debugger, therefore gaining full code
-execution access. The inspector now only allows connections that have a browser
-Host value that is either not subject to DNS resolution or matches localhost or
-localhost6 . Fix for 'path' module regular expression denial of service
-(CVE-2018-7158) : A regular expression used for parsing POSIX paths could be
-used to cause a denial of service if an attacker were able to have a specially
-crafted path string passed through one of the impacted 'path' module functions.
-Reject spaces in HTTP Content-Length header values (CVE-2018-7159) : The Node.js
-HTTP parser allowed for spaces inside Content-Length header values. Such values
-now lead to rejected connections in the same way as non-numeric values. Update
-root certificates : 5 additional root certificates have been added to the
-Node.js binary and 30 have been removed. Commits [ ac21bdc149 ] - crypto :
-update root certificates (Ben Noordhuis) #19322 [ 3c99e41427 ] - deps : add
--no_rand_screen to openssl s_client
+file or one that lacks a type field. String input ( --eval or STDIN ) when
+--input-type is not specified. ES module syntax is defined as syntax that would
+throw when evaluated as CommonJS. This includes the following: import statements
+(but not import() expressions, which are valid in CommonJS). export statements.
+import.meta references. await at the top level of a module. Lexical
+redeclarations of the CommonJS wrapper variables ( require , module , exports ,
+__dirname , __filename ). Module resolution and loading # Node.js has two types
+of module resolution and loading, chosen based on how the module is requested.
+When a module is requested via require() (available by default in CommonJS
+modules, and can be dynamically generated using createRequire() in both CommonJS
+and ES Modules): Resolution: The resolution initiated by require() supports
+folders as modules . When resolving a specifier, if no exact match is found,
+require() will try to add extensions ( .js , .json , and finally .node ) and
+then attempt to resolve folders as modules . It does not support URLs as
+specifiers by default. Loading: .json files are treated as JSON text files.
+.node files are interpreted as compiled addon modules loaded with
+process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
+files. Files with any other extension, or without extensions, are treated as
+JavaScript text files. require() can only be used to load ECMAScript modules
+from CommonJS modules if the ECMAScript module and its dependencies are
+synchronous (i.e. they do not contain top-level await
 ----------------------------------------------------------------------------------------------------
-Index: 46900 <<"chunk_id": 0, "docno": 7343>>
+Index: 15030 <<"chunk_id": 589, "docno": 2234>>
 
-Node.js — Node.js 8.11.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 8.11.0 (LTS) MB Myles
-Borins Node.js 8.11.0 (LTS) Notable Changes Upgrade to OpenSSL 1.0.2o : Does not
-contain any security fixes that are known to impact Node.js. Fix for inspector
-DNS rebinding vulnerability (CVE-2018-7160) : A malicious website could use a
-DNS rebinding attack to trick a web browser to bypass same-origin-policy checks
-and allow HTTP connections to localhost or to hosts on the local network,
-potentially to an open inspector port as a debugger, therefore gaining full code
-execution access. The inspector now only allows connections that have a browser
-Host value that is either not subject to DNS resolution or matches localhost or
-localhost6 . Fix for 'path' module regular expression denial of service
-(CVE-2018-7158) : A regular expression used for parsing POSIX paths could be
-used to cause a denial of service if an attacker were able to have a specially
-crafted path string passed through one of the impacted 'path' module functions.
-Reject spaces in HTTP Content-Length header values (CVE-2018-7159) : The Node.js
-HTTP parser allowed for spaces inside Content-Length header values. Such values
-now lead to rejected connections in the same way as non-numeric values. Update
-root certificates : 5 additional root certificates have been added to the
-Node.js binary and 30 have been removed. Commits [ dc290562e9 ] - crypto :
-update root certificates (Ben Noordhuis) #19322 [ df92da3f3c ] - deps : add
--no_rand_screen to openssl s_client
+CommonJS since .cjs is always loaded as CommonJS. import
+'commonjs-package/src/index.mjs' ; // Loaded as ES module since .mjs is always
+loaded as ES module. js copy The .mjs and .cjs extensions can be used to mix
+types within the same package: Within a "type": "module" package, Node.js can be
+instructed to interpret a particular file as CommonJS by naming it with a .cjs
+extension (since both .js and .mjs files are treated as ES modules within a
+"module" package). Within a "type": "commonjs" package, Node.js can be
+instructed to interpret a particular file as an ES module by naming it with an
+.mjs extension (since both .js and .cjs files are treated as CommonJS within a
+"commonjs" package). --input-type flag # Added in: v12.0.0 Strings passed in as
+an argument to --eval (or -e ), or piped to node via STDIN , are treated as ES
+modules when the --input-type=module flag is set. node --input-type=module
+--eval "import { sep } from 'node:path'; console.log(sep);" echo "import { sep }
+from 'node:path'; console.log(sep);" | node --input-type=module bash copy For
+completeness there is also --input-type=commonjs , for explicitly running string
+input as CommonJS. This is the default behavior if --input-type is unspecified.
+Package entry points # In a package's package.json file, two fields can define
+entry points for a package: "main" and "exports" . Both fields apply to both ES
+module and CommonJS module entry points. The "main" field is supported in all
+versions of Node.js, but its capabilities are limited: it only defines the main
+entry point of
 ----------------------------------------------------------------------------------------------------
-Index: 42165 <<"chunk_id": 1, "docno": 6463>>
+Index: 15025 <<"chunk_id": 584, "docno": 2234>>
 
-future. - [C++ embedder API](https://nodejs.org/docs/latest/api/embedding.md):
-Node.js provides a number of C++ APIs that can be used to execute JavaScript in
-a Node.js environment from other C++ software. - [Environment
-Variables](https://nodejs.org/docs/latest/api/environment_variables.md):
-Environment variables are variables associated to the environment the Node.js
-process runs in. - [Errors](https://nodejs.org/docs/latest/api/errors.md):
-Applications running in Node.js will generally experience the following
-categories of errors: - [C++
-addons](https://nodejs.org/docs/latest/api/addons.md): _Addons_ are
-dynamically-linked shared objects that can be loaded via the `require()`
-function as ordinary Node.js modules. Addons provide a foreign function
-interface between JavaScript and native code. -
-[Assert](https://nodejs.org/docs/latest/api/assert.md): The `node:assert` module
-provides a set of assertion functions for verifying invariants. - [Asynchronous
-context tracking](https://nodejs.org/docs/latest/api/async_context.md): - [Async
-hooks](https://nodejs.org/docs/latest/api/async_hooks.md): We strongly
-discourage the use of the `async_hooks` API. Other APIs that can cover most of
-its use cases include: - [Buffer](https://nodejs.org/docs/latest/api/buffer.md):
-`Buffer` objects are used to represent a fixed-length sequence of bytes. Many
-Node.js APIs support `Buffer`s. - [Child
-process](https://nodejs.org/docs/latest/api/child_process.md): The
-`node:child_process` module provides the ability to spawn subprocesses in a
-manner that is similar, but not identical, to `popen(3)`. This capability is
-primarily provided by the `child_process.spawn()` function: - [Command-line
-API](https://nodejs.org/docs/latest/api/cli.md): Node.js comes with a variety of
-CLI options. These options expose built-in debugging, multiple ways to execute
-scripts, and other helpful runtime options. -
-[Cluster](https://nodejs.org/docs/latest/api/cluster.md): Clusters of Node.js
-processes can be used to run multiple instances of Node.js that can distribute
-workloads among their application threads. When process isolation is not needed,
-use the `worker_threads` module instead, which allows running multiple
-application threads within a single Node.js instance. -
-[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
-module provides
+reference for the package.json fields defined by Node.js. Determining module
+system # Introduction # Node.js will treat the following as ES modules when
+passed to node as the initial input, or when referenced by import statements or
+import() expressions: Files with an .mjs extension. Files with a .js extension
+when the nearest parent package.json file contains a top-level "type" field with
+a value of "module" . Strings passed in as an argument to --eval , or piped to
+node via STDIN , with the flag --input-type=module . Code containing syntax only
+successfully parsed as ES modules , such as import or export statements or
+import.meta , with no explicit marker of how it should be interpreted. Explicit
+markers are .mjs or .cjs extensions, package.json "type" fields with either
+"module" or "commonjs" values, or the --input-type flag. Dynamic import()
+expressions are supported in either CommonJS or ES modules and would not force a
+file to be treated as an ES module. See Syntax detection . Node.js will treat
+the following as CommonJS when passed to node as the initial input, or when
+referenced by import statements or import() expressions: Files with a .cjs
+extension. Files with a .js extension when the nearest parent package.json file
+contains a top-level field "type" with a value of "commonjs" . Strings passed in
+as an argument to --eval or --print , or piped to node via STDIN , with the flag
+--input-type=commonjs . Files with a .js extension with no parent package.json
+file or where the nearest parent package.json file lacks
 ----------------------------------------------------------------------------------------------------
-Index: 46731 <<"chunk_id": 2, "docno": 7311>>
+Index: 12920 <<"chunk_id": 2, "docno": 2018>>
 
-in the Node.js LTS plan, located at https://github.com/nodejs/LTS . If you would
-like help with Node.js, please open an issue at https://github.com/nodejs/help
-If you would like to report a bug with Node.js, please open an issue at
-https://github.com/nodejs/node Node.js 6.9.0 LTS "Boron" Notable changes crypto
-: Don't automatically attempt to load an OpenSSL configuration file, from the
-OPENSSL_CONF environment variable or from the default location for the current
-platform. Always triggering a configuration file load attempt may allow an
-attacker to load compromised OpenSSL configuration into a Node.js process if
-they are able to place a file in a default location. (Fedor Indutny, Rod Vagg)
-node : Introduce the process.release.lts property, set to "Boron" . This value
-is "Argon" for v4 LTS releases and undefined for all other releases. (Rod Vagg)
-V8 : Backport fix for CVE-2016-5172, an arbitrary memory read. The parser in V8
-mishandled scopes, potentially allowing an attacker to obtain sensitive
-information from arbitrary memory locations via crafted JavaScript code. This
-vulnerability would require an attacker to be able to execute arbitrary
-JavaScript code in a Node.js process. (Rod Vagg) v8_inspector : Generate a UUID
-for each execution of the inspector. This provides additional security to
-prevent unauthorized clients from connecting to the Node.js process via the
-v8_inspector port when running with --inspect . Since the debugging protocol
-allows extensive access to the internals of a running process, and the execution
-of arbitrary code, it is important to limit connections to authorized tools
-only. Vulnerability originally reported by Jann Horn. (Eugene Ostroukhov)
-Commits
+module system used by Node.js. Input that is already explicitly defined as ES
+modules or CommonJS, such as by a package.json "type" field or .mjs / .cjs file
+extension or the --input-type flag, is unaffected. What is currently implicitly
+CommonJS would instead be interpreted as ES modules under
+--experimental-default-type=module : String input provided via --eval or STDIN,
+if --input-type is unspecified. Files ending in .js or with no extension, if
+there is no package.json file present in the same folder or any parent folder.
+Files ending in .js or with no extension, if the nearest parent package.json
+field lacks a type field; unless the folder is inside a node_modules folder. In
+addition, extensionless files are interpreted as WebAssembly if
+--experimental-wasm-modules is passed and the file begins with the WebAssembly
+preamble \0asm . We are also exploring using detection of ES module syntax as a
+way of Node.js knowing when to interpret files as ES modules. Our goal is to
+eventually find a way to support ES module syntax by default with minimal
+breaking changes. Contributed by Geoffrey Booth in #49869 . Module customization
+hook globalPreload removed; use register and initialize instead The module
+customization hook globalPreload has been removed. Instead, use register to send
+data from the application thread to the customization hooks, and the initialize
+hook to establish a communications channel between the threads. Contributed by
+Jacob Smith in #49144 . Add flush option to fs.writeFile function When writing
+to files, it is possible that data is not immediately flushed to permanent
+storage. This allows
 ----------------------------------------------------------------------------------------------------
-Index: 43941 <<"chunk_id": 0, "docno": 6803>>
+Index: 9124 <<"chunk_id": 3, "docno": 1400>>
 
-Node.js — Node.js 19.0.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 19.0.0 (Current)
-RG RA Rafael Gonzaga, Ruy Adorno Node.js 19.0.0 (Current) Notable Changes
-Deprecations and Removals [ 7dd2f41c73 ] - (SEMVER-MAJOR) module : runtime
-deprecate exports double slash maps (Guy Bedford) #44495 [ ada2d053ae ] -
-(SEMVER-MAJOR) process : runtime deprecate coercion to integer in process.exit()
-(Daeyeon Jeong) #44711 HTTP(S)/1.1 KeepAlive by default Starting with this
-release, Node.js sets keepAlive to true by default. This means that any outgoing
-HTTP(s) connection will automatically use HTTP 1.1 Keep-Alive. The default
-waiting window is 5 seconds. Enable keep-alive will deliver better throughput as
-connections are reused by default. Additionally the agent is now able to parse
-the response Keep-Alive which the servers might send. This header instructs the
-client on how much to stay connected. On the other side, the Node.js HTTP server
-will now automatically disconnect idle clients (which are using HTTP Keep-Alive
-to reuse the connection) when close() is invoked). Node.js HTTP(S)/1.1 requests
-may experience a better throughput/performance by default. Contributed by Paolo
-Insogna in #43522 DTrace/SystemTap/ETW Support were removed The main reason is
-the lack of resources from Node.js team. The complexity to keep the support
-up-to-date has been proved not worth it without a clear plan to support those
-tools. Hence, an issue was raised in the Node.js repository to assess a better
-support, for DTrace in specific. Contributed by Ben Noordhuis in #43651 and
-#43652 V8 10.7 The V8 engine is
+2 ; } export { addTwo }; js copy The following example of an ES module imports
+the function from addTwo.mjs : // app.mjs import { addTwo } from './addTwo.mjs'
+; // Prints: 6 console . log ( addTwo ( 4 )) ; js copy Node.js fully supports
+ECMAScript modules as they are currently specified and provides interoperability
+between them and its original module format, CommonJS . Enabling # Node.js has
+two module systems: CommonJS modules and ECMAScript modules. Authors can tell
+Node.js to interpret JavaScript as an ES module via the .mjs file extension, the
+package.json "type" field with a value "module" , or the --input-type flag with
+a value of "module" . These are explicit markers of code being intended to run
+as an ES module. Inversely, authors can explicitly tell Node.js to interpret
+JavaScript as CommonJS via the .cjs file extension, the package.json "type"
+field with a value "commonjs" , or the --input-type flag with a value of
+"commonjs" . When code lacks explicit markers for either module system, Node.js
+will inspect the source code of a module to look for ES module syntax. If such
+syntax is found, Node.js will run the code as an ES module; otherwise it will
+run the module as CommonJS. See Determining module system for more details.
+Packages # This section was moved to Modules: Packages . import Specifiers #
+Terminology # The specifier of an import statement is the string after the from
+keyword, e.g. 'node:path' in import { sep } from 'node:path' . Specifiers are
 ----------------------------------------------------------------------------------------------------
-Index: 44348 <<"chunk_id": 0, "docno": 6882>>
+Index: 14999 <<"chunk_id": 558, "docno": 2234>>
 
-Node.js — Node.js 22.8.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.8.0 (Current)
-RG Rafael Gonzaga Node.js 22.8.0 (Current) 2024-09-03, Version 22.8.0 (Current),
-@RafaelGSS New JS API for compile cache This release adds a new API
-module.enableCompileCache() that can be used to enable on-disk code caching of
-all modules loaded after this API is called. Previously this could only be
-enabled by the NODE_COMPILE_CACHE environment variable, so it could only set by
-end-users. This API allows tooling and library authors to enable caching of
-their own code. This is a built-in alternative to the v8-compile-cache /
-v8-compile-cache-lib packages, but have better performance and supports ESM.
-Thanks to Joyee Cheung for working on this. New option for vm.createContext() to
-create a context with a freezable globalThis Node.js implements a flavor of
-vm.createContext() and friends that creates a context without contextifying its
-global object when vm.constants.DONT_CONTEXTIFY is used. This is suitable when
-users want to freeze the context (impossible when the global is contextified
-i.e. has interceptors installed) or speed up the global access if they don't
-need the interceptor behavior. Thanks to Joyee Cheung for working on this.
-Support for coverage thresholds Node.js now supports requiring code coverage to
-meet a specific threshold before the process exits successfully. To use this
-feature, you need to enable the --experimental-test-coverage flag. You can set
-thresholds for the following types of coverage: Branch coverage : Use
---test-coverage-branches=<threshold> Function coverage : Use
---test-coverage-functions=<threshold> Line coverage : Use
---test-coverage-lines=<threshold> <threshold> should
+CommonJS modules and ECMAScript modules. Authors can tell Node.js to interpret
+JavaScript as an ES module via the .mjs file extension, the package.json "type"
+field with a value "module" , or the --input-type flag with a value of "module"
+. These are explicit markers of code being intended to run as an ES module.
+Inversely, authors can explicitly tell Node.js to interpret JavaScript as
+CommonJS via the .cjs file extension, the package.json "type" field with a value
+"commonjs" , or the --input-type flag with a value of "commonjs" . When code
+lacks explicit markers for either module system, Node.js will inspect the source
+code of a module to look for ES module syntax. If such syntax is found, Node.js
+will run the code as an ES module; otherwise it will run the module as CommonJS.
+See Determining module system for more details. Packages # This section was
+moved to Modules: Packages . import Specifiers # Terminology # The specifier of
+an import statement is the string after the from keyword, e.g. 'node:path' in
+import { sep } from 'node:path' . Specifiers are also used in export from
+statements, and as the argument to an import() expression. There are three types
+of specifiers: Relative specifiers like './startup.js' or '../config.mjs' . They
+refer to a path relative to the location of the importing file. The file
+extension is always necessary for these. Bare specifiers like 'some-package' or
+'some-package/shuffle' . They can refer to the main entry point of a package by
+the package name, or a specific feature
 ----------------------------------------------------------------------------------------------------
-Index: 44265 <<"chunk_id": 0, "docno": 6863>>
+Index: 19920 <<"chunk_id": 4, "docno": 2828>>
 
-Node.js — Node.js 22.6.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.6.0 (Current)
-RG Rafael Gonzaga Node.js 22.6.0 (Current) 2024-08-06, Version 22.6.0 (Current),
-@RafaelGSS Experimental TypeScript support via strip types Node.js introduces
-the --experimental-strip-types flag for initial TypeScript support. This feature
-strips type annotations from .ts files, allowing them to run without
-transforming TypeScript-specific syntax. Current limitations include: Supports
-only inline type annotations, not features like enums or namespaces . Requires
-explicit file extensions in import and require statements. Enforces the use of
-the type keyword for type imports to avoid runtime errors. Disabled for
-TypeScript in node_modules by default. Thanks Marco Ippolito for working on
-this. Experimental Network Inspection Support in Node.js This update introduces
-the initial support for network inspection in Node.js. Currently, this is an
-experimental feature, so you need to enable it using the
---experimental-network-inspection flag. With this feature enabled, you can
-inspect network activities occurring within a JavaScript application. To use
-network inspection, start your Node.js application with the following command: $
-node --inspect-wait --experimental-network-inspection index.js Please note that
-the network inspection capabilities are in active development. We are actively
-working on enhancing this feature and will continue to expand its functionality
-in future updates. Network inspection is limited to the http and https modules
-only. The Network tab in Chrome DevTools will not be available until the feature
-request on the Chrome DevTools side is addressed. Thanks Kohei Ueno for working
-on this. Other Notable Changes [ 15a94e67b1 ]
+use wildcard or regular expression patterns such as admin.*.js . The following
+example shows a budget that uses a baseline: { "type" : "bundle" , "name" :
+"main" , "baseline" : "200kb" , "maximumWarning" : "10%" , "maximumError" :
+"20%" } In this example, the builder warns when the bundle grows beyond 220kb
+and errors when it grows beyond 240kb . Configuring CommonJS dependencies Always
+prefer native ECMAScript modules (ESM) throughout your application and its
+dependencies. ESM is a fully specified web standard and JavaScript language
+feature with strong static analysis support. This makes bundle optimizations
+more powerful than other module formats. Angular CLI also supports importing
+CommonJS dependencies into your project and will bundle these dependencies
+automatically. However, CommonJS modules can prevent bundlers and minifiers from
+optimizing those modules effectively, which results in larger bundle sizes. For
+more information, see How CommonJS is making your bundles larger . Angular CLI
+outputs warnings if it detects that your browser application depends on CommonJS
+modules. When you encounter a CommonJS dependency, consider asking the
+maintainer to support ECMAScript modules, contributing that support yourself, or
+using an alternative dependency which meets your needs. If the best option is to
+use a CommonJS dependency, you can disable these warnings by adding the CommonJS
+module name to allowedCommonJsDependencies option in the build options located
+in angular.json . "build" : { "builder" : "@angular/build:application" ,
+"options" : { "allowedCommonJsDependencies" : [ "lodash" ] … } … }, Configuring
+browser compatibility The Angular CLI uses Browserslist to ensure compatibility
+with different browser
 ----------------------------------------------------------------------------------------------------
-Index: 47401 <<"chunk_id": 0, "docno": 7449>>
+Index: 9131 <<"chunk_id": 10, "docno": 1400>>
 
-Node.js — Node.js 12.2.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.2.0 (Current)
-MLZ Michaël Zasso Node.js 12.2.0 (Current) Notable changes deps : Updated llhttp
-to 1.1.3. This fixes a bug that made Node.js' HTTP parser refuse any request URL
-that contained the "|" (vertical bar) character (Fedor Indutny) #27595 . tls :
-Added an enableTrace() method to TLSSocket and an enableTrace option to
-tls.createServer() . When enabled, TSL packet trace information is written to
-stderr . This can be used to debug TLS connection problems (cjihrig) #27497 ,
-(Sam Roberts) #27376 . cli : Added a --trace-tls command-line flag that enables
-tracing of TLS connections without the need to modify existing application code
-(cjihrig) #27497 . Added a --cpu-prof-interval command-line flag. It can be used
-to specify the sampling interval for the CPU profiles generated by --cpu-prof
-(Joyee Cheung) #27535 . module : Added the createRequire() method. It allows to
-create a require function from a file URL object, a file URL string or an
-absolute path string. The existing createRequireFromPath() method is now
-deprecated (Myles Borins) #27405 . Throw on require('./path.mjs') . This is
-technically a breaking change that should have landed with Node.js 12.0.0. It is
-necessary to have this to keep the possibility for a future minor version to
-load ES Modules with the require function (Myles Borins) #27417 . repl : The
-REPL now supports multi-line statements using BigInt literals as well as public
-and private class fields and methods
+performance similarly to require.resolve . This feature is not available within
+custom loaders (it would create a deadlock). Non-standard API : When using the
+--experimental-import-meta-resolve flag, that function accepts a second
+argument: parent <string> | <URL> An optional absolute parent module URL to
+resolve from. Default: import.meta.url Interoperability with CommonJS # import
+statements # An import statement can reference an ES module or a CommonJS
+module. import statements are permitted only in ES modules, but dynamic import()
+expressions are supported in CommonJS for loading ES modules. When importing
+CommonJS modules , the module.exports object is provided as the default export.
+Named exports may be available, provided by static analysis as a convenience for
+better ecosystem compatibility. require # The CommonJS module require currently
+only supports loading synchronous ES modules (that is, ES modules that do not
+use top-level await ). See Loading ECMAScript modules using require() for
+details. CommonJS Namespaces # Added in: v14.13.0 History Version Changes
+v23.0.0 Added 'module.exports' export marker to CJS namespaces. CommonJS modules
+consist of a module.exports object which can be of any type. To support this,
+when importing CommonJS from an ECMAScript module, a namespace wrapper for the
+CommonJS module is constructed, which always provides a default export key
+pointing to the CommonJS module.exports value. In addition, a heuristic static
+analysis is performed against the source text of the CommonJS module to get a
+best-effort static list of exports to provide on the namespace from values on
+module.exports . This is necessary since these namespaces must be constructed
+prior to the
 ----------------------------------------------------------------------------------------------------
-Index: 4178 <<"chunk_id": 2, "docno": 574>>
+Index: 9089 <<"chunk_id": 5, "docno": 1397>>
 
-It's a poor fit for two other situations, though: CPU-bound work (image
-resizing, hashing, parsing huge payloads) ties up the single thread and makes
-your whole application unresponsive while it runs. Scaling across CPU cores — a
-single Node.js process only ever uses one core for its JavaScript, no matter how
-many cores the machine has. Node.js ships three built-in modules to address
-this: node:child_process , node:worker_threads , and node:cluster . They solve
-overlapping problems in different ways, which is why it's easy to reach for the
-wrong one. This guide compares them side by side and walks through when to use
-each. The three options at a glance Runs Memory Talks via Best for child_process
-Separate process Isolated stdio, or IPC ( fork() ) Running external programs
-worker_threads Separate thread Shareable postMessage() CPU-bound JS work cluster
-Multiple processes Isolated IPC Scaling a server across cores A useful way to
-tell them apart: cluster is built on top of child_process specifically to solve
-the "scale a server across cores" problem, while worker_threads exists to solve
-the "run CPU-heavy code without blocking" problem without paying the cost of a
-whole new process. Child Process Use child_process when you need to run another
-program — a shell command, a binary, a script in another language — from
-Node.js, or when you want a fully isolated Node.js process that you drive over
-stdio/IPC. spawn , exec , execFile , and fork Method Description Use case
-spawn() Streams stdout/stderr Long-running, large output exec() Buffers full
-output via a shell Short
+exports , __dirname , __filename ). Module resolution and loading # Node.js has
+two types of module resolution and loading, chosen based on how the module is
+requested. When a module is requested via require() (available by default in
+CommonJS modules, and can be dynamically generated using createRequire() in both
+CommonJS and ES Modules): Resolution: The resolution initiated by require()
+supports folders as modules . When resolving a specifier, if no exact match is
+found, require() will try to add extensions ( .js , .json , and finally .node )
+and then attempt to resolve folders as modules . It does not support URLs as
+specifiers by default. Loading: .json files are treated as JSON text files.
+.node files are interpreted as compiled addon modules loaded with
+process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
+files. Files with any other extension, or without extensions, are treated as
+JavaScript text files. require() can only be used to load ECMAScript modules
+from CommonJS modules if the ECMAScript module and its dependencies are
+synchronous (i.e. they do not contain top-level await ). When a module is
+requested via static import statements (only available in ES Modules) or
+import() expressions (available in both CommonJS and ES Modules): Resolution:
+The resolution of import / import() does not support folders as modules,
+directory indexes (e.g. './startup/index.js' ) must be fully specified. It does
+not perform extension searching. A file extension must be provided when the
+specifier is a relative or absolute file URL. It supports file:// and
 ----------------------------------------------------------------------------------------------------
-Index: 47957 <<"chunk_id": 0, "docno": 7563>>
+Index: 14973 <<"chunk_id": 532, "docno": 2234>>
 
-Node.js — Node.js 12.7.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.7.0 (Current)
-MLZ Michaël Zasso Node.js 12.7.0 (Current) Notable changes deps : Updated
-nghttp2 to 1.39.1 (gengjiawen) #28448 . Updated npm to 6.10.0 (isaacs) #28525 .
-esm : Implemented experimental "pkg-exports" proposal. A new "exports" field can
-be added to a module's package.json file to provide custom subpath aliasing. See
-proposal-pkg-exports for more information (Guy Bedford) #28568 . http : Added
-response.writableFinished (Robert Nagy) #28681 . Exposed headers , rawHeaders
-and other fields on an http.ClientRequest "information" event (Austin Wright)
-#28459 . inspector : Added inspector.waitForDebugger() (Aleksei Koziatinskii)
-#28453 . policy : Added --policy-integrity=sri CLI option to mitigate policy
-tampering. If a policy integrity is specified and the policy does not have that
-integrity, Node.js will error prior to running any code (Bradley Farias) #28734
-. readline,tty : Exposed stream API from various methods which write characters
-(cjihrig) #28674 , #28721 . report : Modify process.report.getReport() to return
-an Object instead of a JSON string (Christopher Hiller) #28630 . src : Use
-cgroups to get memory limits. This improves the way we set the memory ceiling
-for a Node.js process. Previously we would use the physical memory size to
-estimate the necessary V8 heap sizes. The physical memory size is not
-necessarily the correct limit, e.g. if the process is running inside a docker
-container or is otherwise constrained. This change adds the ability to get a
-memory limit set by linux cgroups, which
+the type of the package will make things easier for build tools and loaders to
+determine how the files in the package should be interpreted. Files with an
+extension that is not .mjs , .cjs , .json , .node , or .js , when the nearest
+parent package.json file contains a top-level field "type" with a value of
+"module" . See Determining module system for more details. Calling require()
+always use the CommonJS module loader. Calling import() always use the
+ECMAScript module loader. Accessing the main module # When a file is run
+directly from Node.js, require.main is set to its module . That means that it is
+possible to determine whether a file has been run directly by testing
+require.main === module . For a file foo.js , this will be true if run via node
+foo.js , but false if run by require('./foo') . When the entry point is not a
+CommonJS module, require.main is undefined , and the main module is out of
+reach. Package manager tips # The semantics of the Node.js require() function
+were designed to be general enough to support reasonable directory structures.
+Package manager programs such as dpkg , rpm , and npm will hopefully find it
+possible to build native packages from Node.js modules without modification. In
+the following, we give a suggested directory structure that could work: Let's
+say that we wanted to have the folder at
+/usr/lib/node/<some-package>/<some-version> hold the contents of a specific
+version of a package. Packages can depend on one another. In order to
 ----------------------------------------------------------------------------------------------------
-Index: 42166 <<"chunk_id": 2, "docno": 6463>>
+Index: 15039 <<"chunk_id": 598, "docno": 2234>>
 
-is not needed, use the `worker_threads` module instead, which allows running
-multiple application threads within a single Node.js instance. -
-[Console](https://nodejs.org/docs/latest/api/console.md): The `node:console`
-module provides a simple debugging console that is similar to the JavaScript
-console mechanism provided by web browsers. -
-[Crypto](https://nodejs.org/docs/latest/api/crypto.md): The `node:crypto` module
-provides cryptographic functionality that includes a set of wrappers for
-OpenSSL's hash, HMAC, cipher, decipher, sign, and verify functions. -
-[V8](https://nodejs.org/docs/latest/api/v8.md): The `node:v8` module exposes
-APIs that are specific to the version of V8 built into the Node.js binary. It
-can be accessed using: - [Virtual File
-System](https://nodejs.org/docs/latest/api/vfs.md): The `node:vfs` module
-provides a virtual file system with a `node:fs`-like API. It is useful for
-tests, fixtures, embedded assets, and other scenarios where you need a
-self-contained file system without touching the actual file-system. - [VM
-(executing JavaScript)](https://nodejs.org/docs/latest/api/vm.md): The `node:vm`
-module enables compiling and running code within V8 Virtual Machine contexts. -
-[WebAssembly System Interface
-(WASI)](https://nodejs.org/docs/latest/api/wasi.md): <strong
-class="critical">The `node:wasi` module does not currently provide the
-comprehensive file system security properties provided by some WASI runtimes.
-Full support for secure file system sandboxing may or may not be implemented in
-future. In the mean time, do not rely on it to run untrusted code. </strong> -
-[Web Crypto API](https://nodejs.org/docs/latest/api/webcrypto.md): Node.js
-provides an implementation of the Web Crypto API standard. - [Web Streams
-API](https://nodejs.org/docs/latest/api/webstreams.md): An implementation of the
-WHATWG Streams Standard. - [Worker
-threads](https://nodejs.org/docs/latest/api/worker_threads.md): The
-`node:worker_threads` module enables the use of threads that execute JavaScript
-in parallel. To access it: - [Zlib](https://nodejs.org/docs/latest/api/zlib.md):
-The `node:zlib` module provides compression functionality implemented using
-Gzip, Deflate/Inflate, Brotli,
+CommonJS or ES module file. In most cases explicitly calling out the Node.js
+platform is not necessary. "import" - matches when the package is loaded via
+import or import() , or via any top-level import or resolve operation by the
+ECMAScript module loader. Applies regardless of the module format of the target
+file. Always mutually exclusive with "require" . "require" - matches when the
+package is loaded via require() . The referenced file should be loadable with
+require() although the condition matches regardless of the module format of the
+target file. Expected formats include CommonJS, JSON, native addons, and ES
+modules. Always mutually exclusive with "import" . "module-sync" - matches no
+matter the package is loaded via import , import() or require() . The format is
+expected to be ES modules that does not contain top-level await in its module
+graph - if it does, ERR_REQUIRE_ASYNC_MODULE will be thrown when the module is
+require() -ed. "default" - the generic fallback that always matches. Can be a
+CommonJS or ES module file. This condition should always come last. Within the
+"exports" object, key order is significant. During condition matching, earlier
+entries have higher priority and take precedence over later entries. The general
+rule is that conditions should be from most specific to least specific in object
+order . Using the "import" and "require" conditions can lead to some hazards,
+which are further explained in the dual CommonJS/ES module packages section .
+The "node-addons" condition can be used to provide an entry point which uses
+native C++ addons.
 ----------------------------------------------------------------------------------------------------
-Index: 54181 <<"chunk_id": 0, "docno": 8743>>
+Index: 15026 <<"chunk_id": 585, "docno": 2234>>
 
-Node.js — Node.js 21.1.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 21.1.0 (Current)
-MLZ Michaël Zasso Node.js 21.1.0 (Current) 2023-10-24, Version 21.1.0 (Current),
-@targos Notable Changes Automatically detect and run ESM syntax The new flag
---experimental-detect-module can be used to automatically run ES modules when
-their syntax can be detected. For “ambiguous” files, which are .js or
-extensionless files with no package.json with a type field, Node.js will parse
-the file to detect ES module syntax; if found, it will run the file as an ES
-module, otherwise it will run the file as a CommonJS module. The same applies to
-string input via --eval or STDIN . We hope to make detection enabled by default
-in a future version of Node.js. Detection increases startup time, so we
-encourage everyone — especially package authors — to add a type field to
-package.json , even for the default "type": "commonjs" . The presence of a type
-field, or explicit extensions such as .mjs or .cjs , will opt out of detection.
-Contributed by Geoffrey Booth in #50096 . vm: fix V8 compilation cache support
-for vm.Script Previously repeated compilation of the same source code using
-vm.Script stopped hitting the V8 compilation cache after v16.x when support for
-importModuleDynamically was added to vm.Script , resulting in a performance
-regression that blocked users (in particular Jest users) from upgrading from
-v16.x. The recent fixes landed in v21.1.0 allow the compilation cache to be hit
-again for vm.Script when
+STDIN , with the flag --input-type=commonjs . Files with a .js extension with no
+parent package.json file or where the nearest parent package.json file lacks a
+type field, and where the code can evaluate successfully as CommonJS. In other
+words, Node.js tries to run such "ambiguous" files as CommonJS first, and will
+retry evaluating them as ES modules if the evaluation as CommonJS fails because
+the parser found ES module syntax. Writing ES module syntax in "ambiguous" files
+incurs a performance cost, and therefore it is encouraged that authors be
+explicit wherever possible. In particular, package authors should always include
+the "type" field in their package.json files, even in packages where all sources
+are CommonJS. Being explicit about the type of the package will future-proof the
+package in case the default type of Node.js ever changes, and it will also make
+things easier for build tools and loaders to determine how the files in the
+package should be interpreted. Syntax detection # Added in: v21.1.0, v20.10.0
+History Version Changes v22.7.0, v20.19.0 Syntax detection is enabled by
+default. Stability: 1.2 - Release candidate Node.js will inspect the source code
+of ambiguous input to determine whether it contains ES module syntax; if such
+syntax is detected, the input will be treated as an ES module. Ambiguous input
+is defined as: Files with a .js extension or no extension; and either no
+controlling package.json file or one that lacks a type field. String input (
+--eval or STDIN ) when --input-type is not specified. ES module syntax is
+defined
 ----------------------------------------------------------------------------------------------------
-Index: 53338 <<"chunk_id": 0, "docno": 8553>>
+Index: 9092 <<"chunk_id": 8, "docno": 1397>>
 
-Node.js — Node.js 15.10.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 15.10.0 (Current)
-BNG Bethany Nicolle Griggs Node.js 15.10.0 (Current) Notable changes
-Vulnerabilities fixed: CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of
-Service by resource exhaustion Affected Node.js ersions are vulnerable to denial
-of service attacks when too many connection attempts with an 'unknownProtocol'
-are established. This leads to a leak of file descriptors. If a file descriptor
-limit is configured on the system, then the server is unable to accept new
-connections and prevent the process also from opening, e.g. a file. If no file
-descriptor limit is configured, then this lead to an excessive memory usage and
-cause the system to run out of memory. CVE-2021-22884 : DNS rebinding in
---inspect Affected Node.js ersions are vulnerable to denial of service attacks
-when the whitelist includes “localhost6”. When “localhost6” is not present in
-/etc/hosts, it is just an ordinary domain that is resolved via DNS, i.e., over
-network. If the attacker controls the victim's DNS server or can spoof its
-responses, the DNS rebinding protection can be bypassed by using the
-“localhost6” domain. As long as the attacker uses the “localhost6” domain, they
-can still apply the attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL
-- Integer overflow in CipherUpdate This is a vulnerability in OpenSSL which may
-be exploited through Node.js. You can read more about it in
-https://www.openssl.org/news/secadv/20210216.txt Commits [ 2a3ce5974b ] - deps :
-update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37412 [
+ES modules within a "module" package). Within a "type": "commonjs" package,
+Node.js can be instructed to interpret a particular file as an ES module by
+naming it with an .mjs extension (since both .js and .cjs files are treated as
+CommonJS within a "commonjs" package). --input-type flag # Added in: v12.0.0
+Strings passed in as an argument to --eval (or -e ), or piped to node via STDIN
+, are treated as ES modules when the --input-type=module flag is set. node
+--input-type=module --eval "import { sep } from 'node:path'; console.log(sep);"
+echo "import { sep } from 'node:path'; console.log(sep);" | node
+--input-type=module bash copy For completeness there is also
+--input-type=commonjs , for explicitly running string input as CommonJS. This is
+the default behavior if --input-type is unspecified. Package entry points # In a
+package's package.json file, two fields can define entry points for a package:
+"main" and "exports" . Both fields apply to both ES module and CommonJS module
+entry points. The "main" field is supported in all versions of Node.js, but its
+capabilities are limited: it only defines the main entry point of the package.
+The "exports" provides a modern alternative to "main" allowing multiple entry
+points to be defined, conditional entry resolution support between environments,
+and preventing any other entry points besides those defined in "exports" . This
+encapsulation allows module authors to clearly define the public interface for
+their package. For new packages targeting the currently supported versions of
+Node.js, the "exports" field is recommended. For packages supporting Node.js 10
+and below, the "main"
 ----------------------------------------------------------------------------------------------------
-Index: 50542 <<"chunk_id": 0, "docno": 8047>>
+Index: 9088 <<"chunk_id": 4, "docno": 1397>>
 
-Node.js — Node.js 4.1.1 (Current) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 4.1.1 (Current) RV Rod
-Vagg Node.js 4.1.1 (Current) This release contains some minor security-related
-updates. You are advised to upgrade to 4.1.1 if you are currently running
-v4.1.0. Notable changes buffer : Fixed a bug introduced in v4.1.0 where
-allocating a new zero-length buffer can result in the next allocation of a
-TypedArray in JavaScript not being zero-filled. In certain circumstances this
-could result in data leakage via reuse of memory space in TypedArrays, breaking
-the normally safe assumption that TypedArrays should be always zero-filled.
-(Trevor Norris) #2931 . http : Guard against response-splitting of HTTP trailing
-headers added via response.addTrailers() by removing new-line ( [\r\n] )
-characters from values. Note that standard header values are already stripped of
-new-line characters. The expected security impact is low because trailing
-headers are rarely used. (Ben Noordhuis) #2945 . npm : Upgrade to npm 2.14.4
-from 2.14.3, see release notes for full details (Kat Marchán) #2958 Upgrades
-graceful-fs on multiple dependencies to no longer rely on monkey-patching fs Fix
-npm link for pre-release / RC builds of Node v8 : Update post-mortem metadata to
-allow post-mortem debugging tools to find and inspect: JavaScript objects that
-use dictionary properties (Julien Gilli) #2959 ScopeInfo and thus closures
-(Julien Gilli) #2974 Known issues See
-https://github.com/nodejs/node/labels/confirmed-bug for complete and current
-list of known issues. Some problems with unreferenced timers running during
-beforeExit are still to be resolved. See #1264 .
+module syntax in "ambiguous" files incurs a performance cost, and therefore it
+is encouraged that authors be explicit wherever possible. In particular, package
+authors should always include the "type" field in their package.json files, even
+in packages where all sources are CommonJS. Being explicit about the type of the
+package will future-proof the package in case the default type of Node.js ever
+changes, and it will also make things easier for build tools and loaders to
+determine how the files in the package should be interpreted. Syntax detection #
+Added in: v21.1.0, v20.10.0 History Version Changes v22.7.0, v20.19.0 Syntax
+detection is enabled by default. Stability: 1.2 - Release candidate Node.js will
+inspect the source code of ambiguous input to determine whether it contains ES
+module syntax; if such syntax is detected, the input will be treated as an ES
+module. Ambiguous input is defined as: Files with a .js extension or no
+extension; and either no controlling package.json file or one that lacks a type
+field. String input ( --eval or STDIN ) when --input-type is not specified. ES
+module syntax is defined as syntax that would throw when evaluated as CommonJS.
+This includes the following: import statements (but not import() expressions,
+which are valid in CommonJS). export statements. import.meta references. await
+at the top level of a module. Lexical redeclarations of the CommonJS wrapper
+variables ( require , module , exports , __dirname , __filename ). Module
+resolution and loading # Node.js has two types of module resolution and loading,
+chosen based on how the
 ----------------------------------------------------------------------------------------------------
-Index: 47761 <<"chunk_id": 0, "docno": 7536>>
+Index: 9161 <<"chunk_id": 4, "docno": 1402>>
 
-Node.js — Node.js 12.21.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.21.0 (LTS) RL
-Richard Lau Node.js 12.21.0 (LTS) Notable changes Vulnerabilities fixed:
-CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by resource
-exhaustion Affected Node.js ersions are vulnerable to denial of service attacks
-when too many connection attempts with an 'unknownProtocol' are established.
-This leads to a leak of file descriptors. If a file descriptor limit is
-configured on the system, then the server is unable to accept new connections
-and prevent the process also from opening, e.g. a file. If no file descriptor
-limit is configured, then this lead to an excessive memory usage and cause the
-system to run out of memory. CVE-2021-22884 : DNS rebinding in --inspect
-Affected Node.js ersions are vulnerable to denial of service attacks when the
-whitelist includes “localhost6”. When “localhost6” is not present in /etc/hosts,
-it is just an ordinary domain that is resolved via DNS, i.e., over network. If
-the attacker controls the victim's DNS server or can spoof its responses, the
-DNS rebinding protection can be bypassed by using the “localhost6” domain. As
-long as the attacker uses the “localhost6” domain, they can still apply the
-attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL - Integer overflow
-in CipherUpdate This is a vulnerability in OpenSSL which may be exploited
-through Node.js. You can read more about it in
-https://www.openssl.org/news/secadv/20210216.txt Commits [ e69177a088 ] - deps :
-update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37413 [ 0633ae77e6
+package will make things easier for build tools and loaders to determine how the
+files in the package should be interpreted. Files with an extension that is not
+.mjs , .cjs , .json , .node , or .js , when the nearest parent package.json file
+contains a top-level field "type" with a value of "module" . See Determining
+module system for more details. Calling require() always use the CommonJS module
+loader. Calling import() always use the ECMAScript module loader. Accessing the
+main module # When a file is run directly from Node.js, require.main is set to
+its module . That means that it is possible to determine whether a file has been
+run directly by testing require.main === module . For a file foo.js , this will
+be true if run via node foo.js , but false if run by require('./foo') . When the
+entry point is not a CommonJS module, require.main is undefined , and the main
+module is out of reach. Package manager tips # The semantics of the Node.js
+require() function were designed to be general enough to support reasonable
+directory structures. Package manager programs such as dpkg , rpm , and npm will
+hopefully find it possible to build native packages from Node.js modules without
+modification. In the following, we give a suggested directory structure that
+could work: Let's say that we wanted to have the folder at
+/usr/lib/node/<some-package>/<some-version> hold the contents of a specific
+version of a package. Packages can depend on one another. In order to install
+package foo ,
 ----------------------------------------------------------------------------------------------------
-Index: 49988 <<"chunk_id": 0, "docno": 7936>>
+Index: 9091 <<"chunk_id": 7, "docno": 1397>>
 
-Node.js — Node.js 5.7.0 (Current) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 5.7.0 (Current) RV Rod
-Vagg Node.js 5.7.0 (Current) Notable changes buffer : You can now supply an
-encoding argument when filling a Buffer Buffer#fill(string[, start[, end]][,
-encoding]) , supplying an existing Buffer will also work with
-Buffer#fill(buffer[, start[, end]]) . See the API documentation for details on
-how this works. (Trevor Norris) #4935 Buffer#indexOf() no longer requires a
-byteOffset argument if you also wish to specify an encoding :
-Buffer#indexOf(val[, byteOffset][, encoding]) . (Trevor Norris) #4803
-child_process : spawn() and spawnSync() now support a 'shell' option to allow
-for optional execution of the given command inside a shell. If set to true ,
-cmd.exe will be used on Windows and /bin/sh elsewhere. A path to a custom shell
-can also be passed to override these defaults. On Windows, this option allows
-.bat. and .cmd files to be executed with spawn() and spawnSync() . (Colin Ihrig)
-#4598 http_parser : Update to http-parser 2.6.2 to fix an unintentionally strict
-limitation of allowable header characters (James M Snell) #5237 dgram :
-socket.send() now supports accepts an array of Buffers or Strings as the first
-argument. See the API docs for details on how this works. (Matteo Collina) #4374
-http : Fix a bug where handling headers will mistakenly trigger an 'upgrade'
-event where the server is just advertising its protocols. This bug can prevent
-HTTP clients from communicating with HTTP/2 enabled servers. (Fedor Indutny)
-#4337 net :
+.js files within that package as using ES module syntax. The "type" field
+applies not only to initial entry points ( node my-app.js ) but also to files
+referenced by import statements and import() expressions. // my-app.js, treated
+as an ES module because there is a package.json // file in the same folder with
+"type": "module". import './startup/init.js' ; // Loaded as ES module since
+./startup contains no package.json file, // and therefore inherits the "type"
+value from one level up. import 'commonjs-package' ; // Loaded as CommonJS since
+./node_modules/commonjs-package/package.json // lacks a "type" field or contains
+"type": "commonjs". import './node_modules/commonjs-package/index.js' ; //
+Loaded as CommonJS since ./node_modules/commonjs-package/package.json // lacks a
+"type" field or contains "type": "commonjs". js copy Files ending with .mjs are
+always loaded as ES modules regardless of the nearest parent package.json .
+Files ending with .cjs are always loaded as CommonJS regardless of the nearest
+parent package.json . import './legacy-file.cjs' ; // Loaded as CommonJS since
+.cjs is always loaded as CommonJS. import 'commonjs-package/src/index.mjs' ; //
+Loaded as ES module since .mjs is always loaded as ES module. js copy The .mjs
+and .cjs extensions can be used to mix types within the same package: Within a
+"type": "module" package, Node.js can be instructed to interpret a particular
+file as CommonJS by naming it with a .cjs extension (since both .js and .mjs
+files are treated as ES modules within a "module" package). Within a "type":
+"commonjs" package, Node.js can be instructed to interpret a particular file as
+an ES module by
 ----------------------------------------------------------------------------------------------------
-Index: 49209 <<"chunk_id": 0, "docno": 7786>>
+Index: 9066 <<"chunk_id": 38, "docno": 1394>>
 
-Node.js — Node.js 10.24.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 10.24.0 (LTS) RL
-Richard Lau Node.js 10.24.0 (LTS) Notable changes Vulnerabilities fixed:
-CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by resource
-exhaustion Affected Node.js ersions are vulnerable to denial of service attacks
-when too many connection attempts with an 'unknownProtocol' are established.
-This leads to a leak of file descriptors. If a file descriptor limit is
-configured on the system, then the server is unable to accept new connections
-and prevent the process also from opening, e.g. a file. If no file descriptor
-limit is configured, then this lead to an excessive memory usage and cause the
-system to run out of memory. CVE-2021-22884 : DNS rebinding in --inspect
-Affected Node.js ersions are vulnerable to denial of service attacks when the
-whitelist includes “localhost6”. When “localhost6” is not present in /etc/hosts,
-it is just an ordinary domain that is resolved via DNS, i.e., over network. If
-the attacker controls the victim's DNS server or can spoof its responses, the
-DNS rebinding protection can be bypassed by using the “localhost6” domain. As
-long as the attacker uses the “localhost6” domain, they can still apply the
-attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL - Integer overflow
-in CipherUpdate This is a vulnerability in OpenSSL which may be exploited
-through Node.js. You can read more about it in
-https://www.openssl.org/news/secadv/20210216.txt Commits [ 0afcb4f6bb ] - deps :
-update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37415 [ 447be941cd
+very different effects: When a source is provided, all require calls from this
+module will be processed by the ESM loader with registered resolve and load
+hooks; all require.resolve calls from this module will be processed by the ESM
+loader with registered resolve hooks; only a subset of the CommonJS API will be
+available (e.g. no require.extensions , no require.cache , no
+require.resolve.paths ) and monkey-patching on the CommonJS module loader will
+not apply. If source is undefined or null , it will be handled by the CommonJS
+module loader and require / require.resolve calls will not go through the
+registered hooks. This behavior for nullish source is temporary — in the future,
+nullish source will not be supported. These caveats do not apply to the
+synchronous load hook, in which case the complete set of CommonJS APIs available
+to the customized CommonJS modules, and require / require.resolve always go
+through the registered hooks. The Node.js internal asynchronous load
+implementation, which is the value of next for the last hook in the load chain,
+returns null for source when format is 'commonjs' for backward compatibility.
+Here is an example hook that would opt-in to using the non-default behavior:
+import { readFile } from 'node:fs/promises' ; // Asynchronous version accepted
+by module.register(). This fix is not needed // for the synchronous version
+accepted by module.registerHooks(). export async function load ( url , context ,
+nextLoad ) { const result = await nextLoad (url , context) ; if (result . format
+=== 'commonjs' ) { result . source
 ----------------------------------------------------------------------------------------------------
-Index: 53876 <<"chunk_id": 0, "docno": 8686>>
+Index: 21883 <<"chunk_id": 2, "docno": 3257>>
 
-Node.js — Node.js 14.16.0 (LTS) Skip to content Learn About Download Blog Docs
-Beta Docs Contribute Courses Start typing... ⌘ K Node.js 14.16.0 (LTS) BNG
-Bethany Nicolle Griggs Node.js 14.16.0 (LTS) Notable changes Vulnerabilities
-fixed: CVE-2021-22883 : HTTP2 'unknownProtocol' cause Denial of Service by
-resource exhaustion Affected Node.js ersions are vulnerable to denial of service
-attacks when too many connection attempts with an 'unknownProtocol' are
-established. This leads to a leak of file descriptors. If a file descriptor
-limit is configured on the system, then the server is unable to accept new
-connections and prevent the process also from opening, e.g. a file. If no file
-descriptor limit is configured, then this lead to an excessive memory usage and
-cause the system to run out of memory. CVE-2021-22884 : DNS rebinding in
---inspect Affected Node.js ersions are vulnerable to denial of service attacks
-when the whitelist includes “localhost6”. When “localhost6” is not present in
-/etc/hosts, it is just an ordinary domain that is resolved via DNS, i.e., over
-network. If the attacker controls the victim's DNS server or can spoof its
-responses, the DNS rebinding protection can be bypassed by using the
-“localhost6” domain. As long as the attacker uses the “localhost6” domain, they
-can still apply the attack described in CVE-2018-7160. CVE-2021-23840 : OpenSSL
-- Integer overflow in CipherUpdate This is a vulnerability in OpenSSL which may
-be exploited through Node.js. You can read more about it in
-https://www.openssl.org/news/secadv/20210216.txt Commits [ 313d26800c ] - deps :
-update archs files for OpenSSL-1.1.1j (Daniel Bevenius) #37412 [
+references as needed. What does it do? The dependency analysis engine provides
+just a single getDGraph function to its client, the type inference engine:
+getDGraph :: <path-to-js-file> -> <dependency-graph> This function computes a
+JSON representation of the dependency graph. This graph contains a node for all
+files that the target file directly or transitively depends on. If we pass it
+our 'main' module, it will return something like the following:
+getDGraph('/sample/main.js') ==> { ... "/NODE-NATIVES/stream.js": { "kind":
+"commonjs", "refs": { ... } }, "/NODE-NATIVES/fs.js": { "kind": "commonjs",
+"refs": { "stream": { "kind": "commonjs", "name": "stream", "path":
+"/NODE-NATIVES/stream.js" }, ... } }, "/sample/utils.js": { "kind": "commonjs",
+"refs": {} }, "/sample/main.js": { "kind": "commonjs", "refs": { "fs": { "kind":
+"commonjs", "name": "fs", "path": "/NODE-NATIVES/fs.js" }, "./utils": { "kind":
+"commonjs", "name": "./utils", "path": "/sample/utils.js" } } } } Each property
+in this JSON object represents a node in the graph. The 'refs' property contains
+the edges. Each edge corresponds to a module import. An interesting detail is
+that the dependency analyzer returns special path strings for native node
+modules. When the inference engine request the source code for such a path, the
+Scripted server, which is written in JavaScript and running on Node.js, extracts
+the source code from its very own Node.js process. The inference engine analyzes
+it just like an ordinary JavaScript file. The result is nice content assist for
+built-in node modules: [caption id="attachment_12184" align="aligncenter"
+width="587" caption="Inferred Suggestions for Built-in Node Modules"] [/caption]
+What module systems are supported? For now we only provide support for AMD and
 ----------------------------------------------------------------------------------------------------
-Index: 44481 <<"chunk_id": 0, "docno": 6901>>
+Index: 9100 <<"chunk_id": 16, "docno": 1397>>
 
-Node.js — Node.js 22.1.0 (Current) Skip to content Learn About Download Blog
-Docs Beta Docs Contribute Courses Start typing... ⌘ K Node.js 22.1.0 (Current)
-MLZ Michaël Zasso Node.js 22.1.0 (Current) 2024-05-02, Version 22.1.0 (Current),
-@targos prepared by @aduh95 module: implement NODE_COMPILE_CACHE for automatic
-on-disk code caching This patch implements automatic on-disk code caching that
-can be enabled via an environment variable NODE_COMPILE_CACHE=/path/to/cache/dir
-. When set, whenever Node.js compiles a CommonJS or a ECMAScript Module, it will
-use on-disk V8 code cache persisted in the specified directory to speed up the
-compilation. This may slow down the first load of a module graph, but subsequent
-loads of the same module graph may get a significant speedup if the contents of
-the modules do not change. Locally, this speeds up loading of
-test/fixtures/snapshot/typescript.js from ~130ms to ~80ms. To clean up the
-generated code cache, simply remove the directory. It will be recreated the next
-time the same directory is used for NODE_COMPILE_CACHE . Compilation cache
-generated by one version of Node.js may not be used by a different version of
-Node.js. Cache generated by different versions of Node.js will be stored
-separately if the same directory is used to persist the cache, so they can
-co-exist. Caveat: currently when using this with V8 JavaScript code coverage,
-the coverage being collected by V8 may be less precise in functions that are
-deserialized from the code cache. It's recommended to turn this off when running
-tests to generate precise coverage. Contributed by Joyee Cheung in #52535 .
-Other Notable Changes
+Changes v13.7.0, v12.16.0 Unflag conditional exports. Conditional exports
+provide a way to map to different paths depending on certain conditions. They
+are supported for both CommonJS and ES module imports. For example, a package
+that wants to provide different ES module exports for require() and import can
+be written: // package.json { " exports " : { " import " : "./index-module.js" ,
+" require " : "./index-require.cjs" }, " type " : "module" } json copy Node.js
+implements the following conditions, listed in order from most specific to least
+specific as conditions should be defined: "node-addons" - similar to "node" and
+matches for any Node.js environment. This condition can be used to provide an
+entry point which uses native C++ addons as opposed to an entry point which is
+more universal and doesn't rely on native addons. This condition can be disabled
+via the --no-addons flag . "node" - matches for any Node.js environment. Can be
+a CommonJS or ES module file. In most cases explicitly calling out the Node.js
+platform is not necessary. "import" - matches when the package is loaded via
+import or import() , or via any top-level import or resolve operation by the
+ECMAScript module loader. Applies regardless of the module format of the target
+file. Always mutually exclusive with "require" . "require" - matches when the
+package is loaded via require() . The referenced file should be loadable with
+require() although the condition matches regardless of the module format of the
+target file. Expected formats include CommonJS, JSON, native addons,
+----------------------------------------------------------------------------------------------------
+Index: 14983 <<"chunk_id": 542, "docno": 2234>>
+
+the ESM documentation . Caching # Modules are cached after the first time they
+are loaded. This means (among other things) that every call to require('foo')
+will get exactly the same object returned, if it would resolve to the same file.
+Provided require.cache is not modified, multiple calls to require('foo') will
+not cause the module code to be executed multiple times. This is an important
+feature. With it, "partially done" objects can be returned, thus allowing
+transitive dependencies to be loaded even when they would cause cycles. To have
+a module execute code multiple times, export a function, and call that function.
+Module caching caveats # Modules are cached based on their resolved filename.
+Since modules may resolve to a different filename based on the location of the
+calling module (loading from node_modules folders), it is not a guarantee that
+require('foo') will always return the exact same object, if it would resolve to
+different files. Additionally, on case-insensitive file systems or operating
+systems, different resolved filenames can point to the same file, but the cache
+will still treat them as different modules and will reload the file multiple
+times. For example, require('./foo') and require('./FOO') return two different
+objects, irrespective of whether or not ./foo and ./FOO are the same file.
+Built-in modules # History Version Changes v16.0.0, v14.18.0 Added node: import
+support to require(...) . Node.js has several modules compiled into the binary.
+These modules are described in greater detail elsewhere in this documentation.
+The built-in modules are defined within the Node.js source and are located
+----------------------------------------------------------------------------------------------------
+Index: 9171 <<"chunk_id": 14, "docno": 1402>>
+
+Caching # Modules are cached after the first time they are loaded. This means
+(among other things) that every call to require('foo') will get exactly the same
+object returned, if it would resolve to the same file. Provided require.cache is
+not modified, multiple calls to require('foo') will not cause the module code to
+be executed multiple times. This is an important feature. With it, "partially
+done" objects can be returned, thus allowing transitive dependencies to be
+loaded even when they would cause cycles. To have a module execute code multiple
+times, export a function, and call that function. Module caching caveats #
+Modules are cached based on their resolved filename. Since modules may resolve
+to a different filename based on the location of the calling module (loading
+from node_modules folders), it is not a guarantee that require('foo') will
+always return the exact same object, if it would resolve to different files.
+Additionally, on case-insensitive file systems or operating systems, different
+resolved filenames can point to the same file, but the cache will still treat
+them as different modules and will reload the file multiple times. For example,
+require('./foo') and require('./FOO') return two different objects, irrespective
+of whether or not ./foo and ./FOO are the same file. Built-in modules # History
+Version Changes v16.0.0, v14.18.0 Added node: import support to require(...) .
+Node.js has several modules compiled into the binary. These modules are
+described in greater detail elsewhere in this documentation. The built-in
+modules are defined within the Node.js source and are located in the lib/
+folder.
+----------------------------------------------------------------------------------------------------
+Index: 14960 <<"chunk_id": 519, "docno": 2234>>
+
+defaults are provided. When provided, defaults are merged in with preference to
+the provided properties. In the default nextLoad , if the module pointed to by
+url does not have explicit module type information, context.format is mandatory.
+Returns: <Promise> The asynchronous version takes either an object containing
+the following properties, or a Promise that will resolve to such an object.
+format <string> shortCircuit <undefined> | <boolean> A signal that this hook
+intends to terminate the chain of load hooks. Default: false source <string> |
+<ArrayBuffer> | <TypedArray> The source for Node.js to evaluate Warning : The
+asynchronous load hook and namespaced exports from CommonJS modules are
+incompatible. Attempting to use them together will result in an empty object
+from the import. This may be addressed in the future. This does not apply to the
+synchronous load hook, in which case exports can be used as usual. The
+asynchronous version works similarly to the synchronous version, though when
+using the asynchronous load hook, omitting vs providing a source for 'commonjs'
+has very different effects: When a source is provided, all require calls from
+this module will be processed by the ESM loader with registered resolve and load
+hooks; all require.resolve calls from this module will be processed by the ESM
+loader with registered resolve hooks; only a subset of the CommonJS API will be
+available (e.g. no require.extensions , no require.cache , no
+require.resolve.paths ) and monkey-patching on the CommonJS module loader will
+not apply. If source is undefined or null , it will be handled by
+----------------------------------------------------------------------------------------------------
+Index: 14948 <<"chunk_id": 507, "docno": 2234>>
+
+be used to transform an unsupported source to a supported one (see Examples
+below). Accepted final formats returned by load # The final value of format must
+be one of the following: format Description Acceptable types for source returned
+by load 'addon' Load a Node.js addon <null> 'builtin' Load a Node.js builtin
+module <null> 'commonjs-typescript' Load a Node.js CommonJS module with
+TypeScript syntax <string> | <ArrayBuffer> | <TypedArray> | <null> | <undefined>
+'commonjs' Load a Node.js CommonJS module <string> | <ArrayBuffer> |
+<TypedArray> | <null> | <undefined> 'json' Load a JSON file <string> |
+<ArrayBuffer> | <TypedArray> 'module-typescript' Load an ES module with
+TypeScript syntax <string> | <ArrayBuffer> | <TypedArray> 'module' Load an ES
+module <string> | <ArrayBuffer> | <TypedArray> 'wasm' Load a WebAssembly module
+<ArrayBuffer> | <TypedArray> The value of source is ignored for format 'builtin'
+because currently it is not possible to replace the value of a Node.js builtin
+(core) module. These types all correspond to classes defined in ECMAScript. The
+specific <ArrayBuffer> object is a <SharedArrayBuffer> . The specific
+<TypedArray> object is a <Uint8Array> . If the source value of a text-based
+format (i.e., 'json' , 'module' ) is not a string, it is converted to a string
+using util.TextDecoder . Asynchronous customization hooks # Stability: 1.1 -
+Active Development Caveats of asynchronous customization hooks # The
+asynchronous customization hooks have many caveats and it is uncertain if their
+issues can be resolved. Users are encouraged to use the synchronous
+customization hooks via module.registerHooks() instead to avoid these caveats.
+Asynchronous hooks run on
+----------------------------------------------------------------------------------------------------
+Index: 15029 <<"chunk_id": 588, "docno": 2234>>
+
+if they can be determined through static analysis. Regardless of how a module is
+requested, the resolution and loading process can be customized using
+customization hooks . package.json and file extensions # Within a package, the
+package.json "type" field defines how Node.js should interpret .js files. If a
+package.json file does not have a "type" field, .js files are treated as
+CommonJS . A package.json "type" value of "module" tells Node.js to interpret
+.js files within that package as using ES module syntax. The "type" field
+applies not only to initial entry points ( node my-app.js ) but also to files
+referenced by import statements and import() expressions. // my-app.js, treated
+as an ES module because there is a package.json // file in the same folder with
+"type": "module". import './startup/init.js' ; // Loaded as ES module since
+./startup contains no package.json file, // and therefore inherits the "type"
+value from one level up. import 'commonjs-package' ; // Loaded as CommonJS since
+./node_modules/commonjs-package/package.json // lacks a "type" field or contains
+"type": "commonjs". import './node_modules/commonjs-package/index.js' ; //
+Loaded as CommonJS since ./node_modules/commonjs-package/package.json // lacks a
+"type" field or contains "type": "commonjs". js copy Files ending with .mjs are
+always loaded as ES modules regardless of the nearest parent package.json .
+Files ending with .cjs are always loaded as CommonJS regardless of the nearest
+parent package.json . import './legacy-file.cjs' ; // Loaded as CommonJS since
+.cjs is always loaded as CommonJS. import 'commonjs-package/src/index.mjs' ; //
+Loaded as ES module since .mjs is always loaded as ES module. js
+----------------------------------------------------------------------------------------------------
+Index: 2165 <<"chunk_id": 12, "docno": 284>>
+
+things they shouldn't). If you don't need that, "main" is simpler and may be a
+better option for you. The "engines" field provides both a human-friendly and a
+machine-friendly indication of which version(s) of Node.js the package is
+compatible. Depending on the package manager used, an exception may be thrown
+causing the installation to fail when the consumer is using an incompatible
+version of Node.js (which can be very helpful to consumers). Including this
+field will save a lot of headache for consumers with an older version of Node.js
+who cannot use the package. Down the rabbit-hole Specifically in relation to
+Node.js, there are 4 problems to solve: Determining format of source code files
+(author running their own code) Determining format of distribution files (code
+consumers will receive) Publicising distribution code for when it is require()
+’d (consumer expects CJS) Publicising distribution code for when it is import ’d
+(consumer probably wants ESM) ⚠️ The first 2 are independent of the last 2. The
+method of loading does NOT determine the format the file is interpreted as:
+package.json’s exports.require ≠ CJS . require() does NOT and cannot blindly
+interpret the file as CJS; for instance, require('foo.json') correctly
+interprets the file as JSON, not CJS. The module containing the require() call
+of course must be CJS, but what it is loading is not necessarily also CJS.
+package.json’s exports.import ≠ ESM . import similarly does NOT and cannot
+blindly interpret the file as ESM; import can load CJS, JSON, and WASM, as well
+as ESM. The module containing
+----------------------------------------------------------------------------------------------------
+Index: 15006 <<"chunk_id": 565, "docno": 2234>>
+
+but dynamic import() expressions are supported in CommonJS for loading ES
+modules. When importing CommonJS modules , the module.exports object is provided
+as the default export. Named exports may be available, provided by static
+analysis as a convenience for better ecosystem compatibility. require # The
+CommonJS module require currently only supports loading synchronous ES modules
+(that is, ES modules that do not use top-level await ). See Loading ECMAScript
+modules using require() for details. CommonJS Namespaces # Added in: v14.13.0
+History Version Changes v23.0.0 Added 'module.exports' export marker to CJS
+namespaces. CommonJS modules consist of a module.exports object which can be of
+any type. To support this, when importing CommonJS from an ECMAScript module, a
+namespace wrapper for the CommonJS module is constructed, which always provides
+a default export key pointing to the CommonJS module.exports value. In addition,
+a heuristic static analysis is performed against the source text of the CommonJS
+module to get a best-effort static list of exports to provide on the namespace
+from values on module.exports . This is necessary since these namespaces must be
+constructed prior to the evaluation of the CJS module. These CommonJS namespace
+objects also provide the default export as a 'module.exports' named export, in
+order to unambiguously indicate that their representation in CommonJS uses this
+value, and not the namespace value. This mirrors the semantics of the handling
+of the 'module.exports' export name in require(esm) interop support. When
+importing a CommonJS module, it can be reliably imported using the ES module
+default import or its corresponding sugar syntax:
+----------------------------------------------------------------------------------------------------
+Index: 9179 <<"chunk_id": 22, "docno": 1402>>
+
+Added in: v0.1.16 Type: <module> A reference to the current module, see the
+section about the module object . In particular, module.exports is used for
+defining what a module exports and makes available through require() .
+require(id) # Added in: v0.1.13 id <string> module name or path Returns: <any>
+exported module content Used to import modules, JSON , and local files. Modules
+can be imported from node_modules . Local modules and JSON files can be imported
+using a relative path (e.g. ./ , ./foo , ./bar/baz , ../foo ) that will be
+resolved against the directory named by __dirname (if defined) or the current
+working directory. The relative paths of POSIX style are resolved in an OS
+independent fashion, meaning that the examples above will work on Windows in the
+same way they would on Unix systems. // Importing a local module with a path
+relative to the `__dirname` or current // working directory. (On Windows, this
+would resolve to .\path\myLocalModule.) const myLocalModule = require (
+'./path/myLocalModule' ) ; // Importing a JSON file: const jsonData = require (
+'./path/filename.json' ) ; // Importing a module from node_modules or Node.js
+built-in module: const crypto = require ( 'node:crypto' ) ; js copy
+require.cache # Added in: v0.3.0 Type: <Object> Modules are cached in this
+object when they are required. By deleting a key value from this object, the
+next require will reload the module. This does not apply to native addons , for
+which reloading will result in an error. Adding or replacing entries is also
+----------------------------------------------------------------------------------------------------
+Index: 14989 <<"chunk_id": 548, "docno": 2234>>
+
+the current module resolution algorithm was defined. NODE_PATH is still
+supported, but is less necessary now that the Node.js ecosystem has settled on a
+convention for locating dependent modules. Sometimes deployments that rely on
+NODE_PATH show surprising behavior when people are unaware that NODE_PATH must
+be set. Sometimes a module's dependencies change, causing a different version
+(or even a different module) to be loaded as the NODE_PATH is searched.
+Additionally, Node.js will search in the following list of GLOBAL_FOLDERS: 1:
+$HOME/.node_modules 2: $HOME/.node_libraries 3: $PREFIX/lib/node Where $HOME is
+the user's home directory, and $PREFIX is the Node.js configured node_prefix .
+These are mostly for historic reasons. It is strongly encouraged to place
+dependencies in the local node_modules folder. These will be loaded faster, and
+more reliably. The module wrapper # Before a module's code is executed, Node.js
+will wrap it with a function wrapper that looks like the following: ( function (
+exports , require , module , __filename , __dirname ) { // Module code actually
+lives in here } ) ; js copy By doing this, Node.js achieves a few things: It
+keeps top-level variables (defined with var , const , or let ) scoped to the
+module rather than the global object. It helps to provide some global-looking
+variables that are actually specific to the module, such as: The module and
+exports objects that the implementor can use to export values from the module.
+The convenience variables __filename and __dirname , containing the module's
+absolute filename and directory path. The module scope #
+----------------------------------------------------------------------------------------------------
+Index: 14991 <<"chunk_id": 550, "docno": 2234>>
+
+module.exports . module # Added in: v0.1.16 Type: <module> A reference to the
+current module, see the section about the module object . In particular,
+module.exports is used for defining what a module exports and makes available
+through require() . require(id) # Added in: v0.1.13 id <string> module name or
+path Returns: <any> exported module content Used to import modules, JSON , and
+local files. Modules can be imported from node_modules . Local modules and JSON
+files can be imported using a relative path (e.g. ./ , ./foo , ./bar/baz ,
+../foo ) that will be resolved against the directory named by __dirname (if
+defined) or the current working directory. The relative paths of POSIX style are
+resolved in an OS independent fashion, meaning that the examples above will work
+on Windows in the same way they would on Unix systems. // Importing a local
+module with a path relative to the `__dirname` or current // working directory.
+(On Windows, this would resolve to .\path\myLocalModule.) const myLocalModule =
+require ( './path/myLocalModule' ) ; // Importing a JSON file: const jsonData =
+require ( './path/filename.json' ) ; // Importing a module from node_modules or
+Node.js built-in module: const crypto = require ( 'node:crypto' ) ; js copy
+require.cache # Added in: v0.3.0 Type: <Object> Modules are cached in this
+object when they are required. By deleting a key value from this object, the
+next require will reload the module. This does not apply to native addons , for
+which reloading will result in an error. Adding or
+----------------------------------------------------------------------------------------------------
+Index: 14961 <<"chunk_id": 520, "docno": 2234>>
+
+no require.resolve.paths ) and monkey-patching on the CommonJS module loader
+will not apply. If source is undefined or null , it will be handled by the
+CommonJS module loader and require / require.resolve calls will not go through
+the registered hooks. This behavior for nullish source is temporary — in the
+future, nullish source will not be supported. These caveats do not apply to the
+synchronous load hook, in which case the complete set of CommonJS APIs available
+to the customized CommonJS modules, and require / require.resolve always go
+through the registered hooks. The Node.js internal asynchronous load
+implementation, which is the value of next for the last hook in the load chain,
+returns null for source when format is 'commonjs' for backward compatibility.
+Here is an example hook that would opt-in to using the non-default behavior:
+import { readFile } from 'node:fs/promises' ; // Asynchronous version accepted
+by module.register(). This fix is not needed // for the synchronous version
+accepted by module.registerHooks(). export async function load ( url , context ,
+nextLoad ) { const result = await nextLoad (url , context) ; if (result . format
+=== 'commonjs' ) { result . source ??= await readFile ( new URL (result .
+responseURL ?? url)) ; } return result ; } mjs copy This doesn't apply to the
+synchronous load hook either, in which case the source returned contains source
+code loaded by the next hook, regardless of module format. Examples # The
+various module customization hooks can be used together to accomplish
+wide-ranging customizations
+----------------------------------------------------------------------------------------------------
+Index: 9177 <<"chunk_id": 20, "docno": 1402>>
+
+algorithm was defined. NODE_PATH is still supported, but is less necessary now
+that the Node.js ecosystem has settled on a convention for locating dependent
+modules. Sometimes deployments that rely on NODE_PATH show surprising behavior
+when people are unaware that NODE_PATH must be set. Sometimes a module's
+dependencies change, causing a different version (or even a different module) to
+be loaded as the NODE_PATH is searched. Additionally, Node.js will search in the
+following list of GLOBAL_FOLDERS: 1: $HOME/.node_modules 2:
+$HOME/.node_libraries 3: $PREFIX/lib/node Where $HOME is the user's home
+directory, and $PREFIX is the Node.js configured node_prefix . These are mostly
+for historic reasons. It is strongly encouraged to place dependencies in the
+local node_modules folder. These will be loaded faster, and more reliably. The
+module wrapper # Before a module's code is executed, Node.js will wrap it with a
+function wrapper that looks like the following: ( function ( exports , require ,
+module , __filename , __dirname ) { // Module code actually lives in here } ) ;
+js copy By doing this, Node.js achieves a few things: It keeps top-level
+variables (defined with var , const , or let ) scoped to the module rather than
+the global object. It helps to provide some global-looking variables that are
+actually specific to the module, such as: The module and exports objects that
+the implementor can use to export values from the module. The convenience
+variables __filename and __dirname , containing the module's absolute filename
+and directory path. The module scope # __dirname # Added in:
+----------------------------------------------------------------------------------------------------
+Index: 10451 <<"chunk_id": 44, "docno": 1485>>
+
+additional non-enumerable properties: requireStack <string> [] The chain of
+modules that led to the failing require() , starting with the module that
+required the asynchronous module. topLevelAwaitLocations <Object> [] The
+locations of the top-level awaits in the graph. Only populated when
+--experimental-print-required-tla is enabled. Each entry has the following
+properties: url <string> The URL of the module containing the top-level await.
+line <number> The 1-based line number of the top-level await. column <number>
+The 1-based column number of the top-level await. sourceLine <string> The source
+line containing the top-level await. ERR_REQUIRE_CYCLE_MODULE # When trying to
+require() a ES Module , a CommonJS to ESM or ESM to CommonJS edge participates
+in an immediate cycle. This is not allowed because ES Modules cannot be
+evaluated while they are already being evaluated. To avoid the cycle, the
+require() call involved in a cycle should not happen at the top-level of either
+an ES Module (via createRequire() ) or a CommonJS module, and should be done
+lazily in an inner function. ERR_REQUIRE_ESM # History Version Changes v23.0.0,
+v22.12.0, v20.19.0 require() now supports loading synchronous ES modules by
+default. Stability: 0 - Deprecated An attempt was made to require() an ES Module
+. This error has been deprecated since require() now supports loading
+synchronous ES modules. When require() encounters an ES module that contains
+top-level await , it will throw ERR_REQUIRE_ASYNC_MODULE instead.
+ERR_REQUIRE_ESM_RACE_CONDITION # Added in: v26.1.0 Stability: 1 - Experimental.
+An attempt was made to require() an ES Module while another import() call was
+already in progress to load
+----------------------------------------------------------------------------------------------------
+Index: 9090 <<"chunk_id": 6, "docno": 1397>>
+
+does not perform extension searching. A file extension must be provided when the
+specifier is a relative or absolute file URL. It supports file:// and data: URLs
+as specifiers by default. Loading: .json files are treated as JSON text files.
+When importing JSON modules, an import type attribute is required (e.g. import
+json from './data.json' with { type: 'json' } ). .node files are interpreted as
+compiled addon modules loaded with process.dlopen() , if
+--experimental-addon-modules is enabled. .ts , .mts and .cts files are treated
+as TypeScript text files. It accepts only .js , .mjs , and .cjs extensions for
+JavaScript text files. .wasm files are treated as WebAssembly modules . Any
+other file extensions will result in a ERR_UNKNOWN_FILE_EXTENSION error.
+Additional file extensions can be facilitated via customization hooks . import /
+import() can be used to load JavaScript CommonJS modules . Such modules are
+passed through merve to try to identify named exports, which are available if
+they can be determined through static analysis. Regardless of how a module is
+requested, the resolution and loading process can be customized using
+customization hooks . package.json and file extensions # Within a package, the
+package.json "type" field defines how Node.js should interpret .js files. If a
+package.json file does not have a "type" field, .js files are treated as
+CommonJS . A package.json "type" value of "module" tells Node.js to interpret
+.js files within that package as using ES module syntax. The "type" field
+applies not only to initial entry points ( node my-app.js ) but
+----------------------------------------------------------------------------------------------------
+Index: 2167 <<"chunk_id": 14, "docno": 284>>
+
+there is a risk of certain bugs if both instances of the package get loaded.
+This potential comes from the fact that the pkgInstance created by const
+pkgInstance = require('pkg') is not the same as the pkgInstance created by
+import pkgInstance from 'pkg' (or an alternative main path like 'pkg/module' ).
+This is the “dual package hazard”, where two instances of the same package can
+be loaded within the same runtime environment. While it is unlikely that an
+application or package would intentionally load both instances directly, it is
+common for an application to load one copy while a dependency of the application
+loads the other copy. This hazard can happen because Node.js supports
+intermixing CommonJS and ES modules, and can lead to unexpected and confusing
+behavior. If the package main export is a constructor, an instanceof comparison
+of instances created by the two copies returns false , and if the export is an
+object, properties added to one (like pkgInstance.foo = 3 ) are not present on
+the other. This differs from how import and require statements work in
+all-CommonJS or all-ES module environments, respectively, and therefore is
+surprising to users. It also differs from the behavior users are familiar with
+when using transpilation via tools like Babel or esm . How did we get here
+CommonJS (CJS) was created long before ECMAScript Modules (ESM), back when
+JavaScript was still adolescent—CJS and jQuery were created just 3 years apart.
+CJS is not an official ( TC39 ) standard and is supported by a limited few
+----------------------------------------------------------------------------------------------------
+Index: 25805 <<"chunk_id": 2, "docno": 4111>>
+
+function return function draw(data) { return graph.piechart(data); } } ); The
+AMD format is often used in browser applications, since: it allows variables to
+be scoped inside the factory function (vs. having everything in the window
+global scope) dependencies may not be available synchronously, e.g., they need
+to be fetched via asynchronous network request modules are defined in a
+callback, then run once all dependencies are loaded CommonJS is another
+authoring format , often used in Node.js applications on the server side, but
+also in browser applications. /** * Our module's dependencies and API **/ // we
+fetch the graph module as a dependency var graph = require('graphmodule'); // we
+decorate the `exports` variable to export our function exports.draw = drawFunc;
+/** * API implementation **/ function drawFunc(data) { return
+graph.piechart(data); } You probably spotted some differences with AMD: this
+authoring format can be used in the browser and on the server! thus you can test
+your modules in headless browsers and Node.js unit tests! module definitions
+aren't wrapped in a define What's next? The next version of JavaScript
+(technically called ECMAScript 6) will standardize JavaScript modularity ,
+albeit using a slightly different syntax than either the AMD or commonJS formats
+we've seen above. More, EcmaScript 6 will solve many problems in that space but
+will also make available syntactic sugar to define OO-like classes. Wherever
+you're putting JavaScript to use, be it client or server, consider taking the
+modular approach — for all the same reasons we do in Java. There is a small
+learning
+----------------------------------------------------------------------------------------------------
+Index: 15957 <<"chunk_id": 1516, "docno": 2234>>
+
+v22.7.0, v20.19.0 ESM syntax detection is enabled by default. This configures
+Node.js to interpret --eval or STDIN input as CommonJS or as an ES module. Valid
+values are "commonjs" , "module" , "module-typescript" and "commonjs-typescript"
+. The "-typescript" values are not available with the flag --no-strip-types .
+The default is no value, or "commonjs" if --no-experimental-detect-module is
+passed. If --input-type is not provided, Node.js will try to detect the syntax
+with the following steps: Run the input as CommonJS. If step 1 fails, run the
+input as an ES module. If step 2 fails with a SyntaxError, strip the types. If
+step 3 fails with an error code ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX or
+ERR_INVALID_TYPESCRIPT_SYNTAX , throw the error from step 2, including the
+TypeScript error in the message, else run as CommonJS. If step 4 fails, run the
+input as an ES module. To avoid the delay of multiple syntax detection passes,
+the --input-type=type flag can be used to specify how the --eval input should be
+interpreted. The REPL does not support this option. Usage of --input-type=module
+with --print will throw an error, as --print does not support ES module syntax.
+--insecure-http-parser # Added in: v13.4.0, v12.15.0, v10.19.0 Enable leniency
+flags on the HTTP parser. This may allow interoperability with non-conformant
+HTTP implementations. When enabled, the parser will accept the following:
+Invalid HTTP headers values. Invalid HTTP versions. Allow message containing
+both Transfer-Encoding and Content-Length headers. Allow extra data after
+message when Connection: close is present. Allow extra transfer encodings after
+chunked has been provided. Allow \n to be
+----------------------------------------------------------------------------------------------------
+Index: 12940 <<"chunk_id": 1, "docno": 2021>>
+
+Array.fromAsync , Set methods and iterator helpers . Contributed by Michaël
+Zasso in #52465 Maglev V8's Maglev Compiler is now enabled by default on
+supported architectures ( https://v8.dev/blog/maglev ). Maglev improves
+performance for short-lived CLI programs. Contributed by Keyhan Vakil in #51360
+Support require()ing synchronous ESM graphs This release adds require() support
+for synchronous ESM graphs under the flag --experimental-require-module . If
+--experimental-require-module is enabled, and the ECMAScript module being loaded
+by require() meets the following requirements: Explicitly marked as an ES module
+with a "type": "module" field in the closest package.json or a .mjs extension.
+Fully synchronous (contains no top-level await). require() will load the
+requested module as an ES Module, and return the module name space object. In
+this case it is similar to dynamic import() but is run synchronously and returns
+the name space object directly. We intend to eventually enable require(esm) by
+default in the future, without the flag. Contributed by Joyee Cheung in #51977
+Running package.json scripts Node.js 22 includes a new experimental feature for
+the execution of scripts from the package.json with the cli flag node --run
+<script-in-package-json> . It also supports node --run test which executes the
+test command inside package.json scripts. Contributed by Yagiz Nizipli #52190
+Stream default High Water Mark Increased the default High Water Mark for streams
+from 16KiB to 64KiB. This provides a performance boost across the board at the
+cost of slightly higher memory usage. Users in memory sensitive environments are
+encouraged to explicitly set setDefaultHighWaterMark . Contributed by Robert
+Nagy in #52037 Watch
+----------------------------------------------------------------------------------------------------
+Index: 15014 <<"chunk_id": 573, "docno": 2234>>
+
+within a mapped package and the specifier matches a declared dependency, the
+package map resolution takes precedence. See Package maps for details.
+Resolution algorithm # The algorithm to load an ES module specifier is given
+through the ESM_RESOLVE method below. It returns the resolved URL for a module
+specifier relative to a parentURL. The resolution algorithm determines the full
+resolved URL for a module load, along with its suggested module format. The
+resolution algorithm does not determine whether the resolved URL protocol can be
+loaded, or whether the file extensions are permitted, instead these validations
+are applied by Node.js during the load phase (for example, if it was asked to
+load a URL that has a protocol that is not file: , data: or node: . The
+algorithm also tries to determine the format of the file based on the extension
+(see ESM_FILE_FORMAT algorithm below). If it does not recognize the file
+extension (eg if it is not .mjs , .cjs , or .json ), then a format of undefined
+is returned, which will throw during the load phase. The algorithm to determine
+the module format of a resolved URL is provided by ESM_FILE_FORMAT , which
+returns the unique module format for any file. The "module" format is returned
+for an ECMAScript Module, while the "commonjs" format is used to indicate
+loading through the legacy CommonJS loader. Additional formats such as "addon"
+can be extended in future updates. In the following algorithms, all subroutine
+errors are propagated as errors of these top-level routines unless stated
+otherwise.
+----------------------------------------------------------------------------------------------------
+Index: 13265 <<"chunk_id": 0, "docno": 2109>>
+
+Node.js — Node.js 12.17.0 (LTS) Skip to content Learn About Download Blog Docs
+Beta Docs Contribute Courses Start typing... ⌘ K Node.js 12.17.0 (LTS) MLZ
+Michaël Zasso Node.js 12.17.0 (LTS) Notable Changes ECMAScript Modules -
+--experimental-modules flag removal As of Node.js 12.17.0, the
+--experimental-modules flag is no longer necessary to use ECMAScript modules
+(ESM). However, the ESM implementation in Node.js remains experimental. As per
+our stability index: “The feature is not subject to Semantic Versioning rules.
+Non-backward compatible changes or removal may occur in any future release.”
+Users should be cautious when using the feature in production environments.
+Unlike Node.js 14, using ESM will still emit a runtime experimental warning,
+either when a module is used a the application's entrypoint or the first time
+dynamic import() is called. Please keep in mind that the implementation of ESM
+in Node.js differs from the developer experience you might be familiar with.
+Most transpilation workflows support features such as named exports from
+CommonJS module imports, optional file extensions or JSON modules that the
+Node.js ESM implementation does not support. It is highly likely that modules
+from transpiled environments will require a certain degree of refactoring to
+work in Node.js. It is worth mentioning that many of our design decisions were
+made with two primary goals. Spec compliance and Web Compatibility. It is our
+belief that the current implementation offers a future proof model to authoring
+ESM modules that paves the path to Universal JavaScript. Please read more in our
+documentation. The ESM implementation in Node.js is still experimental but
+----------------------------------------------------------------------------------------------------
+Index: 15028 <<"chunk_id": 587, "docno": 2234>>
+
+be used to load ECMAScript modules from CommonJS modules if the ECMAScript
+module and its dependencies are synchronous (i.e. they do not contain top-level
+await ). When a module is requested via static import statements (only available
+in ES Modules) or import() expressions (available in both CommonJS and ES
+Modules): Resolution: The resolution of import / import() does not support
+folders as modules, directory indexes (e.g. './startup/index.js' ) must be fully
+specified. It does not perform extension searching. A file extension must be
+provided when the specifier is a relative or absolute file URL. It supports
+file:// and data: URLs as specifiers by default. Loading: .json files are
+treated as JSON text files. When importing JSON modules, an import type
+attribute is required (e.g. import json from './data.json' with { type: 'json' }
+). .node files are interpreted as compiled addon modules loaded with
+process.dlopen() , if --experimental-addon-modules is enabled. .ts , .mts and
+.cts files are treated as TypeScript text files. It accepts only .js , .mjs ,
+and .cjs extensions for JavaScript text files. .wasm files are treated as
+WebAssembly modules . Any other file extensions will result in a
+ERR_UNKNOWN_FILE_EXTENSION error. Additional file extensions can be facilitated
+via customization hooks . import / import() can be used to load JavaScript
+CommonJS modules . Such modules are passed through merve to try to identify
+named exports, which are available if they can be determined through static
+analysis. Regardless of how a module is requested, the resolution and loading
+process can be customized using customization
+----------------------------------------------------------------------------------------------------
+Index: 9053 <<"chunk_id": 25, "docno": 1394>>
+
+typeof result . source === 'string' ? result . source : Buffer . from (result .
+source) . toString ( 'utf8' ) ; return { source : source . replace ( / foo / g ,
+'bar' ) , ... result , }; } registerHooks ( { load } ) ; mjs copy In a more
+advanced scenario, this can also be used to transform an unsupported source to a
+supported one (see Examples below). Accepted final formats returned by load #
+The final value of format must be one of the following: format Description
+Acceptable types for source returned by load 'addon' Load a Node.js addon <null>
+'builtin' Load a Node.js builtin module <null> 'commonjs-typescript' Load a
+Node.js CommonJS module with TypeScript syntax <string> | <ArrayBuffer> |
+<TypedArray> | <null> | <undefined> 'commonjs' Load a Node.js CommonJS module
+<string> | <ArrayBuffer> | <TypedArray> | <null> | <undefined> 'json' Load a
+JSON file <string> | <ArrayBuffer> | <TypedArray> 'module-typescript' Load an ES
+module with TypeScript syntax <string> | <ArrayBuffer> | <TypedArray> 'module'
+Load an ES module <string> | <ArrayBuffer> | <TypedArray> 'wasm' Load a
+WebAssembly module <ArrayBuffer> | <TypedArray> The value of source is ignored
+for format 'builtin' because currently it is not possible to replace the value
+of a Node.js builtin (core) module. These types all correspond to classes
+defined in ECMAScript. The specific <ArrayBuffer> object is a
+<SharedArrayBuffer> . The specific <TypedArray> object is a <Uint8Array> . If
+the source value of a text-based format (i.e., 'json' , 'module' ) is not a
+string,
+----------------------------------------------------------------------------------------------------
+Index: 14835 <<"chunk_id": 394, "docno": 2234>>
+
+speedy. cheetahify ( function speedy () { throw new Error ( 'oh no!' ) ; } ) ; }
+makeFaster () ; // will throw: // /home/gbusey/file.js:6 // throw new Error('oh
+no!'); // ^ // Error: oh no! // at speedy (/home/gbusey/file.js:6:11) // at
+makeFaster (/home/gbusey/file.js:5:3) // at Object.<anonymous>
+(/home/gbusey/file.js:10:1) // at Module._compile (module.js:456:26) // at
+Object.Module._extensions..js (module.js:474:10) // at Module.load
+(module.js:356:32) // at Function.Module._load (module.js:312:12) // at
+Function.Module.runMain (module.js:497:10) // at startup (node.js:119:16) // at
+node.js:906:3 js copy The location information will be one of: native , if the
+frame represents a call internal to V8 (as in [].forEach ).
+plain-filename.js:line:column , if the frame represents a call internal to
+Node.js. /absolute/path/to/file.js:line:column , if the frame represents a call
+in a user program (using CommonJS module system), or its dependencies.
+<transport-protocol>:///url/to/module/file.mjs:line:column , if the frame
+represents a call in a user program (using ES module system), or its
+dependencies. The number of frames captured by the stack trace is bounded by the
+smaller of Error.stackTraceLimit or the number of available frames on the
+current event loop tick. error.stack is a getter/setter for a hidden internal
+property which is only present on builtin Error objects (those for which
+Error.isError returns true). If error is not a builtin error object, then the
+error.stack getter will always return undefined , and the setter will do
+nothing. This can occur if the accessor is manually invoked with a this value
+that is not a builtin error object, such as a <Proxy> . Class: AssertionError #
+Extends: <errors.Error> Indicates the
+----------------------------------------------------------------------------------------------------
+Index: 15050 <<"chunk_id": 609, "docno": 2234>>
+
+precedence over the "main" field when importing the package by name. It also
+defines the script that is used when the package directory is loaded via
+require() . // This resolves to ./path/to/directory/index.js. require (
+'./path/to/directory' ) ; cjs copy "type" # Added in: v12.0.0 History Version
+Changes v13.2.0, v12.17.0 Unflag --experimental-modules . Type: <string> The
+"type" field defines the module format that Node.js uses for all .js files that
+have that package.json file as their nearest parent. Files ending with .js are
+loaded as ES modules when the nearest parent package.json file contains a
+top-level field "type" with a value of "module" . The nearest parent
+package.json is defined as the first package.json found when searching in the
+current folder, that folder's parent, and so on up until a node_modules folder
+or the volume root is reached. // package.json { " type " : "module" } json copy
+# In same folder as preceding package.json node my-app.js # Runs as ES module
+bash copy If the nearest parent package.json lacks a "type" field, or contains
+"type": "commonjs" , .js files are treated as CommonJS . If the volume root is
+reached and no package.json is found, .js files are treated as CommonJS . import
+statements of .js files are treated as ES modules if the nearest parent
+package.json contains "type": "module" . // my-app.js, part of the same example
+as above import './startup.js' ; // Loaded as ES module because of package.json
+js copy Regardless of the value of the "type" field, .mjs files are
+----------------------------------------------------------------------------------------------------
+Index: 9101 <<"chunk_id": 17, "docno": 1397>>
+
+should be loadable with require() although the condition matches regardless of
+the module format of the target file. Expected formats include CommonJS, JSON,
+native addons, and ES modules. Always mutually exclusive with "import" .
+"module-sync" - matches no matter the package is loaded via import , import() or
+require() . The format is expected to be ES modules that does not contain
+top-level await in its module graph - if it does, ERR_REQUIRE_ASYNC_MODULE will
+be thrown when the module is require() -ed. "default" - the generic fallback
+that always matches. Can be a CommonJS or ES module file. This condition should
+always come last. Within the "exports" object, key order is significant. During
+condition matching, earlier entries have higher priority and take precedence
+over later entries. The general rule is that conditions should be from most
+specific to least specific in object order . Using the "import" and "require"
+conditions can lead to some hazards, which are further explained in the dual
+CommonJS/ES module packages section . The "node-addons" condition can be used to
+provide an entry point which uses native C++ addons. However, this condition can
+be disabled via the --no-addons flag . When using "node-addons" , it's
+recommended to treat "default" as an enhancement that provides a more universal
+entry point, e.g. using WebAssembly instead of a native addon. Conditional
+exports can also be extended to exports subpaths, for example: { " exports " : {
+" . " : "./index.js" , " ./feature.js " : { " node " : "./feature-node.js" , "
+----------------------------------------------------------------------------------------------------
+Index: 9134 <<"chunk_id": 13, "docno": 1400>>
+
+can be used to load CommonJS modules. If needed, a require function can be
+constructed within an ES module using module.createRequire() . No __filename or
+__dirname # These CommonJS variables are not available in ES modules. __filename
+and __dirname use cases can be replicated via import.meta.filename and
+import.meta.dirname . No Addon Loading # Addons are not currently supported with
+ES module imports. They can instead be loaded with module.createRequire() or
+process.dlopen . No require.main # To replace require.main === module , there is
+the import.meta.main API. No require.resolve # Relative resolution can be
+handled via new URL('./local', import.meta.url) . For a complete require.resolve
+replacement, there is the import.meta.resolve API. Alternatively
+module.createRequire() can be used. No NODE_PATH # NODE_PATH is not part of
+resolving import specifiers. Please use symlinks if this behavior is desired. No
+require.extensions # require.extensions is not used by import . Module
+customization hooks can provide a replacement. No require.cache # require.cache
+is not used by import as the ES module loader has its own separate cache. JSON
+modules # History Version Changes v23.1.0, v22.12.0, v20.18.3, v18.20.5 JSON
+modules are no longer experimental. JSON files can be referenced by import :
+import packageConfig from './package.json' with { type : 'json' }; js copy The
+with { type: 'json' } syntax is mandatory; see Import Attributes . The imported
+JSON only exposes a default export. There is no support for named exports. A
+cache entry is created in the CommonJS cache to avoid duplication. The same
+object is returned in CommonJS if the JSON module
+----------------------------------------------------------------------------------------------------
+Index: 9139 <<"chunk_id": 18, "docno": 1400>>
+
+to the loading phase The default loader has the following properties Support for
+builtin module loading via node: URLs Support for "inline" module loading via
+data: URLs Support for file: module loading Fails on any other URL protocol
+Fails on unknown extensions for file: loading (supports only .cjs , .js , and
+.mjs ) When the --experimental-package-map flag is enabled, bare specifier
+resolution first consults the package map configuration. If the importing module
+is within a mapped package and the specifier matches a declared dependency, the
+package map resolution takes precedence. See Package maps for details.
+Resolution algorithm # The algorithm to load an ES module specifier is given
+through the ESM_RESOLVE method below. It returns the resolved URL for a module
+specifier relative to a parentURL. The resolution algorithm determines the full
+resolved URL for a module load, along with its suggested module format. The
+resolution algorithm does not determine whether the resolved URL protocol can be
+loaded, or whether the file extensions are permitted, instead these validations
+are applied by Node.js during the load phase (for example, if it was asked to
+load a URL that has a protocol that is not file: , data: or node: . The
+algorithm also tries to determine the format of the file based on the extension
+(see ESM_FILE_FORMAT algorithm below). If it does not recognize the file
+extension (eg if it is not .mjs , .cjs , or .json ), then a format of undefined
+is returned, which will throw during the load phase. The algorithm to
+----------------------------------------------------------------------------------------------------
+Index: 14865 <<"chunk_id": 424, "docno": 2234>>
+
+locations of the top-level awaits in the graph. Only populated when
+--experimental-print-required-tla is enabled. Each entry has the following
+properties: url <string> The URL of the module containing the top-level await.
+line <number> The 1-based line number of the top-level await. column <number>
+The 1-based column number of the top-level await. sourceLine <string> The source
+line containing the top-level await. ERR_REQUIRE_CYCLE_MODULE # When trying to
+require() a ES Module , a CommonJS to ESM or ESM to CommonJS edge participates
+in an immediate cycle. This is not allowed because ES Modules cannot be
+evaluated while they are already being evaluated. To avoid the cycle, the
+require() call involved in a cycle should not happen at the top-level of either
+an ES Module (via createRequire() ) or a CommonJS module, and should be done
+lazily in an inner function. ERR_REQUIRE_ESM # History Version Changes v23.0.0,
+v22.12.0, v20.19.0 require() now supports loading synchronous ES modules by
+default. Stability: 0 - Deprecated An attempt was made to require() an ES Module
+. This error has been deprecated since require() now supports loading
+synchronous ES modules. When require() encounters an ES module that contains
+top-level await , it will throw ERR_REQUIRE_ASYNC_MODULE instead.
+ERR_REQUIRE_ESM_RACE_CONDITION # Added in: v26.1.0 Stability: 1 - Experimental.
+An attempt was made to require() an ES Module while another import() call was
+already in progress to load it asynchronously. ERR_SCRIPT_EXECUTION_INTERRUPTED
+# Script execution was interrupted by SIGINT (For example, Ctrl + C was
+pressed.) ERR_SCRIPT_EXECUTION_TIMEOUT # Script execution timed out, possibly
+due to bugs in the script
+----------------------------------------------------------------------------------------------------
+Index: 9063 <<"chunk_id": 35, "docno": 1394>>
+
+properties, or a Promise that will resolve to such an object. format <string> |
+<null> | <undefined> A hint to the load hook (it might be ignored). It can be a
+module format (such as 'commonjs' or 'module' ) or an arbitrary value like 'css'
+or 'yaml' . importAttributes <Object> | <undefined> The import attributes to use
+when caching the module (optional; if excluded the input will be used)
+shortCircuit <undefined> | <boolean> A signal that this hook intends to
+terminate the chain of resolve hooks. Default: false url <string> The absolute
+URL to which this input resolves The asynchronous version works similarly to the
+synchronous version, only that the nextResolve function returns a Promise , and
+the resolve hook itself can return a Promise . Warning In the case of the
+asynchronous version, despite support for returning promises and async
+functions, calls to resolve may still block the main thread which can impact
+performance. Warning The resolve hook invoked for require() calls inside
+CommonJS modules customized by asynchronous hooks does not receive the original
+specifier passed to require() . Instead, it receives a URL already fully
+resolved using the default CommonJS resolution. Warning In the CommonJS modules
+that are customized by the asynchronous customization hooks, require.resolve()
+and require() will use "import" export condition instead of "require" , which
+may cause unexpected behaviors when loading dual packages. export async function
+resolve ( specifier , context , nextResolve ) { // When calling
+`defaultResolve`, the arguments can be modified. For example, // to change the
+specifier or
+----------------------------------------------------------------------------------------------------
+Index: 15013 <<"chunk_id": 572, "docno": 2234>>
+
+log (five) ; // Logs `5` js copy node b.mjs # works bash copy If a top level
+await expression never resolves, the node process will exit with a 13 status
+code . import { spawn } from 'node:child_process' ; import { execPath } from
+'node:process' ; spawn (execPath , [ '--input-type=module' , '--eval' , //
+Never-resolving Promise: 'await new Promise(() => {})' , ]) . once ( 'exit' , (
+code ) => { console . log (code) ; // Logs `13` } ) ; js copy Loaders # The
+former Loaders documentation is now at Modules: Customization hooks . Resolution
+and loading algorithm # Features # The default resolver has the following
+properties: FileURL-based resolution as is used by ES modules Relative and
+absolute URL resolution No default extensions No folder mains Bare specifier
+package resolution lookup through node_modules Does not fail on unknown
+extensions or protocols Can optionally provide a hint of the format to the
+loading phase The default loader has the following properties Support for
+builtin module loading via node: URLs Support for "inline" module loading via
+data: URLs Support for file: module loading Fails on any other URL protocol
+Fails on unknown extensions for file: loading (supports only .cjs , .js , and
+.mjs ) When the --experimental-package-map flag is enabled, bare specifier
+resolution first consults the package map configuration. If the importing module
+is within a mapped package and the specifier matches a declared dependency, the
+package map resolution takes precedence. See Package maps for details.
+Resolution algorithm #
 ----------------------------------------------------------------------------------------------------

@@ -1,21 +1,28 @@
 import os
 import threading
 import json
-from shared import import_chunks
+from shared import import_chunks, load_corpus, normalize_text_tokens
 import Models.bm25_model as bm
 import Models.vector_model as vec
 import Models.hybrid as hybrid
+import dotenv
+
+dotenv.load_dotenv()
 
 QUERY_RESULTS = "./Data/queries/"
 QUERIES = "queries.jsonl"
-BM25_WEIGHT = 0.25
+BM25_WEIGHT = float(os.getenv("BM25_WEIGHT", 0.25))  # Default weight for BM25 in hybrid retrieval
+TOP_N = int(os.getenv("TOP_N", 20))  # Default to top 20 results if not set in .env
 
 # Format [{"query_id": "id", "tokens": ["token1", "token2", ...]}, ...]
 queries = []
 bm25_model = None
 w2v_model = None
 w2v_doc_vectors = None
+vectorizer = None
+tfidf_matrix = None
 chunks = import_chunks()
+corpus = load_corpus()  # Load the corpus for TF-IDF vectorization
 
 def load_queries():
     global queries
@@ -33,19 +40,22 @@ def load_queries():
                 temp = json.loads(line)
                 queries.append({
                     "query_id": temp["query_id"],
-                    "tokens": temp["query"].split()
+                    "tokens": normalize_text_tokens(temp["query"])
                 })
             except Exception as e:
                 print(f"Error parsing line: {line}. Error: {e}")
                 continue
+    return queries
 
 def load_models():
-    global bm25_model, w2v_model, w2v_doc_vectors
+    global bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix
 
     bm25_model = bm.load_bm25_model()
     w2v_model, w2v_doc_vectors = vec.load_vector_model()
 
-    return 
+    vectorizer, tfidf_matrix = vec.tfidf_vectorize(corpus)  # Initialize TF-IDF vectorizer and matrix
+
+    return bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix
 
 def paragraph_pretier(text, max_length=80):
     words = text.split()
@@ -82,6 +92,10 @@ def save_query_chunks(folder, file_name, top_indices):
             f.write("-" * 100 + "\n")
 
 def query_processing(query_id, tokens):
+    global bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix
+
+    bm25_model, w2v_model, w2v_doc_vectors, vectorizer, tfidf_matrix = load_models()
+
     print(f"Processing query {query_id}...")
     result_folder = os.path.join(QUERY_RESULTS, query_id)
     os.makedirs(result_folder, exist_ok=True)
@@ -89,23 +103,23 @@ def query_processing(query_id, tokens):
     bm_scores = bm_top_indices = []
     w2v_scores = w2v_top_indices = []
 
-    bm_scores, bm_top_indices = bm.query_bm25(bm25_model, tokens, top_n=20)
+    bm_scores, bm_top_indices = bm.query_bm25(bm25_model, tokens, top_n=TOP_N)
     save_query_scores(result_folder, f"bm25_scores_{query_id}.json", bm_scores, bm_top_indices)
     save_query_chunks(result_folder, f"bm25_top_chunks_{query_id}.txt", bm_top_indices)
 
-    print(f"BM25 - Finished processing query {query_id}. Results saved in {result_folder}.")
+    # print(f"BM25 - Finished processing query {query_id}. Results saved in {result_folder}.")
 
-    w2v_scores, w2v_top_indices = vec.query_vector(w2v_model, w2v_doc_vectors, tokens, top_n=20)
+    w2v_scores, w2v_top_indices = vec.query_vector(w2v_model, w2v_doc_vectors, tokens, vectorizer, tfidf_matrix, top_n=TOP_N)
     save_query_scores(result_folder, f"w2v_scores_{query_id}.json", w2v_scores, w2v_top_indices)
     save_query_chunks(result_folder, f"w2v_top_chunks_{query_id}.txt", w2v_top_indices)
 
-    print(f"Word2Vec - Finished processing query {query_id}. Results saved in {result_folder}.")
+    # print(f"Word2Vec - Finished processing query {query_id}. Results saved in {result_folder}.")
 
-    hybrid_scores, hybrid_top_indices = hybrid.combine_scores(bm_scores, w2v_scores, bm25_weight=BM25_WEIGHT, top_n=20)
+    hybrid_scores, hybrid_top_indices = hybrid.combine_scores(bm_scores, w2v_scores, bm25_weight=BM25_WEIGHT, top_n=TOP_N)
     save_query_scores(result_folder, f"hybrid_scores_{query_id}.json", hybrid_scores, hybrid_top_indices)
     save_query_chunks(result_folder, f"hybrid_top_chunks_{query_id}.txt", hybrid_top_indices)
 
-    print(f"Hybrid - Finished processing query {query_id}. Results saved in {result_folder}.")
+    # print(f"Hybrid - Finished processing query {query_id}. Results saved in {result_folder}.")
 
 def querying():
     load_models()

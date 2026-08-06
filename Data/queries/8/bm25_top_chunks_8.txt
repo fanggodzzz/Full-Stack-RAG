@@ -1,529 +1,1111 @@
-Index: 29329 <<"chunk_id": 565, "docno": 4202>>
+Index: 1395 <<"chunk_id": 1, "docno": 174>>
 
-but dynamic import() expressions are supported in CommonJS for loading ES
-modules. When importing CommonJS modules , the module.exports object is provided
-as the default export. Named exports may be available, provided by static
-analysis as a convenience for better ecosystem compatibility. require # The
-CommonJS module require currently only supports loading synchronous ES modules
-(that is, ES modules that do not use top-level await ). See Loading ECMAScript
-modules using require() for details. CommonJS Namespaces # Added in: v14.13.0
-History Version Changes v23.0.0 Added 'module.exports' export marker to CJS
-namespaces. CommonJS modules consist of a module.exports object which can be of
-any type. To support this, when importing CommonJS from an ECMAScript module, a
-namespace wrapper for the CommonJS module is constructed, which always provides
-a default export key pointing to the CommonJS module.exports value. In addition,
-a heuristic static analysis is performed against the source text of the CommonJS
-module to get a best-effort static list of exports to provide on the namespace
-from values on module.exports . This is necessary since these namespaces must be
-constructed prior to the evaluation of the CJS module. These CommonJS namespace
-objects also provide the default export as a 'module.exports' named export, in
-order to unambiguously indicate that their representation in CommonJS uses this
-value, and not the namespace value. This mirrors the semantics of the handling
-of the 'module.exports' export name in require(esm) interop support. When
-importing a CommonJS module, it can be reliably imported using the ES module
-default import or its corresponding sugar syntax:
+in the UI tree. You can control when to preserve state and when to reset it
+between re-renders. You will learn When React chooses to preserve or reset the
+state How to force React to reset component’s state How keys and types affect
+whether the state is preserved State is tied to a position in the render tree
+React builds render trees for the component structure in your UI. When you give
+a component state, you might think the state “lives” inside the component. But
+the state is actually held inside React. React associates each piece of state
+it’s holding with the correct component by where that component sits in the
+render tree. Here, there is only one <Counter /> JSX tag, but it’s rendered at
+two different positions: App.js App.js Reload Clear Fork import { useState }
+from 'react' ; export default function App ( ) { const counter = < Counter /> ;
+return ( < div > { counter } { counter } </ div > ) ; } function Counter ( ) {
+const [ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] =
+useState ( false ) ; let className = 'counter' ; if ( hover ) { className += '
+hover' ; } return ( < div className = { className } onPointerEnter = { ( ) =>
+setHover ( true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > {
+score } </
 ----------------------------------------------------------------------------------------------------
-Index: 7734 <<"chunk_id": 4, "docno": 1069>>
+Index: 1407 <<"chunk_id": 13, "docno": 174>>
 
-use wildcard or regular expression patterns such as admin.*.js . The following
-example shows a budget that uses a baseline: { "type" : "bundle" , "name" :
-"main" , "baseline" : "200kb" , "maximumWarning" : "10%" , "maximumError" :
-"20%" } In this example, the builder warns when the bundle grows beyond 220kb
-and errors when it grows beyond 240kb . Configuring CommonJS dependencies Always
-prefer native ECMAScript modules (ESM) throughout your application and its
-dependencies. ESM is a fully specified web standard and JavaScript language
-feature with strong static analysis support. This makes bundle optimizations
-more powerful than other module formats. Angular CLI also supports importing
-CommonJS dependencies into your project and will bundle these dependencies
-automatically. However, CommonJS modules can prevent bundlers and minifiers from
-optimizing those modules effectively, which results in larger bundle sizes. For
-more information, see How CommonJS is making your bundles larger . Angular CLI
-outputs warnings if it detects that your browser application depends on CommonJS
-modules. When you encounter a CommonJS dependency, consider asking the
-maintainer to support ECMAScript modules, contributing that support yourself, or
-using an alternative dependency which meets your needs. If the best option is to
-use a CommonJS dependency, you can disable these warnings by adding the CommonJS
-module name to allowedCommonJsDependencies option in the build options located
-in angular.json . "build" : { "builder" : "@angular/build:application" ,
-"options" : { "allowedCommonJsDependencies" : [ "lodash" ] … } … }, Configuring
-browser compatibility The Angular CLI uses Browserslist to ensure compatibility
-with different browser
+h1 > { person } 's score: { score } </ h1 > < button onClick = { ( ) => setScore
+( score + 1 ) } > Add one </ button > </ div > ) ; } Show more Currently, when
+you change the player, the score is preserved. The two Counter s appear in the
+same position, so React sees them as the same Counter whose person prop has
+changed. But conceptually, in this app they should be two separate counters.
+They might appear in the same place in the UI, but one is a counter for Taylor,
+and another is a counter for Sarah. There are two ways to reset state when
+switching between them: Render components in different positions Give each
+component an explicit identity with key Option 1: Rendering a component in
+different positions If you want these two Counter s to be independent, you can
+render them in two different positions: App.js App.js Reload Clear Fork import {
+useState } from 'react' ; export default function Scoreboard ( ) { const [
+isPlayerA , setIsPlayerA ] = useState ( true ) ; return ( < div > { isPlayerA &&
+< Counter person = "Taylor" /> } { ! isPlayerA && < Counter person = "Sarah" />
+} < button onClick = { ( ) => { setIsPlayerA ( ! isPlayerA ) ; } } > Next
+player! </ button > </ div > ) ; } function Counter ( { person } ) { const [
+score
 ----------------------------------------------------------------------------------------------------
-Index: 13210 <<"chunk_id": 3, "docno": 1772>>
+Index: 1415 <<"chunk_id": 21, "docno": 174>>
 
-2 ; } export { addTwo }; js copy The following example of an ES module imports
-the function from addTwo.mjs : // app.mjs import { addTwo } from './addTwo.mjs'
-; // Prints: 6 console . log ( addTwo ( 4 )) ; js copy Node.js fully supports
-ECMAScript modules as they are currently specified and provides interoperability
-between them and its original module format, CommonJS . Enabling # Node.js has
-two module systems: CommonJS modules and ECMAScript modules. Authors can tell
-Node.js to interpret JavaScript as an ES module via the .mjs file extension, the
-package.json "type" field with a value "module" , or the --input-type flag with
-a value of "module" . These are explicit markers of code being intended to run
-as an ES module. Inversely, authors can explicitly tell Node.js to interpret
-JavaScript as CommonJS via the .cjs file extension, the package.json "type"
-field with a value "commonjs" , or the --input-type flag with a value of
-"commonjs" . When code lacks explicit markers for either module system, Node.js
-will inspect the source code of a module to look for ES module syntax. If such
-syntax is found, Node.js will run the code as an ES module; otherwise it will
-run the module as CommonJS. See Determining module system for more details.
-Packages # This section was moved to Modules: Packages . import Specifiers #
-Terminology # The specifier of an import statement is the string after the from
-keyword, e.g. 'node:path' in import { sep } from 'node:path' . Specifiers are
+onClick = { ( ) => { setShowHint ( false ) ; } } > Hide hint </ button > </ div
+> ) ; } return ( < div > < Form /> < button onClick = { ( ) => { setShowHint (
+true ) ; } } > Show hint </ button > </ div > ) ; } function Form ( ) { const [
+text , setText ] = useState ( '' ) ; return ( < textarea value = { text }
+onChange = { e => setText ( e . target . value ) } /> ) ; } Show more Show
+solution Next Challenge Previous Sharing State Between Components Next
+Extracting State Logic into a Reducer Copyright © Meta Platforms, Inc no uwu plz
+uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation Describing
+the UI Adding Interactivity Managing State Escape Hatches API Reference React
+APIs React DOM APIs Community Code of Conduct Meet the Team Docs Contributors
+Acknowledgements More Blog React Native Privacy Terms On this page Overview
+State is tied to a position in the render tree Same component at the same
+position preserves state Different components at the same position reset state
+Resetting state at the same position Option 1: Rendering a component in
+different positions Option 2: Resetting state with a key Resetting a form with a
+key Recap Challenges
 ----------------------------------------------------------------------------------------------------
-Index: 29321 <<"chunk_id": 557, "docno": 4202>>
+Index: 1411 <<"chunk_id": 17, "docno": 174>>
 
-Module customization hooks are executed off the main thread. v18.6.0, v16.17.0
-Add support for chaining module customization hooks. v17.1.0, v16.14.0 Add
-experimental support for import assertions. v17.0.0, v16.12.0 Consolidate
-customization hooks, removed getFormat , getSource , transformSource , and
-getGlobalPreloadCode hooks added load and globalPreload hooks allowed returning
-format from either resolve or load hooks. v15.3.0, v14.17.0, v12.22.0 Stabilize
-modules implementation. v14.13.0, v12.20.0 Support for detection of CommonJS
-named exports. v14.8.0 Unflag Top-Level Await. v14.0.0, v13.14.0, v12.20.0
-Remove experimental modules warning. v13.2.0, v12.17.0 Loading ECMAScript
-modules no longer requires a command-line flag. v12.0.0 Add support for ES
-modules using .js file extension via package.json "type" field. Stability: 2 -
-Stable Introduction # ECMAScript modules are the official standard format to
-package JavaScript code for reuse. Modules are defined using a variety of import
-and export statements. The following example of an ES module exports a function:
-// addTwo.mjs function addTwo ( num ) { return num + 2 ; } export { addTwo }; js
-copy The following example of an ES module imports the function from addTwo.mjs
-: // app.mjs import { addTwo } from './addTwo.mjs' ; // Prints: 6 console . log
-( addTwo ( 4 )) ; js copy Node.js fully supports ECMAScript modules as they are
-currently specified and provides interoperability between them and its original
-module format, CommonJS . Enabling # Node.js has two module systems: CommonJS
-modules and ECMAScript modules. Authors can tell Node.js to interpret JavaScript
-as an ES module via the .mjs file extension, the package.json "type" field
+Toggling between them resets their state over and over. Note Remember that keys
+are not globally unique. They only specify the position within the parent .
+Resetting a form with a key Resetting state with a key is particularly useful
+when dealing with forms. In this chat app, the <Chat> component contains the
+text input state: App.js ContactList.js Chat.js App.js Reload Clear Fork import
+{ useState } from 'react' ; import Chat from './Chat.js' ; import ContactList
+from './ContactList.js' ; export default function Messenger ( ) { const [ to ,
+setTo ] = useState ( contacts [ 0 ] ) ; return ( < div > < ContactList contacts
+= { contacts } selectedContact = { to } onSelect = { contact => setTo ( contact
+) } /> < Chat contact = { to } /> </ div > ) } const contacts = [ { id : 0 ,
+name : 'Taylor' , email : 'taylor@mail.com' } , { id : 1 , name : 'Alice' ,
+email : 'alice@mail.com' } , { id : 2 , name : 'Bob' , email : 'bob@mail.com' }
+] ; Show more Try entering something into the input, and then press “Alice” or
+“Bob” to choose a different recipient. You will notice that the input state is
+preserved because the <Chat> is rendered at the same position in the tree. In
+many apps, this may be the desired behavior, but not in a chat app! You don’t
+want to let the user send a message they
 ----------------------------------------------------------------------------------------------------
-Index: 29350 <<"chunk_id": 586, "docno": 4202>>
+Index: 1414 <<"chunk_id": 20, "docno": 174>>
 
-file or one that lacks a type field. String input ( --eval or STDIN ) when
---input-type is not specified. ES module syntax is defined as syntax that would
-throw when evaluated as CommonJS. This includes the following: import statements
-(but not import() expressions, which are valid in CommonJS). export statements.
-import.meta references. await at the top level of a module. Lexical
-redeclarations of the CommonJS wrapper variables ( require , module , exports ,
-__dirname , __filename ). Module resolution and loading # Node.js has two types
-of module resolution and loading, chosen based on how the module is requested.
-When a module is requested via require() (available by default in CommonJS
-modules, and can be dynamically generated using createRequire() in both CommonJS
-and ES Modules): Resolution: The resolution initiated by require() supports
-folders as modules . When resolving a specifier, if no exact match is found,
-require() will try to add extensions ( .js , .json , and finally .node ) and
-then attempt to resolve folders as modules . It does not support URLs as
-specifiers by default. Loading: .json files are treated as JSON text files.
-.node files are interpreted as compiled addon modules loaded with
-process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
-files. Files with any other extension, or without extensions, are treated as
-JavaScript text files. require() can only be used to load ECMAScript modules
-from CommonJS modules if the ECMAScript module and its dependencies are
-synchronous (i.e. they do not contain top-level await
+conceptually distinct from a chat with Bob , so it makes sense to give a key to
+the <Chat> tree based on the current recipient. Recap React keeps state for as
+long as the same component is rendered at the same position. State is not kept
+in JSX tags. It’s associated with the tree position in which you put that JSX.
+You can force a subtree to reset its state by giving it a different key. Don’t
+nest component definitions, or you’ll reset state by accident. Try out some
+challenges 1 . Fix disappearing input text 2 . Swap two form fields 3 . Reset a
+detail form 4 . Clear an image while it’s loading 5 . Fix misplaced state in the
+list Challenge 1 of 5 : Fix disappearing input text This example shows a message
+when you press the button. However, pressing the button also accidentally resets
+the input. Why does this happen? Fix it so that pressing the button does not
+reset the input text. App.js App.js Reload Clear Fork import { useState } from
+'react' ; export default function App ( ) { const [ showHint , setShowHint ] =
+useState ( false ) ; if ( showHint ) { return ( < div > < p > < i > Hint: Your
+favorite city? </ i > </ p > < Form /> < button onClick = { ( ) => { setShowHint
+( false ) ; } } > Hide hint </ button > </ div > ) ;
 ----------------------------------------------------------------------------------------------------
-Index: 14130 <<"chunk_id": 5, "docno": 1854>>
+Index: 851 <<"chunk_id": 8, "docno": 123>>
 
-exports , __dirname , __filename ). Module resolution and loading # Node.js has
-two types of module resolution and loading, chosen based on how the module is
-requested. When a module is requested via require() (available by default in
-CommonJS modules, and can be dynamically generated using createRequire() in both
-CommonJS and ES Modules): Resolution: The resolution initiated by require()
-supports folders as modules . When resolving a specifier, if no exact match is
-found, require() will try to add extensions ( .js , .json , and finally .node )
-and then attempt to resolve folders as modules . It does not support URLs as
-specifiers by default. Loading: .json files are treated as JSON text files.
-.node files are interpreted as compiled addon modules loaded with
-process.dlopen() . .ts , .mts and .cts files are treated as TypeScript text
-files. Files with any other extension, or without extensions, are treated as
-JavaScript text files. require() can only be used to load ECMAScript modules
-from CommonJS modules if the ECMAScript module and its dependencies are
-synchronous (i.e. they do not contain top-level await ). When a module is
-requested via static import statements (only available in ES Modules) or
-import() expressions (available in both CommonJS and ES Modules): Resolution:
-The resolution of import / import() does not support folders as modules,
-directory indexes (e.g. './startup/index.js' ) must be fully specified. It does
-not perform extension searching. A file extension must be provided when the
-specifier is a relative or absolute file URL. It supports file:// and
+This is inefficient because ProfilePage and its children will first render with
+the stale value, and then render again. It is also complicated because you’d
+need to do this in every component that has some state inside ProfilePage . For
+example, if the comment UI is nested, you’d want to clear out nested comment
+state too. Instead, you can tell React that each user’s profile is conceptually
+a different profile by giving it an explicit key. Split your component in two
+and pass a key attribute from the outer component to the inner one: export
+default function ProfilePage ( { userId } ) { return ( < Profile userId = {
+userId } key = { userId } /> ) ; } function Profile ( { userId } ) { // ✅ This
+and any other state below will reset on key change automatically const [ comment
+, setComment ] = useState ( '' ) ; // ... } Normally, React preserves the state
+when the same component is rendered in the same spot. By passing userId as a key
+to the Profile component, you’re asking React to treat two Profile components
+with different userId as two different components that should not share any
+state. Whenever the key (which you’ve set to userId ) changes, React will
+recreate the DOM and reset the state of the Profile component and all of its
+children. Now the comment field will clear out automatically when navigating
+between profiles. Note that in this example, only the outer ProfilePage
+component is
 ----------------------------------------------------------------------------------------------------
-Index: 29351 <<"chunk_id": 587, "docno": 4202>>
+Index: 1398 <<"chunk_id": 4, "docno": 174>>
 
-be used to load ECMAScript modules from CommonJS modules if the ECMAScript
-module and its dependencies are synchronous (i.e. they do not contain top-level
-await ). When a module is requested via static import statements (only available
-in ES Modules) or import() expressions (available in both CommonJS and ES
-Modules): Resolution: The resolution of import / import() does not support
-folders as modules, directory indexes (e.g. './startup/index.js' ) must be fully
-specified. It does not perform extension searching. A file extension must be
-provided when the specifier is a relative or absolute file URL. It supports
-file:// and data: URLs as specifiers by default. Loading: .json files are
-treated as JSON text files. When importing JSON modules, an import type
-attribute is required (e.g. import json from './data.json' with { type: 'json' }
-). .node files are interpreted as compiled addon modules loaded with
-process.dlopen() , if --experimental-addon-modules is enabled. .ts , .mts and
-.cts files are treated as TypeScript text files. It accepts only .js , .mjs ,
-and .cjs extensions for JavaScript text files. .wasm files are treated as
-WebAssembly modules . Any other file extensions will result in a
-ERR_UNKNOWN_FILE_EXTENSION error. Additional file extensions can be facilitated
-via customization hooks . import / import() can be used to load JavaScript
-CommonJS modules . Such modules are passed through merve to try to identify
-named exports, which are available if they can be determined through static
-analysis. Regardless of how a module is requested, the resolution and loading
-process can be customized using customization
+[ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] = useState (
+false ) ; let className = 'counter' ; if ( hover ) { className += ' hover' ; }
+return ( < div className = { className } onPointerEnter = { ( ) => setHover (
+true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > { score } </ h1
+> < button onClick = { ( ) => setScore ( score + 1 ) } > Add one </ button > </
+div > ) ; } Show more Notice how the moment you stop rendering the second
+counter, its state disappears completely. That’s because when React removes a
+component, it destroys its state. Deleting a component When you tick “Render the
+second counter”, a second Counter and its state are initialized from scratch (
+score = 0 ) and added to the DOM. Adding a component React preserves a
+component’s state for as long as it’s being rendered at its position in the UI
+tree. If it gets removed, or a different component gets rendered at the same
+position, React discards its state. Same component at the same position
+preserves state In this example, there are two different <Counter /> tags:
+App.js App.js Reload Clear Fork import { useState } from 'react' ; export
+default function App ( ) { const [ isFancy , setIsFancy ] = useState ( false ) ;
+return ( <
 ----------------------------------------------------------------------------------------------------
-Index: 29272 <<"chunk_id": 508, "docno": 4202>>
+Index: 1405 <<"chunk_id": 11, "docno": 174>>
 
-their issues can be resolved. Users are encouraged to use the synchronous
-customization hooks via module.registerHooks() instead to avoid these caveats.
-Asynchronous hooks run on a separate thread, so the hook functions cannot
-directly mutate the global state of the modules being customized. It's typical
-to use message channels and atomics to pass data between the two or to affect
-control flows. See Communication with asynchronous module customization hooks .
-Asynchronous hooks do not affect all require() calls in the module graph. Custom
-require functions created using module.createRequire() are not affected. If the
-asynchronous load hook does not override the source for CommonJS modules that go
-through it, the child modules loaded by those CommonJS modules via built-in
-require() would not be affected by the asynchronous hooks either. There are
-several caveats that the asynchronous hooks need to handle when customizing
-CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
-details. When require() calls inside CommonJS modules are customized by
-asynchronous hooks, Node.js may need to load the source code of the CommonJS
-module multiple times to maintain compatibility with existing CommonJS
-monkey-patching. If the module code changes between loads, this may lead to
-unexpected behaviors. As a side effect, if both asynchronous hooks and
-synchronous hooks are registered and the asynchronous hooks choose to customize
-the CommonJS module, the synchronous hooks may be invoked multiple times for the
-require() calls in that CommonJS module. Registration of asynchronous
-customization hooks # Asynchronous customization hooks are registered using
-module.register() which takes a path or URL
+structure of your tree needs to “match up” from one render to another. If the
+structure is different, the state gets destroyed because React destroys state
+when it removes a component from the tree. Pitfall This is why you should not
+nest component function definitions. Here, the MyTextField component function is
+defined inside MyComponent : App.js App.js Reload Clear Fork import { useState }
+from 'react' ; export default function MyComponent ( ) { const [ counter ,
+setCounter ] = useState ( 0 ) ; function MyTextField ( ) { const [ text ,
+setText ] = useState ( '' ) ; return ( < input value = { text } onChange = { e
+=> setText ( e . target . value ) } /> ) ; } return ( < > < MyTextField /> <
+button onClick = { ( ) => { setCounter ( counter + 1 ) } } > Clicked { counter }
+times </ button > </ > ) ; } Show more Every time you click the button, the
+input state disappears! This is because a different MyTextField function is
+created for every render of MyComponent . You’re rendering a different component
+in the same position, so React resets all state below. This leads to bugs and
+performance problems. To avoid this problem, always declare component functions
+at the top level, and don’t nest their definitions. Resetting state at the same
+position By default, React preserves state of a component while it stays at the
+same position. Usually,
 ----------------------------------------------------------------------------------------------------
-Index: 38793 <<"chunk_id": 2, "docno": 5760>>
+Index: 131 <<"chunk_id": 1, "docno": 16>>
 
-function return function draw(data) { return graph.piechart(data); } } ); The
-AMD format is often used in browser applications, since: it allows variables to
-be scoped inside the factory function (vs. having everything in the window
-global scope) dependencies may not be available synchronously, e.g., they need
-to be fetched via asynchronous network request modules are defined in a
-callback, then run once all dependencies are loaded CommonJS is another
-authoring format , often used in Node.js applications on the server side, but
-also in browser applications. /** * Our module's dependencies and API **/ // we
-fetch the graph module as a dependency var graph = require('graphmodule'); // we
-decorate the `exports` variable to export our function exports.draw = drawFunc;
-/** * API implementation **/ function drawFunc(data) { return
-graph.piechart(data); } You probably spotted some differences with AMD: this
-authoring format can be used in the browser and on the server! thus you can test
-your modules in headless browsers and Node.js unit tests! module definitions
-aren't wrapped in a define What's next? The next version of JavaScript
-(technically called ECMAScript 6) will standardize JavaScript modularity ,
-albeit using a slightly different syntax than either the AMD or commonJS formats
-we've seen above. More, EcmaScript 6 will solve many problems in that space but
-will also make available syntactic sugar to define OO-like classes. Wherever
-you're putting JavaScript to use, be it client or server, consider taking the
-modular approach — for all the same reasons we do in Java. There is a small
-learning
+Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
+learn how to structure your state well, how to keep your state update logic
+maintainable, and how to share state between distant components. In this chapter
+How to think about UI changes as state changes How to structure state well How
+to “lift state up” to share it between components How to control whether the
+state gets preserved or reset How to consolidate complex state logic in a
+function How to pass information without “prop drilling” How to scale state
+management as your app grows Reacting to input with state With React, you won’t
+modify the UI from code directly. For example, you won’t write commands like
+“disable the button”, “enable the button”, “show the success message”, etc.
+Instead, you will describe the UI you want to see for the different visual
+states of your component (“initial state”, “typing state”, “success state”), and
+then trigger the state changes in response to user input. This is similar to how
+designers think about UI. Here is a quiz form built using React. Note how it
+uses the status state variable to determine whether to enable or disable the
+submit button, and whether to show the success message instead. App.js App.js
+Reload Clear Fork import { useState } from 'react' ; export default function
+Form ( ) { const [ answer , setAnswer ] = useState ( '' ) ; const [ error ,
+setError ] = useState ( null ) ; const [ status
 ----------------------------------------------------------------------------------------------------
-Index: 13217 <<"chunk_id": 10, "docno": 1772>>
+Index: 137 <<"chunk_id": 7, "docno": 16>>
 
-performance similarly to require.resolve . This feature is not available within
-custom loaders (it would create a deadlock). Non-standard API : When using the
---experimental-import-meta-resolve flag, that function accepts a second
-argument: parent <string> | <URL> An optional absolute parent module URL to
-resolve from. Default: import.meta.url Interoperability with CommonJS # import
-statements # An import statement can reference an ES module or a CommonJS
-module. import statements are permitted only in ES modules, but dynamic import()
-expressions are supported in CommonJS for loading ES modules. When importing
-CommonJS modules , the module.exports object is provided as the default export.
-Named exports may be available, provided by static analysis as a convenience for
-better ecosystem compatibility. require # The CommonJS module require currently
-only supports loading synchronous ES modules (that is, ES modules that do not
-use top-level await ). See Loading ECMAScript modules using require() for
-details. CommonJS Namespaces # Added in: v14.13.0 History Version Changes
-v23.0.0 Added 'module.exports' export marker to CJS namespaces. CommonJS modules
-consist of a module.exports object which can be of any type. To support this,
-when importing CommonJS from an ECMAScript module, a namespace wrapper for the
-CommonJS module is constructed, which always provides a default export key
-pointing to the CommonJS module.exports value. In addition, a heuristic static
-analysis is performed against the source text of the CommonJS module to get a
-best-effort static list of exports to provide on the namespace from values on
-module.exports . This is necessary since these namespaces must be constructed
-prior to the
+title } </ h3 > { isActive ? ( < p > { children } </ p > ) : ( < button onClick
+= { onShow } > Show </ button > ) } </ section > ) ; } Show more Ready to learn
+this topic? Read Sharing State Between Components to learn how to lift state up
+and keep components in sync. Read More Preserving and resetting state When you
+re-render a component, React needs to decide which parts of the tree to keep
+(and update), and which parts to discard or re-create from scratch. In most
+cases, React’s automatic behavior works well enough. By default, React preserves
+the parts of the tree that “match up” with the previously rendered component
+tree. However, sometimes this is not what you want. In this chat app, typing a
+message and then switching the recipient does not reset the input. This can make
+the user accidentally send a message to the wrong person: App.js ContactList.js
+Chat.js App.js Reload Clear Fork import { useState } from 'react' ; import Chat
+from './Chat.js' ; import ContactList from './ContactList.js' ; export default
+function Messenger ( ) { const [ to , setTo ] = useState ( contacts [ 0 ] ) ;
+return ( < div > < ContactList contacts = { contacts } selectedContact = { to }
+onSelect = { contact => setTo ( contact ) } /> < Chat contact = { to } /> </ div
+> ) } const contacts = [ { name
 ----------------------------------------------------------------------------------------------------
-Index: 5014 <<"chunk_id": 0, "docno": 698>>
+Index: 905 <<"chunk_id": 2, "docno": 129>>
 
-How much JavaScript do you need to know to use Node.js? | Node.js Learn Learn
-About Download Blog Docs Contribute Courses Start typing... ⌘ K Navigation How
-much JavaScript do you need to know to use Node.js? Getting Started Introduction
-to Node.js How much JavaScript do you need to know to use Node.js? Differences
-between Node.js and the Browser The V8 JavaScript Engine An introduction to the
-npm package manager ECMAScript 2015 (ES6) and beyond Debugging Node.js Fetching
-data with Node.js WebSocket client with Node.js Node.js, the difference between
-development and production Profiling Node.js Applications Node.js with
-WebAssembly Security Best Practices Introduction to Userland Migrations Command
-Line Run Node.js scripts from the command line How to use the Node.js REPL
-Output to the command line using Node.js Accept input from the command line in
-Node.js How to read environment variables from Node.js HTTP Anatomy of an HTTP
-Transaction Enterprise Network Configuration Manipulating Files Node.js file
-stats Node.js File Paths Reading files with Node.js Writing files with Node.js
-Working with file descriptors in Node.js Working with folders in Node.js How to
-work with Different Filesystems Asynchronous Work JavaScript Asynchronous
-Programming and Callbacks Asynchronous flow control Discover Promises in Node.js
-Discover JavaScript Timers Overview of Blocking vs Non-Blocking The Node.js
-Event Loop The Node.js Event Emitter Understanding process.nextTick()
-Understanding setImmediate() Don't Block the Event Loop Concurrency Comparing
-Node.js concurrency models TypeScript Introduction to TypeScript Running
-TypeScript Natively Running TypeScript code using transpilation Running
-TypeScript with a runner Publishing a TypeScript package Modules How to use
-streams Backpressuring in
+there is a special behavior for functions. This argument is ignored after the
+initial render. If you pass a function as initialState , it will be treated as
+an initializer function . It should be pure, should take no arguments, and
+should return a value of any type. React will call your initializer function
+when initializing the component, and store its return value as the initial
+state. See an example below. Returns useState returns an array with exactly two
+values: The current state. During the first render, it will match the
+initialState you have passed. The set function that lets you update the state to
+a different value and trigger a re-render. Caveats useState is a Hook, so you
+can only call it at the top level of your component or your own Hooks. You can’t
+call it inside loops or conditions. If you need that, extract a new component
+and move the state into it. In Strict Mode, React will call your initializer
+function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your initializer
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. set functions, like
+setSomething(nextState) The set function returned by useState lets you update
+the state to a different value and trigger a re-render. You can pass the next
+state directly, or a function that calculates it from the previous state: const
+[ name , setName ] =
 ----------------------------------------------------------------------------------------------------
-Index: 5015 <<"chunk_id": 1, "docno": 698>>
+Index: 917 <<"chunk_id": 14, "docno": 129>>
 
-TypeScript Running TypeScript Natively Running TypeScript code using
-transpilation Running TypeScript with a runner Publishing a TypeScript package
-Modules How to use streams Backpressuring in Streams Publishing a package How to
-publish a Node-API package ABI Stability Diagnostics User Journey Memory
-Overview Understanding and Tuning Memory Using Heap Profiler Using Heap Snapshot
-Tracing garbage collection Live Debugging Overview Using Inspector Poor
-Performance Overview Using Linux Perf Flame Graphs Test Runner Discovering
-Node.js's test runner Using Node.js's test runner Mocking in tests Collecting
-code coverage in Node.js Node-API What is Node-API? Getting Started Overview
-Pre-requisites Tools Anatomy of a Node-API project Your First Project Object
-Wrap Migrating to Node-API Build Tools Overview node-gyp CMake.js node-pre-gyp
-Special Topics Overview Context Awareness Object and Function References
-AsyncWorker Thread-Safe Functions On this page What is recommended to learn
-before diving deep with Node.js? How much JavaScript do you need to know to use
-Node.js? As a beginner, it's hard to get to a point where you are confident
-enough in your programming abilities. While learning to code, you might also be
-confused at where does JavaScript end, and where Node.js begins, and vice versa.
-What is recommended to learn before diving deep with Node.js? Lexical Structure
-Expressions Data Types Classes Variables Functions this operator Arrow Functions
-Loops Scopes Arrays Template Literals Strict Mode ECMAScript 2015 (ES6) and
-beyond Asynchronous JavaScript With those concepts in mind, you are well on your
-road to become a proficient JavaScript developer, in both the browser and in
-Node.js. Asynchronous Programming The following concepts are
+a state variable when a prop changes. In most cases, you don’t need this: If the
+value you need can be computed entirely from the current props or other state,
+remove that redundant state altogether. If you’re worried about recomputing too
+often, the useMemo Hook can help. If you want to reset the entire component
+tree’s state, pass a different key to your component. If you can, update all the
+relevant state in the event handlers. In the rare case that none of these apply,
+there is a pattern you can use to update state based on the values that have
+been rendered so far, by calling a set function while your component is
+rendering. Here’s an example. This CountLabel component displays the count prop
+passed to it: export default function CountLabel ( { count } ) { return < h1 > {
+count } </ h1 > } Say you want to show whether the counter has increased or
+decreased since the last change. The count prop doesn’t tell you this — you need
+to keep track of its previous value. Add the prevCount state variable to track
+it. Add another state variable called trend to hold whether the count has
+increased or decreased. Compare prevCount with count , and if they’re not equal,
+update both prevCount and trend . Now you can show both the current count prop
+and how it has changed since the last render . App.js CountLabel.js
+CountLabel.js Reload Clear Fork import { useState } from 'react' ; export
+default function
 ----------------------------------------------------------------------------------------------------
-Index: 12866 <<"chunk_id": 6, "docno": 1735>>
+Index: 4264 <<"chunk_id": 22, "docno": 628>>
 
-looking for missing dependencies in /usr/node_modules or /node_modules . In
-order to make modules available to the Node.js REPL, it might be useful to also
-add the /usr/lib/node_modules folder to the $NODE_PATH environment variable.
-Since the module lookups using node_modules folders are all relative, and based
-on the real path of the files making the calls to require() , the packages
-themselves can be anywhere. Loading ECMAScript modules using require() # Added
-in: v22.0.0, v20.17.0 History Version Changes v25.4.0 This feature is no longer
-experimental. v23.5.0, v22.13.0, v20.19.0 This feature no longer emits an
-experimental warning by default, though the warning can still be emitted by
---trace-require-module. v23.0.0, v22.12.0, v20.19.0 This feature is no longer
-behind the --experimental-require-module CLI flag. v23.0.0, v22.12.0 Support
-'module.exports' interop export in require(esm) . The .mjs extension is reserved
-for ECMAScript Modules . See Determining module system section for more info
-regarding which files are parsed as ECMAScript modules. require() only supports
-loading ECMAScript modules that meet the following requirements: The module is
-fully synchronous (contains no top-level await ); and One of these conditions
-are met: The file has a .mjs extension. The file has a .js extension, and the
-closest package.json contains "type": "module" The file has a .js extension, the
-closest package.json does not contain "type": "commonjs" , and the module
-contains ES module syntax. If the ES Module being loaded meets the requirements,
-require() can load it and return the module namespace object . In this case it
-is similar to dynamic import() but is run synchronously
+receive those props if your app uses modern React features like Suspense . If a
+render attempt is suspended (for example, because the code for some child
+component has not loaded yet), React will throw the in-progress tree away and
+attempt to construct the component from scratch during the next attempt. By the
+time of the next render attempt, the props might be different. This is why this
+method is “unsafe”. Code that should run only for committed updates (like
+resetting a subscription) should go into componentDidUpdate .
+UNSAFE_componentWillReceiveProps does not mean that the component has received
+different props than the last time. You need to compare nextProps and this.props
+yourself to check if something changed. React doesn’t call
+UNSAFE_componentWillReceiveProps with initial props during mounting. It only
+calls this method if some of component’s props are going to be updated. For
+example, calling setState doesn’t generally trigger
+UNSAFE_componentWillReceiveProps inside the same component. Note Calling
+setState inside UNSAFE_componentWillReceiveProps in a class component to
+“adjust” state is equivalent to calling the set function from useState during
+rendering in a function component. UNSAFE_componentWillUpdate(nextProps,
+nextState) If you define UNSAFE_componentWillUpdate , React will call it before
+rendering with the new props or state. It only exists for historical reasons and
+should not be used in any new code. Instead, use one of the alternatives: If you
+need to run a side effect (for example, fetch data, run an animation, or
+reinitialize a subscription) in response to prop or state changes, move that
+logic to componentDidUpdate instead. If you need to read
 ----------------------------------------------------------------------------------------------------
-Index: 3343 <<"chunk_id": 0, "docno": 468>>
+Index: 5076 <<"chunk_id": 1, "docno": 740>>
 
-ECMAScript 2015 (ES6) and beyond | Node.js Learn Learn About Download Blog Docs
-Contribute Courses Start typing... ⌘ K Navigation ECMAScript 2015 (ES6) and
-beyond Getting Started Introduction to Node.js How much JavaScript do you need
-to know to use Node.js? Differences between Node.js and the Browser The V8
-JavaScript Engine An introduction to the npm package manager ECMAScript 2015
-(ES6) and beyond Debugging Node.js Fetching data with Node.js WebSocket client
-with Node.js Node.js, the difference between development and production
-Profiling Node.js Applications Node.js with WebAssembly Security Best Practices
-Introduction to Userland Migrations Command Line Run Node.js scripts from the
-command line How to use the Node.js REPL Output to the command line using
-Node.js Accept input from the command line in Node.js How to read environment
-variables from Node.js HTTP Anatomy of an HTTP Transaction Enterprise Network
-Configuration Manipulating Files Node.js file stats Node.js File Paths Reading
-files with Node.js Writing files with Node.js Working with file descriptors in
-Node.js Working with folders in Node.js How to work with Different Filesystems
-Asynchronous Work JavaScript Asynchronous Programming and Callbacks Asynchronous
-flow control Discover Promises in Node.js Discover JavaScript Timers Overview of
-Blocking vs Non-Blocking The Node.js Event Loop The Node.js Event Emitter
-Understanding process.nextTick() Understanding setImmediate() Don't Block the
-Event Loop Concurrency Comparing Node.js concurrency models TypeScript
-Introduction to TypeScript Running TypeScript Natively Running TypeScript code
-using transpilation Running TypeScript with a runner Publishing a TypeScript
-package Modules How to use streams Backpressuring in Streams Publishing a
-package How to publish a Node-API package ABI Stability
+PureComponent API Reference APIs Copy page Copy createPortal createPortal lets
+you render some children into a different part of the DOM. < div > <
+SomeComponent /> { createPortal ( children , domNode , key ? ) } </ div >
+Reference createPortal(children, domNode, key?) Usage Rendering to a different
+part of the DOM Rendering a modal dialog with a portal Rendering React
+components into non-React server markup Rendering React components into
+non-React DOM nodes Reference createPortal(children, domNode, key?) To create a
+portal, call createPortal , passing some JSX, and the DOM node where it should
+be rendered: import { createPortal } from 'react-dom' ; // ... < div > < p >
+This child is placed in the parent div. </ p > { createPortal ( < p > This child
+is placed in the document body. </ p > , document . body ) } </ div > See more
+examples below. A portal only changes the physical placement of the DOM node. In
+every other way, the JSX you render into a portal acts as a child node of the
+React component that renders it. For example, the child can access the context
+provided by the parent tree, and events bubble up from children to parents
+according to the React tree. Parameters children : Anything that can be rendered
+with React, such as a piece of JSX (e.g. <div /> or <SomeComponent /> ), a
+Fragment ( <>...</> ), a string or a number, or an array of these. domNode :
+Some DOM
 ----------------------------------------------------------------------------------------------------
-Index: 42167 <<"chunk_id": 3, "docno": 6463>>
+Index: 854 <<"chunk_id": 11, "docno": 123>>
 
-the use of threads that execute JavaScript in parallel. To access it: -
-[Zlib](https://nodejs.org/docs/latest/api/zlib.md): The `node:zlib` module
-provides compression functionality implemented using Gzip, Deflate/Inflate,
-Brotli, and Zstd. - [String
-decoder](https://nodejs.org/docs/latest/api/string_decoder.md): The
-`node:string_decoder` module provides an API for decoding `Buffer` objects into
-strings in a manner that preserves encoded multi-byte UTF-8 and UTF-16
-characters. It can be accessed using: - [Usage and
-example](https://nodejs.org/docs/latest/api/synopsis.md): - [Modules: ECMAScript
-modules](https://nodejs.org/docs/latest/api/esm.md): -
-[Events](https://nodejs.org/docs/latest/api/events.md): Much of the Node.js core
-API is built around an idiomatic asynchronous event-driven architecture in which
-certain kinds of objects (called "emitters") emit named events that cause
-`Function` objects ("listeners") to be called. -
-[FFI](https://nodejs.org/docs/latest/api/ffi.md): The `node:ffi` module provides
-an experimental foreign function interface for loading dynamic libraries and
-calling native symbols from JavaScript. - [File
-system](https://nodejs.org/docs/latest/api/fs.md): The `node:fs` module enables
-interacting with the file system in a way modeled on standard POSIX functions. -
-[Global objects](https://nodejs.org/docs/latest/api/globals.md): These objects
-are available in all modules. -
-[HTTP/2](https://nodejs.org/docs/latest/api/http2.md): The `node:http2` module
-provides an implementation of the HTTP/2 protocol. It can be accessed using: -
-[HTTP](https://nodejs.org/docs/latest/api/http.md): This module, containing both
-a client and server, can be imported via `require('node:http')` (CommonJS) or
-`import * as http from 'node:http'` (ES module). -
-[HTTPS](https://nodejs.org/docs/latest/api/https.md): HTTPS is the HTTP protocol
-over TLS/SSL. In Node.js this is implemented as a separate module. -
-[Index](https://nodejs.org/docs/latest/api/index.md): -
-[Inspector](https://nodejs.org/docs/latest/api/inspector.md): The
-`node:inspector` module provides an API for interacting with the V8 inspector. -
-[Modules: CommonJS modules](https://nodejs.org/docs/latest/api/modules.md):
-CommonJS modules are the original way to package JavaScript code for Node.js.
-Node.js also supports the ECMAScript modules standard used by browsers and other
+prevItems is necessary to avoid loops. You may adjust state like this, but any
+other side effects (like changing the DOM or setting timeouts) should stay in
+event handlers or Effects to keep components pure. Although this pattern is more
+efficient than an Effect, most components shouldn’t need it either. No matter
+how you do it, adjusting state based on props or other state makes your data
+flow more difficult to understand and debug. Always check whether you can reset
+all state with a key or calculate everything during rendering instead. For
+example, instead of storing (and resetting) the selected item , you can store
+the selected item ID: function List ( { items } ) { const [ isReverse ,
+setIsReverse ] = useState ( false ) ; const [ selectedId , setSelectedId ] =
+useState ( null ) ; // ✅ Best: Calculate everything during rendering const
+selection = items . find ( item => item . id === selectedId ) ?? null ; // ... }
+Now there is no need to “adjust” the state at all. If the item with the selected
+ID is in the list, it remains selected. If it’s not, the selection calculated
+during rendering will be null because no matching item was found. This behavior
+is different, but arguably better because most changes to items preserve the
+selection. Sharing logic between event handlers Let’s say you have a product
+page with two buttons (Buy and Checkout) that both let you buy that product. You
+want to show a
 ----------------------------------------------------------------------------------------------------
-Index: 12870 <<"chunk_id": 10, "docno": 1735>>
+Index: 5077 <<"chunk_id": 2, "docno": 740>>
 
-and print the locations in the stderr. If support for loading ES modules using
-require() results in unexpected breakage, it can be disabled using
---no-require-module . To print where this feature is used, use
---trace-require-module . This feature can be detected by checking if
-process.features.require_module is true . All together # To get the exact
-filename that will be loaded when require() is called, use the require.resolve()
-function. Putting together all of the above, here is the high-level algorithm in
-pseudocode of what require() does: require(X) from module at path Y 1. If X is a
-core module, a. return the core module b. STOP 2. If X begins with '/' a. set Y
-to the file system root 3. If X is equal to '.', or X begins with './', '/' or
-'../' a. LOAD_AS_FILE(Y + X) b. LOAD_AS_DIRECTORY(Y + X) c. THROW "not found" 4.
-If X begins with '#' a. LOAD_PACKAGE_IMPORTS(X, dirname(Y)) 5.
-LOAD_PACKAGE_SELF(X, dirname(Y)) 6. If a package map PACKAGE_MAP exists, a. Find
-the package ID for the package owning Y 1. Let PARENT_PACKAGE_ID be
-FIND_PACKAGE_ID(dirname(Y), PACKAGE_MAP) b. LOAD_PACKAGE_MAP(X,
-PARENT_PACKAGE_ID, PACKAGE_MAP) 7. LOAD_NODE_MODULES(X, dirname(Y)) 8. THROW
-"not found" MAYBE_DETECT_AND_LOAD(X) 1. If X parses as a CommonJS module, load X
-as a CommonJS module. STOP. 2. Else, if the source code of X can be parsed as
-ECMAScript module using DETECT_MODULE_SYNTAX defined in the ESM resolver, a.
-Load X as an ECMAScript module. STOP. 3. THROW the SyntaxError from attempting
-to parse X as CommonJS in 1. STOP. LOAD_AS_FILE(X) 1. If X is
+<div /> or <SomeComponent /> ), a Fragment ( <>...</> ), a string or a number,
+or an array of these. domNode : Some DOM node, such as those returned by
+document.getElementById() . The node must already exist. Passing a different DOM
+node during an update will cause the portal content to be recreated. optional
+key : A unique string or number to be used as the portal’s key. Returns
+createPortal returns a React node that can be included into JSX or returned from
+a React component. If React encounters it in the render output, it will place
+the provided children inside the provided domNode . Caveats Events from portals
+propagate according to the React tree rather than the DOM tree. For example, if
+you click inside a portal, and the portal is wrapped in <div onClick> , that
+onClick handler will fire. If this causes issues, either stop the event
+propagation from inside the portal, or move the portal itself up in the React
+tree. Usage Rendering to a different part of the DOM Portals let your components
+render some of their children into a different place in the DOM. This lets a
+part of your component “escape” from whatever containers it may be in. For
+example, a component can display a modal dialog or a tooltip that appears above
+and outside of the rest of the page. To create a portal, render the result of
+createPortal with some JSX and the DOM node where it should go : import {
+createPortal } from 'react-dom'
 ----------------------------------------------------------------------------------------------------
-Index: 28775 <<"chunk_id": 11, "docno": 4202>>
+Index: 6461 <<"chunk_id": 3, "docno": 946>>
 
-shortcut module.filename module.id module.isPreloading module.loaded
-module.parent module.path module.paths module.require(id) The Module object
-Source map v3 support Modules: ECMAScript modules Introduction Enabling Packages
-import Specifiers Terminology Mandatory file extensions URLs file: URLs data:
-imports node: imports Import attributes Built-in modules import() expressions
-import.meta import.meta.dirname import.meta.filename import.meta.url
-import.meta.main import.meta.resolve(specifier) Interoperability with CommonJS
-import statements require CommonJS Namespaces Differences between ES modules and
-CommonJS No require , exports , or module.exports No __filename or __dirname No
-Addon Loading No require.main No require.resolve No NODE_PATH No
-require.extensions No require.cache JSON modules Text modules Wasm modules Wasm
-Source Phase Imports JavaScript String Builtins Wasm Instance Phase Imports
-Reserved Wasm Namespaces Top-level await Loaders Resolution and loading
-algorithm Features Resolution algorithm Resolution Algorithm Specification
-Customizing ESM specifier resolution algorithm Modules: Packages Introduction
-Determining module system Introduction Syntax detection Module resolution and
-loading package.json and file extensions --input-type flag Package entry points
-Main entry point export Subpath exports Extensions in subpaths Path Rules and
-Validation for Export Targets Targets must be relative URLs No path traversal or
-invalid segments Exports sugar Subpath imports Subpath patterns Conditional
-exports Nested conditions Resolving user conditions Community Conditions
-Definitions Self-referencing a package using its name Dual CommonJS/ES module
-packages Package maps Configuration file format Resolution algorithm Multiple
-package versions Multiple packages for the same URL Interaction with other
-resolution Limitations Node.js package.json field definitions "name" "main"
-"type" "exports" "imports" Modules: TypeScript Enabling Full TypeScript support
-Type stripping Determining module system TypeScript features Importing types
-without type keyword Non-file forms of input Source maps Type stripping in
-dependencies
+clear all the existing HTML content inside the domNode before rendering the
+React component into it. If your domNode contains HTML generated by React on the
+server or during the build, use hydrate() instead, which attaches the event
+handlers to the existing HTML. If you call render on the same domNode more than
+once, React will update the DOM as necessary to reflect the latest JSX you
+passed. React will decide which parts of the DOM can be reused and which need to
+be recreated by “matching it up” with the previously rendered tree. Calling
+render on the same domNode again is similar to calling the set function on the
+root component: React avoids unnecessary DOM updates. If your app is fully built
+with React, you’ll likely have only one render call in your app. (If you use a
+framework, it might do this call for you.) When you want to render a piece of
+JSX in a different part of the DOM tree that isn’t a child of your component
+(for example, a modal or a tooltip), use createPortal instead of render . Usage
+Call render to display a React component inside a browser DOM node . import {
+render } from 'react-dom' ; import App from './App.js' ; render ( <App /> ,
+document.getElementById('root') ) ; Rendering the root component In apps fully
+built with React, you will usually only do this once at startup —to render the
+“root” component. index.js App.js index.js Reset Fork import './styles.css' ;
+import { render } from 'react-dom'
 ----------------------------------------------------------------------------------------------------
-Index: 12863 <<"chunk_id": 3, "docno": 1735>>
+Index: 4265 <<"chunk_id": 23, "docno": 628>>
 
-of the square module, which exports a Square class: const Square = require (
-'./square.js' ) ; const mySquare = new Square ( 2 ) ; console . log ( `The area
-of mySquare is ${ mySquare . area () } ` ) ; js copy The square module is
-defined in square.js : // Assigning to exports will not modify module, must use
-module.exports module . exports = class Square { constructor ( width ) { this .
-width = width ; } area () { return this . width ** 2 ; } }; js copy The CommonJS
-module system is implemented in the module core module . Enabling # Node.js has
-two module systems: CommonJS modules and ECMAScript modules . By default,
-Node.js will treat the following as CommonJS modules: Files with a .cjs
-extension. Files with a .js extension or without an extension, when the nearest
-parent package.json file contains a top-level field "type" with a value of
-"commonjs" . Files with a .js extension or without an extension, when the
-nearest parent package.json file doesn't contain a top-level field "type" or
-there is no package.json in any parent folder; unless the file contains syntax
-that errors unless it is evaluated as an ES module. Package authors should
-include the "type" field, even in packages where all sources are CommonJS. Being
-explicit about the type of the package will make things easier for build tools
-and loaders to determine how the files in the package should be interpreted.
-Files with an extension
+run an animation, or reinitialize a subscription) in response to prop or state
+changes, move that logic to componentDidUpdate instead. If you need to read some
+information from the DOM (for example, to save the current scroll position) so
+that you can use it in componentDidUpdate later, read it inside
+getSnapshotBeforeUpdate instead. See examples of migrating away from unsafe
+lifecycles. Parameters nextProps : The next props that the component is about to
+render with. Compare nextProps to this.props to determine what changed.
+nextState : The next state that the component is about to render with. Compare
+nextState to this.state to determine what changed. Returns
+UNSAFE_componentWillUpdate should not return anything. Caveats
+UNSAFE_componentWillUpdate will not get called if shouldComponentUpdate is
+defined and returns false . UNSAFE_componentWillUpdate will not get called if
+the component implements static getDerivedStateFromProps or
+getSnapshotBeforeUpdate . It’s not supported to call setState (or any method
+that leads to setState being called, like dispatching a Redux action) during
+componentWillUpdate . Despite its naming, UNSAFE_componentWillUpdate does not
+guarantee that the component will update if your app uses modern React features
+like Suspense . If a render attempt is suspended (for example, because the code
+for some child component has not loaded yet), React will throw the in-progress
+tree away and attempt to construct the component from scratch during the next
+attempt. By the time of the next render attempt, the props and state might be
+different. This is why this method is “unsafe”. Code that should run only for
+committed updates (like resetting a subscription) should go
 ----------------------------------------------------------------------------------------------------
-Index: 14018 <<"chunk_id": 26, "docno": 1848>>
+Index: 5428 <<"chunk_id": 4, "docno": 796>>
 
-The specific <TypedArray> object is a <Uint8Array> . If the source value of a
-text-based format (i.e., 'json' , 'module' ) is not a string, it is converted to
-a string using util.TextDecoder . Asynchronous customization hooks # Stability:
-1.1 - Active Development Caveats of asynchronous customization hooks # The
-asynchronous customization hooks have many caveats and it is uncertain if their
-issues can be resolved. Users are encouraged to use the synchronous
-customization hooks via module.registerHooks() instead to avoid these caveats.
-Asynchronous hooks run on a separate thread, so the hook functions cannot
-directly mutate the global state of the modules being customized. It's typical
-to use message channels and atomics to pass data between the two or to affect
-control flows. See Communication with asynchronous module customization hooks .
-Asynchronous hooks do not affect all require() calls in the module graph. Custom
-require functions created using module.createRequire() are not affected. If the
-asynchronous load hook does not override the source for CommonJS modules that go
-through it, the child modules loaded by those CommonJS modules via built-in
-require() would not be affected by the asynchronous hooks either. There are
-several caveats that the asynchronous hooks need to handle when customizing
-CommonJS modules. See asynchronous resolve hook and asynchronous load hook for
-details. When require() calls inside CommonJS modules are customized by
-asynchronous hooks, Node.js may need to load the source code of the CommonJS
-module multiple times to maintain compatibility with existing CommonJS
-monkey-patching. If the module code changes between loads, this may lead
+to use a ref instead of state here because the click count is only read and
+written in an event handler. App.js App.js Reload Clear Fork import { useRef }
+from 'react' ; export default function Counter ( ) { let ref = useRef ( 0 ) ;
+function handleClick ( ) { ref . current = ref . current + 1 ; alert ( 'You
+clicked ' + ref . current + ' times!' ) ; } return ( < button onClick = {
+handleClick } > Click me! </ button > ) ; } Show more If you show {ref.current}
+in the JSX, the number won’t update on click. This is because setting
+ref.current does not trigger a re-render. Information that’s used for rendering
+should be state instead. Next Example Pitfall Do not write or read ref.current
+during rendering. React expects that the body of your component behaves like a
+pure function : If the inputs ( props , state , and context ) are the same, it
+should return exactly the same JSX. Calling it in a different order or with
+different arguments should not affect the results of other calls. Reading or
+writing a ref during rendering breaks these expectations. function MyComponent (
+) { // ... // 🚩 Don't write a ref during rendering myRef . current = 123 ; //
+... // 🚩 Don't read a ref during rendering return < h1 > { myOtherRef . current
+} </ h1 > ; } You can read or write refs from
 ----------------------------------------------------------------------------------------------------
-Index: 28815 <<"chunk_id": 51, "docno": 4202>>
+Index: 916 <<"chunk_id": 13, "docno": 129>>
 
-final formats returned by load Asynchronous customization hooks Caveats of
-asynchronous customization hooks Registration of asynchronous customization
-hooks Chaining of asynchronous customization hooks Communication with
-asynchronous module customization hooks Asynchronous hooks accepted by
-module.register() initialize() Asynchronous resolve(specifier, context,
-nextResolve) Asynchronous load(url, context, nextLoad) Examples Import from
-HTTPS Transpilation Asynchronous version Synchronous version Running hooks
-Import maps Asynchronous version Synchronous version Using the hooks Source Map
-Support module.getSourceMapsSupport() module.findSourceMap(path)
-module.setSourceMapsSupport(enabled[, options]) Class: module.SourceMap new
-SourceMap(payload[, { lineLengths }]) sourceMap.payload
-sourceMap.findEntry(lineOffset, columnOffset) sourceMap.findOrigin(lineNumber,
-columnNumber) Modules: CommonJS modules Enabling Accessing the main module
-Package manager tips Loading ECMAScript modules using require() All together
-Caching Module caching caveats Built-in modules Built-in modules with mandatory
-node: prefix Cycles File modules Folders as modules Loading from node_modules
-folders Loading from the global folders The module wrapper The module scope
-__dirname __filename exports module require(id) require.cache require.extensions
-require.main require.resolve(request[, options]) require.resolve.paths(request)
-The module object module.children module.exports exports shortcut
-module.filename module.id module.isPreloading module.loaded module.parent
-module.path module.paths module.require(id) The Module object Source map v3
-support Modules: ECMAScript modules Introduction Enabling Packages import
-Specifiers Terminology Mandatory file extensions URLs file: URLs data: imports
-node: imports Import attributes Built-in modules import() expressions
-import.meta import.meta.dirname import.meta.filename import.meta.url
-import.meta.main import.meta.resolve(specifier) Interoperability with CommonJS
-import statements require CommonJS Namespaces Differences between ES modules and
-CommonJS No require , exports , or module.exports No __filename or __dirname No
-Addon Loading No require.main No require.resolve No NODE_PATH No
-require.extensions No require.cache JSON modules Text modules Wasm modules Wasm
-Source Phase Imports JavaScript String Builtins Wasm Instance Phase Imports
-Reserved Wasm Namespaces Top-level
+reset a component’s state by passing a different key to a component. In this
+example, the Reset button changes the version state variable, which we pass as a
+key to the Form . When the key changes, React re-creates the Form component (and
+all of its children) from scratch, so its state gets reset. Read preserving and
+resetting state to learn more. App.js App.js Reload Clear Fork import { useState
+} from 'react' ; export default function App ( ) { const [ version , setVersion
+] = useState ( 0 ) ; function handleReset ( ) { setVersion ( version + 1 ) ; }
+return ( < > < button onClick = { handleReset } > Reset </ button > < Form key =
+{ version } /> </ > ) ; } function Form ( ) { const [ name , setName ] =
+useState ( 'Taylor' ) ; return ( < > < input value = { name } onChange = { e =>
+setName ( e . target . value ) } /> < p > Hello, { name } . </ p > </ > ) ; }
+Show more Storing information from previous renders Usually, you will update
+state in event handlers. However, in rare cases you might want to adjust state
+in response to rendering — for example, you might want to change a state
+variable when a prop changes. In most cases, you don’t need this: If the value
+you need can be computed entirely from the
+----------------------------------------------------------------------------------------------------
+Index: 4855 <<"chunk_id": 16, "docno": 703>>
+
+to always be considered a different tree). I’m getting an error: “A component is
+changing an uncontrolled input to be controlled” If you provide a value to the
+component, it must remain a string throughout its lifetime. You cannot pass
+value={undefined} first and later pass value="some string" because React won’t
+know whether you want the component to be uncontrolled or controlled. A
+controlled component should always receive a string value , not null or
+undefined . If your value is coming from an API or a state variable, it might be
+initialized to null or undefined . In that case, either set it to an empty
+string ( '' ) initially, or pass value={someValue ?? ''} to ensure value is a
+string. Similarly, if you pass checked to a checkbox, ensure it’s always a
+boolean. Previous <form> Next <option> Copyright © Meta Platforms, Inc no uwu
+plz uwu? Logo by @sawaratsuki1004 Learn React Quick Start Installation
+Describing the UI Adding Interactivity Managing State Escape Hatches API
+Reference React APIs React DOM APIs Community Code of Conduct Meet the Team Docs
+Contributors Acknowledgements More Blog React Native Privacy Terms On this page
+Overview Reference <input> Usage Displaying inputs of different types Providing
+a label for an input Providing an initial value for an input Reading the input
+values when submitting a form Controlling an input with a state variable
+Optimizing re-rendering on every keystroke Troubleshooting My text input doesn’t
+update when I type into it My checkbox doesn’t update when I click on it My
+input caret
+----------------------------------------------------------------------------------------------------
+Index: 1591 <<"chunk_id": 1, "docno": 197>>
+
+React state, set up a server connection, or send an analytics log when a
+component appears on the screen. Effects let you run some code after rendering
+so that you can synchronize your component with some system outside of React.
+You will learn What Effects are How Effects are different from events How to
+declare an Effect in your component How to skip re-running an Effect
+unnecessarily Why Effects run twice in development and how to fix them What are
+Effects and how are they different from events? Before getting to Effects, you
+need to be familiar with two types of logic inside React components: Rendering
+code (introduced in Describing the UI ) lives at the top level of your
+component. This is where you take the props and state, transform them, and
+return the JSX you want to see on the screen. Rendering code must be pure. Like
+a math formula, it should only calculate the result, but not do anything else.
+Event handlers (introduced in Adding Interactivity ) are nested functions inside
+your components that do things rather than just calculate them. An event handler
+might update an input field, submit an HTTP POST request to buy a product, or
+navigate the user to another screen. Event handlers contain “side effects” (they
+change the program’s state) caused by a specific user action (for example, a
+button click or typing). Sometimes this isn’t enough. Consider a ChatRoom
+component that must connect to the chat server whenever it’s visible on the
+screen. Connecting to a server
+----------------------------------------------------------------------------------------------------
+Index: 6028 <<"chunk_id": 3, "docno": 874>>
+
+insights into how it works under the hood, and live renders the compiler’s
+outputs as you type. This will be shipped together with the compiler when it’s
+released. Offscreen Today, if you want to hide and show a component, you have
+two options. One is to add or remove it from the tree completely. The problem
+with this approach is that the state of your UI is lost each time you unmount,
+including state stored in the DOM, like scroll position. The other option is to
+keep the component mounted and toggle the appearance visually using CSS. This
+preserves the state of your UI, but it comes at a performance cost, because
+React must keep rendering the hidden component and all of its children whenever
+it receives new updates. Offscreen introduces a third option: hide the UI
+visually, but deprioritize its content. The idea is similar in spirit to the
+content-visibility CSS property: when content is hidden, it doesn’t need to stay
+in sync with the rest of the UI. React can defer the rendering work until the
+rest of the app is idle, or until the content becomes visible again. Offscreen
+is a low level capability that unlocks high level features. Similar to React’s
+other concurrent features like startTransition , in most cases you won’t
+interact with the Offscreen API directly, but instead via an opinionated
+framework to implement patterns like: Instant transitions. Some routing
+frameworks already prefetch data to speed up subsequent navigations, like when
+hovering over a link. With Offscreen, they’ll also be
+----------------------------------------------------------------------------------------------------
+Index: 947 <<"chunk_id": 12, "docno": 132>>
+
+is a good indication that they synchronize different things, and so it made
+sense to split them up. On the other hand, if you split up a cohesive piece of
+logic into separate Effects, the code may look “cleaner” but will be more
+difficult to maintain. This is why you should think whether the processes are
+same or separate, not whether the code looks cleaner. Effects “react” to
+reactive values Your Effect reads two variables ( serverUrl and roomId ), but
+you only specified roomId as a dependency: const serverUrl =
+'https://localhost:1234' ; function ChatRoom ( { roomId } ) { useEffect ( ( ) =>
+{ const connection = createConnection ( serverUrl , roomId ) ; connection .
+connect ( ) ; return ( ) => { connection . disconnect ( ) ; } ; } , [ roomId ] )
+; // ... } Why doesn’t serverUrl need to be a dependency? This is because the
+serverUrl never changes due to a re-render. It’s always the same no matter how
+many times the component re-renders and why. Since serverUrl never changes, it
+wouldn’t make sense to specify it as a dependency. After all, dependencies only
+do something when they change over time! On the other hand, roomId may be
+different on a re-render. Props, state, and other values declared inside the
+component are reactive because they’re calculated during rendering and
+participate in the React data flow. If serverUrl was a state variable, it would
+be reactive. Reactive values must be included in dependencies: function
+----------------------------------------------------------------------------------------------------
+Index: 872 <<"chunk_id": 29, "docno": 123>>
+
+like useData above. The fewer raw useEffect calls you have in your components,
+the easier you will find to maintain your application. Recap If you can
+calculate something during render, you don’t need an Effect. To cache expensive
+calculations, add useMemo instead of useEffect . To reset the state of an entire
+component tree, pass a different key to it. To reset a particular bit of state
+in response to a prop change, set it during rendering. Code that runs because a
+component was displayed should be in Effects, the rest should be in events. If
+you need to update the state of several components, it’s better to do it during
+a single event. Whenever you try to synchronize state variables in different
+components, consider lifting state up. You can fetch data with Effects, but you
+need to implement cleanup to avoid race conditions. Try out some challenges 1 .
+Transform data without Effects 2 . Cache a calculation without Effects 3 . Reset
+state without Effects 4 . Submit a form without Effects Challenge 1 of 4 :
+Transform data without Effects The TodoList below displays a list of todos. When
+the “Show only active todos” checkbox is ticked, completed todos are not
+displayed in the list. Regardless of which todos are visible, the footer
+displays the count of todos that are not yet completed. Simplify this component
+by removing all the unnecessary state and Effects. App.js todos.js App.js Reload
+Clear Fork import { useState , useEffect } from 'react' ; import { initialTodos
+,
+----------------------------------------------------------------------------------------------------
+Index: 4263 <<"chunk_id": 21, "docno": 628>>
+
+call it when the component receives new props. It only exists for historical
+reasons and should not be used in any new code. Instead, use one of the
+alternatives: If you need to run a side effect (for example, fetch data, run an
+animation, or reinitialize a subscription) in response to prop changes, move
+that logic to componentDidUpdate instead. If you need to avoid re-computing some
+data only when a prop changes, use a memoization helper instead. If you need to
+“reset” some state when a prop changes, consider either making a component fully
+controlled or fully uncontrolled with a key instead. If you need to “adjust”
+some state when a prop changes, check whether you can compute all the necessary
+information from props alone during rendering. If you can’t, use static
+getDerivedStateFromProps instead. See examples of migrating away from unsafe
+lifecycles. Parameters nextProps : The next props that the component is about to
+receive from its parent component. Compare nextProps to this.props to determine
+what changed. nextContext : The next context that the component is about to
+receive from the closest provider. Compare nextContext to this.context to
+determine what changed. Only available if you specify static contextType .
+Returns UNSAFE_componentWillReceiveProps should not return anything. Caveats
+UNSAFE_componentWillReceiveProps will not get called if the component implements
+static getDerivedStateFromProps or getSnapshotBeforeUpdate . Despite its naming,
+UNSAFE_componentWillReceiveProps does not guarantee that the component will
+receive those props if your app uses modern React features like Suspense . If a
+render attempt is suspended (for example, because the code for
+----------------------------------------------------------------------------------------------------
+Index: 852 <<"chunk_id": 9, "docno": 123>>
+
+its children. Now the comment field will clear out automatically when navigating
+between profiles. Note that in this example, only the outer ProfilePage
+component is exported and visible to other files in the project. Components
+rendering ProfilePage don’t need to pass the key to it: they pass userId as a
+regular prop. The fact ProfilePage passes it as a key to the inner Profile
+component is an implementation detail. Adjusting some state when a prop changes
+Sometimes, you might want to reset or adjust a part of the state on a prop
+change, but not all of it. This List component receives a list of items as a
+prop, and maintains the selected item in the selection state variable. You want
+to reset the selection to null whenever the items prop receives a different
+array: function List ( { items } ) { const [ isReverse , setIsReverse ] =
+useState ( false ) ; const [ selection , setSelection ] = useState ( null ) ; //
+🔴 Avoid: Adjusting state on prop change in an Effect useEffect ( ( ) => {
+setSelection ( null ) ; } , [ items ] ) ; // ... } This, too, is not ideal.
+Every time the items change, the List and its child components will render with
+a stale selection value at first. Then React will update the DOM and run the
+Effects. Finally, the setSelection(null) call will cause another re-render of
+the List and its child components, restarting this whole process again. Start by
+----------------------------------------------------------------------------------------------------
+Index: 4269 <<"chunk_id": 27, "docno": 628>>
+
+props . userID !== state . prevUserID ) { return { prevUserID : props . userID ,
+email : props . defaultEmail } ; } return null ; } // ... } Note that this
+pattern requires you to keep a previous value of the prop (like userID ) in
+state (like prevUserID ). Pitfall Deriving state leads to verbose code and makes
+your components difficult to think about. Make sure you’re familiar with simpler
+alternatives: If you need to perform a side effect (for example, data fetching
+or an animation) in response to a change in props, use componentDidUpdate method
+instead. If you want to re-compute some data only when a prop changes, use a
+memoization helper instead. If you want to “reset” some state when a prop
+changes, consider either making a component fully controlled or fully
+uncontrolled with a key instead. Parameters props : The next props that the
+component is about to render with. state : The next state that the component is
+about to render with. Returns static getDerivedStateFromProps return an object
+to update the state, or null to update nothing. Caveats This method is fired on
+every render, regardless of the cause. This is different from
+UNSAFE_componentWillReceiveProps , which only fires when the parent causes a
+re-render and not as a result of a local setState . This method doesn’t have
+access to the component instance. If you’d like, you can reuse some code between
+static getDerivedStateFromProps and the other class methods by extracting pure
+functions of the component props
+----------------------------------------------------------------------------------------------------
+Index: 1819 <<"chunk_id": 14, "docno": 229>>
+
+single component as much as you like. Immer is a great way to keep the update
+handlers concise, especially if there’s nesting in your state, and copying
+objects leads to repetitive code. Deep Dive Why is mutating state not
+recommended in React? Show Details There are a few reasons: Debugging: If you
+use console.log and don’t mutate state, your past logs won’t get clobbered by
+the more recent state changes. So you can clearly see how state has changed
+between renders. Optimizations: Common React optimization strategies rely on
+skipping work if previous props or state are the same as the next ones. If you
+never mutate state, it is very fast to check whether there were any changes. If
+prevObj === obj , you can be sure that nothing could have changed inside of it.
+New Features: The new React features we’re building rely on state being treated
+like a snapshot. If you’re mutating past versions of state, that may prevent you
+from using the new features. Requirement Changes: Some application features,
+like implementing Undo/Redo, showing a history of changes, or letting the user
+reset a form to earlier values, are easier to do when nothing is mutated. This
+is because you can keep past copies of state in memory, and reuse them when
+appropriate. If you start with a mutative approach, features like this can be
+difficult to add later on. Simpler Implementation: Because React does not rely
+on mutation, it does not need to do anything special with your objects. It does
+not need
+----------------------------------------------------------------------------------------------------
+Index: 1400 <<"chunk_id": 6, "docno": 174>>
+
+counter state does not get reset. Whether isFancy is true or false , you always
+have a <Counter /> as the first child of the div returned from the root App
+component: Updating the App state does not reset the Counter because Counter
+stays in the same position It’s the same component at the same position, so from
+React’s perspective, it’s the same counter. Pitfall Remember that it’s the
+position in the UI tree—not in the JSX markup—that matters to React! This
+component has two return clauses with different <Counter /> JSX tags inside and
+outside the if : App.js App.js Reload Clear Fork import { useState } from
+'react' ; export default function App ( ) { const [ isFancy , setIsFancy ] =
+useState ( false ) ; if ( isFancy ) { return ( < div > < Counter isFancy = {
+true } /> < label > < input type = "checkbox" checked = { isFancy } onChange = {
+e => { setIsFancy ( e . target . checked ) } } /> Use fancy styling </ label >
+</ div > ) ; } return ( < div > < Counter isFancy = { false } /> < label > <
+input type = "checkbox" checked = { isFancy } onChange = { e => { setIsFancy ( e
+. target . checked ) } } /> Use fancy styling </ label > </ div > ) ; } function
+Counter ( { isFancy } ) { const [ score
+----------------------------------------------------------------------------------------------------
+Index: 1401 <<"chunk_id": 7, "docno": 174>>
+
+} /> Use fancy styling </ label > </ div > ) ; } function Counter ( { isFancy }
+) { const [ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] =
+useState ( false ) ; let className = 'counter' ; if ( hover ) { className += '
+hover' ; } if ( isFancy ) { className += ' fancy' ; } return ( < div className =
+{ className } onPointerEnter = { ( ) => setHover ( true ) } onPointerLeave = { (
+) => setHover ( false ) } > < h1 > { score } </ h1 > < button onClick = { ( ) =>
+setScore ( score + 1 ) } > Add one </ button > </ div > ) ; } Show more You
+might expect the state to reset when you tick checkbox, but it doesn’t! This is
+because both of these <Counter /> tags are rendered at the same position. React
+doesn’t know where you place the conditions in your function. All it “sees” is
+the tree you return. In both cases, the App component returns a <div> with
+<Counter /> as a first child. To React, these two counters have the same
+“address”: the first child of the first child of the root. This is how React
+matches them up between the previous and next renders, regardless of how you
+structure your logic. Different components at the same position reset state In
+this
+----------------------------------------------------------------------------------------------------
+Index: 1881 <<"chunk_id": 5, "docno": 236>>
+
+know that the filesystem does not preserve case, then you should be prepared to
+see ABC in a directory listing when your program creates abc . But if you know
+that the filesystem does preserve case, then you should consider ABC to be a
+different filename to abc , when detecting file renames or if the filesystem is
+case-sensitive. Case Preservation You may create a directory called test/abc and
+be surprised to see sometimes that fs.readdir('test') returns ['ABC'] . This is
+not a bug in Node. Node returns the filename as the filesystem stores it, and
+not all filesystems support case-preservation. Some filesystems convert all
+filenames to uppercase (or lowercase). Unicode Form Preservation Case
+preservation and Unicode form preservation are similar concepts. To understand
+why Unicode form should be preserved , make sure that you first understand why
+case should be preserved. Unicode form preservation is just as simple when
+understood correctly. Unicode can encode the same characters using several
+different byte sequences. Several strings may look the same, but have different
+byte sequences. When working with UTF-8 strings, be careful that your
+expectations are in line with how Unicode works. Just as you would not expect
+all UTF-8 characters to encode to a single byte, you should not expect several
+UTF-8 strings that look the same to the human eye to have the same byte
+representation. This may be an expectation that you can have of ASCII, but not
+of UTF-8. You may create a directory called test/café (NFC Unicode form with
+byte sequence <63
+----------------------------------------------------------------------------------------------------
+Index: 4266 <<"chunk_id": 24, "docno": 628>>
+
+state might be different. This is why this method is “unsafe”. Code that should
+run only for committed updates (like resetting a subscription) should go into
+componentDidUpdate . UNSAFE_componentWillUpdate does not mean that the component
+has received different props or state than the last time. You need to compare
+nextProps with this.props and nextState with this.state yourself to check if
+something changed. React doesn’t call UNSAFE_componentWillUpdate with initial
+props and state during mounting. Note There is no direct equivalent to
+UNSAFE_componentWillUpdate in function components. static contextType If you
+want to read this.context from your class component, you must specify which
+context it needs to read. The context you specify as the static contextType must
+be a value previously created by createContext . class Button extends Component
+{ static contextType = ThemeContext ; render ( ) { const theme = this . context
+; const className = 'button-' + theme ; return ( < button className = {
+className } > { this . props . children } </ button > ) ; } } Note Reading
+this.context in class components is equivalent to useContext in function
+components. See how to migrate. static defaultProps You can define static
+defaultProps to set the default props for the class. They will be used for
+undefined and missing props, but not for null props. For example, here is how
+you define that the color prop should default to 'blue' : class Button extends
+Component { static defaultProps = { color : 'blue' } ; render ( ) { return <
+----------------------------------------------------------------------------------------------------
+Index: 5010 <<"chunk_id": 1, "docno": 727>>
+
+Component createElement createRef forwardRef isValidElement PureComponent API
+Reference Overview Copy page Copy Components and Hooks must be pure Pure
+functions only perform a calculation and nothing more. It makes your code easier
+to understand, debug, and allows React to automatically optimize your components
+and Hooks correctly. Note This reference page covers advanced topics and
+requires familiarity with the concepts covered in the Keeping Components Pure
+page. Why does purity matter? Components and Hooks must be idempotent Side
+effects must run outside of render When is it okay to have mutation? Props and
+state are immutable Don’t mutate Props Don’t mutate State Return values and
+arguments to Hooks are immutable Values are immutable after being passed to JSX
+Why does purity matter? One of the key concepts that makes React, React is
+purity . A pure component or hook is one that is: Idempotent – You always get
+the same result every time you run it with the same inputs – props, state,
+context for component inputs; and arguments for hook inputs. Has no side effects
+in render – Code with side effects should run separately from rendering . For
+example as an event handler – where the user interacts with the UI and causes it
+to update; or as an Effect – which runs after render. Does not mutate non-local
+values : Components and Hooks should never modify values that aren’t created
+locally in render. When render is kept pure, React can understand how to
+prioritize which updates are most important for the user to see
+----------------------------------------------------------------------------------------------------
+Index: 2039 <<"chunk_id": 0, "docno": 264>>
+
+Separating Events from Effects – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Separating Events from Effects Event handlers only re-run when you perform the
+same interaction again. Unlike event handlers, Effects re-synchronize if some
+value they read, like a prop or a state variable, is different from what it was
+during the last render. Sometimes, you also want a mix
+----------------------------------------------------------------------------------------------------
+Index: 130 <<"chunk_id": 0, "docno": 16>>
+
+Managing State – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Managing State
+Intermediate As your application grows, it helps to be more intentional about
+how your state is organized and how the data flows between your components.
+Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
+learn how to structure your state well, how to keep your
+----------------------------------------------------------------------------------------------------
+Index: 1808 <<"chunk_id": 3, "docno": 229>>
+
+is with this bit of code. onPointerMove = { e => { position . x = e . clientX ;
+position . y = e . clientY ; } } This code modifies the object assigned to
+position from the previous render. But without using the state setting function,
+React has no idea that object has changed. So React does not do anything in
+response. It’s like trying to change the order after you’ve already eaten the
+meal. While mutating state can work in some cases, we don’t recommend it. You
+should treat the state value you have access to in a render as read-only. To
+actually trigger a re-render in this case, create a new object and pass it to
+the state setting function: onPointerMove = { e => { setPosition ( { x : e
+.clientX , y : e .clientY } ) ; } } With setPosition , you’re telling React:
+Replace position with this new object And render this component again Notice how
+the red dot now follows your pointer when you touch or hover over the preview
+area: App.js App.js Reload Clear Fork import { useState } from 'react' ; export
+default function MovingDot ( ) { const [ position , setPosition ] = useState ( {
+x : 0 , y : 0 } ) ; return ( < div onPointerMove = { e => { setPosition ( { x :
+e . clientX , y : e . clientY } ) ; } } style = { { position
+----------------------------------------------------------------------------------------------------
+Index: 1727 <<"chunk_id": 13, "docno": 214>>
+
+consider context. Use cases for context Theming: If your app lets the user
+change its appearance (e.g. dark mode), you can put a context provider at the
+top of your app, and use that context in components that need to adjust their
+visual look. Current account: Many components might need to know the currently
+logged in user. Putting it in context makes it convenient to read it anywhere in
+the tree. Some apps also let you operate multiple accounts at the same time
+(e.g. to leave a comment as a different user). In those cases, it can be
+convenient to wrap a part of the UI into a nested provider with a different
+current account value. Routing: Most routing solutions use context internally to
+hold the current route. This is how every link “knows” whether it’s active or
+not. If you build your own router, you might want to do it too. Managing state:
+As your app grows, you might end up with a lot of state closer to the top of
+your app. Many distant components below may want to change it. It is common to
+use a reducer together with context to manage complex state and pass it down to
+distant components without too much hassle. Context is not limited to static
+values. If you pass a different value on the next render, React will update all
+the components reading it below! This is why context is often used in
+combination with state. In general, if some information is needed by distant
+components in
+----------------------------------------------------------------------------------------------------
+Index: 18946 <<"chunk_id": 2, "docno": 2701>>
+
+while a navigation is executing. After a navigation completes, the router writes
+an object containing this value together with a navigationId to history.state .
+The value is written when location.go() or location.replaceState() is called
+before activating this route. Note that history.state does not pass an object
+equality test because the router adds the navigationId on each navigation. info
+unknown Use this to convey transient information about this particular
+navigation, such as how it happened. In this way, it's different from the
+persisted value state that will be set to history.state . This object is
+assigned directly to the Router's current Navigation (it is not copied or
+cloned), so it should be mutated with caution. One example of how this might be
+used is to trigger different single-page navigation animations depending on how
+a certain route was reached. For example, consider a photo gallery app, where
+you can reach the same photo URL and state via various routes: Clicking on it in
+a gallery view Clicking "next" or "previous" when viewing another photo in the
+album Etc. Each of these wants a different animation at navigate time. This
+information doesn't make sense to store in the persistent URL or history entry
+state, but it's still important to communicate from the rest of the application,
+into the router. This information could be used in coordination with the View
+Transitions feature and the onViewTransitionCreated callback. The information
+might be used in the callback to set classes on the document in order to control
+the transition animations and remove the
+----------------------------------------------------------------------------------------------------
+Index: 634 <<"chunk_id": 3, "docno": 97>>
+
+tree is only composed of React components . React, as a UI framework, is
+platform agnostic. On react.dev, we showcase examples that render to the web,
+which uses HTML markup as its UI primitives. But a React app could just as
+likely render to a mobile or desktop platform, which may use different UI
+primitives like UIView or FrameworkElement . These platform UI primitives are
+not a part of React. React render trees can provide insight to our React app
+regardless of what platform your app renders to. A render tree represents a
+single render pass of a React application. With conditional rendering , a parent
+component may render different children depending on the data passed. We can
+update the app to conditionally render either an inspirational quote or color.
+App.js FancyText.js Color.js InspirationGenerator.js Copyright.js
+inspirations.js App.js Reload Clear Fork import FancyText from './FancyText' ;
+import InspirationGenerator from './InspirationGenerator' ; import Copyright
+from './Copyright' ; export default function App ( ) { return ( < > < FancyText
+title text = "Get Inspired App" /> < InspirationGenerator > < Copyright year = {
+2004 } /> </ InspirationGenerator > </ > ) ; } With conditional rendering,
+across different renders, the render tree may render different components. In
+this example, depending on what inspiration.type is, we may render <FancyText>
+or <Color> . The render tree may be different for each render pass. Although
+render trees may differ across render passes, these trees are generally helpful
+for identifying what the top-level and leaf components are in a
+----------------------------------------------------------------------------------------------------
+Index: 5565 <<"chunk_id": 1, "docno": 812>>
+
+PureComponent API Reference Hooks Copy page Copy useId useId is a React Hook for
+generating unique IDs that can be passed to accessibility attributes. const id =
+useId ( ) Reference useId() Usage Generating unique IDs for accessibility
+attributes Generating IDs for several related elements Specifying a shared
+prefix for all generated IDs Using the same ID prefix on the client and the
+server Reference useId() Call useId at the top level of your component to
+generate a unique ID: import { useId } from 'react' ; function PasswordField ( )
+{ const passwordHintId = useId ( ) ; // ... See more examples below. Parameters
+useId does not take any parameters. Returns useId returns a unique ID string
+associated with this particular useId call in this particular component. Caveats
+useId is a Hook, so you can only call it at the top level of your component or
+your own Hooks. You can’t call it inside loops or conditions. If you need that,
+extract a new component and move the state into it. useId should not be used to
+generate cache keys for use() . The ID is stable when a component is mounted but
+may change during rendering. Cache keys should be generated from your data.
+useId should not be used to generate keys in a list. Keys should be generated
+from your data. useId currently cannot be used in async Server Components .
+Usage Pitfall Do not call useId to generate keys in a list. Keys should be
+generated from your data. Generating unique
+----------------------------------------------------------------------------------------------------
+Index: 1063 <<"chunk_id": 0, "docno": 150>>
+
+Conditional Rendering – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Conditional Rendering Your components will often need to display different
+things depending on different conditions. In React, you can conditionally render
+JSX using JavaScript syntax like if statements, && , and ? : operators. You will
+learn How to return different JSX depending on a condition How to conditionally
+----------------------------------------------------------------------------------------------------
+Index: 3653 <<"chunk_id": 2, "docno": 525>>
+
+It can be a value of any type. How the initial state is calculated from it
+depends on the next init argument. optional init : The initializer function that
+should return the initial state. If it’s not specified, the initial state is set
+to initialArg . Otherwise, the initial state is set to the result of calling
+init(initialArg) . Returns useReducer returns an array with exactly two values:
+The current state. During the first render, it’s set to init(initialArg) or
+initialArg (if there’s no init ). The dispatch function that lets you update the
+state to a different value and trigger a re-render. Caveats useReducer is a
+Hook, so you can only call it at the top level of your component or your own
+Hooks. You can’t call it inside loops or conditions. If you need that, extract a
+new component and move the state into it. The dispatch function has a stable
+identity, so you will often see it omitted from Effect dependencies, but
+including it will not cause the Effect to fire. If the linter lets you omit a
+dependency without errors, it is safe to do. Learn more about removing Effect
+dependencies. In Strict Mode, React will call your reducer and initializer twice
+in order to help you find accidental impurities. This is development-only
+behavior and does not affect production. If your reducer and initializer are
+pure (as they should be), this should not affect your logic. The result from one
+of the calls is ignored. dispatch function The dispatch function returned by
+----------------------------------------------------------------------------------------------------
+Index: 1394 <<"chunk_id": 0, "docno": 174>>
+
+Preserving and Resetting State – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Preserving and Resetting State State is isolated between components. React keeps
+track of which state belongs to which component based on their place in the UI
+tree. You can control when to preserve state and when to reset it between
+re-renders. You will learn When React chooses to
+----------------------------------------------------------------------------------------------------
+Index: 2643 <<"chunk_id": 3, "docno": 358>>
+
+a piece of JSX in a different part of the DOM tree that isn’t a child of your
+component (for example, a modal or a tooltip), use createPortal instead of
+createRoot . root.render(reactNode) Call root.render to display a piece of JSX
+(“React node”) into the React root’s browser DOM node. root . render ( < App />
+) ; React will display <App /> in the root , and take over managing the DOM
+inside it. See more examples below. Parameters reactNode : A React node that you
+want to display. This will usually be a piece of JSX like <App /> , but you can
+also pass a React element constructed with createElement() , a string, a number,
+null , or undefined . Returns root.render returns undefined . Caveats The first
+time you call root.render , React will clear all the existing HTML content
+inside the React root before rendering the React component into it. If your
+root’s DOM node contains HTML generated by React on the server or during the
+build, use hydrateRoot() instead, which attaches the event handlers to the
+existing HTML. If you call render on the same root more than once, React will
+update the DOM as necessary to reflect the latest JSX you passed. React will
+decide which parts of the DOM can be reused and which need to be recreated by
+“matching it up” with the previously rendered tree. Calling render on the same
+root again is similar to calling the set function on the root component: React
+avoids
+----------------------------------------------------------------------------------------------------
+Index: 1410 <<"chunk_id": 16, "docno": 174>>
+
+[ score , setScore ] = useState ( 0 ) ; const [ hover , setHover ] = useState (
+false ) ; let className = 'counter' ; if ( hover ) { className += ' hover' ; }
+return ( < div className = { className } onPointerEnter = { ( ) => setHover (
+true ) } onPointerLeave = { ( ) => setHover ( false ) } > < h1 > { person } 's
+score: { score } </ h1 > < button onClick = { ( ) => setScore ( score + 1 ) } >
+Add one </ button > </ div > ) ; } Show more Switching between Taylor and Sarah
+does not preserve the state. This is because you gave them different key s: {
+isPlayerA ? ( < Counter key = "Taylor" person = "Taylor" /> ) : ( < Counter key
+= "Sarah" person = "Sarah" /> ) } Specifying a key tells React to use the key
+itself as part of the position, instead of their order within the parent. This
+is why, even though you render them in the same place in JSX, React sees them as
+two different counters, and so they will never share state. Every time a counter
+appears on the screen, its state is created. Every time it is removed, its state
+is destroyed. Toggling between them resets their state over and over. Note
+Remember that keys are not globally unique. They only specify the position
+within the parent
+----------------------------------------------------------------------------------------------------
+Index: 4259 <<"chunk_id": 17, "docno": 628>>
+
+updater function in a queue and re-render your component. During the next
+render, React will calculate the next state by applying all of the queued
+updaters to the previous state. optional callback : If specified, React will
+call the callback you’ve provided after the update is committed. Returns
+setState does not return anything. Caveats Think of setState as a request rather
+than an immediate command to update the component. When multiple components
+update their state in response to an event, React will batch their updates and
+re-render them together in a single pass at the end of the event. In the rare
+case that you need to force a particular state update to be applied
+synchronously, you may wrap it in flushSync , but this may hurt performance.
+setState does not update this.state immediately. This makes reading this.state
+right after calling setState a potential pitfall. Instead, use
+componentDidUpdate or the setState callback argument, either of which are
+guaranteed to fire after the update has been applied. If you need to set the
+state based on the previous state, you can pass a function to nextState as
+described above. Note Calling setState in class components is similar to calling
+a set function in function components. See how to migrate.
+shouldComponentUpdate(nextProps, nextState, nextContext) If you define
+shouldComponentUpdate , React will call it to determine whether a re-render can
+be skipped. If you are confident you want to write it by hand, you may compare
+this.props with nextProps and this.state with nextState and return false to tell
+React the
+----------------------------------------------------------------------------------------------------
+Index: 555 <<"chunk_id": 1, "docno": 84>>
+
+using the browser API, play and pause a video player implemented without React,
+or connect and listen to messages from a remote server. In this chapter, you’ll
+learn the escape hatches that let you “step outside” React and connect to
+external systems. Most of your application logic and data flow should not rely
+on these features. In this chapter How to “remember” information without
+re-rendering How to access DOM elements managed by React How to synchronize
+components with external systems How to remove unnecessary Effects from your
+components How an Effect’s lifecycle is different from a component’s How to
+prevent some values from re-triggering Effects How to make your Effect re-run
+less often How to share logic between components Referencing values with refs
+When you want a component to “remember” some information, but you don’t want
+that information to trigger new renders , you can use a ref : const ref = useRef
+( 0 ) ; Like state, refs are retained by React between re-renders. However,
+setting state re-renders a component. Changing a ref does not! You can access
+the current value of that ref through the ref.current property. App.js App.js
+Reload Clear Fork import { useRef } from 'react' ; export default function
+Counter ( ) { let ref = useRef ( 0 ) ; function handleClick ( ) { ref . current
+= ref . current + 1 ; alert ( 'You clicked ' + ref . current + ' times!' ) ; }
+return ( < button onClick = { handleClick }
+----------------------------------------------------------------------------------------------------
+Index: 2492 <<"chunk_id": 1, "docno": 336>>
+
+isValidElement PureComponent API Reference Components Copy page Copy <Fragment>
+(<>...</>) <Fragment> , often used via <>...</> syntax, lets you group elements
+without a wrapper node. Canary Fragments can also accept refs, which enable
+interacting with underlying DOM nodes without adding wrapper elements. < > <
+OneChild /> < AnotherChild /> </ > Reference <Fragment> FragmentInstance Usage
+Returning multiple elements Assigning multiple elements to a variable Grouping
+elements with text Rendering a list of Fragments Adding event listeners without
+a wrapper element Managing focus across a group of elements Scrolling a group of
+elements into view Observing visibility without a wrapper element Caching a
+global IntersectionObserver Reference <Fragment> Wrap elements in <Fragment> to
+group them together in situations where you need a single element. Grouping
+elements in Fragment has no effect on the resulting DOM; it is the same as if
+the elements were not grouped. The empty JSX tag <></> is shorthand for
+<Fragment></Fragment> in most cases. Props optional key : Fragments declared
+with the explicit <Fragment> syntax may have keys. Canary only optional ref : A
+ref object (e.g. from useRef ) or callback function . React provides a
+FragmentInstance as the ref value that implements methods for interacting with
+the DOM nodes wrapped by the Fragment. Caveats If you want to pass key to a
+Fragment, you can’t use the <>...</> syntax. You have to explicitly import
+Fragment from 'react' and render <Fragment key={yourKey}>...</Fragment> . React
+does not reset state when you go from rendering <><Child /></> to [<Child />] or
+back, or when
+----------------------------------------------------------------------------------------------------
+Index: 844 <<"chunk_id": 1, "docno": 123>>
+
+React and synchronize your components with some external system like a non-React
+widget, network, or the browser DOM. If there is no external system involved
+(for example, if you want to update a component’s state when some props or state
+change), you shouldn’t need an Effect. Removing unnecessary Effects will make
+your code easier to follow, faster to run, and less error-prone. You will learn
+Why and how to remove unnecessary Effects from your components How to cache
+expensive computations without Effects How to reset and adjust component state
+without Effects How to share logic between event handlers Which logic should be
+moved to event handlers How to notify parent components about changes How to
+remove unnecessary Effects There are two common cases in which you don’t need
+Effects: You don’t need Effects to transform data for rendering. For example,
+let’s say you want to filter a list before displaying it. You might feel tempted
+to write an Effect that updates a state variable when the list changes. However,
+this is inefficient. When you update the state, React will first call your
+component functions to calculate what should be on the screen. Then React will
+“commit” these changes to the DOM, updating the screen. Then React will run your
+Effects. If your Effect also immediately updates the state, this restarts the
+whole process from scratch! To avoid the unnecessary render passes, transform
+all the data at the top level of your components. That code will automatically
+re-run whenever your props or state change. You don’t need
 ----------------------------------------------------------------------------------------------------

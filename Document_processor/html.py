@@ -75,7 +75,7 @@ def remove_unwanted_tags(html):
     for tag in REMOVED_TAGS:
         for element in soup.find_all(tag):
             element.decompose()
-            
+
     return str(soup)
 
 def valid_doc_title(html):
@@ -96,9 +96,9 @@ def valid_doc_title(html):
 
 def process_html(content, base_url):
     title = valid_doc_title(content)
-    text = extract_text_from_html(content)
     links = extract_links_from_html(content, base_url)
     text = remove_unwanted_tags(content)
+    # text = content
 
     if not text or not title:
         return None, None, None

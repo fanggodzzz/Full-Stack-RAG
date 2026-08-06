@@ -1,484 +1,1192 @@
-Index: 3833 <<"chunk_id": 2, "docno": 519>>
+Index: 5010 <<"chunk_id": 1, "docno": 727>>
 
-use the current working directory for that, which is a very unreliable way to
-determine where the application is. The current working directory is
-process-wide and if you are running multiple applications in one process (which
-could happen in a webserver without you knowing) the paths will be off. Worse:
-many webservers do not set the working directory to the directory of your
-application but to the document root which does not have to be the same folder.
-The third reason is “explicit is better than implicit”. That object is your WSGI
-application, you don’t have to remember anything else. If you want to apply a
-WSGI middleware, just wrap it and you’re done (though there are better ways to
-do that so that you do not lose the reference to the application object
-wsgi_app() ). Furthermore this design makes it possible to use a factory
-function to create the application which is very helpful for unit testing and
-similar things ( Application Factories ). The Routing System ¶ Flask uses the
-Werkzeug routing system which was designed to automatically order routes by
-complexity. This means that you can declare routes in arbitrary order and they
-will still work as expected. This is a requirement if you want to properly
-implement decorator based routing since decorators could be fired in undefined
-order when the application is split into multiple modules. Another design
-decision with the Werkzeug routing system is that routes in Werkzeug try to
-ensure that URLs are unique. Werkzeug will go quite far with
+Component createElement createRef forwardRef isValidElement PureComponent API
+Reference Overview Copy page Copy Components and Hooks must be pure Pure
+functions only perform a calculation and nothing more. It makes your code easier
+to understand, debug, and allows React to automatically optimize your components
+and Hooks correctly. Note This reference page covers advanced topics and
+requires familiarity with the concepts covered in the Keeping Components Pure
+page. Why does purity matter? Components and Hooks must be idempotent Side
+effects must run outside of render When is it okay to have mutation? Props and
+state are immutable Don’t mutate Props Don’t mutate State Return values and
+arguments to Hooks are immutable Values are immutable after being passed to JSX
+Why does purity matter? One of the key concepts that makes React, React is
+purity . A pure component or hook is one that is: Idempotent – You always get
+the same result every time you run it with the same inputs – props, state,
+context for component inputs; and arguments for hook inputs. Has no side effects
+in render – Code with side effects should run separately from rendering . For
+example as an event handler – where the user interacts with the UI and causes it
+to update; or as an Effect – which runs after render. Does not mutate non-local
+values : Components and Hooks should never modify values that aren’t created
+locally in render. When render is kept pure, React can understand how to
+prioritize which updates are most important for the user to see
 ----------------------------------------------------------------------------------------------------
-Index: 3834 <<"chunk_id": 3, "docno": 519>>
+Index: 4253 <<"chunk_id": 11, "docno": 628>>
 
-design decision with the Werkzeug routing system is that routes in Werkzeug try
-to ensure that URLs are unique. Werkzeug will go quite far with that in that it
-will automatically redirect to a canonical URL if a route is ambiguous. One
-Template Engine ¶ Flask decides on one template engine: Jinja. Why doesn’t Flask
-have a pluggable template engine interface? You can obviously use a different
-template engine, but Flask will still configure Jinja for you. While that
-limitation that Jinja is always configured will probably go away, the decision
-to bundle one template engine and use that will not. Template engines are like
-programming languages and each of those engines has a certain understanding
-about how things work. On the surface they all work the same: you tell the
-engine to evaluate a template with a set of variables and take the return value
-as string. But that’s about where similarities end. Jinja for example has an
-extensive filter system, a certain way to do template inheritance, support for
-reusable blocks (macros) that can be used from inside templates and also from
-Python code, supports iterative template rendering, configurable syntax and
-more. On the other hand an engine like Genshi is based on XML stream evaluation,
-template inheritance by taking the availability of XPath into account and more.
-Mako on the other hand treats templates similar to Python modules. When it comes
-to connecting a template engine with an application or framework there is more
-than just rendering templates. For instance, Flask uses Jinja’s
+{ this . destroyConnection ( ) ; this . setupConnection ( ) ; } }
+componentWillUnmount ( ) { this . destroyConnection ( ) ; } // ... } See more
+examples. Parameters componentWillUnmount does not take any parameters. Returns
+componentWillUnmount should not return anything. Caveats When Strict Mode is on,
+in development React will call componentDidMount , then immediately call
+componentWillUnmount , and then call componentDidMount again. This helps you
+notice if you forgot to implement componentWillUnmount or if its logic doesn’t
+fully “mirror” what componentDidMount does. Note For many use cases, defining
+componentDidMount , componentDidUpdate , and componentWillUnmount together in
+class components is equivalent to calling useEffect in function components. In
+the rare cases where it’s important for the code to run before browser paint,
+useLayoutEffect is a closer match. See how to migrate. forceUpdate(callback?)
+Forces a component to re-render. Usually, this is not necessary. If your
+component’s render method only reads from this.props , this.state , or
+this.context , it will re-render automatically when you call setState inside
+your component or one of its parents. However, if your component’s render method
+reads directly from an external data source, you have to tell React to update
+the user interface when that data source changes. That’s what forceUpdate lets
+you do. Try to avoid all uses of forceUpdate and only read from this.props and
+this.state in render . Parameters optional callback If specified, React will
+call the callback you’ve provided after the update is committed. Returns
+forceUpdate does not return anything. Caveats If you call
 ----------------------------------------------------------------------------------------------------
-Index: 3660 <<"chunk_id": 144, "docno": 493>>
+Index: 2139 <<"chunk_id": 2, "docno": 280>>
 
-ways to define rules for the routing system: You can use the flask.Flask.route()
-decorator. You can use the flask.Flask.add_url_rule() function. You can directly
-access the underlying Werkzeug routing system which is exposed as
-flask.Flask.url_map . Variable parts in the route can be specified with angular
-brackets ( /user/<username> ). By default a variable part in the URL accepts any
-string without a slash however a different converter can be specified as well by
-using <converter:name> . Variable parts are passed to the view function as
-keyword arguments. The following converters are available: string accepts any
-text without a slash (the default) int accepts integers float like int but for
-floating point values path like the default but also accepts slashes any matches
-one of the items provided uuid accepts UUID strings Custom converters can be
-defined using flask.Flask.url_map . Here are some examples: @app . route ( '/' )
-def index (): pass @app . route ( '/<username>' ) def show_user ( username ):
-pass @app . route ( '/post/<int:post_id>' ) def show_post ( post_id ): pass An
-important detail to keep in mind is how Flask deals with trailing slashes. The
-idea is to keep each URL unique so the following rules apply: If a rule ends
-with a slash and is requested without a slash by the user, the user is
-automatically redirected to the same page with a trailing slash attached. If a
-rule does not end with a trailing slash and the user requests the page with a
-trailing slash, a 404
+app predictable, easy to debug, and allows React to automatically optimize your
+code. Components must be idempotent – React components are assumed to always
+return the same output with respect to their inputs – props, state, and context.
+Side effects must run outside of render – Side effects should not run in render,
+as React can render components multiple times to create the best possible user
+experience. Props and state are immutable – A component’s props and state are
+immutable snapshots with respect to a single render. Never mutate them directly.
+Return values and arguments to Hooks are immutable – Once values are passed to a
+Hook, you should not modify them. Like props in JSX, values become immutable
+when passed to a Hook. Values are immutable after being passed to JSX – Don’t
+mutate values after they’ve been used in JSX. Move the mutation before the JSX
+is created. React calls Components and Hooks React is responsible for rendering
+components and hooks when necessary to optimize the user experience. It is
+declarative: you tell React what to render in your component’s logic, and React
+will figure out how best to display it to your user. Never call component
+functions directly – Components should only be used in JSX. Don’t call them as
+regular functions. Never pass around hooks as regular values – Hooks should only
+be called inside of components. Never pass it around as a regular value. Rules
+of Hooks Hooks are defined using JavaScript functions, but they represent a
+special type of reusable
 ----------------------------------------------------------------------------------------------------
-Index: 35174 <<"chunk_id": 0, "docno": 4791>>
+Index: 4259 <<"chunk_id": 17, "docno": 628>>
 
-SEO: URL Structure | Next.js Skip to content Search documentation... ⌘K
-Search... ⌘K Showcase Docs Blog Templates Enterprise Search documentation... ⌘K
-Search... ⌘K Deploy Learn 13 Chapter 13 URL Structure URL Structure is an
-important part of an SEO strategy. While Google doesn't disclose which weight
-each part of SEO has, great URLs are considered a best practice no matter if
-they are a big or small ranking factor in the end. You might want to follow some
-principles: Semantic : It's best to use URLs that are semantic, meaning that
-they use words instead of IDs or random numbers. Example:
-/learn/basics/create-nextjs-app is better than /learn/course-1/lesson-1 Patterns
-that are logical and consistent : URLs should follow some sort of pattern that
-is consistent among pages. For example, you want to have a folder that groups
-all product pages, instead of having different paths for each product that you
-have. Keyword focused : Google still bases a considerable part of their systems
-on the keywords a website contains. You might want to use keywords in your URLs
-to facilitate understanding the purpose of the pages. Not parameter-based :
-Using parameters to build your URLs is generally not a good idea. They are not
-semantic in most cases, and search engines might confuse them and demote their
-rankings in results. How are Routes Defined in Next.js? Next.js uses file-system
-routing built on the file-system routing built on the concept of pages . When a
-file is added to the pages directory, it is automatically available as a route.
+updater function in a queue and re-render your component. During the next
+render, React will calculate the next state by applying all of the queued
+updaters to the previous state. optional callback : If specified, React will
+call the callback you’ve provided after the update is committed. Returns
+setState does not return anything. Caveats Think of setState as a request rather
+than an immediate command to update the component. When multiple components
+update their state in response to an event, React will batch their updates and
+re-render them together in a single pass at the end of the event. In the rare
+case that you need to force a particular state update to be applied
+synchronously, you may wrap it in flushSync , but this may hurt performance.
+setState does not update this.state immediately. This makes reading this.state
+right after calling setState a potential pitfall. Instead, use
+componentDidUpdate or the setState callback argument, either of which are
+guaranteed to fire after the update has been applied. If you need to set the
+state based on the previous state, you can pass a function to nextState as
+described above. Note Calling setState in class components is similar to calling
+a set function in function components. See how to migrate.
+shouldComponentUpdate(nextProps, nextState, nextContext) If you define
+shouldComponentUpdate , React will call it to determine whether a re-render can
+be skipped. If you are confident you want to write it by hand, you may compare
+this.props with nextProps and this.state with nextState and return false to tell
+React the
 ----------------------------------------------------------------------------------------------------
-Index: 16074 <<"chunk_id": 3, "docno": 2149>>
+Index: 632 <<"chunk_id": 1, "docno": 97>>
 
-SQL – entire statements, or just custom WHERE clauses as custom parameters to
-API calls. URL design ¶ Loose coupling ¶ URLs in a Django app should not be
-coupled to the underlying Python code. Tying URLs to Python function names is a
-Bad And Ugly Thing. Along these lines, the Django URL system should allow URLs
-for the same app to be different in different contexts. For example, one site
-may put stories at /stories/ , while another may use /news/ . Infinite
-flexibility ¶ URLs should be as flexible as possible. Any conceivable URL design
-should be allowed. Encourage best practices ¶ The framework should make it just
-as easy (or even easier) for a developer to design pretty URLs than ugly ones.
-File extensions in web-page URLs should be avoided. Vignette-style commas in
-URLs deserve severe punishment. Definitive URLs ¶ Technically, foo.com/bar and
-foo.com/bar/ are two different URLs, and search-engine robots (and some web
-traffic-analyzing tools) would treat them as separate pages. Django should make
-an effort to “normalize” URLs so that search-engine robots don’t get confused.
-This is the reasoning behind the APPEND_SLASH setting. Template system ¶
-Separate logic from presentation ¶ We see a template system as a tool that
-controls presentation and presentation-related logic – and that’s it. The
-template system shouldn’t support functionality that goes beyond this basic
-goal. Discourage redundancy ¶ The majority of dynamic websites use some sort of
-common sitewide design – a common header, footer, navigation bar, etc. The
-Django template system should make it
+How does React keep track of your app’s component structure? React, and many
+other UI libraries, model UI as a tree. Thinking of your app as a tree is useful
+for understanding the relationship between components. This understanding will
+help you debug future concepts like performance and state management. You will
+learn How React “sees” component structures What a render tree is and what it is
+useful for What a module dependency tree is and what it is useful for Your UI as
+a tree Trees are a relationship model between items. The UI is often represented
+using tree structures. For example, browsers use tree structures to model HTML (
+DOM ) and CSS ( CSSOM ). Mobile platforms also use trees to represent their view
+hierarchy. React creates a UI tree from your components. In this example, the UI
+tree is then used to render to the DOM. Like browsers and mobile platforms,
+React also uses tree structures to manage and model the relationship between
+components in a React app. These trees are useful tools to understand how data
+flows through a React app and how to optimize rendering and app size. The Render
+Tree A major feature of components is the ability to compose components of other
+components. As we nest components , we have the concept of parent and child
+components, where each parent component may itself be a child of another
+component. When we render a React app, we can model this relationship in a tree,
+known as the render tree. Here
 ----------------------------------------------------------------------------------------------------
-Index: 5904 <<"chunk_id": 267, "docno": 788>>
+Index: 2100 <<"chunk_id": 0, "docno": 272>>
 
-with the appropriate path in order to leverage Angular routing. ```typescript
-import {RouterLink} from '@angular/router'; @Component({ template: ` <nav> <a
-routerLink="/user-profile">User profile</a> <a
-routerLink="/settings">Settings</a> </nav> `, imports: [RouterLink], ... })
-export class App {} ``` ### Using absolute or relative links **Relative URLs**
-in Angular routing allow you to define navigation paths relative to the current
-route's location. This is in contrast to **absolute URLs** which contain the
-full path with the protocol (e.g., `http://`) and the **root domain** (e.g.,
-`google.com`). ```html <!-- Absolute URL --> <a
-href="https://www.angular.dev/essentials">Angular Essentials Guide</a> <!--
-Relative URL --> <a href="/essentials">Angular Essentials Guide</a> ``` In this
-example, the first example contains the full path with the protocol (i.e.,
-`https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the
-essentials page. In contrast, the second example assumes the user is already on
-the correct root domain for `/essentials`. Generally speaking, relative URLs are
-preferred as they are more maintainable across applications since they don’t
-need to know their absolute position within the routing hierarchy. ### How
-relative URLs work Angular routing has two syntaxes for defining relative URLs:
-strings and arrays. ```html <!-- Navigates user to /dashboard --> <a
-routerLink="dashboard">Dashboard</a> <a
-[routerLink]="['dashboard']">Dashboard</a> ``` HELPFUL: Passing a string is the
-most common way to define relative URLs. When you need to define dynamic
-parameters in a relative URL, use the array syntax: ```html <a
-[routerLink]="['user', currentUserId]">Current User</a> ``` In addition, Angular
-routing allows you to specify whether you want the path to be relative to the
-current URL or to the root
+React Compiler – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy React Compiler
+Introduction Learn what React Compiler does and how it automatically optimizes
+your React application by handling memoization for you, eliminating the need for
+manual useMemo , useCallback , and React.memo . Installation Get started with
+installing React Compiler and learn how to configure it with your build tools.
+Incremental Adoption
 ----------------------------------------------------------------------------------------------------
-Index: 2052 <<"chunk_id": 7, "docno": 300>>
+Index: 656 <<"chunk_id": 0, "docno": 101>>
 
-for more tips. Deep Dive How does React know which state to return? Show Details
-You might have noticed that the useState call does not receive any information
-about which state variable it refers to. There is no “identifier” that is passed
-to useState , so how does it know which of the state variables to return? Does
-it rely on some magic like parsing your functions? The answer is no. Instead, to
-enable their concise syntax, Hooks rely on a stable call order on every render
-of the same component. This works well in practice because if you follow the
-rule above (“only call Hooks at the top level”), Hooks will always be called in
-the same order. Additionally, a linter plugin catches most mistakes. Internally,
-React holds an array of state pairs for every component. It also maintains the
-current pair index, which is set to 0 before rendering. Each time you call
-useState , React gives you the next state pair and increments the index. You can
-read more about this mechanism in React Hooks: Not Magic, Just Arrays. This
-example doesn’t use React but it gives you an idea of how useState works
-internally: index.js index.html index.js Reload Clear Fork let componentHooks =
-[ ] ; let currentHookIndex = 0 ; // How useState works inside React
-(simplified). function useState ( initialState ) { let pair = componentHooks [
-currentHookIndex ] ; if ( pair ) { // This is not the first render, // so the
-state pair already exists. //
+React Developer Tools – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Setup Copy page Copy React Developer
+Tools Use React Developer Tools to inspect React components , edit props and
+state , and identify performance problems. You will learn How to install React
+Developer Tools Browser extension The easiest way to debug websites built with
+React is to install the React Developer Tools browser extension.
 ----------------------------------------------------------------------------------------------------
-Index: 22156 <<"chunk_id": 1, "docno": 2739>>
+Index: 2071 <<"chunk_id": 0, "docno": 267>>
 
-quite complex, and when designing a routing topology for a scalable, complex
-system it must be elegant. Kept clean and decoupled, components can throttle
-nicely with varying loads. This can be expressed as a simple map or complex
-graph. In its simplest form a routing topology can be expressed as nodes, for
-instance hierarchical nodes: For those new to RabbitMQ or AMQP (note that Rabbit
-works with many protocols including STOMP , HTTP, HTTPS, XMPP, and SMTP), here
-are some basic component descriptions: Exchange The entity within the server
-which receives messages from producer applications and optionally routes these
-to message queues within the server Exchange type The algorithm and
-implementation of a particular model of exchange. In contrast to the "exchange
-instance", which is the entity that receives and routes messages within the
-server Message queue A named entity that holds messages and forwards them to
-consumer applications Binding An entity that creates a relationship between a
-message queue and an exchange Routing key A virtual address that an exchange may
-use to decide how to route a specific message For point-to-point routing, the
-routing key is usually the name of a message queue. For topic pub-sub routing
-the routing key is usually hierarchical in nature:
-api.agents.agent-{id}.operations.{operationName} In more complex cases the
-routing key may be combined with routing on message header fields and/or its
-content. An exchange examines a message's properties, header fields, body
-content, and possibly data from other sources, then decides how to route the
-message. A binding pattern derived from the
+Introduction – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React React Compiler Copy page Copy Introduction
+React Compiler is a new build-time tool that automatically optimizes your React
+app. It works with plain JavaScript, and understands the Rules of React , so you
+don’t need to rewrite any code to use it. You will learn What React Compiler
+does Getting started with the compiler Incremental adoption
 ----------------------------------------------------------------------------------------------------
-Index: 43569 <<"chunk_id": 2, "docno": 6725>>
+Index: 1670 <<"chunk_id": 0, "docno": 204>>
 
-origin. If a URL behaves like a relative path but resolves to a different
-origin, Angular throws NG05703 and blocks the request/navigation. Common causes
-Backslash-prefixed hijack attempts (open redirects / SSRF bypass): Relative
-paths beginning with slashes and backslashes (such as /\\attacker.com/path or
-\\\\attacker.com/path ) can be interpreted differently by browsers and
-server-side URL parsers. In some parser implementations, these resolve to an
-absolute URL pointing to attacker.com . Angular detects this mismatch and blocks
-the resolution. Disallowed state changes to different origins: Navigation or URL
-updates (e.g. using location.replaceState or location.pushState ) that change
-the origin of the application when the environment is configured to restrict URL
-changes to the current origin only. SSR bootstrap URL mismatch: In server-side
-rendering, if the url passed to the renderer does not align with the base origin
-configured for the application (such as APP_BASE_HREF ), the router might
-attempt to synchronize the location on startup, causing a disallowed origin
-change. Obfuscated protocol schemes: Absolute URLs with obfuscated or malformed
-protocols (e.g. ht\ntp://evil.com/path ) that attempt to bypass origin checks.
-Debugging the error Check the URL that triggered the error. Ensure it does not
-contain unexpected backslashes, line breaks, or other characters that could
-trigger parsing anomalies: Avoid using backslashes ( \ ) in relative URLs or
-routing paths. Make sure any user-supplied URLs or query parameters are properly
-validated and sanitized before being processed in SSR. Align SSR bootstrap URL
-with configured base URL: If the error occurs on startup in an SSR environment,
-ensure that the url
+Setup – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog GET
+STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Setup React integrates with
+tools like editors, TypeScript, browser extensions, and compilers. This section
+will help you get your environment set up. Editor Setup See our recommended
+editors and learn how to set them up to work with React. Using TypeScript
+TypeScript is a popular way to add type definitions to JavaScript codebases.
 ----------------------------------------------------------------------------------------------------
-Index: 44587 <<"chunk_id": 1, "docno": 6915>>
+Index: 631 <<"chunk_id": 0, "docno": 97>>
 
-arrow_upward_alt Back to the top How to use RouterLink Instead of using regular
-anchor elements <a> with an href attribute, you add a RouterLink directive with
-the appropriate path in order to leverage Angular routing. import { RouterLink }
-from '@angular/router' ; @ Component ({ template: ` < nav > < a routerLink =
-"/user-profile" >User profile</ a > < a routerLink = "/settings" >Settings</ a >
-</ nav > ` , imports: [ RouterLink ], ... }) export class App {} Using absolute
-or relative links Relative URLs in Angular routing allow you to define
-navigation paths relative to the current route's location. This is in contrast
-to absolute URLs which contain the full path with the protocol (e.g., http:// )
-and the root domain (e.g., google.com ). <!-- Absolute URL --> < a href =
-"https://www.angular.dev/essentials" >Angular Essentials Guide</ a > <!--
-Relative URL --> < a href = "/essentials" >Angular Essentials Guide</ a > In
-this example, the first example contains the full path with the protocol (i.e.,
-https:// ) and the root domain (i.e., angular.dev ) explicitly defined for the
-essentials page. In contrast, the second example assumes the user is already on
-the correct root domain for /essentials . Generally speaking, relative URLs are
-preferred as they are more maintainable across applications since they don’t
-need to know their absolute position within the routing hierarchy. How relative
-URLs work Angular routing has two syntaxes for defining relative URLs: strings
-and arrays. <!-- Navigates user to /dashboard --> < a routerLink =
+Understanding Your UI as a Tree – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Understanding Your UI as a Tree Your React app is taking shape with many
+components being nested within each other. How does React keep track of your
+app’s component structure? React, and many other UI libraries, model UI as a
+tree. Thinking of your app
 ----------------------------------------------------------------------------------------------------
-Index: 15247 <<"chunk_id": 12, "docno": 2006>>
+Index: 130 <<"chunk_id": 0, "docno": 16>>
 
-{ "blog_id" : 3 }), ] Note that extra options will always be passed to every
-line in the included URLconf, regardless of whether the line’s view actually
-accepts those options as valid. For this reason, this technique is only useful
-if you’re certain that every view in the included URLconf accepts the extra
-options you’re passing. Reverse resolution of URLs ¶ A common need when working
-on a Django project is the possibility to obtain URLs in their final forms
-either for embedding in generated content (views and assets URLs, URLs shown to
-the user, etc.) or for handling of the navigation flow on the server side
-(redirections, etc.) It is strongly desirable to avoid hardcoding these URLs (a
-laborious, non-scalable and error-prone strategy). Equally dangerous is devising
-ad-hoc mechanisms to generate URLs that are parallel to the design described by
-the URLconf, which can result in the production of URLs that become stale over
-time. In other words, what’s needed is a DRY mechanism. Among other advantages
-it would allow evolution of the URL design without having to go over all the
-project source code to search and replace outdated URLs. The primary piece of
-information we have available to get a URL is an identification (e.g. the name)
-of the view in charge of handling it. Other pieces of information that
-necessarily must participate in the lookup of the right URL are the types
-(positional, keyword) and values of the view arguments. Django provides a
-solution such that the URL mapper is the
+Managing State – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Managing State
+Intermediate As your application grows, it helps to be more intentional about
+how your state is organized and how the data flows between your components.
+Redundant or duplicate state is a common source of bugs. In this chapter, you’ll
+learn how to structure your state well, how to keep your
 ----------------------------------------------------------------------------------------------------
-Index: 23975 <<"chunk_id": 1, "docno": 3135>>
+Index: 1646 <<"chunk_id": 2, "docno": 202>>
 
-URLs : Google sources URLs from many places, including Google Search Console ,
-links between websites, or XML sitemaps . Add to Crawl Queue : These URLs are
-added to the Crawl Queue for the Googlebot to process. URLs in the Crawl Queue
-usually last seconds there, but it can be up to a few days depending on the
-case, especially if the pages need to be rendered, indexed, or – if the URL is
-already indexed – refreshed. The pages will then enter the Render Queue . HTTP
-Request : The crawler makes an HTTP request to get the headers and acts
-according to the returned status code: 200 : It crawls and parses the HTML. 30X
-: It follows the redirects. 40X : It notes the error and does not load the HTML.
-50X : It may come back later to check if the status code has changed. Render
-Queue : The different services and components of the search system process the
-HTML and parse the content. If the page has some JavaScript client-side based
-content, the URLs might be added to a Render Queue. Render Queue is more costly
-for Google as it needs to use more resources to render JavaScript and therefore
-URLs rendered are a smaller percentage over the total pages out there on the
-internet. Some other search engines might not have the same rendering capacity
-as Google, and this is where Next.js can help with your rendering strategy.
-Ready to be indexed : If all criteria are met, the
+</ h3 > < img src = { sculpture . url } alt = { sculpture . alt } /> < p > {
+sculpture . description } </ p > </ > ) ; } Show more The handleClick event
+handler is updating a local variable, index . But two things prevent that change
+from being visible: Local variables don’t persist between renders. When React
+renders this component a second time, it renders it from scratch—it doesn’t
+consider any changes to the local variables. Changes to local variables won’t
+trigger renders. React doesn’t realize it needs to render the component again
+with the new data. To update a component with new data, two things need to
+happen: Retain the data between renders. Trigger React to render the component
+with new data (re-rendering). The useState Hook provides those two things: A
+state variable to retain the data between renders. A state setter function to
+update the variable and trigger React to render the component again. Adding a
+state variable To add a state variable, import useState from React at the top of
+the file: import { useState } from 'react' ; Then, replace this line: let index
+= 0 ; with const [ index , setIndex ] = useState ( 0 ) ; index is a state
+variable and setIndex is the setter function. The [ and ] syntax here is called
+array destructuring and it lets you read values from an array. The array
+returned by useState always has exactly two items. This is how
 ----------------------------------------------------------------------------------------------------
-Index: 6346 <<"chunk_id": 4, "docno": 828>>
+Index: 4698 <<"chunk_id": 3, "docno": 685>>
 
-Creating your own settings Using settings without setting DJANGO_SETTINGS_MODULE
-Signals Listening to signals Defining and sending signals Disconnecting signals
-System check framework Writing your own checks External packages Localflavor
-Comments Formtools Asynchronous support Async views Async safety Async adapter
-functions Django’s Tasks framework Background Task fundamentals Configuring a
-Task backend Defining Tasks Enqueueing Tasks Task results How-to guides Models,
-data and databases How to provide initial data for models How to integrate
-Django with a legacy database How to create custom model fields How to create
-database migrations How to write custom lookups Templates and output How to
-create CSV output How to create PDF files How to override templates How to
-implement a custom template backend How to create custom template tags and
-filters Project configuration and management How to manage static files (e.g.
-images, JavaScript, CSS) How to configure and use logging How to manage error
-reporting How to delete a Django application Installing, deploying and upgrading
-How to upgrade Django to a newer version How to install Django on Windows How to
-deploy Django How to deploy static files Other guides How to authenticate using
-REMOTE_USER How to use Django’s Content Security Policy How to use Django’s CSRF
-protection How to write a custom storage class How to create custom django-admin
-commands How to customize the shell command Django FAQ FAQ: General Why does
-this project exist? What does “Django” mean, and how do you pronounce it? Is
-Django stable? Does Django scale? Who’s behind this? How is Django licensed? Why
-does Django
+camelCase , for example fontWeight instead of font-weight . You can pass strings
+or numbers as values. If you pass a number, like width: 100 , React will
+automatically append px (“pixels”) to the value unless it’s a unitless property.
+We recommend using style only for dynamic styles where you don’t know the style
+values ahead of time. In other cases, applying plain CSS classes with className
+is more efficient. Read more about className and style . These standard DOM
+props are also supported for all built-in components: accessKey : A string.
+Specifies a keyboard shortcut for the element. Not generally recommended. aria-*
+: ARIA attributes let you specify the accessibility tree information for this
+element. See ARIA attributes for a complete reference. In React, all ARIA
+attribute names are exactly the same as in HTML. autoCapitalize : A string.
+Specifies whether and how the user input should be capitalized. className : A
+string. Specifies the element’s CSS class name. Read more about applying CSS
+styles. contentEditable : A boolean. If true , the browser lets the user edit
+the rendered element directly. This is used to implement rich text input
+libraries like Lexical. React warns if you try to pass React children to an
+element with contentEditable={true} because React will not be able to update its
+content after user edits. data-* : Data attributes let you attach some string
+data to the element, for example data-fruit="banana" . In React, they are not
+commonly used because you would usually read data from props or state instead.
 ----------------------------------------------------------------------------------------------------
-Index: 50854 <<"chunk_id": 7, "docno": 8103>>
+Index: 844 <<"chunk_id": 1, "docno": 123>>
 
-that would cause the required CSRF cookie to be sent. Solution: use
-ensure_csrf_cookie() on the view that sends the page. CSRF protection in
-reusable applications ¶ Because it is possible for the developer to turn off the
-CsrfViewMiddleware , all relevant views in contrib apps use the csrf_protect
-decorator to ensure the security of these applications against CSRF. It is
-recommended that the developers of other reusable apps that want the same
-guarantees also use the csrf_protect decorator on their views. Previous page and
-next page How to use Django’s Content Security Policy How to write a custom
-storage class Back to Top Additional Information Support Django! Abu Ashraf
-Masnun donated to the Django Software Foundation to support Django development.
-Donate today! Contents How to use Django’s CSRF protection Using CSRF protection
-with AJAX Acquiring the token if CSRF_USE_SESSIONS and CSRF_COOKIE_HTTPONLY are
-False Acquiring the token if CSRF_USE_SESSIONS or CSRF_COOKIE_HTTPONLY is True
-Setting the token on the AJAX request Using CSRF protection in Jinja2 templates
-Using the decorator method Handling rejected requests Using CSRF protection with
-caching Testing and CSRF protection Edge cases Disabling CSRF protection for
-just a few views Setting the token when CsrfViewMiddleware.process_view() is not
-used Including the CSRF token in an unprotected view Protecting a view for only
-one path Protecting a page that uses AJAX without an HTML form CSRF protection
-in reusable applications Browse Prev: How to use Django’s Content Security
-Policy Next: How to write a custom storage class Table of contents General Index
-Python Module Index You are
+React and synchronize your components with some external system like a non-React
+widget, network, or the browser DOM. If there is no external system involved
+(for example, if you want to update a component’s state when some props or state
+change), you shouldn’t need an Effect. Removing unnecessary Effects will make
+your code easier to follow, faster to run, and less error-prone. You will learn
+Why and how to remove unnecessary Effects from your components How to cache
+expensive computations without Effects How to reset and adjust component state
+without Effects How to share logic between event handlers Which logic should be
+moved to event handlers How to notify parent components about changes How to
+remove unnecessary Effects There are two common cases in which you don’t need
+Effects: You don’t need Effects to transform data for rendering. For example,
+let’s say you want to filter a list before displaying it. You might feel tempted
+to write an Effect that updates a state variable when the list changes. However,
+this is inefficient. When you update the state, React will first call your
+component functions to calculate what should be on the screen. Then React will
+“commit” these changes to the DOM, updating the screen. Then React will run your
+Effects. If your Effect also immediately updates the state, this restarts the
+whole process from scratch! To avoid the unnecessary render passes, transform
+all the data at the top level of your components. That code will automatically
+re-run whenever your props or state change. You don’t need
 ----------------------------------------------------------------------------------------------------
-Index: 44402 <<"chunk_id": 3, "docno": 6888>>
+Index: 26611 <<"chunk_id": 6, "docno": 4276>>
 
-a RouterOutlet that displays views based on router navigations. <base href> The
-router uses the browser's history.pushState for navigation. pushState lets you
-customize in-application URL paths; for example, localhost:4200/crisis-center .
-The in-application URLs can be indistinguishable from server URLs. Modern HTML5
-browsers were the first to support pushState which is why many people refer to
-these URLs as "HTML5 style" URLs. HELPFUL: HTML5 style navigation is the router
-default. In the LocationStrategy and browser URL styles section, learn why HTML5
-style is preferable, how to adjust its behavior, and how to switch to the older
-hash ( # ) style, if necessary. You must add a <base href> element to the
-application's index.html for pushState routing to work. The browser uses the
-<base href> value to prefix relative URLs when referencing CSS files, scripts,
-and images. Add the <base> element just after the <head> tag. If the app folder
-is the application root, as it is for this application, set the href value in
-index.html as shown here. < base href = "/" /> HTML5 URLs and the <base href>
-The guidelines that follow will refer to different parts of a URL. This diagram
-outlines what those parts refer to:
-foo://example.com:8042/over/there?name=ferret#nose \_/
-\______________/\_________/ \_________/ \__/ | | | | | scheme authority path
-query fragment While the router uses the HTML5 pushState style by default, you
-must configure that strategy with a <base href> . The preferred way to configure
-the strategy is to add a <base href> element tag in the <head> of the index.html
+get() method or any type of query, then the object is automatically associated
+with the session. If you just create a new instance via the new keyword, then
+the object is not attached to the session until the save() method is called.
+Second, domain class properties are persistent by default, i.e. they have
+matching columns in the database where their values are stored. You can make
+properties transient by adding their names to the static transients list
+property, which means that their values aren't stored in the database. Finally,
+I mentioned that changes are persisted if they exist when the session closes.
+What did I mean by that? In order to do anything with the database via
+Hibernate, you must have an open session. Once the session is closed, you can no
+longer use it for database access. Also, the session is flushed when it's
+closed, which is why changes are persisted at the end of our controller action
+above (Grails automatically opens a session at the start of a request and closes
+it at the end). Can you prevent such changes being persisted? Sure. One option
+is to call save() on your domain instance: if any of the property values fail
+validation, the changes will not be persisted. Of course, if the values are
+valid and yet you still don't want to persist them, you can call discard() on
+your instance. This won't reset the values of the instance's properties, but it
+will ensure that they aren't saved to the database. That's a fair bit
 ----------------------------------------------------------------------------------------------------
-Index: 16076 <<"chunk_id": 5, "docno": 2149>>
+Index: 4256 <<"chunk_id": 14, "docno": 628>>
 
-functionality, such as branching and looping, that is essential for making
-presentation-related decisions. The Django Template Language (DTL) aims to avoid
-advanced logic. Safety and security ¶ The template system, out of the box,
-should forbid the inclusion of malicious code – such as commands that delete
-database records. This is another reason the template system doesn’t allow
-arbitrary Python code. Extensibility ¶ The template system should recognize that
-advanced template authors may want to extend its technology. This is the
-philosophy behind custom template tags and filters. Views ¶ Simplicity ¶ Writing
-a view should be as simple as writing a Python function. Developers shouldn’t
-have to instantiate a class when a function will do. Use request objects ¶ Views
-should have access to a request object – an object that stores metadata about
-the current request. The object should be passed directly to a view function,
-rather than the view function having to access the request data from a global
-variable. This makes it light, clean and easy to test views by passing in “fake”
-request objects. Loose coupling ¶ A view shouldn’t care about which template
-system the developer uses – or even whether a template system is used at all.
-Differentiate between GET and POST ¶ GET and POST are distinct; developers
-should explicitly use one or the other. The framework should make it easy to
-distinguish between GET and POST data. Cache Framework ¶ The core goals of
-Django’s cache framework are: Less code ¶ A cache should be as fast
+function components. This use case is very uncommon, but if you have the need
+for it, for now you’ll have to write a class component. render() The render
+method is the only required method in a class component. The render method
+should specify what you want to appear on the screen, for example: import {
+Component } from 'react' ; class Greeting extends Component { render ( ) {
+return < h1 > Hello, { this . props . name } ! </ h1 > ; } } React may call
+render at any moment, so you shouldn’t assume that it runs at a particular time.
+Usually, the render method should return a piece of JSX , but a few other return
+types (like strings) are supported. To calculate the returned JSX, the render
+method can read this.props , this.state , and this.context . You should write
+the render method as a pure function, meaning that it should return the same
+result if props, state, and context are the same. It also shouldn’t contain side
+effects (like setting up subscriptions) or interact with the browser APIs. Side
+effects should happen either in event handlers or methods like componentDidMount
+. Parameters render does not take any parameters. Returns render can return any
+valid React node. This includes React elements such as <div /> , strings,
+numbers, portals , empty nodes ( null , undefined , true , and false ), and
+arrays of React nodes. Caveats render should be written as a pure function of
+props, state,
 ----------------------------------------------------------------------------------------------------
-Index: 12957 <<"chunk_id": 5, "docno": 1747>>
+Index: 3711 <<"chunk_id": 1, "docno": 535>>
 
-market in a different country, internationalizing your project is critical for
-success. Internationalizing a project has two main pillars: Translations and
-Routing. Many React libraries prepare applications to be translated, but most of
-them expect you to handle routing manually, and generally only work with one
-rendering strategy. That's why, as part of Next.js 10, we're releasing built-in
-support for internationalized routing and language detection. This built-in
-support for internationalized routing supports Next.js' hybrid strategy, so you
-can choose between Static Generation or Server-Rendering on a per-page basis.
-Next.js 10 supports the two most common routing strategies: subpath routing and
-domain routing. For both strategies, you start by configuring the locales in the
-Next.js configuration. js filename="next.config.js" module.exports = { i18n: {
-locales: ['en', 'nl'], defaultLocale: 'en', }, }; Locales are UTS Locale
-Identifiers , a standardized format for defining locales. Generally a Locale
-Identifier is made up of a language, region, and script separated by a dash:
-language-region-script . The region and script are optional. An example: en-US -
-English as spoken in the United States nl-NL - Dutch as spoken in the
-Netherlands nl - Dutch, no specific region Once your locales are configured you
-can choose subpath or domain routing. Subpath routing Subpath routing puts the
-locale in the url. This allows all languages to live on a single domain. For
-example, you can insert the locale in the url like /nl-nl/blog and /en/blog .
-Domain routing Domain routing enables you to map a locale to a top level domain.
-For example example.nl
+forwardRef isValidElement PureComponent API Reference Copy page Copy Built-in
+React Hooks Hooks let you use different React features from your components. You
+can either use the built-in Hooks or combine them to build your own. This page
+lists all built-in Hooks in React. State Hooks State lets a component “remember”
+information like user input. For example, a form component can use state to
+store the input value, while an image gallery component can use state to store
+the selected image index. To add state to a component, use one of these Hooks:
+useState declares a state variable that you can update directly. useReducer
+declares a state variable with the update logic inside a reducer function.
+function ImageGallery ( ) { const [ index , setIndex ] = useState ( 0 ) ; // ...
+Context Hooks Context lets a component receive information from distant parents
+without passing it as props. For example, your app’s top-level component can
+pass the current UI theme to all components below, no matter how deep.
+useContext reads and subscribes to a context. function Button ( ) { const theme
+= useContext ( ThemeContext ) ; // ... Ref Hooks Refs let a component hold some
+information that isn’t used for rendering, like a DOM node or a timeout ID.
+Unlike with state, updating a ref does not re-render your component. Refs are an
+“escape hatch” from the React paradigm. They are useful when you need to work
+with non-React systems, such as the built-in browser APIs. useRef declares a
+ref. You
 ----------------------------------------------------------------------------------------------------
-Index: 18685 <<"chunk_id": 20, "docno": 2473>>
+Index: 843 <<"chunk_id": 0, "docno": 123>>
 
-IDs in URLs ¶ The Django sessions framework is entirely, and solely,
-cookie-based. It does not fall back to putting session IDs in URLs as a last
-resort, as PHP does. This is an intentional design decision. Not only does that
-behavior make URLs ugly, it makes your site vulnerable to session-ID theft via
-the “Referer” header. Previous page and next page Middleware Working with forms
-Back to Top Additional Information Support Django! Chandan Singh donated to the
-Django Software Foundation to support Django development. Donate today! Contents
-How to use sessions Enabling sessions Configuring the session engine Using
-database-backed sessions Using cached sessions Using file-based sessions Using
-cookie-based sessions Using sessions in views Session serialization Bundled
-serializers Write your own serializer Session object guidelines Examples Setting
-test cookies Using sessions out of views When sessions are saved Browser-length
-sessions vs. persistent sessions Clearing the session store Settings Session
-security Technical details The SessionStore object Extending database-backed
-session engines Example Session IDs in URLs Browse Prev: Middleware Next:
-Working with forms Table of contents General Index Python Module Index You are
-here: Django 6.0 documentation Using Django Handling HTTP requests How to use
-sessions Getting help FAQ Try the FAQ — it's got answers to many common
-questions. Index , Module Index , or Table of Contents Handy when looking for
-specific information. Django Discord Server Join the Django Discord Community.
-Official Django Forum Join the community on the Django Forum. Ticket tracker
-Report bugs with Django or Django documentation in our ticket tracker. Download:
-Offline
+You Might Not Need an Effect – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy You
+Might Not Need an Effect Effects are an escape hatch from the React paradigm.
+They let you “step outside” of React and synchronize your components with some
+external system like a non-React widget, network, or the browser DOM. If there
+is no external system involved
 ----------------------------------------------------------------------------------------------------
-Index: 964 <<"chunk_id": 15, "docno": 150>>
+Index: 6315 <<"chunk_id": 28, "docno": 914>>
 
-if old configuration is detected that needs to be moved. #2866
-RequestContext.copy includes the current session object in the request context
-copy. This prevents session pointing to an out-of-date object. #2935 Using
-built-in RequestContext, unprintable Unicode characters in Host header will
-result in a HTTP 400 response and not HTTP 500 as previously. #2994 send_file
-supports PathLike objects as described in PEP 519 , to support pathlib in Python
-3. #3059 send_file supports BytesIO partial content. #2957 open_resource accepts
-the “rt” file mode. This still does the same thing as “r”. #3163 The
-MethodView.methods attribute set in a base class is used by subclasses. #3138
-Flask.jinja_options is a dict instead of an ImmutableDict to allow easier
-configuration. Changes must still be made before creating the environment. #3190
-Flask’s JSONMixin for the request and response wrappers was moved into Werkzeug.
-Use Werkzeug’s version with Flask-specific support. This bumps the Werkzeug
-dependency to >= 0.15. #3125 The flask command entry point is simplified to take
-advantage of Werkzeug 0.15’s better reloader support. This bumps the Werkzeug
-dependency to >= 0.15. #3022 Support static_url_path that ends with a forward
-slash. #3134 Support empty static_folder without requiring setting an empty
-static_url_path as well. #3124 jsonify supports dataclass objects. #3195 Allow
-customizing the Flask.url_map_class used for routing. #3069 The development
-server port can be set to 0, which tells the OS to pick an available port. #2926
-The return value from cli.load_dotenv is more consistent with the documentation.
-It will return False if python-dotenv is not installed, or if the given
+closer to having the final API finished. Gesture Animations We’re also
+researching ways to enhance View Transitions to support gesture animations such
+as swiping to open a menu, or scroll through a photo carousel. Gestures present
+new challenges for a few reasons: Gestures are continuous : as you swipe the
+animation is tied to your finger placement time, rather than triggering and
+running to completion. Gestures don’t complete : when you release your finger
+gesture animations can run to completion, or revert to their original state
+(like when you only partially open a menu) depending on how far you go. Gestures
+invert old and new : while you’re animating, you want the page you are animating
+from to stay “alive” and interactive. This inverts the browser View Transition
+model where the “old” state is a snapshot and the “new” state is the live DOM.
+We believe we’ve found an approach that works well and may introduce a new API
+for triggering gesture transitions. For now, we’re focused on shipping
+<ViewTransition> , and will revisit gestures afterward. Concurrent Stores When
+we released React 18 with concurrent rendering, we also released
+useSyncExternalStore so external store libraries that did not use React state or
+context could support concurrent rendering by forcing a synchronous render when
+the store is updated. Using useSyncExternalStore comes at a cost though, since
+it forces a bail out from concurrent features like transitions, and forces
+existing content to show Suspense fallbacks. Now that React 19 has shipped,
+we’re revisiting this problem space to create a
 ----------------------------------------------------------------------------------------------------
-Index: 25541 <<"chunk_id": 4, "docno": 3524>>
+Index: 978 <<"chunk_id": 0, "docno": 137>>
 
-a slight problem with this however. Browsers, typically have a fixed set of
-media types they send along as the Accept HTTP header and there's no way (aside
-from using JavaScript) to modify the Accept header sent along by the browser.
-That's why the file extension is a good alternative to indicate to a server what
-representation you want. Spring 3.0 features a ContentNegotiatingViewResolver
-that can work with both the extension as well as the Accept header. After it's
-figured out an appropriate media type, it delegates to a set of other view
-resolvers to do this for us. The following needs to be pasted into
-rest-servlet.xml to get this to work. As you can see, the
-ContentNegotiatingViewResolver will delegate to a a BeanNameViewResolver
-(resolving to the SampleContentAtomView if needed) or an
-InternalResourceViewResolver. The snippet below should, by the way, replace the
-InternalResourceViewResolver that was already configured in your
-rest-servlet.xml file. The ContentNegotiatingViewResolver looks at the file
-extension first and after that the Accept header is used (this is by the way
-customizable to a certain degree). We have to map the appropriate extensions to
-the appropriate media types. In this example, we map .html to the media type
-text/html and we map .atom to application/atom+xml. This will make sure the
-appropriate views are rendered. If a .atom request comes in, the
-ContentNegotiatingViewResolver will look for a view that matches the
-application/atom+xml media type. The view resolver will look for a view
-rendering content with media type text/html is an .html request comes in. <bean
-class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+State as a Snapshot – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State as a Snapshot State variables might look like regular JavaScript variables
+that you can read and write to. However, state behaves more like a snapshot.
+Setting it does not change the state variable you already have, but instead
+triggers a re-render. You will learn How setting state
+----------------------------------------------------------------------------------------------------
+Index: 428 <<"chunk_id": 0, "docno": 67>>
+
+Adding Interactivity – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Adding Interactivity
+Some things on the screen update in response to user input. For example,
+clicking an image gallery switches the active image. In React, data that changes
+over time is called state. You can add state to any component, and update it as
+needed. In this chapter, you’ll learn how to
+----------------------------------------------------------------------------------------------------
+Index: 1221 <<"chunk_id": 18, "docno": 161>>
+
+Square /> < Square /> </ div > < div className = "board-row" > < Square /> <
+Square /> < Square /> </ div > < div className = "board-row" > < Square /> <
+Square /> < Square /> </ div > </ > ) ; } Show more React Developer Tools React
+Developer Tools let you check the props and the state of your React components.
+It is available as a Chrome , Firefox , and Edge browser extension. After you
+install it, a new Components tab will appear in your browser Developer Tools for
+sites using React. If you’re following along in CodeSandbox, you’d need to first
+open your sandbox preview in a new tab: Then, on the preview page, open your
+browser’s DevTools and find the Components tab: To inspect a particular
+component on the screen, use the button in the top left corner of the Components
+tab: Completing the game By this point, you have all the basic building blocks
+for your tic-tac-toe game. To have a complete game, you now need to alternate
+placing “X”s and “O”s on the board, and you need a way to determine a winner.
+Lifting state up Currently, each Square component maintains a part of the game’s
+state. To check for a winner in a tic-tac-toe game, the Board would need to
+somehow know the state of each of the 9 Square components. How would you
+approach that? At first, you might guess that the Board needs to “ask” each
+Square for that Square
+----------------------------------------------------------------------------------------------------
+Index: 6001 <<"chunk_id": 8, "docno": 870>>
+
+the “Show solution” button in the left bottom corner. It’s handy if you want to
+check yourself! Build an intuition with diagrams and illustrations When we
+couldn’t figure out how to explain something with code and words alone, we’ve
+added diagrams that help provide some intuition. For example, here is one of the
+diagrams from Preserving and Resetting State : When section changes to div , the
+section is deleted and the new div is added You’ll also see some illustrations
+throughout the docs—here’s one of the browser painting the screen : Illustrated
+by Rachel Lee Nabors We’ve confirmed with the browser vendors that this
+depiction is 100% scientifically accurate. A new, detailed API Reference In the
+API Reference , every React API now has a dedicated page. This includes all
+kinds of APIs: Built-in Hooks like useState . Built-in components like
+<Suspense> . Built-in browser components like <input> . Framework-oriented APIs
+like renderToPipeableStream . Other React APIs like memo . You’ll notice that
+every API page is split into at least two segments: Reference and Usage .
+Reference describes the formal API signature by listing its arguments and return
+values. It’s concise, but it can feel a bit abstract if you’re not familiar with
+that API. It describes what an API does, but not how to use it. Usage shows why
+and how you would use this API in practice, like a colleague or a friend might
+explain. It shows the canonical scenarios for how each API was meant to be used
+by the React
+----------------------------------------------------------------------------------------------------
+Index: 73 <<"chunk_id": 0, "docno": 7>>
+
+Quick Start – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community Blog
+GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React Installation
+Creating a React App Build a React App from Scratch Add React to an Existing
+Project Setup Editor Setup Using TypeScript React Developer Tools React Compiler
+Introduction Installation Incremental Adoption Debugging and Troubleshooting
+LEARN REACT Describing the UI Your First Component Importing and Exporting
+Components Writing Markup with JSX JavaScript in JSX with Curly Braces Passing
+Props to a Component Conditional Rendering Rendering Lists Keeping Components
+Pure Your UI as a Tree Adding Interactivity Responding to Events State: A
+Component's Memory Render and Commit State as a Snapshot Queueing a Series of
+State Updates Updating Objects in State Updating Arrays in State Managing State
+Reacting to Input with State Choosing the State Structure Sharing State Between
+Components Preserving and Resetting State Extracting State Logic into a Reducer
+Passing Data Deeply with Context Scaling Up with Reducer and Context Escape
+Hatches Referencing Values with Refs Manipulating the DOM with Refs
+Synchronizing with Effects You Might Not Need an Effect Lifecycle of Reactive
+Effects Separating Events from Effects Removing Effect Dependencies Reusing
+Logic with Custom Hooks Learn React Copy page Copy Quick Start Welcome to the
+React documentation! This page will give you an introduction to 80% of the React
+concepts that you will use on a daily basis. You will learn How to create and
+nest components How to add markup and styles How to display data How to render
+conditions and
+----------------------------------------------------------------------------------------------------
+Index: 1413 <<"chunk_id": 19, "docno": 174>>
+
+: 2 , name : 'Bob' , email : 'bob@mail.com' } ] ; Show more Deep Dive Preserving
+state for removed components Show Details In a real chat app, you’d probably
+want to recover the input state when the user selects the previous recipient
+again. There are a few ways to keep the state “alive” for a component that’s no
+longer visible: You could render all chats instead of just the current one, but
+hide all the others with CSS. The chats would not get removed from the tree, so
+their local state would be preserved. This solution works great for simple UIs.
+But it can get very slow if the hidden trees are large and contain a lot of DOM
+nodes. You could lift the state up and hold the pending message for each
+recipient in the parent component. This way, when the child components get
+removed, it doesn’t matter, because it’s the parent that keeps the important
+information. This is the most common solution. You might also use a different
+source in addition to React state. For example, you probably want a message
+draft to persist even if the user accidentally closes the page. To implement
+this, you could have the Chat component initialize its state by reading from the
+localStorage , and save the drafts there too. No matter which strategy you pick,
+a chat with Alice is conceptually distinct from a chat with Bob , so it makes
+sense to give a key to the <Chat> tree based on the current recipient.
+----------------------------------------------------------------------------------------------------
+Index: 26610 <<"chunk_id": 5, "docno": 4276>>
+
+can almost guarantee that you will. So why might might it happen? Hibernate
+supports the concept of dirty-checking. What this means is that Hibernate checks
+whether any values of a domain instance's (persistent) properties have changed
+after that instance has been pulled from the database , and will persist those
+changes to the database. That's a bit of a mouthful so hopefully an example will
+help clarify this explanation. Let's say we have a Book domain class with title
+and author properties, and the following code is in a controller action: def b =
+Book.findByAuthor(params.author) b.title = b.title.reverse() Note that there is
+no call to save() here. When the request has completed you will find that the
+book's title has been reversed in the database - the change has been persisted
+without an explicit save. This is because: the book is attached to the session
+(by virtue of being retrieved by a query); the title property is persistent (all
+properties are persistent unless configured as transient); and the property
+value has changed by the time the session closes. Let's look at those in a
+little more detail. First, I have already mentioned that objects can be
+"attached" to the session, i.e. managed by Hibernate and backed by the database,
+but how do objects become attached? If you use GORM to retrieve a domain
+instance in any way, for example via the get() method or any type of query, then
+the object is automatically associated with the session. If you just create a
+new instance via the
+----------------------------------------------------------------------------------------------------
+Index: 1159 <<"chunk_id": 0, "docno": 156>>
+
+Scaling Up with Reducer and Context – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Scaling Up with Reducer and Context Reducers let you consolidate a component’s
+state update logic. Context lets you pass information deep down to other
+components. You can combine reducers and context together to manage state of a
+complex screen. You will learn How to combine a
+----------------------------------------------------------------------------------------------------
+Index: 1326 <<"chunk_id": 0, "docno": 169>>
+
+Choosing the State Structure – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Managing State Copy page Copy
+Choosing the State Structure Structuring state well can make a difference
+between a component that is pleasant to modify and debug, and one that is a
+constant source of bugs. Here are some tips you should consider when structuring
+state. You will learn When to use a single
+----------------------------------------------------------------------------------------------------
+Index: 26747 <<"chunk_id": 8, "docno": 4302>>
+
+layers. To start things off, it’s very handy to have a top level container for
+all components. (This will become more evident as you expand upon the code
+throughout this series.) Right now, you only have the employee list. But you
+might need some other related components later on, so let’s start with this:
+src/main/resources/static/app.jsx - App component var App = React.createClass({
+getInitialState: function () { return ({employees: []}); }, componentDidMount:
+function () { client({method: 'GET', path: '/api/employees'}).done(response => {
+this.setState({employees: response.entity._embedded.employees}); }); }, render:
+function () { return ( <EmployeeList employees={this.state.employees}/> ) } })
+React.createClass({…​}) is the method to create a React component.
+getInitialState is the API to initialize state data (data that is expected to
+vary). componentDidMount is the API invoked after React renders a component in
+the DOM. render is the API to "draw" the component on the screen. Note In React,
+uppercase is the convention for naming components. In the App component, an
+array of employees is fetched from the Spring Data REST backend and stored in
+this component’s state data. React components have two types of data: state and
+properties . State is data that the component is expected to handle itself. It
+is also data that can fluctuate and change. To read the state, you use
+this.state . To update it, you use this.setState() . Every time this.setState()
+is called, React updates the state, calculates a diff between the previous state
+and the new state, and injects a set of changes to the DOM on the page. This
+results a
+----------------------------------------------------------------------------------------------------
+Index: 785 <<"chunk_id": 2, "docno": 115>>
+
+; Try commenting out the root.render() call and see the component disappear!
+Re-renders when state updates Once the component has been initially rendered,
+you can trigger further renders by updating its state with the set function.
+Updating your component’s state automatically queues a render. (You can imagine
+these as a restaurant guest ordering tea, dessert, and all sorts of things after
+putting in their first order, depending on the state of their thirst or hunger.)
+State update... ...triggers... ...render! Illustrated by Rachel Lee Nabors Step
+2: React renders your components After you trigger a render, React calls your
+components to figure out what to display on screen. “Rendering” is React calling
+your components. On initial render, React will call the root component. For
+subsequent renders, React will call the function component whose state update
+triggered the render. This process is recursive: if the updated component
+returns some other component, React will render that component next, and if that
+component also returns something, it will render that component next, and so on.
+The process will continue until there are no more nested components and React
+knows exactly what should be displayed on screen. In the following example,
+React will call Gallery() and Image() several times: index.js Gallery.js
+Gallery.js Reload Clear Fork export default function Gallery ( ) { return ( <
+section > < h1 > Inspiring Sculptures </ h1 > < Image /> < Image /> < Image />
+</ section > ) ; } function Image ( ) { return ( < img src =
+----------------------------------------------------------------------------------------------------
+Index: 5923 <<"chunk_id": 12, "docno": 857>>
+
+re-rendering a non-urgent part of the tree. It is similar to debouncing, but has
+a few advantages compared to it. There is no fixed time delay, so React will
+attempt the deferred render right after the first render is reflected on the
+screen. The deferred render is interruptible and doesn’t block user input. See
+docs here . useSyncExternalStore useSyncExternalStore is a new Hook that allows
+external stores to support concurrent reads by forcing updates to the store to
+be synchronous. It removes the need for useEffect when implementing
+subscriptions to external data sources, and is recommended for any library that
+integrates with state external to React. See docs here . Note
+useSyncExternalStore is intended to be used by libraries, not application code.
+useInsertionEffect useInsertionEffect is a new Hook that allows CSS-in-JS
+libraries to address performance issues of injecting styles in render. Unless
+you’ve already built a CSS-in-JS library we don’t expect you to ever use this.
+This Hook will run after the DOM is mutated, but before layout effects read the
+new layout. This solves an issue that already exists in React 17 and below, but
+is even more important in React 18 because React yields to the browser during
+concurrent rendering, giving it a chance to recalculate layout. See docs here .
+Note useInsertionEffect is intended to be used by libraries, not application
+code. How to Upgrade See How to Upgrade to React 18 for step-by-step
+instructions and a full list of breaking and notable changes. Changelog React
+Add useTransition and useDeferredValue to separate urgent
+----------------------------------------------------------------------------------------------------
+Index: 1659 <<"chunk_id": 15, "docno": 202>>
+
+of a single component, but we will return to this topic in Sharing State Between
+Components. Recap Use a state variable when a component needs to “remember” some
+information between renders. State variables are declared by calling the
+useState Hook. Hooks are special functions that start with use . They let you
+“hook into” React features like state. Hooks might remind you of imports: they
+need to be called unconditionally. Calling Hooks, including useState , is only
+valid at the top level of a component or another Hook. The useState Hook returns
+a pair of values: the current state and the function to update it. You can have
+more than one state variable. Internally, React matches them up by their order.
+State is private to the component. If you render it in two places, each copy
+gets its own state. Try out some challenges 1 . Complete the gallery 2 . Fix
+stuck form inputs 3 . Fix a crash 4 . Remove unnecessary state Challenge 1 of 4
+: Complete the gallery When you press “Next” on the last sculpture, the code
+crashes. Fix the logic to prevent the crash. You may do this by adding extra
+logic to event handler or by disabling the button when the action is not
+possible. After fixing the crash, add a “Previous” button that shows the
+previous sculpture. It shouldn’t crash on the first sculpture. App.js data.js
+App.js Reload Clear Fork import { useState } from 'react' ; import {
+sculptureList } from './data.js' ; export default function
+----------------------------------------------------------------------------------------------------
+Index: 3477 <<"chunk_id": 1, "docno": 494>>
+
+PureComponent API Reference APIs Copy page Copy memo memo lets you skip
+re-rendering a component when its props are unchanged. const MemoizedComponent =
+memo ( SomeComponent , arePropsEqual ? ) Note React Compiler automatically
+applies the equivalent of memo to all components, reducing the need for manual
+memoization. You can use the compiler to handle component memoization
+automatically. Reference memo(Component, arePropsEqual?) Usage Skipping
+re-rendering when props are unchanged Updating a memoized component using state
+Updating a memoized component using a context Minimizing props changes
+Specifying a custom comparison function Do I still need React.memo if I use
+React Compiler? Troubleshooting My component re-renders when a prop is an
+object, array, or function Reference memo(Component, arePropsEqual?) Wrap a
+component in memo to get a memoized version of that component. This memoized
+version of your component will usually not be re-rendered when its parent
+component is re-rendered as long as its props have not changed. But React may
+still re-render it: memoization is a performance optimization, not a guarantee.
+import { memo } from 'react' ; const SomeComponent = memo ( function
+SomeComponent ( props ) { // ... } ) ; See more examples below. Parameters
+Component : The component that you want to memoize. The memo does not modify
+this component, but returns a new, memoized component instead. Any valid React
+component, including functions and forwardRef components, is accepted. optional
+arePropsEqual : A function that accepts two arguments: the component’s previous
+props, and its new props. It should return true if the old and new props
+----------------------------------------------------------------------------------------------------
+Index: 326 <<"chunk_id": 0, "docno": 45>>
+
+Describing the UI – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Describing the UI
+React is a JavaScript library for rendering user interfaces (UI). UI is built
+from small units like buttons, text, and images. React lets you combine them
+into reusable, nestable components. From web sites to phone apps, everything on
+the screen can be broken down into components. In this
+----------------------------------------------------------------------------------------------------
+Index: 1975 <<"chunk_id": 0, "docno": 252>>
+
+Referencing Values with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Referencing Values with Refs When you want a component to “remember” some
+information, but you don’t want that information to trigger new renders , you
+can use a ref . You will learn How to add a ref to your component How to update
+a ref’s value How
+----------------------------------------------------------------------------------------------------
+Index: 592 <<"chunk_id": 0, "docno": 91>>
+
+Incremental Adoption – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React React Compiler Copy page Copy
+Incremental Adoption React Compiler can be adopted incrementally, allowing you
+to try it on specific parts of your codebase first. This guide shows you how to
+gradually roll out the compiler in existing projects. You will learn Why
+incremental adoption is recommended Using Babel overrides for directory-based
+adoption Using the
+----------------------------------------------------------------------------------------------------
+Index: 6079 <<"chunk_id": 8, "docno": 878>>
+
+preserve the state of hidden tabs, so the user can switch between them without
+losing their progress. A virtualized list component can prerender additional
+rows above and below the visible window. When opening a modal or popup, the rest
+of the app can be put into “background” mode so that events and updates are
+disabled for everything except the modal. Most React developers will not
+interact with React’s offscreen APIs directly. Instead, offscreen rendering will
+be integrated into things like routers and UI libraries, and then developers who
+use those libraries will automatically benefit without additional work. The idea
+is that you should be able to render any React tree offscreen without changing
+the way you write your components. When a component is rendered offscreen, it
+does not actually mount until the component becomes visible — its effects are
+not fired. For example, if a component uses useEffect to log analytics when it
+appears for the first time, prerendering won’t mess up the accuracy of those
+analytics. Similarly, when a component goes offscreen, its effects are
+unmounted, too. A key feature of offscreen rendering is that you can toggle the
+visibility of a component without losing its state. Since our last update, we’ve
+tested an experimental version of prerendering internally at Meta in our React
+Native apps on Android and iOS, with positive performance results. We’ve also
+improved how offscreen rendering works with Suspense — suspending inside an
+offscreen tree will not trigger Suspense fallbacks. Our remaining work involves
+finalizing the primitives that are exposed to
+----------------------------------------------------------------------------------------------------
+Index: 18946 <<"chunk_id": 2, "docno": 2701>>
+
+while a navigation is executing. After a navigation completes, the router writes
+an object containing this value together with a navigationId to history.state .
+The value is written when location.go() or location.replaceState() is called
+before activating this route. Note that history.state does not pass an object
+equality test because the router adds the navigationId on each navigation. info
+unknown Use this to convey transient information about this particular
+navigation, such as how it happened. In this way, it's different from the
+persisted value state that will be set to history.state . This object is
+assigned directly to the Router's current Navigation (it is not copied or
+cloned), so it should be mutated with caution. One example of how this might be
+used is to trigger different single-page navigation animations depending on how
+a certain route was reached. For example, consider a photo gallery app, where
+you can reach the same photo URL and state via various routes: Clicking on it in
+a gallery view Clicking "next" or "previous" when viewing another photo in the
+album Etc. Each of these wants a different animation at navigate time. This
+information doesn't make sense to store in the persistent URL or history entry
+state, but it's still important to communicate from the rest of the application,
+into the router. This information could be used in coordination with the View
+Transitions feature and the onViewTransitionCreated callback. The information
+might be used in the callback to set classes on the document in order to control
+the transition animations and remove the
+----------------------------------------------------------------------------------------------------
+Index: 432 <<"chunk_id": 4, "docno": 67>>
+
+Show more Ready to learn this topic? Read State: A Component’s Memory to learn
+how to remember a value and update it on interaction. Read More Render and
+commit Before your components are displayed on the screen, they must be rendered
+by React. Understanding the steps in this process will help you think about how
+your code executes and explain its behavior. Imagine that your components are
+cooks in the kitchen, assembling tasty dishes from ingredients. In this
+scenario, React is the waiter who puts in requests from customers and brings
+them their orders. This process of requesting and serving UI has three steps:
+Triggering a render (delivering the diner’s order to the kitchen) Rendering the
+component (preparing the order in the kitchen) Committing to the DOM (placing
+the order on the table) Trigger Render Commit Illustrated by Rachel Lee Nabors
+Ready to learn this topic? Read Render and Commit to learn the lifecycle of a UI
+update. Read More State as a snapshot Unlike regular JavaScript variables, React
+state behaves more like a snapshot. Setting it does not change the state
+variable you already have, but instead triggers a re-render. This can be
+surprising at first! console . log ( count ) ; // 0 setCount ( count + 1 ) ; //
+Request a re-render with 1 console . log ( count ) ; // Still 0! This behavior
+helps you avoid subtle bugs. Here is a little chat app. Try to guess what
+happens if you press “Send” first and then change the
+----------------------------------------------------------------------------------------------------
+Index: 3832 <<"chunk_id": 16, "docno": 556>>
+
+) ; However, this works instead: startTransition ( async ( ) => { await
+someAsyncFunction ( ) ; // ✅ Using startTransition *after* await startTransition
+( ( ) => { setPage ( '/about' ) ; } ) ; } ) ; This is a JavaScript limitation
+due to React losing the scope of the async context. In the future, when
+AsyncContext is available, this limitation will be removed. I want to call
+useTransition from outside a component You can’t call useTransition outside a
+component because it’s a Hook. In this case, use the standalone startTransition
+method instead. It works the same way, but it doesn’t provide the isPending
+indicator. The function I pass to startTransition executes immediately If you
+run this code, it will print 1, 2, 3: console . log ( 1 ) ; startTransition ( (
+) => { console . log ( 2 ) ; setPage ( '/about' ) ; } ) ; console . log ( 3 ) ;
+It is expected to print 1, 2, 3. The function you pass to startTransition does
+not get delayed. Unlike with the browser setTimeout , it does not run the
+callback later. React executes your function immediately, but any state updates
+scheduled while it is running are marked as Transitions. You can imagine that it
+works like this: // A simplified version of how React works let
+isInsideTransition = false ; function startTransition ( scope ) {
+isInsideTransition = true ; scope ( ) ; isInsideTransition = false ; } function
+setState ( )
+----------------------------------------------------------------------------------------------------
+Index: 907 <<"chunk_id": 4, "docno": 129>>
+
+is an optimization. Although in some cases React may still need to call your
+component before skipping the children, it shouldn’t affect your code. React
+batches state updates. It updates the screen after all the event handlers have
+run and have called their set functions. This prevents multiple re-renders
+during a single event. In the rare case that you need to force React to update
+the screen earlier, for example to access the DOM, you can use flushSync . The
+set function has a stable identity, so you will often see it omitted from Effect
+dependencies, but including it will not cause the Effect to fire. If the linter
+lets you omit a dependency without errors, it is safe to do. Learn more about
+removing Effect dependencies. Calling the set function during rendering is only
+allowed from within the currently rendering component. React will discard its
+output and immediately attempt to render it again with the new state. This
+pattern is rarely needed, but you can use it to store information from the
+previous renders . See an example below. In Strict Mode, React will call your
+updater function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your updater
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. Usage Adding state to a component
+Call useState at the top level of your component to declare one or more state
+variables. import
+----------------------------------------------------------------------------------------------------
+Index: 554 <<"chunk_id": 0, "docno": 84>>
+
+Escape Hatches – React React v 19.2 Search ⌘ Ctrl K Learn Reference Community
+Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Copy page Copy Escape Hatches
+Advanced Some of your components may need to control and synchronize with
+systems outside of React. For example, you might need to focus an input using
+the browser API, play and pause a video player implemented without React, or
+connect and listen to messages from a remote server. In this
+----------------------------------------------------------------------------------------------------
+Index: 1644 <<"chunk_id": 0, "docno": 202>>
+
+State: A Component's Memory – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Adding Interactivity Copy page Copy
+State: A Component's Memory Components often need to change what’s on the screen
+as a result of an interaction. Typing into the form should update the input
+field, clicking “next” on an image carousel should change which image is
+displayed, clicking “buy” should put a product in the
+----------------------------------------------------------------------------------------------------
+Index: 905 <<"chunk_id": 2, "docno": 129>>
+
+there is a special behavior for functions. This argument is ignored after the
+initial render. If you pass a function as initialState , it will be treated as
+an initializer function . It should be pure, should take no arguments, and
+should return a value of any type. React will call your initializer function
+when initializing the component, and store its return value as the initial
+state. See an example below. Returns useState returns an array with exactly two
+values: The current state. During the first render, it will match the
+initialState you have passed. The set function that lets you update the state to
+a different value and trigger a re-render. Caveats useState is a Hook, so you
+can only call it at the top level of your component or your own Hooks. You can’t
+call it inside loops or conditions. If you need that, extract a new component
+and move the state into it. In Strict Mode, React will call your initializer
+function twice in order to help you find accidental impurities. This is
+development-only behavior and does not affect production. If your initializer
+function is pure (as it should be), this should not affect the behavior. The
+result from one of the calls will be ignored. set functions, like
+setSomething(nextState) The set function returned by useState lets you update
+the state to a different value and trigger a re-render. You can pass the next
+state directly, or a function that calculates it from the previous state: const
+[ name , setName ] =
+----------------------------------------------------------------------------------------------------
+Index: 1819 <<"chunk_id": 14, "docno": 229>>
+
+single component as much as you like. Immer is a great way to keep the update
+handlers concise, especially if there’s nesting in your state, and copying
+objects leads to repetitive code. Deep Dive Why is mutating state not
+recommended in React? Show Details There are a few reasons: Debugging: If you
+use console.log and don’t mutate state, your past logs won’t get clobbered by
+the more recent state changes. So you can clearly see how state has changed
+between renders. Optimizations: Common React optimization strategies rely on
+skipping work if previous props or state are the same as the next ones. If you
+never mutate state, it is very fast to check whether there were any changes. If
+prevObj === obj , you can be sure that nothing could have changed inside of it.
+New Features: The new React features we’re building rely on state being treated
+like a snapshot. If you’re mutating past versions of state, that may prevent you
+from using the new features. Requirement Changes: Some application features,
+like implementing Undo/Redo, showing a history of changes, or letting the user
+reset a form to earlier values, are easier to do when nothing is mutated. This
+is because you can keep past copies of state in memory, and reuse them when
+appropriate. If you start with a mutative approach, features like this can be
+difficult to add later on. Simpler Implementation: Because React does not rely
+on mutation, it does not need to do anything special with your objects. It does
+not need
+----------------------------------------------------------------------------------------------------
+Index: 746 <<"chunk_id": 4, "docno": 110>>
+
+React, you don’t directly manipulate the UI—meaning you don’t enable, disable,
+show, or hide components directly. Instead, you declare what you want to show,
+and React figures out how to update the UI. Think of getting into a taxi and
+telling the driver where you want to go instead of telling them exactly where to
+turn. It’s the driver’s job to get you there, and they might even know some
+shortcuts you haven’t considered! Illustrated by Rachel Lee Nabors Thinking
+about UI declaratively You’ve seen how to implement a form imperatively above.
+To better understand how to think in React, you’ll walk through reimplementing
+this UI in React below: Identify your component’s different visual states
+Determine what triggers those state changes Represent the state in memory using
+useState Remove any non-essential state variables Connect the event handlers to
+set the state Step 1: Identify your component’s different visual states In
+computer science, you may hear about a “state machine” being in one of several
+“states”. If you work with a designer, you may have seen mockups for different
+“visual states”. React stands at the intersection of design and computer
+science, so both of these ideas are sources of inspiration. First, you need to
+visualize all the different “states” of the UI the user might see: Empty : Form
+has a disabled “Submit” button. Typing : Form has an enabled “Submit” button.
+Submitting : Form is completely disabled. Spinner is shown. Success : “Thank
+you” message is shown instead of a form. Error : Same as Typing
+----------------------------------------------------------------------------------------------------
+Index: 4261 <<"chunk_id": 19, "docno": 628>>
+
+what changed. Only available if you specify static contextType . Returns Return
+true if you want the component to re-render. That’s the default behavior. Return
+false to tell React that re-rendering can be skipped. Caveats This method only
+exists as a performance optimization. If your component breaks without it, fix
+that first. Consider using PureComponent instead of writing
+shouldComponentUpdate by hand. PureComponent shallowly compares props and state,
+and reduces the chance that you’ll skip a necessary update. We do not recommend
+doing deep equality checks or using JSON.stringify in shouldComponentUpdate . It
+makes performance unpredictable and dependent on the data structure of every
+prop and state. In the best case, you risk introducing multi-second stalls to
+your application, and in the worst case you risk crashing it. Returning false
+does not prevent child components from re-rendering when their state changes.
+Returning false does not guarantee that the component will not re-render. React
+will use the return value as a hint but it may still choose to re-render your
+component if it makes sense to do for other reasons. Note Optimizing class
+components with shouldComponentUpdate is similar to optimizing function
+components with memo . Function components also offer more granular optimization
+with useMemo . UNSAFE_componentWillMount() If you define
+UNSAFE_componentWillMount , React will call it immediately after the constructor
+. It only exists for historical reasons and should not be used in any new code.
+Instead, use one of the alternatives: To initialize state, declare state as a
+class field or set this.state inside the constructor . If
+----------------------------------------------------------------------------------------------------
+Index: 1433 <<"chunk_id": 0, "docno": 179>>
+
+Manipulating the DOM with Refs – React React v 19.2 Search ⌘ Ctrl K Learn
+Reference Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking
+in React Installation Creating a React App Build a React App from Scratch Add
+React to an Existing Project Setup Editor Setup Using TypeScript React Developer
+Tools React Compiler Introduction Installation Incremental Adoption Debugging
+and Troubleshooting LEARN REACT Describing the UI Your First Component Importing
+and Exporting Components Writing Markup with JSX JavaScript in JSX with Curly
+Braces Passing Props to a Component Conditional Rendering Rendering Lists
+Keeping Components Pure Your UI as a Tree Adding Interactivity Responding to
+Events State: A Component's Memory Render and Commit State as a Snapshot
+Queueing a Series of State Updates Updating Objects in State Updating Arrays in
+State Managing State Reacting to Input with State Choosing the State Structure
+Sharing State Between Components Preserving and Resetting State Extracting State
+Logic into a Reducer Passing Data Deeply with Context Scaling Up with Reducer
+and Context Escape Hatches Referencing Values with Refs Manipulating the DOM
+with Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Escape Hatches Copy page Copy
+Manipulating the DOM with Refs React automatically updates the DOM to match your
+render output, so your components won’t often need to manipulate it. However,
+sometimes you might need access to the DOM elements managed by React—for
+example, to focus a node, scroll to it, or measure
+----------------------------------------------------------------------------------------------------
+Index: 3078 <<"chunk_id": 3, "docno": 430>>
+
+it inside loops or conditions. If you need that, extract a new component and
+move the state into it. If you’re not trying to synchronize with some external
+system, you probably don’t need an Effect. When Strict Mode is on, React will
+run one extra development-only setup+cleanup cycle before the first real setup.
+This is a stress-test that ensures that your cleanup logic “mirrors” your setup
+logic and that it stops or undoes whatever the setup is doing. If this causes a
+problem, implement the cleanup function. If some of your dependencies are
+objects or functions defined inside the component, there is a risk that they
+will cause the Effect to re-run more often than needed. To fix this, remove
+unnecessary object and function dependencies. You can also extract state updates
+and non-reactive logic outside of your Effect. If your Effect wasn’t caused by
+an interaction (like a click), React will generally let the browser paint the
+updated screen first before running your Effect. If your Effect is doing
+something visual (for example, positioning a tooltip), and the delay is
+noticeable (for example, it flickers), replace useEffect with useLayoutEffect .
+If your Effect is caused by an interaction (like a click), React may run your
+Effect before the browser paints the updated screen . This ensures that the
+result of the Effect can be observed by the event system. Usually, this works as
+expected. However, if you must defer the work until after paint, such as an
+alert() , you can use setTimeout . See reactwg/react-18/128
+----------------------------------------------------------------------------------------------------
+Index: 1063 <<"chunk_id": 0, "docno": 150>>
+
+Conditional Rendering – React React v 19.2 Search ⌘ Ctrl K Learn Reference
+Community Blog GET STARTED Quick Start Tutorial: Tic-Tac-Toe Thinking in React
+Installation Creating a React App Build a React App from Scratch Add React to an
+Existing Project Setup Editor Setup Using TypeScript React Developer Tools React
+Compiler Introduction Installation Incremental Adoption Debugging and
+Troubleshooting LEARN REACT Describing the UI Your First Component Importing and
+Exporting Components Writing Markup with JSX JavaScript in JSX with Curly Braces
+Passing Props to a Component Conditional Rendering Rendering Lists Keeping
+Components Pure Your UI as a Tree Adding Interactivity Responding to Events
+State: A Component's Memory Render and Commit State as a Snapshot Queueing a
+Series of State Updates Updating Objects in State Updating Arrays in State
+Managing State Reacting to Input with State Choosing the State Structure Sharing
+State Between Components Preserving and Resetting State Extracting State Logic
+into a Reducer Passing Data Deeply with Context Scaling Up with Reducer and
+Context Escape Hatches Referencing Values with Refs Manipulating the DOM with
+Refs Synchronizing with Effects You Might Not Need an Effect Lifecycle of
+Reactive Effects Separating Events from Effects Removing Effect Dependencies
+Reusing Logic with Custom Hooks Learn React Describing the UI Copy page Copy
+Conditional Rendering Your components will often need to display different
+things depending on different conditions. In React, you can conditionally render
+JSX using JavaScript syntax like if statements, && , and ? : operators. You will
+learn How to return different JSX depending on a condition How to conditionally
 ----------------------------------------------------------------------------------------------------
